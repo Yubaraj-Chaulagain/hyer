@@ -32,7 +32,7 @@ nav ul li a{
   color: white;
   display: block;
   padding: 0 15px;
-  line-height: 70px;
+  line-height: 35px;
   font-size: 10px;
   background: #063247;
   transition: .5s;
@@ -43,37 +43,37 @@ nav ul li a.active{
 }
 nav ul ul{
   position: absolute;
-  top: 85px;
+  top: 40px;
   border-top: 3px solid #23dbdb;
   opacity: 0;
   visibility: hidden;
 }
 nav ul li:hover > ul{
-  top: 70px;
+  top: 35px;
   opacity: 1;
   visibility: visible;
   transition: .3s linear;
 }
 nav ul ul li{
-  width: 150px;
+  width: 75px;
   display: list-item;
   position: relative;
   border: 1px solid #042331;
   border-top: none;
 }
 nav ul ul li a{
-  line-height: 50px;
+  line-height: 25px;
 }
 nav ul ul ul{
   border-top: none;
 }
 nav ul ul ul li{
   position: relative;
-  top: -70px;
-  left: 150px;
+  top: -35px;
+  left: 75px;
 }
 nav ul ul li a i{
-  margin-left: 45px;
+  margin-left: 20px;
 }
 section{
   background: url(bg.jpeg);
