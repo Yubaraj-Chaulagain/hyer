@@ -326,10 +326,10 @@ function read_value(srch) {
     tabCell = tr.insertCell(-1);
     tabCell.innerHTML = json.records[i].Email;
     tabCell = tr.insertCell(-1);
-    tabCell.innerHTML =Sorry Not Avilable In Your Data!!;//////////////////
+    tabCell.innerHTML = json.records[i].Kontak;//////////////////
             }
         }
-         $("#re").html("Informasi data siswa");
+         $("#re").html("Sorry Not Avilable In Your Data!!");
         $("#re").css("visibility","visible");
       } else {
          for (var i = 0; i < json.records.length; i++) {
