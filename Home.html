@@ -59,7 +59,7 @@ button:hover{
 .dropdown-options a {
   display: block;
   color: #000000;
-  padding: 2px;
+  padding: 20px;
   text-decoration: none;
   padding:10px 10px;
 }
@@ -68,6 +68,32 @@ button:hover{
   color: #0a0a23;
   background-color: #ddd;
   border-radius:2px;
+}
+.dropdown-option {
+  display: none;
+  position: absolute;
+  overflow: auto;
+  background-color:#fff;
+  border-radius:3px;
+  box-shadow: 0px 2.5px 2.5px 0px rgba(0,0,0,0.4);
+}
+
+.dropdown:hover .dropdown-option {
+  display: block;
+}
+
+.dropdown-option a {
+  display: block;
+  color: #000000;
+  padding: 2px;
+  text-decoration: none;
+  padding:3px 2px;
+}
+
+.dropdown-option a:hover {
+  color: #0a0a23;
+  background-color: #ddd;
+  border-radius:20px;
 }
 body {
     font-family: "Lato", sans-serif;
@@ -89,7 +115,7 @@ body {
 .sidenav a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
-    font-size: 25px;
+    font-size: 15px;
     color: #818181;
     display: block;
     transition: 0.3s
@@ -147,20 +173,22 @@ li a:hover {
 
   <div class="dropdown" style="position: absolute;
     width: 1%;
-    height: 1%;
+    height: 2%;
     float: right;">
-  <button>Profile</button>
+  <button>Internet Service</button>
   <div class="dropdown-options">
-    <a href="#">Login request</a>
-    <a href="#">Member Search & Result</a>
-    <a href="#">Total Tranjection Pie Chart</a>
-<a href="#">Loan Request View</a>
- <a href="#">Loan Pending View</a>
-    <a href="#">Loan Approved View</a>
-	  <a href="#">Day End Report</a>
-	  <a href="#">Tranjection Repoart</a>
-	  <a href="#">Balance Note</a>
-    <a href="#">Logout</a>
+    <a href="https://services.imepay.com.np/">Ime Pay</a>
+    <a href="https://merchant.prabhupay.com/Secure">Prabhu Pay</a>
+    <a href="https://login.connectips.com/#/login">Connnect IPS</a>
+<a href="#">Youtube</a>
+ <a href="#">Facebook</a>
+    <a href="#">WhatsApp</a>
+	  <a href="#">Instagram</a>
+	  <a href="#">TikTok</a>
+	  <a href="#">Telegram</a>
+    <a href="#"> Twitter</a>
+<a href="#">Skype</a>
+<a href="#">Viber</a>
   </div>
 </div>
 <ul>
@@ -178,8 +206,36 @@ li a:hover {
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a href="#">Login Official</a>
-  <a href="#">Services</a>
+  <a href="#"><div class="dropdown" style="position: absolute;
+    width: 5%;
+    height: 5%;
+    float: right;">
+   <button>Report</button>
+  <div class="dropdown-options">
+    <a href="#">Wellcome Dashboard</a>
+    <a href="#">Ledger Report</a>
+    <a href="#">Tranjection Report</a>
+<a href="#">Member Entry Report</a>
+ <a href="#">Pt Cash Report</a>
+    <a href="#">Target Report</a>
+  <a href="#">Target Match Report</a>
+	  <a href="#">Trail Ballance Report</a>
+	  <a href="#">Emi Schedule Report</a>
+	  <a href="#">Dayend Report</a>
+    <a href="#">Logout</a>
+  </div>
+</div></a><br><br>
+  <a href="#"><div class="dropdown" style="position: absolute;
+    width: 2%;
+    height: 2%;
+    float: right;">
+   <button>Tranjections</button>
+  <div class="dropdown-options">
+    <a href="#">Member Add/Update/Search/Delete</a>
+    <a href="#">Tranjection Add/Update/Search/Delete</a>
+    <a href="#">Logout</a>
+  </div>
+</div></a>
   <a href="#">About Infornmation</a>
   <a href="#">Contacts</a>
 </div>
@@ -215,7 +271,7 @@ function closeNav() {
         <header class="masthead bg-primary text-white text-center">
             <div class="container d-flex align-items-center flex-column">
                 <!-- Masthead Avatar Image-->
-                <img class="masthead-avatar mb-5" src="278280085_1152551862146486_4003285981124320203_n.jpg" alt="..." />
+                <img class="masthead-avatar mb-5" src="https://fulkumari.com.np/278280085_1152551862146486_4003285981124320203_n.jpg" alt="..." />
                 <!-- Masthead Heading-->
                 <h2 class="masthead-heading text-uppercase mb-0">Yubaraj Chaulagain</h2>
                 <table><tr>
