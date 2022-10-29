@@ -19,41 +19,203 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     </head>
-    <body id="page-top">
-<table border="0" width="100%"  height="100%" bgcolor="red">
-<tr>
-<th width="20%"><font color="white" size="5"><b><a href="Contact.html""#">Contact</b></font></th>
-<th width="20%"><font color="white" size="5"><b><a href="Staff%20work.html ""#">Staff work</b></font></th>
-<th width="20%"><font color="white" size="5"><b><a href="Other.html""#">Other</b></font></th>
-<th width="20%"><font color="white" size="5"><b><a href="samiti.html""#">Dashboards</b></font></th>
-<th width="20%"><font color="white" size="5"><b><a href="index.html""#">Index</b></font></th>
-</tr>
-</table>
-      <!-- Masthead-->
+
+<style>
+background: #0a0a23;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+button{
+  border:none;
+  border-radius:5px;
+  padding:15px 30px;
+  font-size:18px;
+  cursor:pointer;
+}
+
+button:hover{
+  background-color:#ddd;
+}
+
+.dropdown-options {
+  display: none;
+  position: absolute;
+  overflow: auto;
+  background-color:#fff;
+  border-radius:5px;
+  box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+}
+
+.dropdown:hover .dropdown-options {
+  display: block;
+}
+
+.dropdown-options a {
+  display: block;
+  color: #000000;
+  padding: 5px;
+  text-decoration: none;
+  padding:20px 40px;
+}
+
+.dropdown-options a:hover {
+  color: #0a0a23;
+  background-color: #ddd;
+  border-radius:5px;
+}
+body {
+    font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s
+}
+
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+#main {
+    transition: margin-left .5s;
+    padding: 16px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333333;
+}
+
+li {
+  float: right;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 16px;
+  text-decoration: none;
+}
+
+li a:hover {
+  background-color: #111111;
+}
+</style>
+<body id="mains" style="position: absolute;
+    width: 100%;
+    height: 100%;
+    float: left;">
+
+  <div class="dropdown" style="position: absolute;
+    width: 1%;
+    height: 1%;
+    float: right;">
+  <button>Profile</button>
+  <div class="dropdown-options">
+    <a href="#">Login request</a>
+    <a href="#">Setting</a>
+    <a href="#">Logout</a>
+  </div>
+</div>
+<ul>
+<li><a href="#contact">Comments</a></li>
+  <li><a href="#contact">About</a></li>
+  <li><a href="#about">Signup</a></li>
+ <li><a href="#about">Login</a></li>
+ <li><a href="#about">Emi Simple Calculater</a></li>
+ <li><a href="#about">Emi Schedule Calculater</a></li>
+ <li><a href="#about">Social Site</a></li>
+ <li><a href="#about">Home</a></li>
+</ul>
+
+
+<div id="mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#">Login Official</a>
+  <a href="#">Services</a>
+  <a href="#">About Infornmation</a>
+  <a href="#">Contacts</a>
+</div>
+
+<div id="main">
+  <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+</div>
+
+<script>
+document.onclick = function(e){
+    if(e.target.id != "mySidenav" &&( e.target.id== "mains" ||  e.target.id=="main"))
+    {
+	
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";   
+    }
+    }
+
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+}
+
+</script>
+     
+</body>
+<!-- Masthead-->
         <header class="masthead bg-primary text-white text-center">
             <div class="container d-flex align-items-center flex-column">
                 <!-- Masthead Avatar Image-->
-                <img class="masthead-avatar mb-5" src="https://scontent.fjkr1-1.fna.fbcdn.net/v/t39.30808-6/241087325_1015514409183566_6530413345244689625_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=ciKYiDFb0SoAX8kCsM4&_nc_ht=scontent.fjkr1-1.fna&oh=00_AT8c7eSgE6rEjqc9N79fnvb097FujeE0cA_OkYgAfxIBPg&oe=630F0D80" height="200" width="200" " alt="..." />
+                <img class="masthead-avatar mb-5" src="https://fulkumari.com.np/278280085_1152551862146486_4003285981124320203_n.jpg" height="200" width="200" " alt="..." />
                 <!-- Masthead Heading-->
                 <h1 class="masthead-heading text-uppercase mb-0">Yubaraj Chaulagain</h1>
                 <!-- Masthead Subheading-->
                 <p class="masthead-subheading font-weight-light mb-0">Software Devloper (marinsoftware)</p>
    </div>
         </header>
-                <nav>
-                    
-                    <table>
-<tr>
-<th width="20%"><font color="white" size="3"><a href="https://wa.me/+9779827857357" class="whatsapp_float" target="_blank">WhatsApp Id <i class="fa fa-whatsapp whatsapp-icon"></i></th>
-<th width="20%"><font color="white" size="3"><a href="http://facebook.com/yubaraj.chaulagain.773">Facebook  Id <i class='fab fa-facebook-f'></i></a></th>
-<th width="20%"><font color="white" size="3"><a href="mailto:yubarajchaulagain5@gmail.com">Send Mail <i class='fas fa-envelope-open-text' style='font-size:24px'></i></a></th>
-<th width="20%"><font color="white" size="3"><a href="tel:9827857357">Direct Call <i class="fa fa-phone" style="font-size:24px"></i></a></th>
-</table>
-                </nav>
-              
-               
-            
-        <!-- Copyright Section-->
+ <!-- Copyright Section-->
         <div class="copyright py-4 text-center text-white">
             <div class="container"><small>Copyright &copy; 2022 Yubaraj Chaulagain</small></div>
         </div>
@@ -62,5 +224,4 @@
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
-    </body>
 </html>
