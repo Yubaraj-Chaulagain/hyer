@@ -147,7 +147,10 @@
           <i class='bx bxs-cart-download cart four' ></i>
         </div>
       </div>
-
+<legend style="width: 750px; height: 320px;"><table class="columns"><tr>
+      <td style="align=left"><div id="Anthony_chart_div" style="width: 320px; height: 150px;"></div></td>
+<td style="align=right"><div id="Sarah_chart_div" style="width: 320px; height: 150px;"></div></td><td style="align=right"><div id="yuba_chart_div" style="width: 320px; height: 150px;"></div></td></tr>
+   </table></legend>
       <div class="sales-boxes">
         <div class="recent-sales box">
           <div class="title">Recent Sales</div>
@@ -719,5 +722,77 @@ nav .profile-details i{
   }
 }
  </style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawSarahChart);
+      google.charts.setOnLoadCallback(drawAnthonyChart);
+      google.charts.setOnLoadCallback(drawyubaChart);
+      function drawSarahChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Total Stock', 100000],
+          ['Total Sale', 50000],
+          ['Total Pending', 10000],
+          ['Total Avileble Stock', 30000],
+          ['Total Office Use', 10000]
+        ]);
+
+        var options = {title:'How Much Pizza Sarah Ate Last Night',
+                       width:400,
+                       height:300};
+
+        var chart = new google.visualization.PieChart(document.getElementById('Sarah_chart_div'));
+        chart.draw(data, options);
+      }
+
+      
+
+      function drawAnthonyChart() {
+
+        // Create the data table for Anthony's pizza.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Mushrooms', 2],
+          ['Onions', 2],
+          ['Olives', 2],
+          ['Zucchini', 0],
+          ['Pepperoni', 3]
+        ]);
+
+        var options = {title:'How Much Pizza Anthony Ate Last Night',
+                       width:400,
+                       height:300};
+
+        var chart = new google.visualization.PieChart(document.getElementById('Anthony_chart_div'));
+        chart.draw(data, options);
+      }
+function drawyubaChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Total Stock', 100000],
+          ['Total Sale', 50000],
+          ['Total Pending', 10000],
+          ['Total Avileble Stock', 30000],
+          ['Total Office Use', 10000]
+        ]);
+
+        var options = {title:'How Much Pizza yuba Ate Last Night',
+                       width:400,
+                       height:300};
+
+        var chart = new google.visualization.PieChart(document.getElementById('yuba_chart_div'));
+        chart.draw(data, options);
+      }
+    </script><!--Table and divs that hold the pie charts-->
 </body>
 </html>
+.
+
