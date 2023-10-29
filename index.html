@@ -6,5 +6,16 @@
 <frameset rows="*,39" border=0 width=0 frameborder=no framespacing=0>
  <frame src="index2.html" name="frSheet">
  <frame src="linkiframe.html" marginwidth=0 marginheight=0>
+ <input type="button" name="Quit" id="Quit" value="Quit" onclick="return quitBox('quit');" />
+
+
+<script>
+function quitBox(cmd)
+{   
+    if (cmd=='quit')
+    {
+        open(location, '_self').close();
+    }   
+    return false;   
 </frameset>
 </html>
