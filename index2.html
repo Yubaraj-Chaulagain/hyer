@@ -243,7 +243,6 @@ var form1=parseInt(document.getElementById("submit-form").value);
 
 </head>
 <body>
-	<p This window will close automatically within <span id="counter">10</span> second(s).</p>
 <!-- partial:index.partial.html -->
 <div class="box-form">
 	<div class="left">
@@ -310,10 +309,11 @@ var form1=parseInt(document.getElementById("submit-form").value);
 <script type="text/javascript">
 
  function countdown() {
-    var i = document.getElementById('counter');
+    var i = document.getElementById('counteer');
     i.innerHTML = parseInt(i.innerHTML)-1;
  if (parseInt(i.innerHTML)<=0)
 window.location.replace(document.all.item("close").href);
  }
 setInterval(function(){ countdown(); },1000);
 </script>
+	<p This window will close automatically within <span id="counteer">100</span> second(s).</p>
