@@ -12,33 +12,8 @@ A {
 <table border=0 cellspacing=1>
  <tr>
 <td bgcolor="#FFFFFF" nowrap><b><small><small>&nbsp;<a href="index2.html" target="frSheet"><font face="Arial" color="#000000">Exit Main File</font></a>&nbsp;</small></small></b></td>
-<td bgcolor="#FFFFFF" nowrap><b><small><small><a href="#" onclick="closeWindowr(); return false;">Close page</a></small></small></b></td> </tr>
+ </tr>
 </table>
-	<link id="Close" rel="Close" href="https://www.google.com/" target="frSheet">
-
-		<script type="text/javascript">
-
-			/**
-			 * Replace original window.confirm to automatically return TRUE
-			 * 
-			 * @see https://stackoverflow.com/a/11575047
-			 */
-			var realConfirm = window.confirm;
-			window.confirm=function(){
-			  window.confirm = realConfirm;
-			  return true;
-			};
-
-			/**
-			 * button click to close window
-			 */
-			function closeWindowr() {
-				// Below confirm it doesn't affect anything
-				if (confirm('Are you sure you want to close the page?'))
-window.location.replace(document.all.item("Close").href);
-				
-			}
-		</script>
 
 </body>
 </html>    
