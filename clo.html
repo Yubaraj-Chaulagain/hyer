@@ -1,48 +1,29 @@
-
-
-<!DOCTYPE html>
 <html>
+	<body>
+		<a href="#" onclick="closeWindow(); return false;">Close page</a>
 
-<head> 
-<Title> My Web Page </Title> 
-</head>
+		<script type="text/javascript">
 
-<body>
-    <h1 style="color: blue;">
-        Scaler Topics
-    </h1>
-  
-    <p>
-        Click the button to close the current window.
-    </p>
-  
-    <!-- Defining the button and
-    adding an on-click listener to it-->
-       
-    <button onclick="return closeWindow();">
-        Close
-    </button>
-    
-    <!-- defining the javascript script to obtain closing
-    window functionality -->
-    
-    <script type="text/javascript">
-        function closeWindow() {
-  
-            // Open the new window 
-            // replace the current page
-            // using _self
-            
-            let my_window =
-                open(location, '_self');
-  
-            // Close this window
-            my_window.close();
-  
-            return false;
-        }
-    </script>
-</body>
-  
+			/**
+			 * Replace original window.confirm to automatically return TRUE
+			 * 
+			 * @see https://stackoverflow.com/a/11575047
+			 */
+			var realConfirm = window.confirm;
+			window.confirm=function(){
+			  window.confirm = realConfirm;
+			  return true;
+			};
+
+			/**
+			 * button click to close window
+			 */
+			function closeWindow() {
+				// Below confirm it doesn't affect anything
+				if (confirm('Are you sure you want to close the page?')) {
+					window.close();
+				}
+			}
+		</script>
+	</body>
 </html>
-
