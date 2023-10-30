@@ -8,4 +8,10 @@
  <frame src="index2.html" name="frSheet">
  <frame src="linkiframe.html" marginwidth=0 marginheight=0>
 </frameset>
+ <script>
+function autoRefresh() {
+window.location = window.location.href;
+}
+setInterval('autoRefresh()', 30000);
+	</script>
 </html>
