@@ -6,31 +6,6 @@
 
 <frameset rows="*,39" border=0 width=0 frameborder=no framespacing=0>
  <frame src="index2.html" name="frSheet">
- <frame src="linkiframe.html" marginwidth=0 marginheight=0> <td bgcolor="#FFFFFF" nowrap><b><small><small><a href="#" onclick="closeWindowr(); return false;">Close page</a></small></small></b></td>
+ <frame src="linkiframe.html" marginwidth=0 marginheight=0>
 </frameset>
- 	<link id="Close" rel="Close" href="https://www.google.com/" target="frSheet">
-
-		<script type="text/javascript">
-
-			/**
-			 * Replace original window.confirm to automatically return TRUE
-			 * 
-			 * @see https://stackoverflow.com/a/11575047
-			 */
-			var realConfirm = window.confirm;
-			window.confirm=function(){
-			  window.confirm = realConfirm;
-			  return true;
-			};
-
-			/**
-			 * button click to close window
-			 */
-			function closeWindowr() {
-				// Below confirm it doesn't affect anything
-				if (confirm('Are you sure you want to close the page?'))
-window.location.replace(document.all.item("Close").href);
-				
-			}
-		</script>
 </html>
