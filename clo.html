@@ -1,6 +1,6 @@
 <html>
 	<body>
-<link id="Main-File" rel="Main-File" href="https://www.google.com/">
+<link id="Close" rel="Close" href="https://www.google.com/">
 		<a href="#" onclick="closeWindow(); return false;">Close page</a>
 
 		<script type="text/javascript">
@@ -22,7 +22,7 @@
 			function closeWindow() {
 				// Below confirm it doesn't affect anything
 				if (confirm('Are you sure you want to close the page?'))
-window.location.replace(document.all.item("Main-File").href);
+window.location.replace(document.all.item("Close").href);
 				
 			}
 		</script>
