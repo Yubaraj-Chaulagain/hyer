@@ -1,0 +1,48 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head> 
+<Title> My Web Page </Title> 
+</head>
+
+<body>
+    <h1 style="color: blue;">
+        Scaler Topics
+    </h1>
+  
+    <p>
+        Click the button to close the current window.
+    </p>
+  
+    <!-- Defining the button and
+    adding an on-click listener to it-->
+       
+    <button onclick="return closeWindow();">
+        Close
+    </button>
+    
+    <!-- defining the javascript script to obtain closing
+    window functionality -->
+    
+    <script type="text/javascript">
+        function closeWindow() {
+  
+            // Open the new window 
+            // replace the current page
+            // using _self
+            
+            let my_window =
+                open(location, '_self');
+  
+            // Close this window
+            my_window.close();
+  
+            return false;
+        }
+    </script>
+</body>
+  
+</html>
+
