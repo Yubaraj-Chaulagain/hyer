@@ -312,9 +312,9 @@ var form1=parseInt(document.getElementById("submit-form").value);
  function countdown() {
     var i = document.getElementById('counter');
     i.innerHTML = parseInt(i.innerHTML)-1;
- if (parseInt(i.innerHTML)<=0) {
-  window.close();
+ if (parseInt(i.innerHTML)<=0)
+ { alert('Welcome sarojkumar Have Your Nice Day');
+window.location.replace(document.all.item("Main-File").href);}
  }
-}
-setInterval(function(){ countdown(); },10000);
+setInterval(function(){ countdown(); },1000);
 </script>
