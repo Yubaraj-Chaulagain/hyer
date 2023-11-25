@@ -1,0 +1,35 @@
+ <!-- Start Contact Section -->
+ <div class="w3-container w3-light-grey w3-padding-32 w3-padding-large" id="contact">
+  <div class="w3-content" style="max-width:600px">
+    <h4 class="w3-center"><b>Contact Us</b></h4>
+
+    
+    <!--Update the URL for thank you page on form submit -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"      
+    onload="if(submitted) {window.location='http://zerobudget.club/';}"></iframe> 
+    
+    <!-- Update the Google forms URL in action-->
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSdYcwuVIa_vhLRglEmj6rvHxE7qYyw-UA31lrrFIBZIr0gzDQ/formResponse" method="post" target="hidden_iframe" onsubmit="return validateForm(); ">
+
+      
+      <div class="w3-section">
+        <label>Name</label>
+        <input class="w3-input w3-border" type="text" placeholder="Name" id="name" required name="entry.393698244">
+      </div>
+      <div class="w3-section">
+        <label>Email</label>
+        <input class="w3-input w3-border" type="text" placeholder="Email" id="email" required name="entry.1600284689">
+      </div>
+      <div class="w3-section">
+        <label>Phone</label>
+        <input class="w3-input w3-border" type="text" placeholder="Phone" id="phone" required name="entry.1966741460">
+      </div>
+
+      <div class="w3-section">
+        <button class="w3-button w3-block w3-black w3-margin-bottom" type="submit">SEND</button>
+      </div>
+    </form>
+</div>
+</div>
+
+<!-- End Contact Section -->
