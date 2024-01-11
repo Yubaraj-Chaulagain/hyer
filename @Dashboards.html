@@ -792,9 +792,10 @@ nav .profile-details i{
     <script type="text/javascript">
 
       google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawSarahChart);
-      google.charts.setOnLoadCallback(drawAnthonyChart);
-      function drawSarahChart() {
+      google.charts.setOnLoadCallback(drawInExChart);
+      google.charts.setOnLoadCallback(drawStauseChart);
+       google.charts.setOnLoadCallback(drawSallaryChart);
+      function drawInExChart() {
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Topping');
         data.addColumn('number', 'Slices');
@@ -804,7 +805,7 @@ nav .profile-details i{
       
         ]);
 
-        var options = {title:'How Much Pizza Sarah Ate Last Night',
+        var options = {title:'Marin Fant Sanchai Complete Statuse Chart',
                        width:400,
                        height:300};
 
@@ -814,7 +815,7 @@ nav .profile-details i{
 
       
 
-      function drawAnthonyChart() {
+      function drawStauseChart() {
 
         // Create the data table for Anthony's pizza.
         var data = new google.visualization.DataTable();
@@ -825,7 +826,24 @@ nav .profile-details i{
           ['Total Pending Amount', 200],
         ]);
 
-        var options = {title:'How Much Pizza Anthony Ate Last Night',
+        var options = {title:'Marin Fant Sanchai Tax-Income Statuse Chart',
+                       width:400,
+                       height:300};
+
+        var chart = new google.visualization.PieChart(document.getElementById('Anthony_chart_div'));
+        chart.draw(data, options);
+      }
+
+      function drawSallaryChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Total Collected Sallary Amount',1200],
+          ['Total Pending Sallary Amount', 200],
+        ]);
+
+        var options = {title:'Marin Fant Sanchai Sallary Statuse Chart',
                        width:400,
                        height:300};
 
