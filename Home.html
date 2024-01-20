@@ -186,7 +186,45 @@ li a:hover {
 </ul>
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-List
+<div id="sideBarNav" class="fixed hidden md:flex w-[60px] h-full bg-white z-30 duration-300">
+  <button id="abreNav" class="absolute w-4 h-4 bg-white text-black flex justify-center items-center top-3 -right-2 z-20 rounded-full text-2xl">
+    <i class="ti ti-square-rounded-arrow-right-filled duration-300 text-stone-800" id="setaAbre"></i>
+  </button>
+ </div>
+
+
+ <div id="contGeral" class="relative bg-stone-100 w-full md:w-[calc(100%-60px)] min-h-screen z-10 float-right duration-300 p-6 rounded-xl">
+  
+  
+  
+aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+<br><br>  aa
+
+
+
+
+
+</div>
   <div class="dropdown-options">Lists
     <a href="#">Wellcome Dashboard</a>
     <a href="#">Ledger Report</a>
@@ -222,6 +260,25 @@ function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
     document.getElementById("main").style.marginLeft= "0";
 }
+ const sidebar = document.getElementById('sideBarNav');
+  const openSidebarButton = document.getElementById('abreNav');
+  const areaGeral = document.getElementById("contGeral");
+  const abreSeta = document.getElementById("setaAbre");
+
+    openSidebarButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sidebar.classList.toggle('md:w-[260px]');
+      areaGeral.classList.toggle('md:w-[calc(100%-260px)]');
+      abreSeta.classList.toggle('rotate-180');
+    });
+
+    // Fecha a sidebar quando clica fora
+    document.addEventListener('click', (e) => {
+      if (!sidebar.contains(e.target) && !openSidebarButton.contains(e.target)) {
+          sidebar.classList.remove('md:w-[260px]');
+          areaGeral.classList.remove('md:w-[calc(100%-260px)]');
+      }
+    });
 </script>
      
 </body>
