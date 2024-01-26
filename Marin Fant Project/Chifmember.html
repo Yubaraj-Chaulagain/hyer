@@ -1,0 +1,85 @@
+<iframe name="print_frame" width="0" height="0" frameborder="0" border:1px solid black; src="about:blank"></iframe> <script> function printDiv() { window.frames["print_frame"].document.body.innerHTML = document.getElementById("printableTable").innerHTML; window.frames["print_frame"].window.focus(); window.frames["print_frame"].window.print(); }  
+
+ function myFunction() { var input, filter, table, tr, td, i, txtValue; input = document.getElementById("myInput"); filter = input.value.toUpperCase(); table = document.getElementById("myTablee"); tr = table.getElementsByTagName("tr"); for (i = 0; i < tr.length; i++) { td = tr[i].getElementsByTagName("td")[1]; if (td) { txtValue = td.textContent || td.innerText; if (txtValue.toUpperCase().indexOf(filter) > -1) { tr[i].style.display = ""; } else { tr[i].style.display = "none"; } } } }  
+
+ function myFunctionss() { var input, filter, table, tr, td, i, txtValue; input = document.getElementById("myInputss"); filter = input.value.toUpperCase(); table = document.getElementById("myTablee"); tr = table.getElementsByTagName("tr"); for (i = 0; i < tr.length; i++) { td = tr[i].getElementsByTagName("td")[5]; if (td) { txtValue = td.textContent || td.innerText; if (txtValue.toUpperCase().indexOf(filter) > -1) { tr[i].style.display = ""; } else { tr[i].style.display = "none"; } } } } 
+
+  function myFunctionsss() { var input, filter, table, tr, td, i, txtValue; input = document.getElementById("myInputsss"); filter = input.value.toUpperCase(); table = document.getElementById("myTablee"); tr = table.getElementsByTagName("tr"); for (i = 0; i < tr.length; i++) { td = tr[i].getElementsByTagName("td")[2]; if (td) { txtValue = td.textContent || td.innerText; if (txtValue.toUpperCase().indexOf(filter) > -1) { tr[i].style.display = ""; } else { tr[i].style.display = "none"; } } } } 
+
+  function myFunctionssss() { var select, filter, table, tr, td, i, txtValue; select = document.getElementById("myInputssss"); filter = select.value.toUpperCase(); table = document.getElementById("myTablee"); tr = table.getElementsByTagName("tr"); for (i = 0; i < tr.length; i++) { td = tr[i].getElementsByTagName("td")[4]; if (td) { txtValue = td.textContent || td.innerText; if (txtValue.toUpperCase().indexOf(filter) > -1) { tr[i].style.display = ""; } else { tr[i].style.display = "none"; } } } }  </script>
+
+ <style>     .responsive-container{         width: 50px;         margin: 0 center;     }     body{         background-color: orange;     }          .responsive-container table{         width: 50%;         background-color: bisque;     }     .responsive-container input{         display:block;       }     .responsive-container td{         border-color: solid 1px rgb(12, 5, 5);     }     .responsive-container td::before{         display: none;     }     .responsive-container th,.responsive-container td{         display: table-cell;         padding: 10px;         text-align: left;     }     @media(max-width:767px){ .responsive-container{ width:80%; margin-top: 20px; } .responsive-container th{ display:none; } .responsive-container td{ display:block; } .responsive-container td:first-child{ padding-top:.5em; } .responsive-container td:last-child{ padding: bottom 0.5em; } .responsive-container td:before{ content: attr(data-th) ": "; font-weight:bold; width:6.5em; display:inline-block; } </style> <style> @media print { * { display: none; }  #printableTable { display: block; } } </style> <meta charset="UTF-8"> <title>Member Conditions (Yubaraj Chaulagain Officeal Website)</title> <link rel="icon" type="image/x-icon" href="icon size small/nepali national logo icon.jpg"> <h4>Wellcome My Sanchai Data Base </h4>  <p3>Source By:.......... Company:Marin Fant Sachai Samiti Address:Marin Gaupalika-7 Sindhuli,Nepal </p3></br>..Current Date and Time is: <span id='date-time'></span></p4><script> var dt = new Date(); document.getElementById('date-time').innerHTML=dt; </script> <br><br><b>Search From Below Inbox:</b><br> पदाधिकारीहरू को नामाबली:<input type="text" size=9% id="myInput" onkeyup="myFunction()" title="पदाधिकारीहरू को नामाबली"></input>Phone Number:<input type="text" size=8% id="myInputss" onkeyup="myFunctionss()" title="Type in a MobileNumber"></input><hr/> Position:<input type="text" size=8% id="myInputssss" onkeyup="myFunctionssss()" title="Type Position"></input>Address:<input type="text" size=8% id="myInputsss" onkeyup="myFunctionsss()" title="Type in a Address"></input> &nbsp;<button class="Button Button--outline" onclick="printDiv()">Print</button> <hr/>       <div id="printableTable" align="left">     <div class="responsive-container"> <table id="myTablee" width="100%" align="left">
+ 
+<tr><th>क्र.स</th><th>पदाधिकारीहरू को नामाबली</th><th>ठेगाना</th><th>श्रेत्रफल</th><th>पद</th><th>फोन नम्बर</th><th>पद दर्ता मिती</th></tr>
+
+
+<tr><td>1</td><td>चन्द्रलाल भोलन</td><td>मरिण-6</td><td>0-12-0</td><td>अध्यक्ष</td><td>981-5873852</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>2</td><td>शंकर राज आरण</td><td>मरिण-6</td><td>0-05-0</td><td>उपाध्यक्ष</td><td>9803972094</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>3</td><td>बुद्दी प्रसाद पन्त</td><td>मरिण-7</td><td>0-10-0</td><td>सचिब</td><td>981-5857272</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>4</td><td>नोबिन बहादुर बिश्वकर्मा</td><td>मरिण-7</td><td>0-03-0</td><td>सह-सचिब</td><td>9861617665</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>5</td><td>मेन्दोमाया स्याङ्तान</td><td>मरिण-6</td><td>0-5-0</td><td>कोशाध्यक्ष</td><td>981-6815711</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>6</td><td>ज्योतीलाल माझी</td><td>मरिण-6</td><td>0-17-0</td><td>सदस्य</td><td>9864135180</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>7</td><td>रुद्र बहादुर माझी</td><td>मरिण-7</td><td>0-10-0</td><td>सदस्य</td><td>9817821045</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>8</td><td>लक्ष्मिमाया नेपाली</td><td>मरिण-7</td><td>0-04-0</td><td>सदस्य</td><td></td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>9</td><td>बिन्दामाया खंड्का</td><td>मरिण-7</td><td>0-05-0</td><td>सदस्य</td><td>9817673540</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>10</td><td>बिश्णु बहादुर माझी</td><td>मरिण-7</td><td>0-04-0</td><td>सदस्य</td><td>982-5836092</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>11</td><td>जित बहादुर माझी(बेतीनी)</td><td>मरिण-5</td><td>0-10-0</td><td>सदस्य</td><td>982-3592588</td><td>२०८०/०४/०३</td></tr>
+
+<tr><td>12</td><td>युबराज चौंलागाँई</td><td>मरिण-7</td><td>0-0-0</td><td>पिउन</td><td>9703487543</td><td>२०७६/०७/०१</td></tr>
+
+
+
+</table></div></div></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
