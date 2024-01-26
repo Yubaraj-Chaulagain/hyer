@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+<meta http-equiv="refresh" content="15; url="index2.html">
+  <title>Yubaraj Chaulagain Official Website(Login Page)</title>
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"><link rel="stylesheet" href="./style.css">
+
+</head>
+ <style>
+body {
+  background-image: linear-gradient(135deg, #FAB2FF 10%, #1904E5 100%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Open Sans", sans-serif;
+  color: #333333;
+}
+
+.box-form {
+  margin: 0 auto;
+  width: 82%;
+  background: #FFFFFF;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex: 1 1 50%;
+  align-items: stretch;
+  justify-content: space-between;
+  box-shadow: 0 0 20px 6px #090b6f85;
+}
+@media (max-width: 980px) {
+  .box-form {
+    flex-flow: wrap;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+  }
+}
+.box-form div {
+  height: auto;
+}
+.box-form .left {
+  color: #FFFFFF;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-image: url("https://i.pinimg.com/736x/5d/73/ea/5d73eaabb25e3805de1f8cdea7df4a42--tumblr-backgrounds-iphone-phone-wallpapers-iphone-wallaper-tumblr.jpg");
+  overflow: hidden;
+}
+.box-form .left .overlay {
+  padding: 30px;
+  width: 100%;
+  height: 100%;
+  background: #5961f9ad;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.box-form .left .overlay h1 {
+  font-size: 10vmax;
+  line-height: 1;
+  font-weight: 900;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+.box-form .left .overlay span p {
+  margin-top: 30px;
+  font-weight: 900;
+}
+.box-form .left .overlay span a {
+  background: #3b5998;
+  color: #FFFFFF;
+  margin-top: 10px;
+  padding: 14px 50px;
+  border-radius: 100px;
+  display: inline-block;
+  box-shadow: 0 3px 6px 1px #042d4657;
+}
+.box-form .left .overlay span a:last-child {
+  background: #1dcaff;
+  margin-left: 30px;
+}
+.box-form .right {
+  padding: 40px;
+  overflow: hidden;
+}
+@media (max-width: 980px) {
+  .box-form .right {
+    width: 100%;
+  }
+}
+.box-form .right h5 {
+  font-size: 6vmax;
+  line-height: 0;
+}
+.box-form .right p {
+  font-size: 16px;
+  color: #B0B3B9;
+}
+.box-form .right .inputs {
+  overflow: hidden;
+}
+.box-form .right input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 25px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #B0B3B9;
+}
+.box-form .right .remember-me--forget-password {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.box-form .right .remember-me--forget-password input {
+  margin: 0;
+  margin-right: 7px;
+  width: auto;
+}
+.box-form .right button {
+  float: right;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px 35px;
+  border-radius: 50px;
+  display: inline-block;
+  border: 0;
+  outline: 0;
+  box-shadow: 0px 4px 20px 0px #49c628a6;
+  background-image: linear-gradient(135deg, #70F570 10%, #49C628 100%);
+}
+
+label {
+  display: block;
+  position: relative;
+  margin-left: 30px;
+}
+
+label::before {
+  content: ' \f00c';
+  position: absolute;
+  font-family: FontAwesome;
+  background: transparent;
+  border: 3px solid #70F570;
+  border-radius: 4px;
+  color: transparent;
+  left: -30px;
+  transition: all 0.2s linear;
+}
+
+label:hover::before {
+  font-family: FontAwesome;
+  content: ' \f00c';
+  color: #fff;
+  cursor: pointer;
+  background: #70F570;
+}
+
+label:hover::before .text-checkbox {
+  background: #70F570;
+}
+
+label span.text-checkbox {
+  display: inline-block;
+  height: auto;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+label input[type="checkbox"] {
+  display: none;
+}
+</style>
+<style>/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */@font-face{font-family:'FontAwesome';src:url('../fonts/fontawesome-webfont.eot?v=4.7.0');src:url('../fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'),url('../fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'),url('../fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'),url('../fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'),url('../fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');font-weight:normal;font-style:normal}.fa{display:inline-block;font:normal normal normal 14px/1 FontAwesome;font-size:inherit;text-rendering:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.fa-lg{font-size:1.33333333em;line-height:.75em;vertical-align:-15%}.fa-2x{font-size:2em}.fa-3x{font-size:3em}.fa-4x{font-size:4em}.fa-5x{font-size:5em}.fa-fw{width:1.28571429em;text-align:center}.fa-ul{padding-left:0;margin-left:2.14285714em;list-style-type:none}.fa-ul>li{position:relative}.fa-li{position:absolute;left:-2.14285714em;width:2.14285714em;top:.14285714em;text-align:center}.fa-li.fa-lg{left:-1.85714286em}.fa-border{padding:.2em .25em .15em;border:solid .08em #eee;border-radius:.1em}.fa-pull-left{float:left}.fa-pull-right{float:right}.fa.fa-pull-left{margin-right:.3em}.fa.fa-pull-right{margin-left:.3em}.pull-right{float:right}.pull-left{float:left}.fa.pull-left{margin-right:.3em}.fa.pull-right{margin-left:.3em}.fa-spin{-webkit-animation:fa-spin 2s infinite linear;animation:fa-spin 2s infinite linear}.fa-pulse{-webkit-animation:fa-spin 1s infinite steps(8);animation:fa-spin 1s infinite steps(8)}@-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}@keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}.fa-rotate-90{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";-webkit-transform:rotate(90deg);-ms-transform:rotate(90deg);transform:rotate(90deg)}.fa-rotate-180{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";-webkit-transform:rotate(180deg);-ms-transform:rotate(180deg);transform:rotate(180deg)}.fa-rotate-270{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";-webkit-transform:rotate(270deg);-ms-transform:rotate(270deg);transform:rotate(270deg)}.fa-flip-horizontal{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";-webkit-transform:scale(-1, 1);-ms-transform:scale(-1, 1);transform:scale(-1, 1)}.fa-flip-vertical{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";-webkit-transform:scale(1, -1);-ms-transform:scale(1, -1);transform:scale(1, -1)}:root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270,:root .fa-flip-horizontal,:root .fa-flip-vertical{filter:none}.fa-stack{position:relative;display:inline-block;width:2em;height:2em;line-height:2em;vertical-align:middle}.fa-stack-1x,.fa-stack-2x{position:absolute;left:0;width:100%;text-align:center}.fa-stack-1x{line-height:inherit}.fa-stack-2x{font-size:2em}.fa-inverse{color:#fff}.fa-glass:before{content:"\f000"}.fa-music:before{content:"\f001"}.fa-search:before{content:"\f002"}.fa-envelope-o:before{content:"\f003"}.fa-heart:before{content:"\f004"}.fa-star:before{content:"\f005"}.fa-star-o:before{content:"\f006"}.fa-user:before{content:"\f007"}.fa-film:before{content:"\f008"}.fa-th-large:before{content:"\f009"}.fa-th:before{content:"\f00a"}.fa-th-list:before{content:"\f00b"}.fa-check:before{content:"\f00c"}.fa-remove:before,.fa-close:before,.fa-times:before{content:"\f00d"}.fa-search-plus:before{content:"\f00e"}.fa-search-minus:before{content:"\f010"}.fa-power-off:before{content:"\f011"}.fa-signal:before{content:"\f012"}.fa-gear:before,.fa-cog:before{content:"\f013"}.fa-trash-o:before{content:"\f014"}.fa-home:before{content:"\f015"}.fa-file-o:before{content:"\f016"}.fa-clock-o:before{content:"\f017"}.fa-road:before{content:"\f018"}.fa-download:before{content:"\f019"}.fa-arrow-circle-o-down:before{content:"\f01a"}.fa-arrow-circle-o-up:before{content:"\f01b"}.fa-inbox:before{content:"\f01c"}.fa-play-circle-o:before{content:"\f01d"}.fa-rotate-right:before,.fa-repeat:before{content:"\f01e"}.fa-refresh:before{content:"\f021"}.fa-list-alt:before{content:"\f022"}.fa-lock:before{content:"\f023"}.fa-flag:before{content:"\f024"}.fa-headphones:before{content:"\f025"}.fa-volume-off:before{content:"\f026"}.fa-volume-down:before{content:"\f027"}.fa-volume-up:before{content:"\f028"}.fa-qrcode:before{content:"\f029"}.fa-barcode:before{content:"\f02a"}.fa-tag:before{content:"\f02b"}.fa-tags:before{content:"\f02c"}.fa-book:before{content:"\f02d"}.fa-bookmark:before{content:"\f02e"}.fa-print:before{content:"\f02f"}.fa-camera:before{content:"\f030"}.fa-font:before{content:"\f031"}.fa-bold:before{content:"\f032"}.fa-italic:before{content:"\f033"}.fa-text-height:before{content:"\f034"}.fa-text-width:before{content:"\f035"}.fa-align-left:before{content:"\f036"}.fa-align-center:before{content:"\f037"}.fa-align-right:before{content:"\f038"}.fa-align-justify:before{content:"\f039"}.fa-list:before{content:"\f03a"}.fa-dedent:before,.fa-outdent:before{content:"\f03b"}.fa-indent:before{content:"\f03c"}.fa-video-camera:before{content:"\f03d"}.fa-photo:before,.fa-image:before,.fa-picture-o:before{content:"\f03e"}.fa-pencil:before{content:"\f040"}.fa-map-marker:before{content:"\f041"}.fa-adjust:before{content:"\f042"}.fa-tint:before{content:"\f043"}.fa-edit:before,.fa-pencil-square-o:before{content:"\f044"}.fa-share-square-o:before{content:"\f045"}.fa-check-square-o:before{content:"\f046"}.fa-arrows:before{content:"\f047"}.fa-step-backward:before{content:"\f048"}.fa-fast-backward:before{content:"\f049"}.fa-backward:before{content:"\f04a"}.fa-play:before{content:"\f04b"}.fa-pause:before{content:"\f04c"}.fa-stop:before{content:"\f04d"}.fa-forward:before{content:"\f04e"}.fa-fast-forward:before{content:"\f050"}.fa-step-forward:before{content:"\f051"}.fa-eject:before{content:"\f052"}.fa-chevron-left:before{content:"\f053"}.fa-chevron-right:before{content:"\f054"}.fa-plus-circle:before{content:"\f055"}.fa-minus-circle:before{content:"\f056"}.fa-times-circle:before{content:"\f057"}.fa-check-circle:before{content:"\f058"}.fa-question-circle:before{content:"\f059"}.fa-info-circle:before{content:"\f05a"}.fa-crosshairs:before{content:"\f05b"}.fa-times-circle-o:before{content:"\f05c"}.fa-check-circle-o:before{content:"\f05d"}.fa-ban:before{content:"\f05e"}.fa-arrow-left:before{content:"\f060"}.fa-arrow-right:before{content:"\f061"}.fa-arrow-up:before{content:"\f062"}.fa-arrow-down:before{content:"\f063"}.fa-mail-forward:before,.fa-share:before{content:"\f064"}.fa-expand:before{content:"\f065"}.fa-compress:before{content:"\f066"}.fa-plus:before{content:"\f067"}.fa-minus:before{content:"\f068"}.fa-asterisk:before{content:"\f069"}.fa-exclamation-circle:before{content:"\f06a"}.fa-gift:before{content:"\f06b"}.fa-leaf:before{content:"\f06c"}.fa-fire:before{content:"\f06d"}.fa-eye:before{content:"\f06e"}.fa-eye-slash:before{content:"\f070"}.fa-warning:before,.fa-exclamation-triangle:before{content:"\f071"}.fa-plane:before{content:"\f072"}.fa-calendar:before{content:"\f073"}.fa-random:before{content:"\f074"}.fa-comment:before{content:"\f075"}.fa-magnet:before{content:"\f076"}.fa-chevron-up:before{content:"\f077"}.fa-chevron-down:before{content:"\f078"}.fa-retweet:before{content:"\f079"}.fa-shopping-cart:before{content:"\f07a"}.fa-folder:before{content:"\f07b"}.fa-folder-open:before{content:"\f07c"}.fa-arrows-v:before{content:"\f07d"}.fa-arrows-h:before{content:"\f07e"}.fa-bar-chart-o:before,.fa-bar-chart:before{content:"\f080"}.fa-twitter-square:before{content:"\f081"}.fa-facebook-square:before{content:"\f082"}.fa-camera-retro:before{content:"\f083"}.fa-key:before{content:"\f084"}.fa-gears:before,.fa-cogs:before{content:"\f085"}.fa-comments:before{content:"\f086"}.fa-thumbs-o-up:before{content:"\f087"}.fa-thumbs-o-down:before{content:"\f088"}.fa-star-half:before{content:"\f089"}.fa-heart-o:before{content:"\f08a"}.fa-sign-out:before{content:"\f08b"}.fa-linkedin-square:before{content:"\f08c"}.fa-thumb-tack:before{content:"\f08d"}.fa-external-link:before{content:"\f08e"}.fa-sign-in:before{content:"\f090"}.fa-trophy:before{content:"\f091"}.fa-github-square:before{content:"\f092"}.fa-upload:before{content:"\f093"}.fa-lemon-o:before{content:"\f094"}.fa-phone:before{content:"\f095"}.fa-square-o:before{content:"\f096"}.fa-bookmark-o:before{content:"\f097"}.fa-phone-square:before{content:"\f098"}.fa-twitter:before{content:"\f099"}.fa-facebook-f:before,.fa-facebook:before{content:"\f09a"}.fa-github:before{content:"\f09b"}.fa-unlock:before{content:"\f09c"}.fa-credit-card:before{content:"\f09d"}.fa-feed:before,.fa-rss:before{content:"\f09e"}.fa-hdd-o:before{content:"\f0a0"}.fa-bullhorn:before{content:"\f0a1"}.fa-bell:before{content:"\f0f3"}.fa-certificate:before{content:"\f0a3"}.fa-hand-o-right:before{content:"\f0a4"}.fa-hand-o-left:before{content:"\f0a5"}.fa-hand-o-up:before{content:"\f0a6"}.fa-hand-o-down:before{content:"\f0a7"}.fa-arrow-circle-left:before{content:"\f0a8"}.fa-arrow-circle-right:before{content:"\f0a9"}.fa-arrow-circle-up:before{content:"\f0aa"}.fa-arrow-circle-down:before{content:"\f0ab"}.fa-globe:before{content:"\f0ac"}.fa-wrench:before{content:"\f0ad"}.fa-tasks:before{content:"\f0ae"}.fa-filter:before{content:"\f0b0"}.fa-briefcase:before{content:"\f0b1"}.fa-arrows-alt:before{content:"\f0b2"}.fa-group:before,.fa-users:before{content:"\f0c0"}.fa-chain:before,.fa-link:before{content:"\f0c1"}.fa-cloud:before{content:"\f0c2"}.fa-flask:before{content:"\f0c3"}.fa-cut:before,.fa-scissors:before{content:"\f0c4"}.fa-copy:before,.fa-files-o:before{content:"\f0c5"}.fa-paperclip:before{content:"\f0c6"}.fa-save:before,.fa-floppy-o:before{content:"\f0c7"}.fa-square:before{content:"\f0c8"}.fa-navicon:before,.fa-reorder:before,.fa-bars:before{content:"\f0c9"}.fa-list-ul:before{content:"\f0ca"}.fa-list-ol:before{content:"\f0cb"}.fa-strikethrough:before{content:"\f0cc"}.fa-underline:before{content:"\f0cd"}.fa-table:before{content:"\f0ce"}.fa-magic:before{content:"\f0d0"}.fa-truck:before{content:"\f0d1"}.fa-pinterest:before{content:"\f0d2"}.fa-pinterest-square:before{content:"\f0d3"}.fa-google-plus-square:before{content:"\f0d4"}.fa-google-plus:before{content:"\f0d5"}.fa-money:before{content:"\f0d6"}.fa-caret-down:before{content:"\f0d7"}.fa-caret-up:before{content:"\f0d8"}.fa-caret-left:before{content:"\f0d9"}.fa-caret-right:before{content:"\f0da"}.fa-columns:before{content:"\f0db"}.fa-unsorted:before,.fa-sort:before{content:"\f0dc"}.fa-sort-down:before,.fa-sort-desc:before{content:"\f0dd"}.fa-sort-up:before,.fa-sort-asc:before{content:"\f0de"}.fa-envelope:before{content:"\f0e0"}.fa-linkedin:before{content:"\f0e1"}.fa-rotate-left:before,.fa-undo:before{content:"\f0e2"}.fa-legal:before,.fa-gavel:before{content:"\f0e3"}.fa-dashboard:before,.fa-tachometer:before{content:"\f0e4"}.fa-comment-o:before{content:"\f0e5"}.fa-comments-o:before{content:"\f0e6"}.fa-flash:before,.fa-bolt:before{content:"\f0e7"}.fa-sitemap:before{content:"\f0e8"}.fa-umbrella:before{content:"\f0e9"}.fa-paste:before,.fa-clipboard:before{content:"\f0ea"}.fa-lightbulb-o:before{content:"\f0eb"}.fa-exchange:before{content:"\f0ec"}.fa-cloud-download:before{content:"\f0ed"}.fa-cloud-upload:before{content:"\f0ee"}.fa-user-md:before{content:"\f0f0"}.fa-stethoscope:before{content:"\f0f1"}.fa-suitcase:before{content:"\f0f2"}.fa-bell-o:before{content:"\f0a2"}.fa-coffee:before{content:"\f0f4"}.fa-cutlery:before{content:"\f0f5"}.fa-file-text-o:before{content:"\f0f6"}.fa-building-o:before{content:"\f0f7"}.fa-hospital-o:before{content:"\f0f8"}.fa-ambulance:before{content:"\f0f9"}.fa-medkit:before{content:"\f0fa"}.fa-fighter-jet:before{content:"\f0fb"}.fa-beer:before{content:"\f0fc"}.fa-h-square:before{content:"\f0fd"}.fa-plus-square:before{content:"\f0fe"}.fa-angle-double-left:before{content:"\f100"}.fa-angle-double-right:before{content:"\f101"}.fa-angle-double-up:before{content:"\f102"}.fa-angle-double-down:before{content:"\f103"}.fa-angle-left:before{content:"\f104"}.fa-angle-right:before{content:"\f105"}.fa-angle-up:before{content:"\f106"}.fa-angle-down:before{content:"\f107"}.fa-desktop:before{content:"\f108"}.fa-laptop:before{content:"\f109"}.fa-tablet:before{content:"\f10a"}.fa-mobile-phone:before,.fa-mobile:before{content:"\f10b"}.fa-circle-o:before{content:"\f10c"}.fa-quote-left:before{content:"\f10d"}.fa-quote-right:before{content:"\f10e"}.fa-spinner:before{content:"\f110"}.fa-circle:before{content:"\f111"}.fa-mail-reply:before,.fa-reply:before{content:"\f112"}.fa-github-alt:before{content:"\f113"}.fa-folder-o:before{content:"\f114"}.fa-folder-open-o:before{content:"\f115"}.fa-smile-o:before{content:"\f118"}.fa-frown-o:before{content:"\f119"}.fa-meh-o:before{content:"\f11a"}.fa-gamepad:before{content:"\f11b"}.fa-keyboard-o:before{content:"\f11c"}.fa-flag-o:before{content:"\f11d"}.fa-flag-checkered:before{content:"\f11e"}.fa-terminal:before{content:"\f120"}.fa-code:before{content:"\f121"}.fa-mail-reply-all:before,.fa-reply-all:before{content:"\f122"}.fa-star-half-empty:before,.fa-star-half-full:before,.fa-star-half-o:before{content:"\f123"}.fa-location-arrow:before{content:"\f124"}.fa-crop:before{content:"\f125"}.fa-code-fork:before{content:"\f126"}.fa-unlink:before,.fa-chain-broken:before{content:"\f127"}.fa-question:before{content:"\f128"}.fa-info:before{content:"\f129"}.fa-exclamation:before{content:"\f12a"}.fa-superscript:before{content:"\f12b"}.fa-subscript:before{content:"\f12c"}.fa-eraser:before{content:"\f12d"}.fa-puzzle-piece:before{content:"\f12e"}.fa-microphone:before{content:"\f130"}.fa-microphone-slash:before{content:"\f131"}.fa-shield:before{content:"\f132"}.fa-calendar-o:before{content:"\f133"}.fa-fire-extinguisher:before{content:"\f134"}.fa-rocket:before{content:"\f135"}.fa-maxcdn:before{content:"\f136"}.fa-chevron-circle-left:before{content:"\f137"}.fa-chevron-circle-right:before{content:"\f138"}.fa-chevron-circle-up:before{content:"\f139"}.fa-chevron-circle-down:before{content:"\f13a"}.fa-html5:before{content:"\f13b"}.fa-css3:before{content:"\f13c"}.fa-anchor:before{content:"\f13d"}.fa-unlock-alt:before{content:"\f13e"}.fa-bullseye:before{content:"\f140"}.fa-ellipsis-h:before{content:"\f141"}.fa-ellipsis-v:before{content:"\f142"}.fa-rss-square:before{content:"\f143"}.fa-play-circle:before{content:"\f144"}.fa-ticket:before{content:"\f145"}.fa-minus-square:before{content:"\f146"}.fa-minus-square-o:before{content:"\f147"}.fa-level-up:before{content:"\f148"}.fa-level-down:before{content:"\f149"}.fa-check-square:before{content:"\f14a"}.fa-pencil-square:before{content:"\f14b"}.fa-external-link-square:before{content:"\f14c"}.fa-share-square:before{content:"\f14d"}.fa-compass:before{content:"\f14e"}.fa-toggle-down:before,.fa-caret-square-o-down:before{content:"\f150"}.fa-toggle-up:before,.fa-caret-square-o-up:before{content:"\f151"}.fa-toggle-right:before,.fa-caret-square-o-right:before{content:"\f152"}.fa-euro:before,.fa-eur:before{content:"\f153"}.fa-gbp:before{content:"\f154"}.fa-dollar:before,.fa-usd:before{content:"\f155"}.fa-rupee:before,.fa-inr:before{content:"\f156"}.fa-cny:before,.fa-rmb:before,.fa-yen:before,.fa-jpy:before{content:"\f157"}.fa-ruble:before,.fa-rouble:before,.fa-rub:before{content:"\f158"}.fa-won:before,.fa-krw:before{content:"\f159"}.fa-bitcoin:before,.fa-btc:before{content:"\f15a"}.fa-file:before{content:"\f15b"}.fa-file-text:before{content:"\f15c"}.fa-sort-alpha-asc:before{content:"\f15d"}.fa-sort-alpha-desc:before{content:"\f15e"}.fa-sort-amount-asc:before{content:"\f160"}.fa-sort-amount-desc:before{content:"\f161"}.fa-sort-numeric-asc:before{content:"\f162"}.fa-sort-numeric-desc:before{content:"\f163"}.fa-thumbs-up:before{content:"\f164"}.fa-thumbs-down:before{content:"\f165"}.fa-youtube-square:before{content:"\f166"}.fa-youtube:before{content:"\f167"}.fa-xing:before{content:"\f168"}.fa-xing-square:before{content:"\f169"}.fa-youtube-play:before{content:"\f16a"}.fa-dropbox:before{content:"\f16b"}.fa-stack-overflow:before{content:"\f16c"}.fa-instagram:before{content:"\f16d"}.fa-flickr:before{content:"\f16e"}.fa-adn:before{content:"\f170"}.fa-bitbucket:before{content:"\f171"}.fa-bitbucket-square:before{content:"\f172"}.fa-tumblr:before{content:"\f173"}.fa-tumblr-square:before{content:"\f174"}.fa-long-arrow-down:before{content:"\f175"}.fa-long-arrow-up:before{content:"\f176"}.fa-long-arrow-left:before{content:"\f177"}.fa-long-arrow-right:before{content:"\f178"}.fa-apple:before{content:"\f179"}.fa-windows:before{content:"\f17a"}.fa-android:before{content:"\f17b"}.fa-linux:before{content:"\f17c"}.fa-dribbble:before{content:"\f17d"}.fa-skype:before{content:"\f17e"}.fa-foursquare:before{content:"\f180"}.fa-trello:before{content:"\f181"}.fa-female:before{content:"\f182"}.fa-male:before{content:"\f183"}.fa-gittip:before,.fa-gratipay:before{content:"\f184"}.fa-sun-o:before{content:"\f185"}.fa-moon-o:before{content:"\f186"}.fa-archive:before{content:"\f187"}.fa-bug:before{content:"\f188"}.fa-vk:before{content:"\f189"}.fa-weibo:before{content:"\f18a"}.fa-renren:before{content:"\f18b"}.fa-pagelines:before{content:"\f18c"}.fa-stack-exchange:before{content:"\f18d"}.fa-arrow-circle-o-right:before{content:"\f18e"}.fa-arrow-circle-o-left:before{content:"\f190"}.fa-toggle-left:before,.fa-caret-square-o-left:before{content:"\f191"}.fa-dot-circle-o:before{content:"\f192"}.fa-wheelchair:before{content:"\f193"}.fa-vimeo-square:before{content:"\f194"}.fa-turkish-lira:before,.fa-try:before{content:"\f195"}.fa-plus-square-o:before{content:"\f196"}.fa-space-shuttle:before{content:"\f197"}.fa-slack:before{content:"\f198"}.fa-envelope-square:before{content:"\f199"}.fa-wordpress:before{content:"\f19a"}.fa-openid:before{content:"\f19b"}.fa-institution:before,.fa-bank:before,.fa-university:before{content:"\f19c"}.fa-mortar-board:before,.fa-graduation-cap:before{content:"\f19d"}.fa-yahoo:before{content:"\f19e"}.fa-google:before{content:"\f1a0"}.fa-reddit:before{content:"\f1a1"}.fa-reddit-square:before{content:"\f1a2"}.fa-stumbleupon-circle:before{content:"\f1a3"}.fa-stumbleupon:before{content:"\f1a4"}.fa-delicious:before{content:"\f1a5"}.fa-digg:before{content:"\f1a6"}.fa-pied-piper-pp:before{content:"\f1a7"}.fa-pied-piper-alt:before{content:"\f1a8"}.fa-drupal:before{content:"\f1a9"}.fa-joomla:before{content:"\f1aa"}.fa-language:before{content:"\f1ab"}.fa-fax:before{content:"\f1ac"}.fa-building:before{content:"\f1ad"}.fa-child:before{content:"\f1ae"}.fa-paw:before{content:"\f1b0"}.fa-spoon:before{content:"\f1b1"}.fa-cube:before{content:"\f1b2"}.fa-cubes:before{content:"\f1b3"}.fa-behance:before{content:"\f1b4"}.fa-behance-square:before{content:"\f1b5"}.fa-steam:before{content:"\f1b6"}.fa-steam-square:before{content:"\f1b7"}.fa-recycle:before{content:"\f1b8"}.fa-automobile:before,.fa-car:before{content:"\f1b9"}.fa-cab:before,.fa-taxi:before{content:"\f1ba"}.fa-tree:before{content:"\f1bb"}.fa-spotify:before{content:"\f1bc"}.fa-deviantart:before{content:"\f1bd"}.fa-soundcloud:before{content:"\f1be"}.fa-database:before{content:"\f1c0"}.fa-file-pdf-o:before{content:"\f1c1"}.fa-file-word-o:before{content:"\f1c2"}.fa-file-excel-o:before{content:"\f1c3"}.fa-file-powerpoint-o:before{content:"\f1c4"}.fa-file-photo-o:before,.fa-file-picture-o:before,.fa-file-image-o:before{content:"\f1c5"}.fa-file-zip-o:before,.fa-file-archive-o:before{content:"\f1c6"}.fa-file-sound-o:before,.fa-file-audio-o:before{content:"\f1c7"}.fa-file-movie-o:before,.fa-file-video-o:before{content:"\f1c8"}.fa-file-code-o:before{content:"\f1c9"}.fa-vine:before{content:"\f1ca"}.fa-codepen:before{content:"\f1cb"}.fa-jsfiddle:before{content:"\f1cc"}.fa-life-bouy:before,.fa-life-buoy:before,.fa-life-saver:before,.fa-support:before,.fa-life-ring:before{content:"\f1cd"}.fa-circle-o-notch:before{content:"\f1ce"}.fa-ra:before,.fa-resistance:before,.fa-rebel:before{content:"\f1d0"}.fa-ge:before,.fa-empire:before{content:"\f1d1"}.fa-git-square:before{content:"\f1d2"}.fa-git:before{content:"\f1d3"}.fa-y-combinator-square:before,.fa-yc-square:before,.fa-hacker-news:before{content:"\f1d4"}.fa-tencent-weibo:before{content:"\f1d5"}.fa-qq:before{content:"\f1d6"}.fa-wechat:before,.fa-weixin:before{content:"\f1d7"}.fa-send:before,.fa-paper-plane:before{content:"\f1d8"}.fa-send-o:before,.fa-paper-plane-o:before{content:"\f1d9"}.fa-history:before{content:"\f1da"}.fa-circle-thin:before{content:"\f1db"}.fa-header:before{content:"\f1dc"}.fa-paragraph:before{content:"\f1dd"}.fa-sliders:before{content:"\f1de"}.fa-share-alt:before{content:"\f1e0"}.fa-share-alt-square:before{content:"\f1e1"}.fa-bomb:before{content:"\f1e2"}.fa-soccer-ball-o:before,.fa-futbol-o:before{content:"\f1e3"}.fa-tty:before{content:"\f1e4"}.fa-binoculars:before{content:"\f1e5"}.fa-plug:before{content:"\f1e6"}.fa-slideshare:before{content:"\f1e7"}.fa-twitch:before{content:"\f1e8"}.fa-yelp:before{content:"\f1e9"}.fa-newspaper-o:before{content:"\f1ea"}.fa-wifi:before{content:"\f1eb"}.fa-calculator:before{content:"\f1ec"}.fa-paypal:before{content:"\f1ed"}.fa-google-wallet:before{content:"\f1ee"}.fa-cc-visa:before{content:"\f1f0"}.fa-cc-mastercard:before{content:"\f1f1"}.fa-cc-discover:before{content:"\f1f2"}.fa-cc-amex:before{content:"\f1f3"}.fa-cc-paypal:before{content:"\f1f4"}.fa-cc-stripe:before{content:"\f1f5"}.fa-bell-slash:before{content:"\f1f6"}.fa-bell-slash-o:before{content:"\f1f7"}.fa-trash:before{content:"\f1f8"}.fa-copyright:before{content:"\f1f9"}.fa-at:before{content:"\f1fa"}.fa-eyedropper:before{content:"\f1fb"}.fa-paint-brush:before{content:"\f1fc"}.fa-birthday-cake:before{content:"\f1fd"}.fa-area-chart:before{content:"\f1fe"}.fa-pie-chart:before{content:"\f200"}.fa-line-chart:before{content:"\f201"}.fa-lastfm:before{content:"\f202"}.fa-lastfm-square:before{content:"\f203"}.fa-toggle-off:before{content:"\f204"}.fa-toggle-on:before{content:"\f205"}.fa-bicycle:before{content:"\f206"}.fa-bus:before{content:"\f207"}.fa-ioxhost:before{content:"\f208"}.fa-angellist:before{content:"\f209"}.fa-cc:before{content:"\f20a"}.fa-shekel:before,.fa-sheqel:before,.fa-ils:before{content:"\f20b"}.fa-meanpath:before{content:"\f20c"}.fa-buysellads:before{content:"\f20d"}.fa-connectdevelop:before{content:"\f20e"}.fa-dashcube:before{content:"\f210"}.fa-forumbee:before{content:"\f211"}.fa-leanpub:before{content:"\f212"}.fa-sellsy:before{content:"\f213"}.fa-shirtsinbulk:before{content:"\f214"}.fa-simplybuilt:before{content:"\f215"}.fa-skyatlas:before{content:"\f216"}.fa-cart-plus:before{content:"\f217"}.fa-cart-arrow-down:before{content:"\f218"}.fa-diamond:before{content:"\f219"}.fa-ship:before{content:"\f21a"}.fa-user-secret:before{content:"\f21b"}.fa-motorcycle:before{content:"\f21c"}.fa-street-view:before{content:"\f21d"}.fa-heartbeat:before{content:"\f21e"}.fa-venus:before{content:"\f221"}.fa-mars:before{content:"\f222"}.fa-mercury:before{content:"\f223"}.fa-intersex:before,.fa-transgender:before{content:"\f224"}.fa-transgender-alt:before{content:"\f225"}.fa-venus-double:before{content:"\f226"}.fa-mars-double:before{content:"\f227"}.fa-venus-mars:before{content:"\f228"}.fa-mars-stroke:before{content:"\f229"}.fa-mars-stroke-v:before{content:"\f22a"}.fa-mars-stroke-h:before{content:"\f22b"}.fa-neuter:before{content:"\f22c"}.fa-genderless:before{content:"\f22d"}.fa-facebook-official:before{content:"\f230"}.fa-pinterest-p:before{content:"\f231"}.fa-whatsapp:before{content:"\f232"}.fa-server:before{content:"\f233"}.fa-user-plus:before{content:"\f234"}.fa-user-times:before{content:"\f235"}.fa-hotel:before,.fa-bed:before{content:"\f236"}.fa-viacoin:before{content:"\f237"}.fa-train:before{content:"\f238"}.fa-subway:before{content:"\f239"}.fa-medium:before{content:"\f23a"}.fa-yc:before,.fa-y-combinator:before{content:"\f23b"}.fa-optin-monster:before{content:"\f23c"}.fa-opencart:before{content:"\f23d"}.fa-expeditedssl:before{content:"\f23e"}.fa-battery-4:before,.fa-battery:before,.fa-battery-full:before{content:"\f240"}.fa-battery-3:before,.fa-battery-three-quarters:before{content:"\f241"}.fa-battery-2:before,.fa-battery-half:before{content:"\f242"}.fa-battery-1:before,.fa-battery-quarter:before{content:"\f243"}.fa-battery-0:before,.fa-battery-empty:before{content:"\f244"}.fa-mouse-pointer:before{content:"\f245"}.fa-i-cursor:before{content:"\f246"}.fa-object-group:before{content:"\f247"}.fa-object-ungroup:before{content:"\f248"}.fa-sticky-note:before{content:"\f249"}.fa-sticky-note-o:before{content:"\f24a"}.fa-cc-jcb:before{content:"\f24b"}.fa-cc-diners-club:before{content:"\f24c"}.fa-clone:before{content:"\f24d"}.fa-balance-scale:before{content:"\f24e"}.fa-hourglass-o:before{content:"\f250"}.fa-hourglass-1:before,.fa-hourglass-start:before{content:"\f251"}.fa-hourglass-2:before,.fa-hourglass-half:before{content:"\f252"}.fa-hourglass-3:before,.fa-hourglass-end:before{content:"\f253"}.fa-hourglass:before{content:"\f254"}.fa-hand-grab-o:before,.fa-hand-rock-o:before{content:"\f255"}.fa-hand-stop-o:before,.fa-hand-paper-o:before{content:"\f256"}.fa-hand-scissors-o:before{content:"\f257"}.fa-hand-lizard-o:before{content:"\f258"}.fa-hand-spock-o:before{content:"\f259"}.fa-hand-pointer-o:before{content:"\f25a"}.fa-hand-peace-o:before{content:"\f25b"}.fa-trademark:before{content:"\f25c"}.fa-registered:before{content:"\f25d"}.fa-creative-commons:before{content:"\f25e"}.fa-gg:before{content:"\f260"}.fa-gg-circle:before{content:"\f261"}.fa-tripadvisor:before{content:"\f262"}.fa-odnoklassniki:before{content:"\f263"}.fa-odnoklassniki-square:before{content:"\f264"}.fa-get-pocket:before{content:"\f265"}.fa-wikipedia-w:before{content:"\f266"}.fa-safari:before{content:"\f267"}.fa-chrome:before{content:"\f268"}.fa-firefox:before{content:"\f269"}.fa-opera:before{content:"\f26a"}.fa-internet-explorer:before{content:"\f26b"}.fa-tv:before,.fa-television:before{content:"\f26c"}.fa-contao:before{content:"\f26d"}.fa-500px:before{content:"\f26e"}.fa-amazon:before{content:"\f270"}.fa-calendar-plus-o:before{content:"\f271"}.fa-calendar-minus-o:before{content:"\f272"}.fa-calendar-times-o:before{content:"\f273"}.fa-calendar-check-o:before{content:"\f274"}.fa-industry:before{content:"\f275"}.fa-map-pin:before{content:"\f276"}.fa-map-signs:before{content:"\f277"}.fa-map-o:before{content:"\f278"}.fa-map:before{content:"\f279"}.fa-commenting:before{content:"\f27a"}.fa-commenting-o:before{content:"\f27b"}.fa-houzz:before{content:"\f27c"}.fa-vimeo:before{content:"\f27d"}.fa-black-tie:before{content:"\f27e"}.fa-fonticons:before{content:"\f280"}.fa-reddit-alien:before{content:"\f281"}.fa-edge:before{content:"\f282"}.fa-credit-card-alt:before{content:"\f283"}.fa-codiepie:before{content:"\f284"}.fa-modx:before{content:"\f285"}.fa-fort-awesome:before{content:"\f286"}.fa-usb:before{content:"\f287"}.fa-product-hunt:before{content:"\f288"}.fa-mixcloud:before{content:"\f289"}.fa-scribd:before{content:"\f28a"}.fa-pause-circle:before{content:"\f28b"}.fa-pause-circle-o:before{content:"\f28c"}.fa-stop-circle:before{content:"\f28d"}.fa-stop-circle-o:before{content:"\f28e"}.fa-shopping-bag:before{content:"\f290"}.fa-shopping-basket:before{content:"\f291"}.fa-hashtag:before{content:"\f292"}.fa-bluetooth:before{content:"\f293"}.fa-bluetooth-b:before{content:"\f294"}.fa-percent:before{content:"\f295"}.fa-gitlab:before{content:"\f296"}.fa-wpbeginner:before{content:"\f297"}.fa-wpforms:before{content:"\f298"}.fa-envira:before{content:"\f299"}.fa-universal-access:before{content:"\f29a"}.fa-wheelchair-alt:before{content:"\f29b"}.fa-question-circle-o:before{content:"\f29c"}.fa-blind:before{content:"\f29d"}.fa-audio-description:before{content:"\f29e"}.fa-volume-control-phone:before{content:"\f2a0"}.fa-braille:before{content:"\f2a1"}.fa-assistive-listening-systems:before{content:"\f2a2"}.fa-asl-interpreting:before,.fa-american-sign-language-interpreting:before{content:"\f2a3"}.fa-deafness:before,.fa-hard-of-hearing:before,.fa-deaf:before{content:"\f2a4"}.fa-glide:before{content:"\f2a5"}.fa-glide-g:before{content:"\f2a6"}.fa-signing:before,.fa-sign-language:before{content:"\f2a7"}.fa-low-vision:before{content:"\f2a8"}.fa-viadeo:before{content:"\f2a9"}.fa-viadeo-square:before{content:"\f2aa"}.fa-snapchat:before{content:"\f2ab"}.fa-snapchat-ghost:before{content:"\f2ac"}.fa-snapchat-square:before{content:"\f2ad"}.fa-pied-piper:before{content:"\f2ae"}.fa-first-order:before{content:"\f2b0"}.fa-yoast:before{content:"\f2b1"}.fa-themeisle:before{content:"\f2b2"}.fa-google-plus-circle:before,.fa-google-plus-official:before{content:"\f2b3"}.fa-fa:before,.fa-font-awesome:before{content:"\f2b4"}.fa-handshake-o:before{content:"\f2b5"}.fa-envelope-open:before{content:"\f2b6"}.fa-envelope-open-o:before{content:"\f2b7"}.fa-linode:before{content:"\f2b8"}.fa-address-book:before{content:"\f2b9"}.fa-address-book-o:before{content:"\f2ba"}.fa-vcard:before,.fa-address-card:before{content:"\f2bb"}.fa-vcard-o:before,.fa-address-card-o:before{content:"\f2bc"}.fa-user-circle:before{content:"\f2bd"}.fa-user-circle-o:before{content:"\f2be"}.fa-user-o:before{content:"\f2c0"}.fa-id-badge:before{content:"\f2c1"}.fa-drivers-license:before,.fa-id-card:before{content:"\f2c2"}.fa-drivers-license-o:before,.fa-id-card-o:before{content:"\f2c3"}.fa-quora:before{content:"\f2c4"}.fa-free-code-camp:before{content:"\f2c5"}.fa-telegram:before{content:"\f2c6"}.fa-thermometer-4:before,.fa-thermometer:before,.fa-thermometer-full:before{content:"\f2c7"}.fa-thermometer-3:before,.fa-thermometer-three-quarters:before{content:"\f2c8"}.fa-thermometer-2:before,.fa-thermometer-half:before{content:"\f2c9"}.fa-thermometer-1:before,.fa-thermometer-quarter:before{content:"\f2ca"}.fa-thermometer-0:before,.fa-thermometer-empty:before{content:"\f2cb"}.fa-shower:before{content:"\f2cc"}.fa-bathtub:before,.fa-s15:before,.fa-bath:before{content:"\f2cd"}.fa-podcast:before{content:"\f2ce"}.fa-window-maximize:before{content:"\f2d0"}.fa-window-minimize:before{content:"\f2d1"}.fa-window-restore:before{content:"\f2d2"}.fa-times-rectangle:before,.fa-window-close:before{content:"\f2d3"}.fa-times-rectangle-o:before,.fa-window-close-o:before{content:"\f2d4"}.fa-bandcamp:before{content:"\f2d5"}.fa-grav:before{content:"\f2d6"}.fa-etsy:before{content:"\f2d7"}.fa-imdb:before{content:"\f2d8"}.fa-ravelry:before{content:"\f2d9"}.fa-eercast:before{content:"\f2da"}.fa-microchip:before{content:"\f2db"}.fa-snowflake-o:before{content:"\f2dc"}.fa-superpowers:before{content:"\f2dd"}.fa-wpexplorer:before{content:"\f2de"}.fa-meetup:before{content:"\f2e0"}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);border:0}.sr-only-focusable:active,.sr-only-focusable:focus{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto}</style>
+
+<link id="Main-File" rel="Main-File" href="Loan Amortization.html">
+<link id="Main-File1" rel="Main-File1" href="Authoright.html">
+<link id="Main-File2" rel="Main-File2" href="@Dashboards.html">
+<link id="Main-File3" rel="Main-File3" href="file:///C:/Users/user/OneDrive/%E0%A4%A1%E0%A5%87%E0%A4%B8%E0%A5%8D%E0%A4%95%E0%A4%9F%E0%A4%AA/New%20folder/juy/index2.html">
+
+
+
+<script>
+
+function validatePass(){
+
+if(document.getElementById('Username').value =='sarojkumar' & document.getElementById('passwords').value =='643' & document.getElementById('Post').value =='Manejor')
+{ alert('Welcome sarojkumar Have Your Nice Day');
+window.location.replace(document.all.item("Main-File").href);}
+
+else if(document.getElementById('Username').value =='sarojkumar2' & document.getElementById('passwords').value =='645' & document.getElementById('Post').value =='Members')
+{ alert('Welcome sarojkumar2 Have Your Nice Day');
+window.location.replace(document.all.item("Main-File2").href);}
+
+else if(document.getElementById('Username').value =='Chet Bahadur Khadka'& document.getElementById('passwords').value =='1'& document.getElementById('Post').value =='Members') {alert('चेत बहादुर खड्का जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1080 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:360 *,   *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Salina Tamang'& document.getElementById('passwords').value =='2'& document.getElementById('Post').value =='Members') {alert('सलिना तामाङ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:810 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:270 *,   *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Man Bahadur Shrestha'& document.getElementById('passwords').value =='3'& document.getElementById('Post').value =='Members') {alert('मान बहादुर श्रेस्ठ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:4100 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *,   *२०७७ पिउन तलब रू:900 *,   *२०७८ पिउन तलब रू:900 *,   *२०७९ पिउन तलब रू:900 *,   *२०८० पिउन तलब रू:900 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dawa Saila'& document.getElementById('passwords').value =='4'& document.getElementById('Post').value =='Members') {alert('दावा साँइलो जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1150 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७७ पिउन तलब रू:225 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Arjun Khadka'& document.getElementById('passwords').value =='5'& document.getElementById('Post').value =='Members') {alert('अर्जुन खड्का   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Arjun Khadka Ko Salo'& document.getElementById('passwords').value =='6'& document.getElementById('Post').value =='Members') {alert('अर्जुन खड्का को सालो   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kajiman Muktang'& document.getElementById('passwords').value =='7'& document.getElementById('Post').value =='Members') {alert('काजिमान मुक्तान   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jhalak Bahadur Basnet'& document.getElementById('passwords').value =='8'& document.getElementById('Post').value =='Members') {alert('झलक बहादुर बस्नेत   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Nabaraj Basnet'& document.getElementById('passwords').value =='9'& document.getElementById('Post').value =='Members') {alert('नबराज बस्नेत जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:560 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:100 *,   *२०७८ कुलाको दस्तुर रू:100 *,   *२०७७ पिउन तलब रू:90 *,   *२०७८ पिउन तलब रू:90 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Manoj Basnet'& document.getElementById('passwords').value =='10'& document.getElementById('Post').value =='Members') {alert('मनोज बस्नेत जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:270 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Krishna Bahadur Kandel'& document.getElementById('passwords').value =='11'& document.getElementById('Post').value =='Members') {alert('क्रिष्ण बहादुर कंडेल   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Somlal Shynwa'& document.getElementById('passwords').value =='12'& document.getElementById('Post').value =='Members') {alert('सोमलाल स्याङ्बा   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rebati Khadka'& document.getElementById('passwords').value =='13'& document.getElementById('Post').value =='Members') {alert('रेबती खड्का   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Arjun Kaunkel'& document.getElementById('passwords').value =='14'& document.getElementById('Post').value =='Members') {alert('अर्जुन कुइकेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:925 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Maitabir Majhi'& document.getElementById('passwords').value =='15'& document.getElementById('Post').value =='Members') {alert('माइतबिर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1800 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:900 *,   *२०८० पिउन तलब रू:900 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Miksang Ghole'& document.getElementById('passwords').value =='16'& document.getElementById('Post').value =='Members') {alert('मिक्साङ्ग घोले जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:50 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:50 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Badri Basnet'& document.getElementById('passwords').value =='17'& document.getElementById('Post').value =='Members') {alert('बद्री बस्नेत   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rit Bahadur Lamichhane'& document.getElementById('passwords').value =='18'& document.getElementById('Post').value =='Members') {alert('रित बहादुर लामिछाने   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shyam Pantha'& document.getElementById('passwords').value =='19'& document.getElementById('Post').value =='Members') {alert('श्याम पन्त जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:200 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Budhi Pantha'& document.getElementById('passwords').value =='20'& document.getElementById('Post').value =='Members') {alert('बुद्दी पन्त   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Abhinash Majhi'& document.getElementById('passwords').value =='21'& document.getElementById('Post').value =='Members') {alert('अभिनास माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Helkumar Majhi'& document.getElementById('passwords').value =='22'& document.getElementById('Post').value =='Members') {alert('हेल कुमार माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rajkumar Majhi'& document.getElementById('passwords').value =='23'& document.getElementById('Post').value =='Members') {alert('राज कुमार माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ganesh Paudel'& document.getElementById('passwords').value =='24'& document.getElementById('Post').value =='Members') {alert('गणेश पौडेल   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Yasodha Khatri'& document.getElementById('passwords').value =='25'& document.getElementById('Post').value =='Members') {alert('यशोधा खत्री जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:570 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *,   *२०७८ पिउन तलब रू:270 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kajiman Shyantang'& document.getElementById('passwords').value =='26'& document.getElementById('Post').value =='Members') {alert('काजिमान स्याङतान   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Devi Bika'& document.getElementById('passwords').value =='27'& document.getElementById('Post').value =='Members') {alert('देबी बि.क जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:634.5 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:317.25 *,   *२०८० पिउन तलब रू:317.25 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shakta Prasad Chaulagain'& document.getElementById('passwords').value =='28'& document.getElementById('Post').value =='Members') {alert('शक्त प्रसाद चौँलागाँई   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bhakta Bahadur Majhi'& document.getElementById('passwords').value =='29'& document.getElementById('Post').value =='Members') {alert('भक्त बहादुर माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bishanu Bahadur Majhi'& document.getElementById('passwords').value =='30'& document.getElementById('Post').value =='Members') {alert('बिश्णु बहादुर माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shyam Bahadur Majhi'& document.getElementById('passwords').value =='31'& document.getElementById('Post').value =='Members') {alert('श्याम माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramsharan Majhi'& document.getElementById('passwords').value =='32'& document.getElementById('Post').value =='Members') {alert('रामशरण माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sukmati Majhi'& document.getElementById('passwords').value =='33'& document.getElementById('Post').value =='Members') {alert('सुकमती माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:180 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Amar Majhi'& document.getElementById('passwords').value =='34'& document.getElementById('Post').value =='Members') {alert('अमर माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Pradhan Majhi'& document.getElementById('passwords').value =='35'& document.getElementById('Post').value =='Members') {alert('प्रधान माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:270 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:90 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Hari Majhi'& document.getElementById('passwords').value =='36'& document.getElementById('Post').value =='Members') {alert('हरी माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:280 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:100 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Nabaraj Majhi'& document.getElementById('passwords').value =='37'& document.getElementById('Post').value =='Members') {alert('नबराज माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:280 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:100 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Baburam Majhi'& document.getElementById('passwords').value =='38'& document.getElementById('Post').value =='Members') {alert('बाबुराम माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sadhuram Majhi'& document.getElementById('passwords').value =='39'& document.getElementById('Post').value =='Members') {alert('शादुराम माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Lila Kumari Majhi'& document.getElementById('passwords').value =='40'& document.getElementById('Post').value =='Members') {alert('लिला कुमारी माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:720 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Damodar Aacharya'& document.getElementById('passwords').value =='41'& document.getElementById('Post').value =='Members') {alert('दामोदर आचार्य   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Yubaraj Majhi'& document.getElementById('passwords').value =='42'& document.getElementById('Post').value =='Members') {alert('युबराज माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Nabin Gahatraj'& document.getElementById('passwords').value =='43'& document.getElementById('Post').value =='Members') {alert('नबिन गहतराज जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:300 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:150 *,   *२०७८ कुलाको दस्तुर रू:150 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Karun Upreti'& document.getElementById('passwords').value =='44'& document.getElementById('Post').value =='Members') {alert('करुण उप्रेती जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:740 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *,   *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tibhuraj Giri'& document.getElementById('passwords').value =='45'& document.getElementById('Post').value =='Members') {alert('टिभुराज गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:180 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ganga Budhathoki'& document.getElementById('passwords').value =='46'& document.getElementById('Post').value =='Members') {alert('गँगा बुढाथोकी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tej Bahadur Lakhe'& document.getElementById('passwords').value =='47'& document.getElementById('Post').value =='Members') {alert('तेज बहादुर लाखे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1170 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:585 *,   *२०८० पिउन तलब रू:585 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Lila Bahadur Lakhe'& document.getElementById('passwords').value =='48'& document.getElementById('Post').value =='Members') {alert('लिला बहादुर लाखे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1840 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:400 *,   *२०७७ पिउन तलब रू:360 *,   *२०७८ पिउन तलब रू:360 *,   *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bir Bahadur Lakhe'& document.getElementById('passwords').value =='49'& document.getElementById('Post').value =='Members') {alert('बिर बहादुर लाखे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1940 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *,   *२०७७ पिउन तलब रू:90 *,   *२०७८ पिउन तलब रू:450 *,   *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kausila Lakhe'& document.getElementById('passwords').value =='50'& document.getElementById('Post').value =='Members') {alert('कौशिला लाखे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:920 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *,   *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Amrita Lakhe'& document.getElementById('passwords').value =='51'& document.getElementById('Post').value =='Members') {alert('अमृता लाखे   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rudra Bahadur Majhi'& document.getElementById('passwords').value =='52'& document.getElementById('Post').value =='Members') {alert('रुद्र बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Nabin Sundash'& document.getElementById('passwords').value =='53'& document.getElementById('Post').value =='Members') {alert('नबिन सुन्दास जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:920 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *,   *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramesh Majhi'& document.getElementById('passwords').value =='54'& document.getElementById('Post').value =='Members') {alert('रमेश माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:11.2500000000003 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:5.6843418860808E-14 *,   *२०७८ कुलाको दस्तुर रू:5.6843418860808E-14 *,   *२०७७ पिउन तलब रू:2.25000000000003 *,   *२०७९ पिउन तलब रू:4.50000000000006 *,   *२०८० पिउन तलब रू:4.50000000000006 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kalimaya Majhi'& document.getElementById('passwords').value =='55'& document.getElementById('Post').value =='Members') {alert('कालीमाया माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Padam Bahadur Majhi'& document.getElementById('passwords').value =='56'& document.getElementById('Post').value =='Members') {alert('पदम बहादुर माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dil Bahadur Giri'& document.getElementById('passwords').value =='57'& document.getElementById('Post').value =='Members') {alert('दिल बहादुर गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1200 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:600 *,   *२०७८ कुलाको दस्तुर रू:600 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sangita Giri'& document.getElementById('passwords').value =='58'& document.getElementById('Post').value =='Members') {alert('संगिता गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:760 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:400 *,   *२०७७ पिउन तलब रू:360 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='K.s.s. Kita'& document.getElementById('passwords').value =='59'& document.getElementById('Post').value =='Members') {alert('कपिलाकोट स्कुल कित्ता जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:4600 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:1000 *,   *२०७७ पिउन तलब रू:900 *,   *२०७८ पिउन तलब रू:900 *,   *२०७९ पिउन तलब रू:900 *,   *२०८० पिउन तलब रू:900 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chitra Kumari Chaulagain'& document.getElementById('passwords').value =='60'& document.getElementById('Post').value =='Members') {alert('चित्र कुमारी चौलागांई जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:630 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:315 *,   *२०८० पिउन तलब रू:315 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Man Kumar Majhi'& document.getElementById('passwords').value =='61'& document.getElementById('Post').value =='Members') {alert('मान कुमार माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:360 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dev  Tamang'& document.getElementById('passwords').value =='62'& document.getElementById('Post').value =='Members') {alert('देब तामाङ्ग जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:740 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:100 *,   *२०७८ कुलाको दस्तुर रू:100 *,   *२०७७ पिउन तलब रू:225 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:90 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Alija Mainali'& document.getElementById('passwords').value =='63'& document.getElementById('Post').value =='Members') {alert('एलिजा मैनाली जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:555 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:150 *,   *२०७८ पिउन तलब रू:135 *,   *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sanju Lama'& document.getElementById('passwords').value =='64'& document.getElementById('Post').value =='Members') {alert('शन्जु लामा   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Khelhari Giri'& document.getElementById('passwords').value =='65'& document.getElementById('Post').value =='Members') {alert('खिलहरी गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:405 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:135 *,   *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Navaraj Aaran'& document.getElementById('passwords').value =='66'& document.getElementById('Post').value =='Members') {alert('नबराज आरण जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:184.5 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:22.5 *,   *२०७७ पिउन तलब रू:40.5 *,   *२०७८ पिउन तलब रू:40.5 *,   *२०७९ पिउन तलब रू:40.5 *,   *२०८० पिउन तलब रू:40.5 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rama Sahi'& document.getElementById('passwords').value =='67'& document.getElementById('Post').value =='Members') {alert('रमा शाही जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:540 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Man Bahadur Shrestha 2'& document.getElementById('passwords').value =='68'& document.getElementById('Post').value =='Members') {alert('मान बहादुर श्रेस्ठ २ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1150 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७७ पिउन तलब रू:225 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ganesh Thapa'& document.getElementById('passwords').value =='69'& document.getElementById('Post').value =='Members') {alert('गणेश थापा   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kishwor Basnet'& document.getElementById('passwords').value =='70'& document.getElementById('Post').value =='Members') {alert('किशोर बस्नेत जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2550 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:250 *,   *२०७८ कुलाको दस्तुर रू:500 *,   *२०७७ पिउन तलब रू:450 *,   *२०७८ पिउन तलब रू:450 *,   *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Yangrimaya Shyantang'& document.getElementById('passwords').value =='71'& document.getElementById('Post').value =='Members') {alert('याङ्ग्रीमाया स्याङ्तान   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Panjab Majhi'& document.getElementById('passwords').value =='72'& document.getElementById('Post').value =='Members') {alert('पञ्जाब माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Panjab Majhi Ko Ghar Nagik Bhote'& document.getElementById('passwords').value =='73'& document.getElementById('Post').value =='Members') {alert('पञ्जाब माझी को मर नजिक भोटे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:665 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:350 *,   *२०७८ पिउन तलब रू:315 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Aachutam Giri'& document.getElementById('passwords').value =='74'& document.getElementById('Post').value =='Members') {alert('अच्युतम गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1275 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:125 *,   *२०७८ कुलाको दस्तुर रू:250 *,   *२०७७ पिउन तलब रू:225 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Matan Majhi'& document.getElementById('passwords').value =='75'& document.getElementById('Post').value =='Members') {alert('मतन माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ghaile Majhi'& document.getElementById('passwords').value =='76'& document.getElementById('Post').value =='Members') {alert('घैले माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1000 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:1000 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Inam Dorje Dong'& document.getElementById('passwords').value =='77'& document.getElementById('Post').value =='Members') {alert('इनाम दोर्जे दोङ   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dhana Bahadur Bamjhan'& document.getElementById('passwords').value =='78'& document.getElementById('Post').value =='Members') {alert('धन बहादुर बम्जन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:450 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Om Prakash Giri'& document.getElementById('passwords').value =='79'& document.getElementById('Post').value =='Members') {alert('ओम प्रकाश गिरि   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Akash Majhi'& document.getElementById('passwords').value =='80'& document.getElementById('Post').value =='Members') {alert('आकाश माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1320 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:400 *,   *२०७८ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:360 *,   *२०७८ पिउन तलब रू:360 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Laharimaya Tamang'& document.getElementById('passwords').value =='81'& document.getElementById('Post').value =='Members') {alert('लहरीमाया तामाग   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Babita Luwar'& document.getElementById('passwords').value =='82'& document.getElementById('Post').value =='Members') {alert('बबिता लुवार   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Saroj Majhi'& document.getElementById('passwords').value =='83'& document.getElementById('Post').value =='Members') {alert('सरोज माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dorna Kumar Bika'& document.getElementById('passwords').value =='84'& document.getElementById('Post').value =='Members') {alert('दोर्ण कुमार बि.क जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:400 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:400 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Janja Bahadur Bika'& document.getElementById('passwords').value =='85'& document.getElementById('Post').value =='Members') {alert('जँग बहादुर बि.क   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Niru puri'& document.getElementById('passwords').value =='86'& document.getElementById('Post').value =='Members') {alert('निरू पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1110 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *,   *२०७८ पिउन तलब रू:270 *,   *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kapil Oli'& document.getElementById('passwords').value =='87'& document.getElementById('Post').value =='Members') {alert('कपिल ओली जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Narayan Oli'& document.getElementById('passwords').value =='88'& document.getElementById('Post').value =='Members') {alert('नारायण ओली   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Prit Bahadur Thapa'& document.getElementById('passwords').value =='89'& document.getElementById('Post').value =='Members') {alert('पृत बहादुर थापा जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:200 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Guthi Khet'& document.getElementById('passwords').value =='90'& document.getElementById('Post').value =='Members') {alert('गुठी खेत जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:900 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:900 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Narayan Giri'& document.getElementById('passwords').value =='91'& document.getElementById('Post').value =='Members') {alert('नारायण गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1215 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:405 *,   *२०७९ पिउन तलब रू:810 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chitraraj Giri'& document.getElementById('passwords').value =='92'& document.getElementById('Post').value =='Members') {alert('चित्रराज गिरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shambhuraj Giri'& document.getElementById('passwords').value =='93'& document.getElementById('Post').value =='Members') {alert('सम्भुराज गिरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ram Bahadur Bholan'& document.getElementById('passwords').value =='94'& document.getElementById('Post').value =='Members') {alert('राम बहादुर भोलन   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bharatraj Giri'& document.getElementById('passwords').value =='95'& document.getElementById('Post').value =='Members') {alert('भरत राज गिरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1850 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *,   *२०७८ पिउन तलब रू:450 *,   *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Punya Prasad Chaulagain'& document.getElementById('passwords').value =='96'& document.getElementById('Post').value =='Members') {alert('पुण्य प्रसाद चौँलागाँई जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:907 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:902.5 *,   *२०७९ पिउन तलब रू:2.25000000000003 *,   *२०८० पिउन तलब रू:2.25000000000003 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rabindra Majhi'& document.getElementById('passwords').value =='97'& document.getElementById('Post').value =='Members') {alert('रबिन्द्र माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Biru Majhi'& document.getElementById('passwords').value =='98'& document.getElementById('Post').value =='Members') {alert('बिरु माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:720 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rambabu Puri'& document.getElementById('passwords').value =='99'& document.getElementById('Post').value =='Members') {alert('रामबाबु पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Laxman Bhujel'& document.getElementById('passwords').value =='100'& document.getElementById('Post').value =='Members') {alert('लक्ष्मण भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2100 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:250 *,   *२०७८ कुलाको दस्तुर रू:500 *,   *२०७८ पिउन तलब रू:450 *,   *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Lila Puri'& document.getElementById('passwords').value =='101'& document.getElementById('Post').value =='Members') {alert('लिला पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='NiruKomal Puri'& document.getElementById('passwords').value =='102'& document.getElementById('Post').value =='Members') {alert('निरुकोमल पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Niru Puri2'& document.getElementById('passwords').value =='103'& document.getElementById('Post').value =='Members') {alert('निरू पुरी २ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1620 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kabiraj Giri'& document.getElementById('passwords').value =='104'& document.getElementById('Post').value =='Members') {alert('कबिराज गिरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Hemraj Puri'& document.getElementById('passwords').value =='105'& document.getElementById('Post').value =='Members') {alert('हेमराज पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Muktilal Shrestha'& document.getElementById('passwords').value =='106'& document.getElementById('Post').value =='Members') {alert('मुक्तिलाल श्रेस्ठ   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Gokul Puri'& document.getElementById('passwords').value =='107'& document.getElementById('Post').value =='Members') {alert('गोकुल पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bachu Thapa Magar'& document.getElementById('passwords').value =='108'& document.getElementById('Post').value =='Members') {alert('बच्चु थापा मगर   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kriti Bahadur Karki'& document.getElementById('passwords').value =='109'& document.getElementById('Post').value =='Members') {alert('कृति बहादुर कार्की   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Krishna Bahadur Bhandari'& document.getElementById('passwords').value =='110'& document.getElementById('Post').value =='Members') {alert('कृष्ण बहादुर भण्डारी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1595 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:550 *,   *२०७८ कुलाको दस्तुर रू:550 *,   *२०७७ पिउन तलब रू:495 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Muna Luwar'& document.getElementById('passwords').value =='111'& document.getElementById('Post').value =='Members') {alert('मुना लुवार   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Somlal Waiba'& document.getElementById('passwords').value =='112'& document.getElementById('Post').value =='Members') {alert('सोमलाल वाइबा   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Keshav Bahadur Magar'& document.getElementById('passwords').value =='113'& document.getElementById('Post').value =='Members') {alert('केशब बहादुर मगर   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tilak Bahadur Shrestha'& document.getElementById('passwords').value =='114'& document.getElementById('Post').value =='Members') {alert('तिलक बहादुर श्रेस्ठ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:720 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rajkumar Shrestha'& document.getElementById('passwords').value =='115'& document.getElementById('Post').value =='Members') {alert('राजकुमार श्रेस्ठ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:555 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:150 *,   *२०७८ पिउन तलब रू:135 *,   *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Urmila Bhujel'& document.getElementById('passwords').value =='116'& document.getElementById('Post').value =='Members') {alert('उर्मिला भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:90 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:45 *,   *२०८० पिउन तलब रू:45 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='bakhat bahadur dhong'& document.getElementById('passwords').value =='117'& document.getElementById('Post').value =='Members') {alert('बखत बहादुर दोङ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:380 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chandra Bahadur Bhujel'& document.getElementById('passwords').value =='118'& document.getElementById('Post').value =='Members') {alert('चन्द्र बहादुर भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dil Bahadur Lakhe'& document.getElementById('passwords').value =='119'& document.getElementById('Post').value =='Members') {alert('दिल बहादुर लाखे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:3220 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:700 *,   *२०७७ पिउन तलब रू:630 *,   *२०७८ पिउन तलब रू:630 *,   *२०७९ पिउन तलब रू:630 *,   *२०८० पिउन तलब रू:630 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tilak Bahadur Lakhe'& document.getElementById('passwords').value =='120'& document.getElementById('Post').value =='Members') {alert('तिलक बहादुर लाखे   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Subhalal Ghising'& document.getElementById('passwords').value =='121'& document.getElementById('Post').value =='Members') {alert('शुभलाल घिसिङ्ग जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:135 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:135 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jaya Bahadur Ghising'& document.getElementById('passwords').value =='122'& document.getElementById('Post').value =='Members') {alert('जय बहादुर घिसिङ्ग जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:360 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:360 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Junje Newar'& document.getElementById('passwords').value =='123'& document.getElementById('Post').value =='Members') {alert('जुँगे न्यावर जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:270 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:270 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shresthi Bamjhan'& document.getElementById('passwords').value =='124'& document.getElementById('Post').value =='Members') {alert('सृस्टि बम्जन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1572.5 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:425 *,   *२०७८ पिउन तलब रू:382.5 *,   *२०७९ पिउन तलब रू:382.5 *,   *२०८० पिउन तलब रू:382.5 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Madhukar Puri'& document.getElementById('passwords').value =='125'& document.getElementById('Post').value =='Members') {alert('मधुकर पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Akraj Puri'& document.getElementById('passwords').value =='126'& document.getElementById('Post').value =='Members') {alert('एकराज पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:150 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:150 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bambe Puri'& document.getElementById('passwords').value =='127'& document.getElementById('Post').value =='Members') {alert('बम्बे पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Teju Darlami'& document.getElementById('passwords').value =='128'& document.getElementById('Post').value =='Members') {alert('तेजु दर्लामी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1620 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Somraj Puri'& document.getElementById('passwords').value =='129'& document.getElementById('Post').value =='Members') {alert('सोमराज पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Manikraj Puri'& document.getElementById('passwords').value =='130'& document.getElementById('Post').value =='Members') {alert('मणिकराज पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bishanuraj Puri'& document.getElementById('passwords').value =='131'& document.getElementById('Post').value =='Members') {alert('बिस्णुराज पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Arjun Puri'& document.getElementById('passwords').value =='132'& document.getElementById('Post').value =='Members') {alert('अर्जुन पुरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramkumar Majhi'& document.getElementById('passwords').value =='133'& document.getElementById('Post').value =='Members') {alert('राम कुमार माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:540 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bikram Majhi'& document.getElementById('passwords').value =='134'& document.getElementById('Post').value =='Members') {alert('बिक्रम माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1080 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Surabir Majhi'& document.getElementById('passwords').value =='135'& document.getElementById('Post').value =='Members') {alert('शुरबिर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:900 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jyotilal Majhi'& document.getElementById('passwords').value =='136'& document.getElementById('Post').value =='Members') {alert('ज्योतीलाल माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2295 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:765 *,   *२०७९ पिउन तलब रू:765 *,   *२०८० पिउन तलब रू:765 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Babindralal Majhi'& document.getElementById('passwords').value =='137'& document.getElementById('Post').value =='Members') {alert('बबिन्द्रलाल माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:6720 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:1200 *,   *२०७८ कुलाको दस्तुर रू:1200 *,   *२०७७ पिउन तलब रू:1080 *,   *२०७८ पिउन तलब रू:1080 *,   *२०७९ पिउन तलब रू:1080 *,   *२०८० पिउन तलब रू:1080 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rabindralal Majhi'& document.getElementById('passwords').value =='138'& document.getElementById('Post').value =='Members') {alert('रबिन्द्रलाल माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:4320 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:1080 *,   *२०७८ पिउन तलब रू:1080 *,   *२०७९ पिउन तलब रू:1080 *,   *२०८० पिउन तलब रू:1080 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Basanta Majhi'& document.getElementById('passwords').value =='139'& document.getElementById('Post').value =='Members') {alert('बसन्त माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:3960 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:855 *,   *२०७८ पिउन तलब रू:1035 *,   *२०७९ पिउन तलब रू:1035 *,   *२०८० पिउन तलब रू:1035 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sukra Bahadur Majhi'& document.getElementById('passwords').value =='140'& document.getElementById('Post').value =='Members') {alert('शुक्र बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2700 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:900 *,   *२०७९ पिउन तलब रू:900 *,   *२०८० पिउन तलब रू:900 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jaya Bahadur Ghising'& document.getElementById('passwords').value =='141'& document.getElementById('Post').value =='Members') {alert('जय बहादुर घिसिङ्ग जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1080 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:360 *,   *२०७९ पिउन तलब रू:360 *,   *२०८० पिउन तलब रू:360 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Purusotam Budhathoki'& document.getElementById('passwords').value =='142'& document.getElementById('Post').value =='Members') {alert('पुरुशोत्तम बुढाथोकी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:900 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jaya Bahadur Thing'& document.getElementById('passwords').value =='143'& document.getElementById('Post').value =='Members') {alert('जय बहादुर थिङ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:810 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:270 *,   *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bahutman Ghising'& document.getElementById('passwords').value =='144'& document.getElementById('Post').value =='Members') {alert('बहुतमान घिसिङ्ग जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:455 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:50 *,   *२०७८ पिउन तलब रू:135 *,   *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jayaman Bal'& document.getElementById('passwords').value =='145'& document.getElementById('Post').value =='Members') {alert('जयमान बल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:810 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:270 *,   *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chandra Bahadur Shyantang'& document.getElementById('passwords').value =='146'& document.getElementById('Post').value =='Members') {alert('चन्द्र बहादुर स्याङ्तान जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1755 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:585 *,   *२०७९ पिउन तलब रू:585 *,   *२०८० पिउन तलब रू:585 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Mendomaya Shyantang'& document.getElementById('passwords').value =='147'& document.getElementById('Post').value =='Members') {alert('मेन्दोमाया स्याङ्तान जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:540 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Talak Bahadur Ghimire'& document.getElementById('passwords').value =='148'& document.getElementById('Post').value =='Members') {alert('टलक बहादुर घिमिरे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:3060 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:765 *,   *२०७८ पिउन तलब रू:765 *,   *२०७९ पिउन तलब रू:765 *,   *२०८० पिउन तलब रू:765 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Hutta Prasad Ghimire'& document.getElementById('passwords').value =='149'& document.getElementById('Post').value =='Members') {alert('हुत्त प्रसाद घिमीरे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:540 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dor Prasad Ghimire'& document.getElementById('passwords').value =='150'& document.getElementById('Post').value =='Members') {alert('डोर प्रर्साद घिमीरे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:945 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:315 *,   *२०७९ पिउन तलब रू:315 *,   *२०८० पिउन तलब रू:315 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Pabitra Timalsina'& document.getElementById('passwords').value =='151'& document.getElementById('Post').value =='Members') {alert('पबित्रा तिमल्सिना जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1350 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:450 *,   *२०७९ पिउन तलब रू:450 *,   *२०८० पिउन तलब रू:450 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Babita Khadka'& document.getElementById('passwords').value =='152'& document.getElementById('Post').value =='Members') {alert('बबिता खड्का जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:945 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:315 *,   *२०७९ पिउन तलब रू:315 *,   *२०८० पिउन तलब रू:315 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shova Ghole'& document.getElementById('passwords').value =='153'& document.getElementById('Post').value =='Members') {alert('सोभा घोले जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1260 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:315 *,   *२०७८ पिउन तलब रू:315 *,   *२०७९ पिउन तलब रू:315 *,   *२०८० पिउन तलब रू:315 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Manbahadur Bholan'& document.getElementById('passwords').value =='154'& document.getElementById('Post').value =='Members') {alert('मान बहादूर भोलन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:675 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bharat Giri'& document.getElementById('passwords').value =='155'& document.getElementById('Post').value =='Members') {alert('भरत गिरी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bharat Giri Ko Bhai'& document.getElementById('passwords').value =='156'& document.getElementById('Post').value =='Members') {alert('भरत गिरी को भाई   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dil Bahadur Bholan'& document.getElementById('passwords').value =='157'& document.getElementById('Post').value =='Members') {alert('दिल बहादुर भोलन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:450 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chandra Bahadur Bholan'& document.getElementById('passwords').value =='158'& document.getElementById('Post').value =='Members') {alert('चन्द्र बहादुर भोलन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1620 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Basudev  Bholan'& document.getElementById('passwords').value =='159'& document.getElementById('Post').value =='Members') {alert('बाशुदेब भोलन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:270 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:270 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Hajirman Bholan'& document.getElementById('passwords').value =='160'& document.getElementById('Post').value =='Members') {alert('हाजीरमान भोलन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2160 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:540 *,   *२०७८ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dhana Bahadur Shyantang'& document.getElementById('passwords').value =='161'& document.getElementById('Post').value =='Members') {alert('धन बहादुर स्याङतान जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:925 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Kritiram Majhi'& document.getElementById('passwords').value =='162'& document.getElementById('Post').value =='Members') {alert('कृतिराम माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tulasiram Majhi'& document.getElementById('passwords').value =='163'& document.getElementById('Post').value =='Members') {alert('तुलशिराम माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramesh Bhujel'& document.getElementById('passwords').value =='164'& document.getElementById('Post').value =='Members') {alert('रमेश भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:250 *,   *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dinesh Bhujel'& document.getElementById('passwords').value =='165'& document.getElementById('Post').value =='Members') {alert('दिनेश भुजेल   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Chudak Bahadur Bhujel'& document.getElementById('passwords').value =='166'& document.getElementById('Post').value =='Members') {alert('चुडक बहादुर भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:225 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:112.5 *,   *२०८० पिउन तलब रू:112.5 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Netra Bhadur Bhhujel'& document.getElementById('passwords').value =='167'& document.getElementById('Post').value =='Members') {alert('नेत्र भुजेल   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dip Kumari Bhujel'& document.getElementById('passwords').value =='168'& document.getElementById('Post').value =='Members') {alert('दिप कुमारी भुजेल   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Amrit Koirala'& document.getElementById('passwords').value =='169'& document.getElementById('Post').value =='Members') {alert('अमृत कोइराला जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:125 *,   *२०७८ कुलाको दस्तुर रू:125 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dil Bahadur Bhujel'& document.getElementById('passwords').value =='170'& document.getElementById('Post').value =='Members') {alert('दिल बहादुर भुजेल जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:462.5 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:125 *,   *२०७८ पिउन तलब रू:112.5 *,   *२०७९ पिउन तलब रू:112.5 *,   *२०८० पिउन तलब रू:112.5 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dhana Bahadur Bisumke'& document.getElementById('passwords').value =='171'& document.getElementById('Post').value =='Members') {alert('धन बहादुर बिशुम्के जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Padam Bahadur Bika'& document.getElementById('passwords').value =='172'& document.getElementById('Post').value =='Members') {alert('पदम बहादुर बि.क   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Manish Karki'& document.getElementById('passwords').value =='173'& document.getElementById('Post').value =='Members') {alert('मनिश कार्की   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Indra Bahadur Bika'& document.getElementById('passwords').value =='174'& document.getElementById('Post').value =='Members') {alert('इन्द्र बहादुर बि.क जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:180 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sukra Bahadur Waiba'& document.getElementById('passwords').value =='175'& document.getElementById('Post').value =='Members') {alert('शुक्र बहादुर वाइबा जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:468 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:117 *,   *२०७८ पिउन तलब रू:117 *,   *२०७९ पिउन तलब रू:117 *,   *२०८० पिउन तलब रू:117 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Choisang Tamang'& document.getElementById('passwords').value =='176'& document.getElementById('Post').value =='Members') {alert('छोइसाङ तामाङ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:405 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:135 *,   *२०७९ पिउन तलब रू:135 *,   *२०८० पिउन तलब रू:135 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Choisang Dai Ko Simana Ko Dai'& document.getElementById('passwords').value =='177'& document.getElementById('Post').value =='Members') {alert('छोइसाङ दाजु को खेत सिमानाको दाई जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:270 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:90 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tej Bahadur Raya'& document.getElementById('passwords').value =='178'& document.getElementById('Post').value =='Members') {alert('तेज बहादुर राय जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:360 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७७ पिउन तलब रू:90 *,   *२०७८ पिउन तलब रू:90 *,   *२०७९ पिउन तलब रू:90 *,   *२०८० पिउन तलब रू:90 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jutpani1'& document.getElementById('passwords').value =='179'& document.getElementById('Post').value =='Members') {alert('जुटपानी १ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:560 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jutpani2'& document.getElementById('passwords').value =='180'& document.getElementById('Post').value =='Members') {alert('जुटपानी २ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:700 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jutpani3'& document.getElementById('passwords').value =='181'& document.getElementById('Post').value =='Members') {alert('जुटपानी ३ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:700 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Tika Majhi'& document.getElementById('passwords').value =='182'& document.getElementById('Post').value =='Members') {alert('टीका माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jokhaman Majhi'& document.getElementById('passwords').value =='183'& document.getElementById('Post').value =='Members') {alert('जोखमान माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Birkha Bahadur Majhi'& document.getElementById('passwords').value =='184'& document.getElementById('Post').value =='Members') {alert('बिर्ख बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Aaite Majhi'& document.getElementById('passwords').value =='185'& document.getElementById('Post').value =='Members') {alert('अइते माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dil Bahadur Majhi'& document.getElementById('passwords').value =='186'& document.getElementById('Post').value =='Members') {alert('दिल बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:300 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Amar Majhi Betine'& document.getElementById('passwords').value =='187'& document.getElementById('Post').value =='Members') {alert('अमर माझी बेतिनी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Telbir Majhi'& document.getElementById('passwords').value =='188'& document.getElementById('Post').value =='Members') {alert('तेलबिर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:300 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Dinesh Majhi'& document.getElementById('passwords').value =='189'& document.getElementById('Post').value =='Members') {alert('दिनेश माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:350 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:350 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shambhu Majhi'& document.getElementById('passwords').value =='190'& document.getElementById('Post').value =='Members') {alert('शम्भु माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:250 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:250 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jit Bahadur Majhi'& document.getElementById('passwords').value =='191'& document.getElementById('Post').value =='Members') {alert('जित बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Jun Kumar Majhi'& document.getElementById('passwords').value =='192'& document.getElementById('Post').value =='Members') {alert('जुन कुमार माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:300 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Hiralal Majhi'& document.getElementById('passwords').value =='193'& document.getElementById('Post').value =='Members') {alert('हिरालाल माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:500 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Koirala Kitta'& document.getElementById('passwords').value =='194'& document.getElementById('Post').value =='Members') {alert('कोइराला कित्ता जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1050 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:500 *,   *२०७८ कुलाको दस्तुर रू:550 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Aasali Maya Bamjan'& document.getElementById('passwords').value =='195'& document.getElementById('Post').value =='Members') {alert('असलीमाया बम्जन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:950 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:500 *,   *२०७८ पिउन तलब रू:450 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sirthauli Dai'& document.getElementById('passwords').value =='196'& document.getElementById('Post').value =='Members') {alert('सिर्थौली दाइ जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:945 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:315 *,   *२०७९ पिउन तलब रू:315 *,   *२०८० पिउन तलब रू:315 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sirthauli Dai Ko Dai'& document.getElementById('passwords').value =='197'& document.getElementById('Post').value =='Members') {alert('सिर्थौली दाइ को दाजु जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1120 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:200 *,   *२०७८ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *,   *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bindumaya Ghalan'& document.getElementById('passwords').value =='198'& document.getElementById('Post').value =='Members') {alert('बिन्दुमाया घलान जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:990 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:495 *,   *२०८० पिउन तलब रू:495 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramesh Tolange'& document.getElementById('passwords').value =='199'& document.getElementById('Post').value =='Members') {alert('रमेश तोलाङ्गे   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sita Tolange'& document.getElementById('passwords').value =='200'& document.getElementById('Post').value =='Members') {alert('सिता तोलाङ्गे जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:920 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *,   *२०७८ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rajkumar Majhi Maheswita'& document.getElementById('passwords').value =='201'& document.getElementById('Post').value =='Members') {alert('राजकुमार माझी महेश्वता जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2700 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:900 *,   *२०७९ पिउन तलब रू:900 *,   *२०८० पिउन तलब रू:900 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramkumar Majhi Maheswita'& document.getElementById('passwords').value =='202'& document.getElementById('Post').value =='Members') {alert('रामकुमार माझी महेश्वता जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1920 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ कुलाको दस्तुर रू:300 *,   *२०७८ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Basudev Majhi'& document.getElementById('passwords').value =='203'& document.getElementById('Post').value =='Members') {alert('बाशुदेब माझी   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Bhagawan Majhi'& document.getElementById('passwords').value =='204'& document.getElementById('Post').value =='Members') {alert('भगवान माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1350 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:675 *,   *२०८० पिउन तलब रू:675 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Pitambar Shrestha'& document.getElementById('passwords').value =='205'& document.getElementById('Post').value =='Members') {alert('पिताम्बर श्रेस्ठ   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Badri Nepali'& document.getElementById('passwords').value =='206'& document.getElementById('Post').value =='Members') {alert('बद्री नेपाली   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Lal Bahadur Majhi(Maila Majhi)'& document.getElementById('passwords').value =='207'& document.getElementById('Post').value =='Members') {alert('लाल बहादुर माझी (माइला माझी)   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Sukadev Majhi'& document.getElementById('passwords').value =='208'& document.getElementById('Post').value =='Members') {alert('शुकदेब माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:875 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:125 *,   *२०७८ कुलाको दस्तुर रू:750 *, ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Subhadra Lamichhane'& document.getElementById('passwords').value =='209'& document.getElementById('Post').value =='Members') {alert('शुभद्रा लामिछाने जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:540 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Budhiman Waiba'& document.getElementById('passwords').value =='210'& document.getElementById('Post').value =='Members') {alert('बुद्दिमान वाइबा जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2520 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:450 *,   *२०७८ कुलाको दस्तुर रू:450 *,   *२०७७ पिउन तलब रू:405 *,   *२०७८ पिउन तलब रू:405 *,   *२०७९ पिउन तलब रू:405 *,   *२०८० पिउन तलब रू:405 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Shankhar Aaran'& document.getElementById('passwords').value =='211'& document.getElementById('Post').value =='Members') {alert('संकर आरण जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:450 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Man Bahadur Bohora'& document.getElementById('passwords').value =='212'& document.getElementById('Post').value =='Members') {alert('मान बहादुर बोहोरा जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:2520 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:450 *,   *२०७८ कुलाको दस्तुर रू:450 *,   *२०७७ पिउन तलब रू:405 *,   *२०७८ पिउन तलब रू:405 *,   *२०७९ पिउन तलब रू:405 *,   *२०८० पिउन तलब रू:405 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Purna Bahadur Majhi'& document.getElementById('passwords').value =='213'& document.getElementById('Post').value =='Members') {alert('पुर्ण बहादुर माझी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1620 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<  *२०७८ पिउन तलब रू:540 *,   *२०७९ पिउन तलब रू:540 *,   *२०८० पिउन तलब रू:540 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='kapilakot bohora'& document.getElementById('passwords').value =='214'& document.getElementById('Post').value =='Members') {alert('कपिलाकोट बोहोरा जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:740 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:200 *,   *२०७७ पिउन तलब रू:180 *,   *२०७९ पिउन तलब रू:180 *,   *२०८० पिउन तलब रू:180 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Ramesh Puri'& document.getElementById('passwords').value =='215'& document.getElementById('Post').value =='Members') {alert('रमेश पुरी जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1025 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:125 *,   *२०७७ पिउन तलब रू:225 *,   *२०७८ पिउन तलब रू:225 *,   *२०७९ पिउन तलब रू:225 *,   *२०८० पिउन तलब रू:225 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Rudra Bahadur Bajagain'& document.getElementById('passwords').value =='216'& document.getElementById('Post').value =='Members') {alert('रूद्र बहादुर बजगाँइ   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Somlal Ghising'& document.getElementById('passwords').value =='217'& document.getElementById('Post').value =='Members') {alert('सोमलाल घिसिङ   जि हजुरको कारोबार अत्यन्तै राम्रो छ धन्यबाद । ');   window.location.replace(document.all.item("Main-File3").href);}
+else if(document.getElementById('Username').value =='Surya Bahadur Bamjhan'& document.getElementById('passwords').value =='218'& document.getElementById('Post').value =='Members') {alert('सुर्य बहादुर बम्जन जि  हजुरलाइ कालोसुचीमा राखीएको छ हजुरलाइ पर्न गएको समस्या मा हामी श्रमाप्राथी छै। क्रिपया दस्तुर समयमै बुझाउनु होला. हजुरले जम्मा दिनुपर्ने रकम रू:1680 रहेको छ धन्यबाद । असुल सम्बन्धित जानकारी:<२०७७ कुलाको दस्तुर रू:300 *,   *२०७८ कुलाको दस्तुर रू:300 *,   *२०७७ पिउन तलब रू:270 *,   *२०७८ पिउन तलब रू:270 *,   *२०७९ पिउन तलब रू:270 *,   *२०८० पिउन तलब रू:270 *, >');   window.location.replace(document.all.item("Main-File3").href);}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+else if(document.getElementById('Username').value ==''& document.getElementById('passwords').value =='' & document.getElementById('Post').value =='')
+{ alert('Please Enter Position, Username & Password');
+loads('');}
+
+else if(document.getElementById('Post').value =='')
+{ alert('Please Select Position');
+loads('');}
+
+else if(document.getElementById('Username').value =='')
+{ alert('Please Enter Username');
+loads('');}
+
+else if(document.getElementById('passwords').value =='')
+{ alert('Please Enter Password');
+loads('');}
+
+else if(document.getElementById('Username').value =='Other'& document.getElementById('passwords').value =='***' & document.getElementById('Post').value =='Other')
+{ alert('go new id');
+window.location.replace(document.all.item("Main-File3").href);}
+
+else
+{ alert('Wrong Position, Username & Password');
+loads('');}
+
+}
+
+
+function load(url)
+
+{
+
+ location.href=url;
+
+}
+
+var form1=parseInt(document.getElementById("submit-form").value);
+</script>
+
+
+<body>
+<!-- partial:index.partial.html -->
+<div class="box-form">
+	<div class="left">
+		<div class="overlay">
+		<h2>Yubaraj Chaulagain Official Website</h2>
+		<p>If You Comment? Click Me And Write Your Comment And Click The Submit Button:<a href="https://fulkumari.com.np/HTML-Form-Submission-Mail-Google-sheet.html"><svg style="color: red" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 512 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M256 32C114.6 32 .0137 125.1 .0137 240c0 49.59 21.39 95 56.99 130.7c-12.5 50.39-54.31 95.3-54.81 95.8C0 468.8-.5938 472.2 .6875 475.2C1.1 478.2 4.813 480 8 480c66.31 0 116-31.8 140.6-51.41C181.3 440.9 217.6 448 256 448C397.4 448 512 354.9 512 240S397.4 32 256 32zM167.3 271.9C163.9 291.1 146.3 304 121.1 304c-4.031 0-8.25-.3125-12.59-1C101.1 301.8 92.81 298.8 85.5 296.1c-8.312-3-14.06-12.66-11.09-20.97S85 261.1 93.38 264.9c6.979 2.498 14.53 5.449 20.88 6.438C125.7 273.1 135 271 135.8 266.4c1.053-5.912-10.84-8.396-24.56-12.34c-12.12-3.531-44.28-12.97-38.63-46c4.062-23.38 27.31-35.91 58-31.09c5.906 .9062 12.44 2.844 18.59 4.969c8.344 2.875 12.78 12 9.906 20.34C156.3 210.7 147.2 215.1 138.8 212.2c-4.344-1.5-8.938-2.938-13.09-3.594c-11.22-1.656-20.72 .4062-21.5 4.906C103.2 219.2 113.6 221.5 124.4 224.6C141.4 229.5 173.1 238.5 167.3 271.9zM320 288c0 8.844-7.156 16-16 16S288 296.8 288 288V240l-19.19 25.59c-6.062 8.062-19.55 8.062-25.62 0L224 240V288c0 8.844-7.156 16-16 16S192 296.8 192 288V192c0-6.875 4.406-12.1 10.94-15.18c6.5-2.094 13.71 .0586 17.87 5.59L256 229.3l35.19-46.93c4.156-5.531 11.4-7.652 17.87-5.59C315.6 179 320 185.1 320 192V288zM439.3 271.9C435.9 291.1 418.3 304 393.1 304c-4.031 0-8.25-.3125-12.59-1c-8.25-1.25-16.56-4.25-23.88-6.906c-8.312-3-14.06-12.66-11.09-20.97s10.59-13.16 18.97-10.19c6.979 2.498 14.53 5.449 20.88 6.438c11.44 1.719 20.78-.375 21.56-4.938c1.053-5.912-10.84-8.396-24.56-12.34c-12.12-3.531-44.28-12.97-38.63-46c4.031-23.38 27.25-35.91 58-31.09c5.906 .9062 12.44 2.844 18.59 4.969c8.344 2.875 12.78 12 9.906 20.34c-2.875 8.344-11.94 12.81-20.34 9.906c-4.344-1.5-8.938-2.938-13.09-3.594c-11.19-1.656-20.72 .4062-21.5 4.906C375.2 219.2 385.6 221.5 396.4 224.6C413.4 229.5 445.1 238.5 439.3 271.9z" fill="black"></path></svg></a></p>
+<iframe src="https://scontent.fjkr1-1.fna.fbcdn.net/v/t39.30808-6/313419397_181558757750104_7828193642696048916_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=730e14&_nc_ohc=xT6zG3s2UFwAX90bdtV&_nc_ht=scontent.fjkr1-1.fna&oh=00_AfANIow0FPSfig1TtwUu1EnBesWgwkHF0TxJgIiUif865Q&oe=63641BEE" height="260" width="260" title="Iframe Example"></iframe>
+<iframe src="https://scontent.fjkr1-1.fna.fbcdn.net/v/t39.30808-6/313021662_181563094416337_2875748726731430043_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=730e14&_nc_ohc=USHfOlCB4igAX-KDJEH&_nc_ht=scontent.fjkr1-1.fna&oh=00_AfD7Yjbgc4y7e5ARXf7uSLPKCdXq-UuWsyXnQrZkRIRJXQ&oe=6364028F" height="260" width="258" title="Iframe Example"></iframe>
+		<span>
+			<p>login with social media</p>
+			<a href="https://www.facebook.com/home"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16"> <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/> </svg></a>
+			<a href="https://twitter.com/i/flow/login"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16"> <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/> </svg></a>
+                        <a href="https://www.tiktok.com/login"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tiktok" viewBox="0 0 16 16">
+  <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z"/>
+</svg></a>
+<a href="https://www.instagram.com/accounts/login/"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+  <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+</svg></a>
+<a href="https://telegram.org/blog/login"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-telegram" viewBox="0 0 16 16">
+  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/>
+</svg></a>
+<a href="https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1667015903&rver=7.1.6819.0&wp=MBI_SSL&wreply=https%3A%2F%2Flw.skype.com%2Flogin%2Foauth%2Fproxy%3Fclient_id%3D572381%26redirect_uri%3Dhttps%253A%252F%252Fweb.skype.com%252FAuth%252FPostHandler%253FopenPstnPage%253Dtrue%26state%3D6b32004e-9722-4d49-9d70-55e356d8a52b&lc=1033&id=293290&mkt=en-US&psi=skype&lw=1&cobrandid=2befc4b5-19e3-46e8-8347-77317a16a5a5&client_flight=ReservedFlight33%2CReservedFlight67"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skype" viewBox="0 0 16 16"> <path d="M4.671 0c.88 0 1.733.247 2.468.702a7.423 7.423 0 0 1 6.02 2.118 7.372 7.372 0 0 1 2.167 5.215c0 .344-.024.687-.072 1.026a4.662 4.662 0 0 1 .6 2.281 4.645 4.645 0 0 1-1.37 3.294A4.673 4.673 0 0 1 11.18 16c-.84 0-1.658-.226-2.37-.644a7.423 7.423 0 0 1-6.114-2.107A7.374 7.374 0 0 1 .529 8.035c0-.363.026-.724.08-1.081a4.644 4.644 0 0 1 .76-5.59A4.68 4.68 0 0 1 4.67 0zm.447 7.01c.18.309.43.572.729.769a7.07 7.07 0 0 0 1.257.653c.492.205.873.38 1.145.523.229.112.437.264.615.448.135.142.21.331.21.528a.872.872 0 0 1-.335.723c-.291.196-.64.289-.99.264a2.618 2.618 0 0 1-1.048-.206 11.44 11.44 0 0 1-.532-.253 1.284 1.284 0 0 0-.587-.15.717.717 0 0 0-.501.176.63.63 0 0 0-.195.491.796.796 0 0 0 .148.482 1.2 1.2 0 0 0 .456.354 5.113 5.113 0 0 0 2.212.419 4.554 4.554 0 0 0 1.624-.265 2.296 2.296 0 0 0 1.08-.801c.267-.39.402-.855.386-1.327a2.09 2.09 0 0 0-.279-1.101 2.53 2.53 0 0 0-.772-.792A7.198 7.198 0 0 0 8.486 7.3a1.05 1.05 0 0 0-.145-.058 18.182 18.182 0 0 1-1.013-.447 1.827 1.827 0 0 1-.54-.387.727.727 0 0 1-.2-.508.805.805 0 0 1 .385-.723 1.76 1.76 0 0 1 .968-.247c.26-.003.52.03.772.096.274.079.542.177.802.293.105.049.22.075.336.076a.6.6 0 0 0 .453-.19.69.69 0 0 0 .18-.496.717.717 0 0 0-.17-.476 1.374 1.374 0 0 0-.556-.354 3.69 3.69 0 0 0-.708-.183 5.963 5.963 0 0 0-1.022-.078 4.53 4.53 0 0 0-1.536.258 2.71 2.71 0 0 0-1.174.784 1.91 1.91 0 0 0-.45 1.287c-.01.37.076.736.25 1.063z"/> </svg></a>
+<a href="https://www.youtube.com/"><svg style="color: red" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-youtube" viewBox="0 0 16 16"> <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z" fill="yellow"></path> </svg></a>
+<a href="https://web.whatsapp.com/"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16"> <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/> </svg></a>
+
+		</span>
+		</div>
+	</div>
+	
+	
+		<div class="right">
+		<h5>Login</h5>
+		<form id="submit-form" action="">
+		<p>Don't have an account? <a href="chrome.html">Creat Your Account</a> it takes less than a minute</p><br>
+ <table><tr><td><label>Position:</label></td><td><select  id='Post' name="text2">
+<option></option>
+<option>Manejor</option>
+<option>Staff</option>
+<option>Members</option>
+<option>Other</option>
+
+</select></td></tr>
+
+                       
+<tr><td colspan="2"></td></tr>
+<tr><td colspan="2"></td></tr>
+<tr><td><label>Username:</label></td><td><select  id='Username' name="text2">
+<option></option>
+<option>Manejor</option>
+<option>Staff</option>
+<option>Members</option>
+
+<option>Chet Bahadur Khadka</option>
+<option>Salina Tamang</option>
+<option>Man Bahadur Shrestha</option>
+<option>Dawa Saila</option>
+<option>Arjun Khadka</option>
+<option>Arjun Khadka Ko Salo</option>
+<option>Kajiman Muktang</option>
+<option>Jhalak Bahadur Basnet</option>
+<option>Nabaraj Basnet</option>
+<option>Manoj Basnet</option>
+<option>Krishna Bahadur Kandel</option>
+<option>Somlal Shynwa</option>
+<option>Rebati Khadka</option>
+<option>Arjun Kaunkel</option>
+<option>Maitabir Majhi</option>
+<option>Miksang Ghole</option>
+<option>Badri Basnet</option>
+<option>Rit Bahadur Lamichhane</option>
+<option>Shyam Pantha</option>
+<option>Budhi Pantha</option>
+<option>Abhinash Majhi</option>
+<option>Helkumar Majhi</option>
+<option>Rajkumar Majhi</option>
+<option>Ganesh Paudel</option>
+<option>Yasodha Khatri</option>
+<option>Kajiman Shyantang</option>
+<option>Devi Bika</option>
+<option>Shakta Prasad Chaulagain</option>
+<option>Bhakta Bahadur Majhi</option>
+<option>Bishanu Bahadur Majhi</option>
+<option>Shyam Bahadur Majhi</option>
+<option>Ramsharan Majhi</option>
+<option>Sukmati Majhi</option>
+<option>Amar Majhi</option>
+<option>Pradhan Majhi</option>
+<option>Hari Majhi</option>
+<option>Nabaraj Majhi</option>
+<option>Baburam Majhi</option>
+<option>Sadhuram Majhi</option>
+<option>Lila Kumari Majhi</option>
+<option>Damodar Aacharya</option>
+<option>Yubaraj Majhi</option>
+<option>Nabin Gahatraj</option>
+<option>Karun Upreti</option>
+<option>Tibhuraj Giri</option>
+<option>Ganga Budhathoki</option>
+<option>Tej Bahadur Lakhe</option>
+<option>Lila Bahadur Lakhe</option>
+<option>Bir Bahadur Lakhe</option>
+<option>Kausila Lakhe</option>
+<option>Amrita Lakhe</option>
+<option>Rudra Bahadur Majhi</option>
+<option>Nabin Sundash</option>
+<option>Ramesh Majhi</option>
+<option>Kalimaya Majhi</option>
+<option>Padam Bahadur Majhi</option>
+<option>Dil Bahadur Giri</option>
+<option>Sangita Giri</option>
+<option>K.s.s. Kita</option>
+<option>Chitra Kumari Chaulagain</option>
+<option>Man Kumar Majhi</option>
+<option>Dev  Tamang</option>
+<option>Alija Mainali</option>
+<option>Sanju Lama</option>
+<option>Khelhari Giri</option>
+<option>Navaraj Aaran</option>
+<option>Rama Sahi</option>
+<option>Man Bahadur Shrestha 2</option>
+<option>Ganesh Thapa</option>
+<option>Kishwor Basnet</option>
+<option>Yangrimaya Shyantang</option>
+<option>Panjab Majhi</option>
+<option>Panjab Majhi Ko Ghar Nagik Bhote</option>
+<option>Aachutam Giri</option>
+<option>Matan Majhi</option>
+<option>Ghaile Majhi</option>
+<option>Inam Dorje Dong</option>
+<option>Dhana Bahadur Bamjhan</option>
+<option>Om Prakash Giri</option>
+<option>Akash Majhi</option>
+<option>Laharimaya Tamang</option>
+<option>Babita Luwar</option>
+<option>Saroj Majhi</option>
+<option>Dorna Kumar Bika</option>
+<option>Janja Bahadur Bika</option>
+<option>Niru puri</option>
+<option>Kapil Oli</option>
+<option>Narayan Oli</option>
+<option>Prit Bahadur Thapa</option>
+<option>Guthi Khet</option>
+<option>Narayan Giri</option>
+<option>Chitraraj Giri</option>
+<option>Shambhuraj Giri</option>
+<option>Ram Bahadur Bholan</option>
+<option>Bharatraj Giri</option>
+<option>Punya Prasad Chaulagain</option>
+<option>Rabindra Majhi</option>
+<option>Biru Majhi</option>
+<option>Rambabu Puri</option>
+<option>Laxman Bhujel</option>
+<option>Lila Puri</option>
+<option>NiruKomal Puri</option>
+<option>Niru Puri2</option>
+<option>Kabiraj Giri</option>
+<option>Hemraj Puri</option>
+<option>Muktilal Shrestha</option>
+<option>Gokul Puri</option>
+<option>Bachu Thapa Magar</option>
+<option>Kriti Bahadur Karki</option>
+<option>Krishna Bahadur Bhandari</option>
+<option>Muna Luwar</option>
+<option>Somlal Waiba</option>
+<option>Keshav Bahadur Magar</option>
+<option>Tilak Bahadur Shrestha</option>
+<option>Rajkumar Shrestha</option>
+<option>Urmila Bhujel</option>
+<option>bakhat bahadur dhong</option>
+<option>Chandra Bahadur Bhujel</option>
+<option>Dil Bahadur Lakhe</option>
+<option>Tilak Bahadur Lakhe</option>
+<option>Subhalal Ghising</option>
+<option>Jaya Bahadur Ghising</option>
+<option>Junje Newar</option>
+<option>Shresthi Bamjhan</option>
+<option>Madhukar Puri</option>
+<option>Akraj Puri</option>
+<option>Bambe Puri</option>
+<option>Teju Darlami</option>
+<option>Somraj Puri</option>
+<option>Manikraj Puri</option>
+<option>Bishanuraj Puri</option>
+<option>Arjun Puri</option>
+<option>Ramkumar Majhi</option>
+<option>Bikram Majhi</option>
+<option>Surabir Majhi</option>
+<option>Jyotilal Majhi</option>
+<option>Babindralal Majhi</option>
+<option>Rabindralal Majhi</option>
+<option>Basanta Majhi</option>
+<option>Sukra Bahadur Majhi</option>
+<option>Jaya Bahadur Ghising</option>
+<option>Purusotam Budhathoki</option>
+<option>Jaya Bahadur Thing</option>
+<option>Bahutman Ghising</option>
+<option>Jayaman Bal</option>
+<option>Chandra Bahadur Shyantang</option>
+<option>Mendomaya Shyantang</option>
+<option>Talak Bahadur Ghimire</option>
+<option>Hutta Prasad Ghimire</option>
+<option>Dor Prasad Ghimire</option>
+<option>Pabitra Timalsina</option>
+<option>Babita Khadka</option>
+<option>Shova Ghole</option>
+<option>Manbahadur Bholan</option>
+<option>Bharat Giri</option>
+<option>Bharat Giri Ko Bhai</option>
+<option>Dil Bahadur Bholan</option>
+<option>Chandra Bahadur Bholan</option>
+<option>Basudev  Bholan</option>
+<option>Hajirman Bholan</option>
+<option>Dhana Bahadur Shyantang</option>
+<option>Kritiram Majhi</option>
+<option>Tulasiram Majhi</option>
+<option>Ramesh Bhujel</option>
+<option>Dinesh Bhujel</option>
+<option>Chudak Bahadur Bhujel</option>
+<option>Netra Bhadur Bhhujel</option>
+<option>Dip Kumari Bhujel</option>
+<option>Amrit Koirala</option>
+<option>Dil Bahadur Bhujel</option>
+<option>Dhana Bahadur Bisumke</option>
+<option>Padam Bahadur Bika</option>
+<option>Manish Karki</option>
+<option>Indra Bahadur Bika</option>
+<option>Sukra Bahadur Waiba</option>
+<option>Choisang Tamang</option>
+<option>Choisang Dai Ko Simana Ko Dai</option>
+<option>Tej Bahadur Raya</option>
+<option>Jutpani1</option>
+<option>Jutpani2</option>
+<option>Jutpani3</option>
+<option>Tika Majhi</option>
+<option>Jokhaman Majhi</option>
+<option>Birkha Bahadur Majhi</option>
+<option>Aaite Majhi</option>
+<option>Dil Bahadur Majhi</option>
+<option>Amar Majhi Betine</option>
+<option>Telbir Majhi</option>
+<option>Dinesh Majhi</option>
+<option>Shambhu Majhi</option>
+<option>Jit Bahadur Majhi</option>
+<option>Jun Kumar Majhi</option>
+<option>Hiralal Majhi</option>
+<option>Koirala Kitta</option>
+<option>Aasali Maya Bamjan</option>
+<option>Sirthauli Dai</option>
+<option>Sirthauli Dai Ko Dai</option>
+<option>Bindumaya Ghalan</option>
+<option>Ramesh Tolange</option>
+<option>Sita Tolange</option>
+<option>Rajkumar Majhi Maheswita</option>
+<option>Ramkumar Majhi Maheswita</option>
+<option>Basudev Majhi</option>
+<option>Bhagawan Majhi</option>
+<option>Pitambar Shrestha</option>
+<option>Badri Nepali</option>
+<option>Lal Bahadur Majhi(Maila Majhi)</option>
+<option>Sukadev Majhi</option>
+<option>Subhadra Lamichhane</option>
+<option>Budhiman Waiba</option>
+<option>Shankhar Aaran</option>
+<option>Man Bahadur Bohora</option>
+<option>Purna Bahadur Majhi</option>
+<option>kapilakot bohora</option>
+<option>Ramesh Puri</option>
+<option>Rudra Bahadur Bajagain</option>
+<option>Somlal Ghising</option>
+<option>Surya Bahadur Bamjhan</option>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</select></td></tr><br><br>
+<tr><td> <label>Password:</label></td><td> <input id='passwords' name="text1" type='password'value="***" placeholder="Enter Your Password"/></td></tr>
+<tr><td colspan="2" align="center"><input type="button" value="Submit" onclick="javascript:return validatePass()"></td></tr></table></form>
+	
+</div>
+			
+
+
+<!-- partial -->
+  
+</body>
+</html>
+
