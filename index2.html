@@ -189,15 +189,15 @@ label input[type="checkbox"] {
 
 function validatePass(){
 
-if(document.getElementById('Username').value =='sarojkumar' & document.getElementById('passwords').value =='643' & document.getElementById('Post').value =='Manejor')
+if(document.getElementById('Username').value =='sarojkumar' & document.getElementById('passwords').value =='643' & document.getElementById('Post').value =='Leder')
 { alert('Welcome sarojkumar Have Your Nice Day');
 window.location.replace(document.all.item("Main-File").href);}
 
-else if(document.getElementById('Username').value =='sarojkumar1' & document.getElementById('passwords').value =='644' & document.getElementById('Post').value =='Staff')
+else if(document.getElementById('Username').value =='Chandralal' & document.getElementById('passwords').value =='644' & document.getElementById('Post').value =='Adhaxya')
 { alert('Welcome sarojkumar1 Have Your Nice Day');
 window.location.replace(document.all.item("Main-File1").href);}
 
-else if(document.getElementById('Username').value =='sarojkumar2' & document.getElementById('passwords').value =='645' & document.getElementById('Post').value =='Members')
+else if(document.getElementById('Username').value =='Budhiprasad' & document.getElementById('passwords').value =='645' & document.getElementById('Post').value =='Sachiv')
 { alert('Welcome sarojkumar2 Have Your Nice Day');
 window.location.replace(document.all.item("Main-File2").href);}
 
@@ -217,7 +217,7 @@ else if(document.getElementById('passwords').value =='')
 { alert('Please Enter Password');
 loads('');}
 
-else if(document.getElementById('Username').value =='Other'& document.getElementById('passwords').value =='***' & document.getElementById('Post').value =='Other')
+else if(document.getElementById('Username').value =='Mendomaya'& document.getElementById('passwords').value =='***' & document.getElementById('Post').value =='Kosadhaxya')
 { alert('go new id');
 window.location.replace(document.all.item("Main-File3").href);}
 
@@ -276,10 +276,10 @@ var form1=parseInt(document.getElementById("submit-form").value);
 		<p>Don't have an account? <a href="chrome.html">Creat Your Account</a> it takes less than a minute</p><br>
  <table><tr><td><label>Position:</label></td><td><select  id='Post' name="text2">
 <option></option>
-<option>Manejor</option>
-<option>Staff</option>
-<option>Members</option>
-<option>Other</option>
+<option>Leder</option>
+<option>Adhaxya</option>
+<option>Sachiv</option>
+<option>Kosadhaxya</option>
 </select></td></tr>
 
                        
@@ -287,10 +287,10 @@ var form1=parseInt(document.getElementById("submit-form").value);
 <tr><td colspan="2"></td></tr>
 <tr><td><label>Username:</label></td><td><select  id='Username' name="text2">
 <option></option>
-<option>sarojkumar</option>
-<option>sarojkumar1</option>
-<option>sarojkumar2</option>
-<option>Other</option>
+<option>Sarojkumar</option>
+<option>Chandralal</option>
+<option>Budhiprasad</option>
+<option>Mendomaya</option>
 </select></td></tr><br><br>
                        <tr><td> <label>Password:</label></td><td> <input id='passwords' name="text1" type='password'value="***" placeholder="Enter Your Password"/></td></tr>
 <tr><td colspan="2" align="center"><input type="button" value="Submit" onclick="javascript:return validatePass()"></td></tr></table></form>
