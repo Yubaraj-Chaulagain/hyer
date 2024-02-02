@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<body>
+<title>Kapilakot Marin Fant Sachai Samiti</title>
+<form id="fr" style="display:show" Align="Center">
+Kapilakot Marin Fant Sachai Samiti~Costomer:<input type="text" id="h" style="display:show"  onblur="condition();"/>
+<hr>
+UserName:<select  id='Usernames' name="text2">
+<option></option>
+<option value="Sarojkumar">Sarojkumar</option>
+<option value="Chandralal">Chandralal</option>
+<option value="Budhiprasad">Budhiprasad</option>
+<option value="Mendomaya">Mendomaya</option>
+</select> Password:<input type="text" id="Password">
+
+</form>
+<script>
+function condition(){
+var Num1=document.getElementById("Usernames").value;
+var Num2=document.getElementById("Password").value;
+var Num3=Num1+Num2
+var Num40="Welcome "
+var Num41=" ji"
+var Num4=Num40+Num1+Num41
+if (Num3=="Sarojkumar643") {
+  document.getElementById("Member Data Add").style="display:show";
+  document.getElementById("Member Data Tranjection").style="display:none";
+  document.getElementById("Member Data Edit").style="display:none";
+  document.getElementById("Member Data gty").style="display:none";
+  document.getElementById("h").value=Num4;
+} 
+else if (Num3=="Chandralal644") {
+ document.getElementById("Member Data Tranjection").style="display:show";
+ document.getElementById("Member Data Add").style="display:none";
+ document.getElementById("Member Data Edit").style="display:none";
+ document.getElementById("Member Data gty").style="display:none";
+ document.getElementById("h").value=Num4;
+} else if (Num3=="Budhiprasad645"){
+  document.getElementById("Member Data Edit").style="display:show";
+  document.getElementById("Member Data Add").style="display:none";
+  document.getElementById("Member Data Tranjection").style="display:none";
+  document.getElementById("Member Data gty").style="display:none";
+  document.getElementById("h").value=Num4;
+}
+else if (Num3=="Mendomaya646"){
+ document.getElementById("Member Data gty").style="display:show";
+ document.getElementById("Member Data Tranjection").style="display:none";
+ document.getElementById("Member Data Add").style="display:none";
+ document.getElementById("Member Data Edit").style="display:none";
+document.getElementById("h").value=Num4;
+}
+
+else{
+document.getElementById("h").value="wrong Id"&Num4;}
+}
+
+
+</script>
+
+</body>
+
+<form id="Member Data Add" style="display:none" onblur="condition();"/>
+<h1>Member Data Add</h1>
+<input type="text" id="f11" Placeholder="fr11"  onblur="condition();"/>
+<input type="text" id="f111" Placeholder="fr111"  onblur="condition();"/>
+<button>Submit</button>
+</form>
+
+
+
+<form id="Member Data Tranjection" style="display:none" onblur="condition();"/>
+<h1>Member Data Tranjection</h1>
+<input type="text" id="f22" Placeholder="fr22" onblur="condition();"/>
+<input type="text" id="f222" Placeholder="fr222" onblur="condition();"/>
+<button>Submit</button>
+</form>
+
+
+
+<form id="Member Data Edit" style="display:none" onblur="condition();"/>
+<h1>Member Data Edit</h1>
+<input type="text" id="f33" Placeholder="fr33"  onblur="condition();"/>
+<input type="text" id="f333" Placeholder="fr333"  onblur="condition();"/>
+<button>Submit</button>
+</form>
+
+<form id="Member Data gty" style="display:none" onblur="condition();"/>
+<h1>Member Data gty</h1>
+<input type="text" id="f44" Placeholder="fr44"  onblur="condition();"/>
+<input type="text" id="f444" Placeholder="fr444"  onblur="condition();"/>
+<select  id='Usernamess' name="text2">
+<option></option>
+<option value="Sarojkumar">Sarojkumar</option>
+<option value="Chandralal">Chandralal</option>
+<option value="Budhiprasad">Budhiprasad</option>
+<option value="Mendomaya">Mendomaya</option>
+</select>
+<button>Submit</button>
+</form></form>
+</html>
