@@ -2,6 +2,7 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link id="Main-File" rel="Main-File" href="index.html">
 <form id="regForm" action="/action_page.php" style="display:none" onblur="condition();"/>
 <style>
 * {
@@ -264,6 +265,8 @@ else if (Num3=="Chandralal644") {
  document.getElementById("h").value=Num4;
 } 
 else if (Num3=="Members1234") {
+ alert('Welcome Members Have Your Nice Day');
+ window.location.replace(document.all.item("Main-File").href);
  document.getElementById("Authoright").style="display:show";
  document.getElementById("MemberDataTranjection").style="display:none";
  document.getElementById("MemberDataAdd").style="display:none";
