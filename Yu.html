@@ -1,19 +1,91 @@
 <!DOCTYPE html>
+
 <html>
+ 
+
+<head>
+
+    <title>Using mailto link</title>
+
+    <style>
+
+        .container {
+
+            width: 400px;
+
+            border: 2px solid black;
+
+            padding: 15px;
+
+        }
+ 
+
+        h1 {
+
+            color: green;
+
+        }
+
+    </style>
+
+</head>
+ 
+
 <body>
 
-<h2>Send e-mail to someone@example.com:</h2>
+    <div class="container">
 
-<form action="mailto:yubarajchaulagain5@gmail.com" method="post" enctype="text/plain">
-Name:<br>
-<input type="text" name="name"><br>
-E-mail:<br>
-<input type="text" name="mail"><br>
-Comment:<br>
-<input type="text" name="comment" size="50"><br><br>
-<input type="submit" value="Send">
-<input type="reset" value="Reset">
-</form>
+        <h1>GeeksforGeeks</h1>
+
+        <b>Using mailto link</b>
+
+        <form method="POST" action="mailto: geeksforgeeks@gmail.com"
+
+              enctype="multipart/form-data">
+
+            <div class="control">
+
+                Name:
+
+                <input aria-required="" id="name" type="text" />
+
+            </div>
+
+            <br>
+
+            <div class="control">
+
+                Ph no:
+
+                <input aria-required="" id="mobile_number" type="tel" />
+
+            </div>
+
+            <br>
+
+            <div class="control">
+
+                Suggestion:
+
+                <textarea rows="7" cols="30" name="comment">
+
+                </textarea>
+
+            </div>
+
+            <br>
+
+            <div class="control">
+
+                <input type="submit" value="Submit" />
+
+            </div>
+
+        </form>
+
+    </div>
 
 </body>
+ 
+
 </html>
