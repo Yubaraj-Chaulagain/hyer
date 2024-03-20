@@ -1,14 +1,19 @@
-<!-- Sample HTML Form -->
-<form action="yubarajchaulagain5@gmail.com"
-method="POST"
-enctype="multipart/form-data"
-name="EmailForm">
-    Name:<br>
-    <input type="text" size="19" name="Contact-Name"><br><br>
-    Email:<br>
-    <input type="email" name="Contact-Email"><br><br> 
-    Message:<br> 
-    <textarea name="Contact-Message" rows="6″ cols="20″>
-    </textarea><br><br> 
-    <button type="submit" value="Submit">Send</button>
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Send e-mail to someone@example.com:</h2>
+
+<form action="mailto:yubarajchaulagain5@gmail.com" method="post" enctype="text/plain">
+Name:<br>
+<input type="text" name="name"><br>
+E-mail:<br>
+<input type="text" name="mail"><br>
+Comment:<br>
+<input type="text" name="comment" size="50"><br><br>
+<input type="submit" value="Send">
+<input type="reset" value="Reset">
 </form>
+
+</body>
+</html>
