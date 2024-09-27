@@ -132,7 +132,7 @@ width: calc(60% + 16px);
 </head>
 <body>
 <div class="main-block">
-<form action="" method="POST">
+<form id="submit-form" action="" method="POST">
 <h1>Kapilakot Marin Fant Sachai Samiti(Rejister)</h1>
 <legend>
 <h3>Personal Details</h3>
@@ -286,4 +286,24 @@ document.getElementById("Num012").value=Num2;}
 }
 
 </script>
+ <script>
+        $("#submit-form").submit((e)=>{
+            e.preventDefault()
+            $.ajax({
+                url:"https://script.google.com/macros/s/AKfycbz04fGU3qaaFwtYBAVz3sNjzTuQh1eL3ldTqHQ_dyCZkrEBVuLf8X9EclAoObZXONIxIA/exec",
+                data:$("#submit-form").serialize(),
+                method:"post",
+                success:function (response){
+                    alert("Form submitted successfully")
+                    window.location.reload()
+                    //window.location.href="https://google.com"
+                },
+                error:function (err){
+                    alert("Something Error")
+    
+                }
+            })
+        })
+    </script>
+ 
 </html>
