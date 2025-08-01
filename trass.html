@@ -1,0 +1,29 @@
+<html>
+<body>
+<br>
+<table border=0>
+<tr>
+<th>URL</th>
+<th>Campaign Name</th>
+</tr>
+<tr>
+<td>www.example.com</td>
+<td>Display Campaign</td>
+</tr>
+</table>
+</body>
+</html>
+
+<script>
+sendEmail("ma...@example.com", table);
+
+function sendEmail(email, body) {
+
+  var formattedDate = Utilities.formatDate(new Date(), "GMT+03:00", "dd-MM-yyyy 'at' hh:mm 'GMT+3'");
+    var subject = "Subject - " + formattedDate;
+    Logger.log("Sending email, subject: " + subject);
+
+
+  MailApp.sendEmail(email, subject, '', { htmlBody: body });
+}
+</Script>
