@@ -1,29 +1,19 @@
+<!DOCTYPE html>
 <html>
 <body>
-<br>
-<table border=0 Id="table">
-<tr>
-<th>URL</th>
-<th>Campaign Name</th>
-</tr>
-<tr>
-<td>yubarajchaulagain5@gmail.com</td>
-<td>Display Campaign</td>
-</tr>
-</table>
+
+<h2>Send e-mail to someone@example.com:</h2>
+
+<form action="mailto:someone@example.com" method="post" enctype="text/plain">
+Name:<br>
+<input type="text" name="name"><br>
+E-mail:<br>
+<input type="text" name="mail"><br>
+Comment:<br>
+<input type="text" name="comment" size="50"><br><br>
+<input type="submit" value="Send">
+<input type="reset" value="Reset">
+</form>
+
 </body>
 </html>
-
-<script>
-sendEmail("yubarajchaulagain5@gmail.com", table);
-
-function sendEmail(email, body) {
-
-  var formattedDate = Utilities.formatDate(new Date(), "GMT+03:00", "dd-MM-yyyy 'at' hh:mm 'GMT+3'");
-    var subject = "Subject - " + formattedDate;
-    Logger.log("Sending email, subject: " + subject);
-
-
-  MailApp.sendEmail(email, subject, '', { htmlBody: body });
-}
-</Script>
