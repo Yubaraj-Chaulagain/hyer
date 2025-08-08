@@ -66,7 +66,7 @@ button:hover {
   <body>
     <div class="container">
       <header>Text to Speech Converter</header>
-<input type="text">Name</input>
+<input type="text" id="stk">Name</input>
       <textarea placeholder="Enter text"></textarea>
       <textarea placeholder="Enter text"></textarea>
       <button>Convert to Speech</button>
@@ -74,7 +74,8 @@ button:hover {
 </body>
 
 <script>
-const textarea = document.querySelector("textarea");
+
+const input = document.querySelector("input");
 const button = document.querySelector("button");
 let isSpeaking = true;
 const textToSpeech = () => {
