@@ -80,7 +80,7 @@ const button = document.querySelector("button");
 let isSpeaking = true;
 const textToSpeech = () => {
   const synth = window.speechSynthesis;
-  const text = textarea.value;
+  const text = input.value;
   if (!synth.speaking && text) {
     const utternace = new SpeechSynthesisUtterance(text);
     synth.speak(utternace);
@@ -108,3 +108,4 @@ const textToSpeech = () => {
 };
 button.addEventListener("click", textToSpeech);
 </script>
+const textarea = document.querySelector("textarea");
