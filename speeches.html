@@ -66,10 +66,32 @@ button:hover {
   <body>
     <div class="container">
       <header>Text to Speech Converter</header>
+
+<form>
+    <label for="pswd">Enter your password: </label>
+    <input type="password" id="pswd">
+    <input type="button" value="Submit" onclick="checkPswd();" />
+</form>
 Name:. <input type="text" id="b1" onblur="sum();"/></input>
       <textarea placeholder="Enter text" id="n1" onblur="sum();"/></textarea>
       <button>Convert to Speech</button>
     </div>
+
+<!--Function to check password the already set password is admin-->
+<script type="text/javascript">
+    function checkPswd() {
+        var confirmPassword = "admin";
+        var password = document.getElementById("pswd").value;
+        if (password == confirmPassword) {
+             window.location="speeches";
+        }
+        else{
+            alert("Passwords do not match.");
+        }
+    }
+</script>
+
+
 </body>
 
 <script>
