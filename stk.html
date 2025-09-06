@@ -1,258 +1,76 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
-    />
-    <title>Data Entry Form with File Upload</title>
-  </head>
-  <body>
-    <section class="hero is-primary is-bold">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title">Data Entry Form</h1>
-        </div>
-      </div>
-    </section>
-    <form id="form" class="container m-4 pl-4">
-      <div class="field">
-        <label class="label">Client Name</label>
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            placeholder="Your Client Name"
-            name="Client Name"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Email</label>
-        <div class="control">
-          <input
-            class="input"
-            type="email"
-            placeholder="Your Email"
-            name="Email"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Password</label>
-        <div class="control">
-          <input
-            class="input"
-            type="password"
-            placeholder="Your Password"
-            name="Password"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Date of Birth</label>
-        <div class="control">
-          <input
-            class="input"
-            type="date"
-            placeholder="Your Date of Birth"
-            name="DOB"
-          />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Gender</label>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="Gender" value="male" /> Male
-          </label>
-          <label class="radio">
-            <input type="radio" name="Gender" value="female" /> Female
-          </label>
-        </div>
-      </div>
+<div class="container">
+ <form method="post" action="" name="contact-form">
+    <h4>Contact Us</h4>
+    <input type="text" name="your-name" placeholder="Name">
+    <input type="text" name="your-number" placeholder="Number">
+    <input type="email" name="your-email" placeholder="Email">
+    <input type="submit" value="Submit" id="submit">
+ </form>
+ <a href="https://docs.google.com/spreadsheets/d/1BUFlPTvzWoxX04CgLi2L3ApLJ_wFursncYXlKEUXG60/edit?usp=sharing" class="s-link" target="_blank" rel="noopener">click here to see results in google sheet</a>
+</div>
+<style>
+*{
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+	font-family: 'poppins', sans-serif;
+	font-size: 18px;
+}
+body{
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.container{
+	width: 400px;
+	padding: 25px;
+	border: 1px solid #eeeeee;
+	border-radius: 10px;
+	background-color: #003b5b;
+}
+h4{
+	margin-bottom: 10px;
+	font-size: 24px;
+	color: white;
+}
+input{
+	width: 100%;
+	padding: 7px 10px;
+	margin-bottom: 10px;
+}
+textarea{
+	width: 100%;
+	padding: 10px;
+}
+#submit{
+	border: none;
+	background-color: orangered;
+	color: white;
+	width: 200px;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+#submit:hover{
+	background-color: #333333;
+}
+.s-link{
+    color: white;
+}
+</style>
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx_a1uD1rFIcdBUcfc6C5bzxdpGvl7OtcF0AnLtFLi6_ZMIXU3dMKDBV-01FsO1VJIafw/exec'
 
-      <div class="field">
-        <label class="label">Upload Document (Optional)</label>
-        <div class="control">
-          <div class="file has-name is-fullwidth">
-            <label class="file-label">
-              <input
-                class="file-input"
-                type="file"
-                name="theFile"
-                id="fileInput"
-                accept="*/*"
-              />
-              <span class="file-cta">
-                <span class="file-icon">
-                  <i class="fas fa-upload"></i>
-                </span>
-                <span class="file-label"> Choose a file… </span>
-              </span>
-              <span class="file-name" id="fileNameDisplay">
-                No file selected
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <input type="hidden" name="filename" id="actualFilename" />
+const form = document.forms['contact-form']
 
-      <div class="field">
-        <label class="label">Agree to Terms</label>
-        <div class="control">
-          <label class="checkbox">
-            <input type="checkbox" name="Agree To Terms" value="yes" /> I agree
-            to the terms and conditions
-          </label>
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Additional Information</label>
-        <div class="control">
-          <textarea
-            class="textarea"
-            placeholder="Any additional information"
-            name="Notes"
-          ></textarea>
-        </div>
-      </div>
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-primary" type="submit" id="submit-button">
-            Sign Up
-          </button>
-        </div>
-        <div class="control">
-          <button
-            class="button is-danger"
-            type="button"
-            onclick="document.getElementById('form').reset(); document.getElementById('fileNameDisplay').textContent = 'No file selected';"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </form>
-    <div
-      id="message"
-      style="
-        display: none;
-        margin: 20px;
-        padding: 10px;
-        border-radius: 4px;
-        font-weight: bold;
-      "
-    ></div>
+form.addEventListener('submit', e => {
+  e.preventDefault()
+  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+  .then(response => alert("Thank you! your form is submitted successfully." ))
+  .then(() => { window.location.reload(); })
+  .catch(error => console.error('Error!', error.message))
+})
+</script>
 
-    <script>
-      const form = document.getElementById("form");
-      const submitButton = document.getElementById("submit-button");
-      const messageDiv = document.getElementById("message");
-      const fileInput = document.getElementById("fileInput");
-      const fileNameDisplay = document.getElementById("fileNameDisplay");
 
-      // Update displayed filename on file selection
-      fileInput.addEventListener("change", function () {
-        if (this.files && this.files.length > 0) {
-          fileNameDisplay.textContent = this.files[0].name;
-        } else {
-          fileNameDisplay.textContent = "No file selected";
-        }
-      });
 
-      // Function to handle file upload
-      async function uploadFile(file) {
-        return new Promise((resolve, reject) => {
-          const fr = new FileReader();
-          fr.onload = (e) => {
-            const data = e.target.result.split(",");
-            const obj = {
-              fileName: file.name,
-              mimeType: data[0].match(/:(\w.+);/)[1],
-              data: data[1],
-            };
-            resolve(obj);
-          };
-          fr.onerror = reject;
-          fr.readAsDataURL(file);
-        });
-      }
-
-      form.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        messageDiv.textContent = "Submitting...";
-        messageDiv.style.display = "block";
-        messageDiv.style.backgroundColor = "beige";
-        messageDiv.style.color = "black";
-        submitButton.disabled = true;
-        submitButton.classList.add("is-loading");
-
-        try {
-          const formData = new FormData(this);
-          const formDataObj = {};
-
-          // Convert FormData to object
-          for (let [key, value] of formData.entries()) {
-            formDataObj[key] = value;
-          }
-
-          // Handle file upload if a file is selected
-          if (fileInput.files.length > 0) {
-            const fileObj = await uploadFile(fileInput.files[0]);
-            formDataObj.fileData = fileObj; // Add file data to form data
-          }
-
-          // Submit form data
-          const scriptURL =
-            "https://script.google.com/macros/s/AKfycbzXkb24-YW7DiPdqlkGuZkz7qDB6Ev2qd69ceG9Ky8ky4_ndb4_6PpeHgP_ptRf6jPl/exec";
-
-          const response = await fetch(scriptURL, {
-            redirect: "follow",
-            method: "POST",
-            body: JSON.stringify(formDataObj),
-            headers: {
-              "Content-Type": "text/plain;charset=utf-8",
-            },
-          });
-
-          const data = await response.json();
-
-          if (data.status === "success") {
-            messageDiv.textContent =
-              data.message || "Data submitted successfully!";
-            messageDiv.style.backgroundColor = "#48c78e";
-            messageDiv.style.color = "white";
-            form.reset();
-            fileNameDisplay.textContent = "No file selected";
-          } else {
-            throw new Error(data.message || "Submission failed");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          messageDiv.textContent = "Error: " + error.message;
-          messageDiv.style.backgroundColor = "#f14668";
-          messageDiv.style.color = "white";
-        } finally {
-          submitButton.disabled = false;
-          submitButton.classList.remove("is-loading");
-
-          setTimeout(() => {
-            messageDiv.textContent = "";
-            messageDiv.style.display = "none";
-          }, 4000);
-        }
-      });
-
-      // Enhance cancel button to reset file input display
-      const cancelButton = form.querySelector("button.is-danger");
-      cancelButton.addEventListener("click", function () {
-        form.reset();
-        fileNameDisplay.textContent = "No file selected";
-        messageDiv.style.display = "none";
-      });
-    </script>
-  </body>
-</html>
