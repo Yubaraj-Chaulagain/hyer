@@ -141,30 +141,30 @@ width: calc(60% + 16px);
 <div>
 <div>
 <label>Rejister Type:</label> 
-<select id="Num1" required>
+<select id="Num1" name="Rejister Type" required>
 <option value=""></option>
 <option value="New User">New User</option>
 <option value="Transfar To Archived">Transfar To Archived</option>
 </select>
 </div>
-<div><label>Woner Name:</label><input type="text" name="RejName" id="Num2" required onblur="condition();"/></div>
-<div><label>Woner Phone Number:</label><input type="tel" pattern="[0-9]{10}" title="Ten digits code" name="RejPhone" required></div>
-<div><label>Woner Address:</label><input type="text" name="RejAddress" required></div>
-<div><label>Woner Gmail:</label><input type="email" name="RejGmail" required></div>
-<div><label>Agriment:</label><input type="text" name="RejAgriment" required></div>
-<div><label>Woner Photo Url:</label><input type="Url" name="RejUrl" required></div>
+<div><label>Woner Name:</label><input type="text" name="Woner Name" id="Num2" required onblur="condition();"/></div>
+<div><label>Woner Phone Number:</label><input type="tel" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number" required></div>
+<div><label>Woner Address:</label><input type="text" name="Woner Address" required></div>
+<div><label>Woner Gmail:</label><input type="email" name="Woner Gmail" required></div>
+<div><label>Agriment:</label><input type="text" name="Agriment" required></div>
+<div><label>Woner Photo Url:</label><input type="Url" name="Woner Photo Url" required></div>
 </div>
 <div>
 <div>
 <label>Gender:</label>
-<div class="gender">
-<input type="radio" value="none" name="Rejgender" required>
+<div class="gender" name="Gender">
+<input type="radio" value="none" name="Gender" required>
 <label for="male" class="radio">Male</label>
-<input type="radio" value="none" name="Rejgender" required>
+<input type="radio" value="none" name="Gender" required>
 <label for="female" class="radio">Female</label>
 </div>
 </div>
-<div class="birthdate">
+<div class="birthdate" name="Birthdate">
 <label>Birthdate:</label>
 <div class="bdate-block">
 <select class="day" required>
@@ -220,13 +220,13 @@ width: calc(60% + 16px);
 <input type="Number" name="Rejyear" required>
 </div>
 </div>
-<div><label id="Num3">Transfar From Name:</label><input type="text" name="RejtransName" id="Num4" onblur="condition();"/></div>
-<div><label>Area(Bigha):</label><input type="Number" id="Num10" name="RejArea(B)" required></div>
-<div><label>Area(Katha):</label><input type="Number" name="RejArea(K)" required ></div>
-<div><label>Area(Dhur):</label><input type="Number" name="RejArea(D)" required></div>
+<div><label id="Num3">Transfar From Name:</label><input type="text" name="Transfar From Name" id="Num4" onblur="condition();"/></div>
+<div><label>Area(Bigha):</label><input type="Number" id="Num10" name="Area(Bigha)" required></div>
+<div><label>Area(Katha):</label><input type="Number" name="Area(Katha)" required ></div>
+<div><label>Area(Dhur):</label><input type="Number" name="Area(Dhur)" required></div>
 <div>
 <label>Worker Selection:</label> 
-<select  id="num060" required>
+<select  id="num060" name="Worker Selection" required>
 <option value=""></option>
 <option value="Self">Self</option>
 <option value="other">other</option>
@@ -234,7 +234,7 @@ width: calc(60% + 16px);
 </div>
 <div>
 <label>Are You Conform?</label>
-<div class="children"><input type="checkbox" name="RejConform"  id="Num18" required></div>
+<div class="children"><input type="checkbox" name="Are You Conform?"  id="Num18" required></div>
 </div>
 </div>
 </div>
@@ -244,10 +244,10 @@ width: calc(60% + 16px);
 <h3>Worker Details</h3>
 </legend>
 <div class="Woner-details">
-<div><label>Worker Name:</label><input type="text" name="RejWorkeName" id="Num00"  onblur="conditionf();"/></div>
-<div><label>Worker Address:</label><input type="text" name="RejWorkerAddress" id="Num000" onblur="conditionf();"/></div>
-<div><label>Worker Phone Number:</label><input type="tel" name="RejWorkerPhone" id="Num0000" onblur="conditionf();"/></div>
-<div><label>Worker Gmail:</label><input type="email" name="RejWorkerGmail" id="Num00000" onblur="conditionf();"/></div>
+<div><label>Worker Name:</label><input type="text" name="Worker Name" id="Num00"  onblur="conditionf();"/></div>
+<div><label>Worker Address:</label><input type="text" name="Worker Address" id="Num000" onblur="conditionf();"/></div>
+<div><label>Worker Phone Number:</label><input type="tel" name="Worker Phone Number" id="Num0000" onblur="conditionf();"/></div>
+<div><label>Worker Gmail:</label><input type="email" name="Worker Gmail" id="Num00000" onblur="conditionf();"/></div>
 </div>
 </fieldset>
 <fieldset>
@@ -255,8 +255,8 @@ width: calc(60% + 16px);
 <h3>A Photo of Land Rich Paper</h3>
 </legend>
 <div class="terms-mailing">
-<div><label>Font Side:</label><input type="Url" name="Rejft1" required></div><br>
-<div><label>Back Side:</label><input type="Url" name="Rejft2" required></div>
+<div><label>Font Side:</label><input type="Url" name="Font Side" required></div><br>
+<div><label>Back Side:</label><input type="Url" name="Back Side" required></div>
 </fieldset>
 <button type="submit" value="Submit request" />Submit</button>
 </form>
@@ -307,5 +307,6 @@ document.getElementById("Num012").value=Num2;}
     </script>
  
 </html>
+
 
 
