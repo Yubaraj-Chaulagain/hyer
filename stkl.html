@@ -132,7 +132,7 @@ width: calc(60% + 16px);
 </style>
 <body>
 <div class="main-block">
-<form id="submit-form" action="" method:"post">
+  <form id="submit-to-google-sheet">
 <h1>Kapilakot Marin Fant Sachai Samiti(Rejister)</h1>
 <legend>
 <h3>Personal Details</h3>
@@ -258,7 +258,7 @@ width: calc(60% + 16px);
 <div><label>Font Side:</label><input type="Url" name="Font Side" required></div><br>
 <div><label>Back Side:</label><input type="Url" name="Back Side" required></div>
 </fieldset>
-<button type="submit" value="Submit request" />Submit</button>
+<button type="submit" class="btn btn-primary btn-block"> Submit</button>
 </form>
 </div> 
 </body>
@@ -286,27 +286,104 @@ document.getElementById("Num012").value=Num2;}
 }
 
 </script>
- 
- <script>
-        $("#submit-form").submit((e)=>{
-            e.preventDefault()
-            $.ajax({
-                url:"https://script.google.com/macros/s/AKfycbwZuP9BS418LF2Ji2RZ8z0Zk1_dxDqOQpW6P08R9S8wZTmfiyGGv7vWjB-rhEzWJTqdiw/exec",
-                data:$("#submit-form").serialize(),
-                method:"post",
-                success:function (response){
-                    alert("Form submitted successfully")
-                    window.location.reload()
-                    //window.location.href="https://google.com"
-                },
-                error:function (err){
-                    alert("Something Error")
-    
+
+  <script>
+        $(document).ready(function() {
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbwD8-Y8hqzlMeGINhdbyy86GJd0lz2iSTllVIdVOxsowMRKj-UfZkiBOi0m500-BEaS7Q/exec';
+
+            fetch(webAppUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('tableBody');
+                    data.forEach(row => {
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row['name']}</td>
+                            <td>${row['email']}</td>
+                            <td>${row['contact_number']}</td>
+                            <td>${row['gender']}</td>
+                            <td><a href='${row['media']}' target='_blank'>
+                                Open Link
+                            </a></td>
+                            <td>${row['message']}</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                    $('#dataTable').DataTable();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+      
+        const scriptURL =                       
+        "https://script.google.com/macros/s/AKfycbxJmF1QMV5TtPb6i2g0eMKXwJ1k_wa-1W7a5k3WJ0_cLjs3Zf4wo2zhYHDHNaYsPM7nSw/exec";
+        const form = document.forms["submit-to-google-sheet"];
+        const fileInput = document.getElementById("media");
+
+        form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                var ex = document.getElementById("ex").checked;
+                var age = document.getElementById("age").checked;
+               
+                if (age) {
+                    formData.append("age", "Yes");
+                } else {
+                    formData.append("age", "No");
                 }
-            })
-        })
+
+                if (ex) {
+                    formData.append("ex", "Yes");
+                } else {
+                    formData.append("ex", "No");
+                }
+
+                // Handle the file upload
+                const fileInput = document.getElementById("media");
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    // Size validation here, only less than 2MB allowed
+                    if (file.size > 1024 * 1024 * 2) {
+                        swal("Error", "File size should be less than 2MB.", "error");
+                        return;
+                    }
+
+                    reader.onload = async function () {
+                        formData.append("media", reader.result.split(",")[1]); // Append base64 data
+                        await submitForm(formData);
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
+                    // No file uploaded
+                    await submitForm(formData);
+                }
+                });
+
+        async function submitForm(formData) {
+            // Get the submit button and change its text to "Loading..."
+            const submitButton = document.querySelector("button[type='submit']");
+            submitButton.disabled = true;
+            submitButton.innerText = "Loading...";
+
+            // Submit the form data to the Google Sheet
+            fetch(scriptURL, { method: "POST", body: formData })
+                .then((response) => {
+                    swal("Done", "Submitted Successfully.", "success");
+                    form.reset();
+                })
+                .catch((error) => {
+                    swal("Error", "Something went wrong. Please try again!", "error");
+                })
+                .finally(() => {
+                    // Reset the submit button back to "Submit"
+                    submitButton.disabled = false;
+                    submitButton.innerText = "Submit";
+                });
+        }
+
     </script>
- 
 </html>
 
 
