@@ -47,7 +47,7 @@ input[type=submit]:hover {
   </select>
 <label>Your Comments:</label>
 <input type="text" please holder="Enter Your Comments" id="myText"></input>
-  <iframe src="https://app.air.inc/a/bkmtP3Jgh" allow="clipboard-read; clipboard-write" allowfullscreen></iframe>
+  <iframe src="https://app.air.inc/a/bkmtP3Jgh" allow="clipboard-read; clipboard-write" allowfullscreen id="vvy"></iframe>
 <button onclick="sendMail(); return false">Send</button>
   
 </form>
@@ -59,6 +59,7 @@ function sendMail() {
       + "&bcc=sahadev45912@gmail.com,"
              + encodeURIComponent(document.getElementById('gmail').value)
              + "&body=" + encodeURIComponent(document.getElementById('myText').value)
+             + encodeURIComponent(document.getElementById('vvy').value)
     ;
     
     window.location.href = link;
