@@ -35,7 +35,7 @@ input[type=submit]:hover {
 
 
 
-<form>
+<form id="myform">
     <P><b><u>Costomers Send Notifycation</u></b></P>
 <label>Costomers Gmail Address:</label>
 <input type="text" id="gmail" placeholder="Enter Costomers Gmail"></input>
@@ -290,6 +290,13 @@ input[type=submit]:hover {
 </form>
 <script>
 function sendMail() {
+
+	let x = document.forms["myform"]["myText"].value;
+  if (x == "") {
+    alert("Name must be filled out");
+    return false;
+  }
+}
     var link = "mailto:yubarajchaulagain5@gmail.com,"
              + "?subject=" + encodeURIComponent(document.getElementById('Subject').value)
              + "&cc=marinfant45912@gmail.com,"
