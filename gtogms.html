@@ -268,10 +268,14 @@ input[type=submit]:hover {
 		<option data-countryCode="ZW" value="263">Zimbabwe (+263)</option>
 	</optgroup>
 </select>
-<input type="text" pattern="(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$">
+<input
+  type="tel"
+  id="phone"
+  name="phone"
+  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+  required />
   <label>Enter Your Name:</label>
 <input type="text" please holder="Enter Your Name" id="Name"></input>
-  <
 
 
 
