@@ -1,10 +1,22 @@
-<form id="emailForm">
+   <form action="mailto:recipient@example.com?subject=Form Submission&body=Message from the form:">
         <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"  required><br>
+        <input type="text" id="name" name="name"><br>
         <label for="email">Your Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
+        <input type="email" id="email" name="email"><br>
         <label for="message">Message:</label><br>
-        <textarea id="message" name="message" required></textarea><br>
+        <textarea id="message" name="message"></textarea><br>
+        <input type="submit" value="Send Email">
+    </form>
+Populate the body with form data using JavaScript (optional). If you want to include the content of the form fields in the email body, you'll need to use JavaScript to dynamically construct the mailto URI when the form is submitted.
+Code
+
+    <form id="emailForm">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="email">Your Email:</label><br>
+        <input type="email" id="email" name="email"><br>
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message"></textarea><br>
         <input type="submit" value="Send Email">
     </form>
 
@@ -23,6 +35,6 @@
                 'Message: ' + message
             );
 
-            window.location.href = "mailto:encodeURIComponent(document.getElementById('gmail').value)?subject=${subject}&body=${body}`;
+            window.location.href = `mailto:recipient@example.com?subject=${subject}&body=${body}`;
         });
     </script>
