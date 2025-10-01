@@ -12,7 +12,7 @@
 function sendMail() {
     var link = "mailto:yubarajchaulagain5@gmail.com,"
              + "?cc=marinfant45912@gmail.com,"
-             + "nepalikranti5@gmail.com"
+             + encodeURIComponent(document.getElementById('gmail').value)
              + "&subject=" + encodeURIComponent(document.getElementById('Subject').value)
              + "&body=" + encodeURIComponent(document.getElementById('myText').value)
     ;
