@@ -38,17 +38,17 @@ input[type=submit]:hover {
 <form id="myform">
     <P><b><u>Costomers Send Notifycation</u></b></P>
 <label>Costomers Gmail Address:</label>
-<input type="text" id="gmail" placeholder="Enter Costomers Gmail"></input>
+<input type="text" id="gmail" placeholder="Enter Costomers Gmail" required></input>
 <label for="Subject">Subject</label>
-  <select id="Subject" name="Subject">
+  <select id="Subject" name="Subject" required>
     <option value="Payment Notifycation">Payment Notifycation</option>
     <option value="Request Member Tranjection">Request Member Tranjection</option>
     <option value="Request New Member Actvecation">Request New Member Actvecation</option>
   </select>
 <label>Enter Your Name:</label>
-<input type="text" please holder="Enter Your Name" id="Name"></input>
+<input type="text" please holder="Enter Your Name" id="Name" required></input>
   <label>Enter Your Phone Number:</label>
-  <select name="countryCode" id="Con.c">
+  <select name="countryCode" id="Con.c" required>
 	<option data-countryCode="GB" value="44" Selected>UK (+44)</option>
 	<option data-countryCode="US" value="1">USA (+1)</option>
 	<optgroup label="Other countries">
@@ -271,18 +271,18 @@ input[type=submit]:hover {
 <input
   type="text"
   id="phone"
-  name="phone">
+  name="phone" required>
   <label>Enter Your Name:</label>
-<input type="text" please holder="Enter Your Name" id="Name"></input>
+<input type="text" please holder="Enter Your Name" id="Name" required></input>
 
 
 
 
   
 <label>Your Comments:</label>
-<input type="text" please holder="Enter Your Comments" id="myText"></input>
+<input type="text" please holder="Enter Your Comments" id="myText" required></input>
   <label for="imageUpload">Upload an Image:</label>
-  <input type="file" id="imageUpload" name="imageFile" accept="image/*">
+  <input type="file" id="imageUpload" name="imageFile" accept="image/*" required>
 <button onclick="sendMail(); return true">Send</button>
   
 </form>
