@@ -288,13 +288,6 @@ input[type=submit]:hover {
 </form>
 <script>
 function sendMail() {
-
-	let x = document.forms["myform"]["myText"].value;
-  if (x == "") {
-    alert("Name must be filled out");
-    return false;
-  }
-}
     var link = "mailto:yubarajchaulagain5@gmail.com,"
              + "?subject=" + encodeURIComponent(document.getElementById('Subject').value)
              + "&cc=marinfant45912@gmail.com,"
