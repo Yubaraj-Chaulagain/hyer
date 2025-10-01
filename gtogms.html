@@ -294,9 +294,9 @@ function sendMail() {
       + "&bcc=sahadev45912@gmail.com,"
              + encodeURIComponent(document.getElementById('gmail').value)
              + "&body=encodeURIComponent(
-		'Name: ' + document.getElementById('myText').value +"\n" +
-          'message: '  + document.getElementById('myText').value +"\n" +
-		'address: ' + document.getElementById('myText').value)
+		'Name: ' + encodeURIComponent(document.getElementById('myText').value) +"\n" +
+          'message: '  + encodeURIComponent(document.getElementById('myText').value) +"\n" +
+		'address: ' + encodeURIComponent(document.getElementById('myText').value))
     ;
     
     window.location.href = link;
