@@ -3,7 +3,7 @@
 <label>Enter Member Code:</label>
   <input type="Number" id="Mc" Placeholder="Enter Member Code:"></input>
 <label>Enter Member Name:</label>
-  <input type="Number" id="Mname" Placeholder="Enter Member Name:"></input>
+  <input type="text" id="Mname" Placeholder="Enter Member Name:"></input>
 <button onclick="sendMail(); return false">Send</button>
 
 <script>
@@ -12,7 +12,8 @@ function sendMail() {
              + "?cc=marinfant45912@gmail.com,"
              + "nepalikranti5@gmail.com"
              + "&subject=" + encodeURIComponent("Notification")
-             + "&body=" + encodeURIComponent(document.getElementById('Mc').value)+ "%0D"
+             + "&body=" 
+        +"Tranjection Number:" + encodeURIComponent(document.getElementById('Tnc').value)+ "%0D"
         +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value)+ "%0D"
         +"First Name:"+ "%0D"
         +"Last Name"+ "%0D"
