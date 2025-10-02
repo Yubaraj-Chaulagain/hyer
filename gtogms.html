@@ -102,14 +102,10 @@
 </html>
 
 <script>
-function sendMail() {
-    var link = "mailto:me@example.com"
-             + "?cc=myCCaddress@example.com"
-             + "&subject=" + encodeURIComponent("This is my subject")
-             + "&body=" + encodeURIComponent(document.getElementById('first').value)
-    ;
-    
-    window.location.href = link;
+function submitForm(){
+    var fname = document.getElementsByName("first")[0].value;
+    var lname = document.getElementsByName("last")[0].value;
+    window.open("mailto:someone@example.com?subject=Test%20Email&body=First%20Name:%20"+fname+"%20Last%20Name:"+lname);
 }
 </script>
 
