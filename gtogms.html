@@ -287,15 +287,16 @@ input[type=submit]:hover {
   
 </form>
 <script>
-	function sendMail() {
-    var link = "mailto:yubarajchaulagain5@gmail.com,"
-             + "?subject=" + encodeURIComponent(document.getElementById('Subject').value)
-             + "&cc=marinfant45912@gmail.com,"
-      + "&bcc=sahadev45912@gmail.com,"
-             + encodeURIComponent(document.getElementById('gmail').value)
+function sendMail() {
+    var link = "mailto:me@example.com"
+             + "?cc=myCCaddress@example.com"
+             + "&subject=" + encodeURIComponent("This is my subject")
              + "&body=" + encodeURIComponent(document.getElementById('myText').value)
     ;
     
     window.location.href = link;
 }
 </script>
+
+
+	
