@@ -1,5 +1,5 @@
-<textarea id="myText">
-    member Code:
+<label>Enter Member Code:</label>
+  <input type="Number" Id="Mc" Placeholder="Enter Member Code:"></input>
 </textarea>
 <button onclick="sendMail(); return false">Send</button>
 
@@ -10,12 +10,13 @@ function sendMail() {
              + "nepalikranti5@gmail.com"
              + "&subject=" + encodeURIComponent("Notification")
              + "&body=" + encodeURIComponent(document.getElementById('myText').value)
-        +"First Name:"+"%0D%0A"
-        +"Last Name"+"%0D%0A"
-        +"Date Of Birth:"+"%0D%0A"
-        +"Address:"+"%0D%0A"
-        +"Country:"+"%0D%0A"
-        +"Mobile Number:"+"%0D%0A"
+        +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value)                + "%0D"
+        +"First Name:"+                  "%0D"
+        +"Last Name"+                    "%0D"
+        +"Date Of Birth:"+               "%0D"
+        +"Address:"+                     "%0D"
+        +"Country:"+                     "%0D"
+        +"Mobile Number:"+               "%0D"
         +"married status:"
     ;
     
