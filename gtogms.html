@@ -286,7 +286,8 @@ input[type=submit]:hover {
 <button onclick="sendMail(); return true">Send</button>
   
 </form>
-var link = "mailto:yubarajchaulagain5@gmail.com,"
+<script>
+    var link = "mailto:yubarajchaulagain5@gmail.com,"
              + "?subject=" + encodeURIComponent(document.getElementById('Subject').value)
              + "&cc=marinfant45912@gmail.com,"
       + "&bcc=sahadev45912@gmail.com,"
@@ -297,3 +298,4 @@ var link = "mailto:yubarajchaulagain5@gmail.com,"
     
     window.location.href = link;
 }
+</script>
