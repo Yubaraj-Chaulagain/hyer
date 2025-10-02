@@ -6,137 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML Registration Form</title>
     <style>
-/* Universal and body styles */
-:root {
-    --primary-color: #04AA6D;
-    --secondary-color: #f2f2f2;
-    --border-color: #ccc;
-    --text-color: #333;
-    --white: #fff;
-    --radius: 4px;
-}
-
 body {
     font-family: Arial, sans-serif;
-    background-color: #f1f1f1;
+    background-color: #f4f4f4;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    padding: 15px;
 }
 
-/* Form container */
 .form-container {
-    background-color: var(--white);
-    padding: 30px;
-    border-radius: 5px;
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
-    max-width: 500px;
-    width: 80%;
-    box-sizing: border-box;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px; /* Max width for desktop */
+    box-sizing: border-box; /* Include padding in width */
 }
 
-/* Headings */
 h2 {
-    color: var(--text-color);
-    margin-top: 0;
-}
-
-p {
-    color: #666;
+    text-align: center;
+    color: #333;
     margin-bottom: 20px;
 }
 
-/* Form row for desktop layout */
-.form-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-/* Form groups and labels */
 .form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 15px;
 }
 
-.form-group label {
-    font-weight: bold;
+label {
+    display: block;
     margin-bottom: 5px;
-    color: var(--text-color);
+    color: #555;
 }
 
-.form-group.full-width {
-    flex: none; /* Override flex for elements that should span the full width */
-}
-
-/* Input fields, select, and textarea */
 input[type="text"],
 input[type="email"],
-input[type="tel"],
-select,
 textarea {
-    width: 80%;
-    padding: 9px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
-    font-size: 20px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
 }
 
 textarea {
-    resize: vertical;
+    resize: vertical; /* Allow vertical resizing */
 }
 
-/* Submit button */
-.submit-btn {
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 9px 15px;
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
     border: none;
-    border-radius: var(--radius);
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 20px;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
-    width: 80%; /* Full width on both mobile and desktop */
-    margin-top: 15px;
+    font-size: 16px;
+    width: 100%;
 }
 
-.submit-btn:hover {
-    background-color: #038a59;
+button:hover {
+    background-color: #0056b3;
 }
 
-/* Desktop-specific styles (for screens wider than 600px) */
-@media screen and (min-width: 550px) {
+/* Responsive Adjustments for Mobile (e.g., Android) */
+@media (max-width: 600px) {
     .form-container {
-        padding: 45px;
-    }
-}
-
-/* Mobile-specific styles (for screens 600px and smaller) */
-@media screen and (max-width: 550px) {
-    body {
-        background-color: var(--white);
-    }
-    
-    .form-container {
+        margin: 20px; /* Add some margin on smaller screens */
         padding: 15px;
-        box-shadow: none;
-        border-radius: 0;
     }
 
-    /* Stack form fields vertically on mobile */
-    .form-row {
-        flex-direction: column;
-        gap: 0;
+    h2 {
+        font-size: 22px;
     }
 
-    .form-group {
-        margin-bottom: 10px;
+    label,
+    input,
+    textarea,
+    button {
+        font-size: 14px;
     }
 }
 
