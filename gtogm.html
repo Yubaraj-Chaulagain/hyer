@@ -1,3 +1,5 @@
+<label>Enter Your Tranjection Number:</label>
+  <input type="Number" id="Tnc" Placeholder="Enter Your Tranjection Number:"></input>
 <label>Enter Member Code:</label>
   <input type="Number" id="Mc" Placeholder="Enter Member Code:"></input>
 <label>Enter Member Name:</label>
@@ -11,7 +13,7 @@ function sendMail() {
              + "nepalikranti5@gmail.com"
              + "&subject=" + encodeURIComponent("Notification")
              + "&body=" + encodeURIComponent(document.getElementById('Mc').value)
-        +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value)
+        +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value)+ "%0D"
         +"First Name:"+ "%0D"
         +"Last Name"+ "%0D"
         +"Date Of Birth:"+ "%0D"
