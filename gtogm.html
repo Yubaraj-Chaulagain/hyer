@@ -60,6 +60,8 @@
         }
     </style>
 </head>
+    <body>
+        <form>
 <label for="mtype">Rejister Type:</label></br>
 <select name="Rejister Type:" id="ry">                                                                                                                                                                                                                                                                        ">
   <option value=""></option>
@@ -96,7 +98,8 @@
 <label>Font Side:</label></br><input type="Url" name="Font Side" required></br>
 <label>Back Side:</label></br><input type="Url" name="Back Side" required></br>
 <button onclick="sendMail(); return false">Send</button>
-
+    </form>
+</body>
 <script>
 function sendMail() {
     var link = "mailto:yubarajchaulagain5@gmail.com,"
@@ -118,3 +121,10 @@ function sendMail() {
     window.location.href = link;
 }
 </script>
+
+
+
+</html>
+
+
+    
