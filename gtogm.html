@@ -1,5 +1,5 @@
 <label>Enter Member Code:</label>
-  <input type="Number" Id="Mc" Placeholder="Enter Member Code:"></input>
+  <input type="Number" id="Mc" Placeholder="Enter Member Code:"></input>
 <button onclick="sendMail(); return false">Send</button>
 
 <script>
@@ -9,13 +9,13 @@ function sendMail() {
              + "nepalikranti5@gmail.com"
              + "&subject=" + encodeURIComponent("Notification")
              + "&body=" + encodeURIComponent(document.getElementById('myText').value)
-        +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value)                + "%0D"
-        +"First Name:"+                  "%0D"
-        +"Last Name"+                    "%0D"
-        +"Date Of Birth:"+               "%0D"
-        +"Address:"+                     "%0D"
-        +"Country:"+                     "%0D"
-        +"Mobile Number:"+               "%0D"
+        +"Member Code:" + encodeURIComponent(document.getElementById('Mc').value) + "%0D"
+        +"First Name:"+ "%0D"
+        +"Last Name"+ "%0D"
+        +"Date Of Birth:"+ "%0D"
+        +"Address:"+ "%0D"
+        +"Country:"+ "%0D"
+        +"Mobile Number:"+ "%0D"
         +"married status:"
     ;
     
