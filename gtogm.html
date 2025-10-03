@@ -138,9 +138,10 @@ button:hover {
 <script>
 function sendMail() {
     var link = "mailto:yubarajchaulagain5@gmail.com,"
-             + "?subject=" + encodeURIComponent("Notification")
+             + "?subject=" + encodeURIComponent(document.getElementById('k1').value) + encodeURIComponent("Notification")
              + "&cc=marinfant45912@gmail.com,"
-        + "&bcc=" + encodeURIComponent(document.getElementById('k5').value)
+             + "&bcc=" + encodeURIComponent(document.getElementById('k5').value)
+             + encodeURIComponent(document.getElementById('k5').value)
              + ", nepalikranti5@gmail.com"
              + "&body="
         + "Register Type:" + encodeURIComponent(document.getElementById('k1').value)+ "%0D"
