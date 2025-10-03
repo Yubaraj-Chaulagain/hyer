@@ -130,8 +130,8 @@ button:hover {
 <label>Worker Address:</label></br><input type="text" name="Worker Address" id="k17" ></br>
 <label>Worker Phone Number:</label></br><input type="tel" name="Worker Phone Number" id="k18" ></br>
 <label>Worker Gmail:</label></br><input type="email" name="Worker Gmail" id="k19"></br>
-<label>Font Side:</label></br><input type="Url" name="Font Side" id="k20" required></br>
-<label>Back Side:</label></br><input type="Url" name="Back Side" id="k21"  required></br>
+<label>Wonner Citizenship Photo Link:</label></br><input type="Url" name="Font Side" id="k20" required></br>
+<label>Wonner Lalpurja Photo Link:</label></br><input type="Url" name="Back Side" id="k21"  required></br>
 <button onclick="sendMail(); return false">Send</button>
     </form>
 </body>
@@ -140,27 +140,30 @@ function sendMail() {
     var link = "mailto:yubarajchaulagain5@gmail.com,"
              + "?subject=" + encodeURIComponent("Notification")
              + "&cc=marinfant45912@gmail.com,"
-        + "&bcc=" + encodeURIComponent(document.getElementById('k1').value)
+        + "&bcc=" + encodeURIComponent(document.getElementById('k5').value)
              + ", nepalikranti5@gmail.com"
              + "&body="
         + "Register Type:" + encodeURIComponent(document.getElementById('k1').value)+ "%0D"
         + "Wonner Name:" + encodeURIComponent(document.getElementById('k2').value)+ "%0D"
         + "Wonner Mobile N.:" + encodeURIComponent(document.getElementById('k3').value)+ "%0D"
         + "Wonner Address:" + encodeURIComponent(document.getElementById('k4').value)+ "%0D"
-+ "Wonner Gmail:" + encodeURIComponent(document.getElementById('k5').value)+ "%0D"
+        + "Wonner Gmail:" + encodeURIComponent(document.getElementById('k5').value)+ "%0D"
         + "Agriment:" + encodeURIComponent(document.getElementById('k6').value)+ "%0D"
         + "Wonner Photo Url:" + encodeURIComponent(document.getElementById('k7').value)+ "%0D"
         + "Gender:" + encodeURIComponent(document.getElementById('k8').value)+ "%0D"
         + "Birthdate:" + encodeURIComponent(document.getElementById('k9').value)+ "%0D"
         + "Transfar From Name:" + encodeURIComponent(document.getElementById('k10').value)+ "%0D"
-         + "Area(Bigha):" + encodeURIComponent(document.getElementById('k11').value)+ "%0D"
+        + "Area(Bigha):" + encodeURIComponent(document.getElementById('k11').value)+ "%0D"
         + "Area(Katha):" + encodeURIComponent(document.getElementById('k12').value)+ "%0D"
         + "Area(dhur):" + encodeURIComponent(document.getElementById('k13').value)+ "%0D"
         + "Worker Selection:" + encodeURIComponent(document.getElementById('k14').value)+ "%0D"
-       
-       
-
-        
+        + "Your Conformation:" + encodeURIComponent(document.getElementById('k15').value)+ "%0D"
+        + "Worker Name:" + encodeURIComponent(document.getElementById('k16').value)+ "%0D"
+        + "Worker Address:" + encodeURIComponent(document.getElementById('k17').value)+ "%0D"
+        + "Worker Phone Number:" + encodeURIComponent(document.getElementById('k18').value)+ "%0D"
+        + "Worker Gmail:" + encodeURIComponent(document.getElementById('k19').value)+ "%0D"
+        + "Wonner Citizenship Photo url:" + encodeURIComponent(document.getElementById('k20').value)+ "%0D"
+        + "Wonner Lalpurja Photo url:" + encodeURIComponent(document.getElementById('k21').value)+ "%0D"      
     ;
     
     window.location.href = link;
