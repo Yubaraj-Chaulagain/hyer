@@ -190,19 +190,14 @@ function sendMail() {
 function sendToWhatsApp() {
         var name = document.getElementById("name").value;
         var message = document.getElementById("message").value;
+        var cname = document.getElementById("name").value;
+        var cmessage = document.getElementById("message").value;
 
-        // Construct the message with form data
-        var fullMessage = "Name: " + name + "\nMessage: " + message;
-
-        // URL-encode the message
+        var fullMessage = "Name: " + name + "\nMessage: " + message + "cName:" + cname + "\ncMessage: " + cmessage
         var encodedMessage = encodeURIComponent(fullMessage);
-
-        // Construct the WhatsApp link (for a specific number or general sharing)
-        // If targeting a specific group, you would need the group's shareable link or a method to open WhatsApp and then select the group.
-        // For general sharing, you can omit the number and WhatsApp will prompt the user to select a contact/group.
+    
         var whatsappUrl = "https://wa.me/?text=" + encodedMessage; 
-
-        // Open the WhatsApp link
+    
         window.open(whatsappUrl, '_blank');
     }
 
