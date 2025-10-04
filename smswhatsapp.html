@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Contact Form</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        form { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #25D366; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #1DA851; }
+    </style>
+</head>
+<body>
+
+    <form id="whatsappForm">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required>
+
+        <label for="body">Message Body:</label>
+        <textarea id="body" name="body" rows="5" required></textarea>
+
+        <button type="submit">Send to WhatsApp</button>
+    </form>
+
+    <script>
+        document.getElementById('whatsappForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const whatsappNumber = "YOUR_WHATSAPP_NUMBER"; // Replace with your WhatsApp number in international format (e.g., 1234567890)
+            const subject = document.getElementById('subject').value;
+            const body = document.getElementById('body').value;
+
+            // Construct the WhatsApp message
+            const message = `*Subject:* ${subject}\n\n*Message:* ${body}`;
+
+            // URL-encode the message
+            const encodedMessage = encodeURIComponent(message);
+
+            // Create the WhatsApp link
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+            // Open WhatsApp in a new tab/window
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
+
+</body>
+</html>
