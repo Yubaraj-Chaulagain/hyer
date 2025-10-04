@@ -1,12 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Registration Gmail Verifycation Form</title>
+    
+<style media="all">
+.mobile-display{display:none}
+.desktop-display{display:block}
+@media (max-width:800px){
+. desktop-display {display:none}
+. mobile-display {display:block}
+}
 
-<form id="myForm">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <label for="message">Message:</label><br>
-        <textarea id="message" name="message"></textarea><br><br>
-        <button type="button" onclick="sendToWhatsApp()">Send to WhatsApp</button>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: left;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px; /* Max width for desktop */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resizing */
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 80%;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Adjustments for Mobile (e.g., Android) */
+@media (max-width: 600px) {
+    .form-container {
+        margin: 20px; /* Add some margin on smaller screens */
+        padding: 15px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    label,
+    input,
+    textarea,
+    button {
+        font-size: 14px;
+    }
+}
+
+    </style>
+</head>
+    <body>
+        <form>
+            <p><a href="Home"><b>Back</b></a></p>
+            <h1>Form To Gmail Sender</h1>
+<label>Rejister Type:</label>
+<select name="Rejister Type:" id="k1">                                                                                                                                                                                                                                                                        ">
+  <option value=""></option>
+  <option value="New User">New User</option>
+  <option value="Transfar To Archived">Transfar To Archived</option>
+</select></br>
+<label>Woner Name:</label></br><input type="text" name="Woner Name" id="k2" required>
+<label>Woner Phone Number:</label><input type="tel" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number" id="k3" required></br>
+<label>Woner Address:</label><input type="text" name="Woner Address" id="k4" required></br>
+<label>Woner Gmail:</label></br><input type="email" name="Woner Gmail" id="k5" required></br>
+<label>Agriment:</label></br><input type="text" name="Agriment" id="k6" required></br>
+<label>Woner Photo Url:</label></br><input type="Url" name="Woner Photo Url" id="k7" required></br>
+<label for="gender">Gender Type:</label></br>
+<select name="jender Type:" id="k8" required><option value="ंMale">Male</option> <option value="Female">Female</option>                                                                                                                                                                                                                                                                                                                                                                  Transfar To Archived</option>
+</select></br>
+<label>Birthdate:</label></br>
+<input type="date"  name="birthdate" id="k9" required></br>
+<label id="Num3">Transfar From Name:</label></br><input type="text" name="Transfar From Name"  id="k10" required></br>
+<label>Area(Bigha):</label></br><input type="Number" id="k11" name="Area(Bigha)" required></br>
+<label>Area(Katha):</label></br><input type="Number" name="Area(Katha)"  id="k12" required ></br>
+<label>Area(Dhur):</label></br><input type="Number" name="Area(Dhur)"  id="k13" required></br>
+<label>Worker Selection:</label> </br>
+<select  name="Worker Selection"  id="k14" required>
+<option value=""></option>
+<option value="Self">Self</option>
+<option value="other">other</option>
+</select></br>
+<label>Are You Conform?</label></br>
+<input type="checkbox" name="Are You Conform?"  id="k15" required></br>
+<label>Worker Name:</label></br><input type="text" name="Worker Name" id="k16" ></br>
+<label>Worker Address:</label></br><input type="text" name="Worker Address" id="k17" ></br>
+<label>Worker Phone Number:</label></br><input type="tel" name="Worker Phone Number" id="k18" ></br>
+<label>Worker Gmail:</label></br><input type="email" name="Worker Gmail" id="k19"></br>
+<label>Wonner Citizenship Photo Link:</label></br><input type="Url" name="Font Side" id="k20" required></br>
+<label>Wonner Lalpurja Photo Link:</label></br><input type="Url" name="Back Side" id="k21"  required></br>
+<button onclick="sendMail(); return false">Send</button>
     </form>
+</body>
+<script>
+
+var whatsappUrl = "https://wa.me/+971545699105?text=" + encodedMessage; 
+
+        
+function sendMail() {
+    var link = "mailto:yubarajchaulagain5@gmail.com,"
+             + "?subject=" + encodeURIComponent(document.getElementById('k1').value)+ encodeURIComponent(" Register processing ")+ encodeURIComponent("Notification")
+             + "&cc=marinfant45912@gmail.com,"
+             + "&bcc=" + encodeURIComponent(document.getElementById('k5').value) +","
+             + encodeURIComponent(document.getElementById('k19').value)
+             + ", nepalikranti5@gmail.com"
+             + "&body="
+        + "Register Type:" + encodeURIComponent(document.getElementById('k1').value)+ "%0D"
+        + "Wonner Name:" + encodeURIComponent(document.getElementById('k2').value)+ "%0D"
+        + "Wonner Mobile N.:" + encodeURIComponent(document.getElementById('k3').value)+ "%0D"
+        + "Wonner Address:" + encodeURIComponent(document.getElementById('k4').value)+ "%0D"
+        + "Wonner Gmail:" + encodeURIComponent(document.getElementById('k5').value)+ "%0D"
+        + "Agriment:" + encodeURIComponent(document.getElementById('k6').value)+ "%0D"
+        + "Wonner Photo Url:" + encodeURIComponent(document.getElementById('k7').value)+ "%0D"
+        + "Gender:" + encodeURIComponent(document.getElementById('k8').value)+ "%0D"
+        + "Birthdate:" + encodeURIComponent(document.getElementById('k9').value)+ "%0D"
+        + "Transfar From Name:" + encodeURIComponent(document.getElementById('k10').value)+ "%0D"
+        + "Area(Bigha):" + encodeURIComponent(document.getElementById('k11').value)+ "%0D"
+        + "Area(Katha):" + encodeURIComponent(document.getElementById('k12').value)+ "%0D"
+        + "Area(dhur):" + encodeURIComponent(document.getElementById('k13').value)+ "%0D"
+        + "Worker Selection:" + encodeURIComponent(document.getElementById('k14').value)+ "%0D"
+        + "Your Conformation:" + encodeURIComponent(document.getElementById('k15').value)+ "%0D"
+        + "Worker Name:" + encodeURIComponent(document.getElementById('k16').value)+ "%0D"
+        + "Worker Address:" + encodeURIComponent(document.getElementById('k17').value)+ "%0D"
+        + "Worker Phone Number:" + encodeURIComponent(document.getElementById('k18').value)+ "%0D"
+        + "Worker Gmail:" + encodeURIComponent(document.getElementById('k19').value)+ "%0D"
+        + "Wonner Citizenship Photo url:" + encodeURIComponent(document.getElementById('k20').value)+ "%0D"
+        + "Wonner Lalpurja Photo url:" + encodeURIComponent(document.getElementById('k21').value)+ "%0D"      
+    ;
+    
+    window.location.href = link;
+}
+</script>
+
+
+
+</html>
+
+
+    
+
 
 <script>
 function sendToWhatsApp() {
