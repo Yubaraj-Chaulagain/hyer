@@ -31,7 +31,7 @@
 
             const whatsappNumber = "+971545699105"; // Replace with your WhatsApp number in international format (e.g., 1234567890)
             const subject = document.getElementById('subject').value;
-            const body = document.getElementById('body').value;
+            const body = document.getElementById('body').value + document.getElementById('body').value + document.getElementById('body').value 
 
             // Construct the WhatsApp message
             const message = `*Subject:* ${subject}\n\n*Message:* ${body}`;
@@ -40,7 +40,7 @@
             const encodedMessage = encodeURIComponent(message);
 
             // Create the WhatsApp link
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=$encodeur`*Subject:* $ encodeURIComponent(document.getElementById('subject').value);\n\n*Message:* $encodeURIComponent(document.getElementById('body').value)`;
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
             // Open WhatsApp in a new tab/window
             window.open(whatsappUrl, '_blank');
