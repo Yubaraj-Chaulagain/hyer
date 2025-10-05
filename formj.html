@@ -1,0 +1,37 @@
+      <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Data Entry Form</title>
+          <script>
+            function submitForm(event) {
+              event.preventDefault(); // Prevent default form submission
+              const form = event.target;
+              const formData = new FormData(form);
+              const url = "https://script.google.com/macros/s/AKfycbwaepK1gdd27oPC9liHahNwvFkzWrteRjmvZogwqikrm8zp3S_Qgdz3J6baq_gPHKno/exec"; // Replace with your deployed Apps Script URL
+
+              fetch(url, {
+                method: "POST",
+                body: formData
+              })
+              .then(response => response.text())
+              .then(data => {
+                alert("Data submitted successfully!");
+                form.reset(); // Clear the form
+              })
+              .catch(error => {
+                console.error("Error:", error);
+                alert("Error submitting data.");
+              });
+            }
+          </script>
+        </head>
+        <body>
+          <form onsubmit="submitForm(event)">
+            <label for="name">Name:</label><br>
+            <input type="text" id="name" name="Name"><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="Email"><br>
+            <input type="submit" value="Submit">
+          </form>
+        </body>
+        </html>
