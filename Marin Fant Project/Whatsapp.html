@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Contact Form</title>
-    <link
+     <link
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
@@ -19,11 +19,13 @@
       }
     </style>
 </head>
-<body class="bg-light">
+   <body class="bg-light">
     <div class="container">
       <div class="form-container">
-    <form id="whatsappForm">
-        <div class="form-group">
+        <form id="whatsappForm" onsubmit="submitForm(event)">
+            <p><a href="Home"><b>Back</b></a></p>
+            <h1>Form To Gmail Sender</h1>
+<div class="form-group">
             <label for="loc">Rejister Type:</label>
             <select class="form-control" name="Rejister Type:" id="k1" required>
               <option value="" disabled selected hidden>Choose...</option>
@@ -33,16 +35,16 @@
             </select>
           </div>
         <div class="form-group mt-2">
-<label>Woner Name:</label><input type="text" class="form-control" name="Woner Name" id="k2" required>
-<label>Woner Phone Number:</label><input type="tel" class="form-control" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number" id="k3" required>
-<label>Woner Address:</label><input type="text" class="form-control" name="Woner Address" id="k4" required>
-<label>Woner Gmail:</label><input type="email" class="form-control" name="Woner Gmail" id="k5" required>
-<label>Agriment:</label><input type="text" class="form-control" name="Agriment" id="k6" required>
-<label>Woner Photo Url:</label><input type="Url" class="form-control" name="Woner Photo Url" id="k7" required>
+<label>Woner Name:</label><input type="text" class="form-control" name="Wonner Name:" id="k2" required>
+<label>Woner Phone Number:</label><input type="tel" class="form-control" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number:" id="k3" required>
+<label>Woner Address:</label><input type="text" class="form-control" name="Wonner Address:" id="k4" required>
+<label>Woner Gmail:</label><input type="email" class="form-control" name="Wonner Gmail:" id="k5" required>
+<label>Agriment:</label><input type="text" class="form-control" name="Agriment:" id="k6" required>
+<label>Woner Photo Url:</label><input type="Url" class="form-control" name="Wonner Photo Url:" id="k7" required>
         </div>
        <div class="form-group">
             <label for="loc">Gender:</label>
-            <select class="form-control" name="gender" id="k8" required>
+            <select class="form-control" name="Gender:" id="k8" required>
               <option value="" disabled selected hidden>Choose...</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -50,15 +52,15 @@
           </div>
 <div class="form-group mt-2">
 <label>Birthdate:</label>
-<input type="date" class="form-control" name="birthdate" id="k9" required>
-<label id="Num3">Transfar From Name:</label><input type="text" class="form-control" name="Transfar From Name"  id="k10" required>
-<label>Area(Bigha):</label><input type="Number" id="k11" class="form-control" name="Area(Bigha)" required>
-<label>Area(Katha):</label><input type="Number" class="form-control" name="Area(Katha)"  id="k12" required >
-<label>Area(Dhur):</label><input type="Number" class="form-control" name="Area(Dhur)"  id="k13" required>
+<input type="date" class="form-control" name="Birthdate:" id="k9" required>
+<label id="Num3">Transfar From Name:</label><input type="text" class="form-control" name="Transfar From Name:"  id="k10" required>
+<label>Area(Bigha):</label><input type="Number" id="k11" class="form-control" name="Area(Bigha):" required>
+<label>Area(Katha):</label><input type="Number" class="form-control" name="Area(Katha):"  id="k12" required >
+<label>Area(Dhur):</label><input type="Number" class="form-control" name="Area(dhur):"  id="k13" required>
     </div>
 <div class="form-group">
             <label for="loc">Worker Selecion:</label>
-            <select class="form-control" name="Worker Selecion:" id="k14" required>
+            <select class="form-control" name="Worker Selection:" id="k14" required>
               <option value="" disabled selected hidden>Choose...</option>
               <option value="Self">Self</option>
               <option value="Other">Other</option>
@@ -66,16 +68,17 @@
           </div>
 <div class="form-group form-check">
 <label class="form-check-label">Are You Conform?</label>
-<input type="checkbox" class="form-check-input" name="Are You Conform?"  id="k15" required>
+<input type="checkbox" class="form-check-input" name="Your Conformation:"  id="k15" required>
 </div>
 <div class="form-group mt-2">
-<label>Worker Name:</label><input type="text" class="form-control" name="Worker Name" id="k16" required >
-<label>Worker Address:</label><input type="text" class="form-control" name="Worker Address" id="k17" required >
-<label>Worker Phone Number:</label><input type="tel" class="form-control" name="Worker Phone Number" id="k18" required>
-<label>Worker Gmail:</label><input type="email" class="form-control" name="Worker Gmail" id="k19"required>
-<label>Wonner Citizenship Photo Link:</label><input type="Url" class="form-control" name="Font Side" id="k20" required>
-<label>Wonner Lalpurja Photo Link:</label><input type="Url" class="form-control" name="Back Side" id="k21"  required>
-<label>Registeration Charge:</label><input type="Number" class="form-control" name="Rcharge" id="k22"  required>
+<label>Worker Name:</label><input type="text" class="form-control" name="Worker Name:" id="k16" required >
+<label>Worker Address:</label><input type="text" class="form-control" name="Worker Address:" id="k17" required >
+<label>Worker Phone Number:</label><input type="tel" class="form-control" name="Worker Phone Number:" id="k18" required>
+<label>Worker Gmail:</label><input type="email" class="form-control" name="Worker Gmail:" id="k19"required>
+<label>Wonner Citizenship Photo Link:</label><input type="Url" class="form-control" name="Wonner Citizenship Photo url:" id="k20" required>
+<label>Wonner Lalpurja Photo Link:</label><input type="Url" class="form-control" name="Wonner Lalpurja Photo url:" id="k21"  required>
+<label>Registeration Charge:</label><input type="Number" class="form-control" name="Registeration Charge:" id="k22"  required>
+<label>Registeration Code:</label><input type="text" class="form-control" name="Registeration Code:" id="k23"  required>
 </div>
 <button type="submit">Send to WhatsApp</button>
     </form>
