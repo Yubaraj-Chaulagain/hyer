@@ -24,7 +24,7 @@
    <body class="bg-light">
     <div class="container">
       <div class="form-container">
-        <form method="post" action="https://script.google.com/macros/s/AKfycbwaHJyFS5PUPaMOOJomqF-oZVoa3sfBMZmM0z3i43HuJaCFge80AEylnwClL0-2CsC8/exec">
+        <form onsubmit="submitForm(event)">
             <p><a href="Home"><b>Back</b></a></p>
             <h1>Form To Gmail Sender</h1>
 <div class="form-group">
@@ -189,6 +189,28 @@ function sendMail() {
             window.open(whatsappUrl, '_blank');
         });
     </script>
+    <script>
+            function submitForm(event) {
+              event.preventDefault(); // Prevent default form submission
+              const form = event.target;
+              const formData = new FormData(form);
+              const url = "https://script.google.com/macros/s/AKfycbwaepK1gdd27oPC9liHahNwvFkzWrteRjmvZogwqikrm8zp3S_Qgdz3J6baq_gPHKno/exec"; // Replace with your deployed Apps Script URL
+
+              fetch(url, {
+                method: "POST",
+                body: formData
+              })
+              .then(response => response.text())
+              .then(data => {
+                alert("Data submitted successfully!");
+                form.reset(); // Clear the form
+              })
+              .catch(error => {
+                console.error("Error:", error);
+                alert("Error submitting data.");
+              });
+            }
+          </script>
 
 
 </html>
