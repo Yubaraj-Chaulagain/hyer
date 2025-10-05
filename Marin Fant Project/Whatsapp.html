@@ -9,7 +9,7 @@
         form { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input[type="text"], textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #25D366; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button { background-color: #25D366; color: white; padding: 8px 13px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
         button:hover { background-color: #1DA851; }
     </style>
 </head>
@@ -51,6 +51,7 @@
 <label>Worker Gmail:</label></br><input type="email" name="Worker Gmail" id="k19"></br>
 <label>Wonner Citizenship Photo Link:</label></br><input type="Url" name="Font Side" id="k20" required></br>
 <label>Wonner Lalpurja Photo Link:</label></br><input type="Url" name="Back Side" id="k21"  required></br>
+<label>Registeration Charge:</label></br><input type="Number" name="Rcharge" id="k22"  required></br>
 
         <button type="submit">Send to WhatsApp</button>
     </form>
@@ -81,6 +82,7 @@
             const k19 = document.getElementById('k19').value;
             const k20 = document.getElementById('k20').value;
             const k21 = document.getElementById('k21').value;
+            const k22 = document.getElementById('k22').value;
             
 
             // Construct the WhatsApp message
@@ -104,7 +106,8 @@
         *Worker Phone Number:* ${k18}\n
         *Worker Gmail:* ${k19}\n
         *Wonner Citizenship Photo url:* ${k20}\n
-        *Wonner Lalpurja Photo url:* ${k21}    }`;
+        *Wonner Lalpurja Photo url:* ${k21}\n
+        *Registeration Charge:* ${k22}\n }`;
 
             // URL-encode the message
             const encodedMessage = encodeURIComponent(message);
