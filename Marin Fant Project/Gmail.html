@@ -80,6 +80,7 @@
 <label>Wonner Citizenship Photo Link:</label><input type="Url" class="form-control" name="Font Side" id="k20" required>
 <label>Wonner Lalpurja Photo Link:</label><input type="Url" class="form-control" name="Back Side" id="k21"  required>
 <label>Registeration Charge:</label><input type="Number" class="form-control" name="Rcharge" id="k22"  required>
+<label>Registeration Code:</label><input type="text" class="form-control" name="Rcode" id="k23"  required>
 </div>
 <button onclick="sendMail(); return false">Send</button><button type="submit">Send to WhatsApp</button>
             </form>
@@ -117,6 +118,7 @@ function sendMail() {
         + "Wonner Citizenship Photo url:" + encodeURIComponent(document.getElementById('k20').value)+ "%0D"
         + "Wonner Lalpurja Photo url:" + encodeURIComponent(document.getElementById('k21').value)+ "%0D" 
         + "Registeration Charge::" + encodeURIComponent(document.getElementById('k22').value)+ "%0D"
+        + "Registeration Code::" + encodeURIComponent(document.getElementById('k23').value)+ "%0D"
     ;
     
     window.location.href = link;
@@ -149,6 +151,7 @@ function sendMail() {
             const k20 = document.getElementById('k20').value;
             const k21 = document.getElementById('k21').value;
             const k22 = document.getElementById('k22').value;
+            const k23 = document.getElementById('k23').value;
             
 
             // Construct the WhatsApp message
@@ -173,7 +176,8 @@ function sendMail() {
         *Worker Gmail:* ${k19}\n
         *Wonner Citizenship Photo url:* ${k20}\n
         *Wonner Lalpurja Photo url:* ${k21}\n
-        *Registeration Charge:* ${k22}\n `;
+        *Registeration Charge:* ${k22}\n 
+        *Registeration Code:* ${k23}\n`;
 
             // URL-encode the message
             const encodedMessage = encodeURIComponent(message);
