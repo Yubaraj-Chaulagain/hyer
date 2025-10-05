@@ -190,9 +190,9 @@ function sendMail() {
         });
     </script>
     <script>
-            function submitForm(event) {
+            function submitForm(events) {
               event.preventDefault(); // Prevent default form submission
-              const form = event.target;
+              const form = events.target;
               const formData = new FormData(form);
               const url = "https://script.google.com/macros/s/AKfycbyxNaIhxYo5_mzZBV2tlk5hCGfjUrARa-kd4IVvYJOoFnY94CgfgtHdTJ7ss16AIpU/exec"; // Replace with your deployed Apps Script URL
 
