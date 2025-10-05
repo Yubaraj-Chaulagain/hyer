@@ -82,7 +82,7 @@
 <label>Registeration Charge:</label><input type="Number" class="form-control" name="Registeration Charge:" id="k22"  required>
 <label>Registeration Code:</label><input type="text" class="form-control" name="Registeration Code:" id="k23"  required>
 </div>
-<button onclick="sendMail(); return false">Send</button><button type="submited">Send to WhatsApp</button><input type="submit" value="Submit">
+<button onclick="sendMail(); return false">Send to Gmails</button><button onclick="whatsappsf(); return false">Send to WhatsApp</button><input type="submit" value="Submit">
             </form>
       </div>
     </div>
@@ -125,6 +125,7 @@ function sendMail() {
 }
 </script>
 <script>
+    function whatsappsf() {
         document.getElementById('whatsappForm').addEventListener('submited', function(event) {
             event.preventDefault(); // Prevent default form submission
 
@@ -187,7 +188,10 @@ function sendMail() {
 
             // Open WhatsApp in a new tab/window
             window.open(whatsappUrl, '_blank');
-        });
+        }});
+        </script>
+    
+    <script>
     
             function submitForm(events) {
               event.preventDefault(); // Prevent default form submission
