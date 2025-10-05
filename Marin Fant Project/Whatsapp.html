@@ -24,13 +24,14 @@
       <div class="form-container">
     <form id="whatsappForm">
         <div class="form-group">
-        <label>Rejister Type:</label>
-<select name="Rejister Type:" class="form-control" id="k1" required>                                                                                                                                                                                                                                                                        ">
-  <option value=""></option>
-  <option value="New User">New User</option>
-  <option value="Transfar To Archived">Transfar To Archived</option>
-</select>
-        </div>
+            <label for="loc">Rejister Type:</label>
+            <select class="form-control" name="Rejister Type:" id="k1" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="New User">New User</option>
+              <option value="Transfar To Archived">Transfar To Archived</option>
+              <option value="Dropout Member">Dropout Member</option>  
+            </select>
+          </div>
         <div class="form-group mt-2">
 <label>Woner Name:</label><input type="text" class="form-control" name="Woner Name" id="k2" required>
 <label>Woner Phone Number:</label><input type="tel" class="form-control" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number" id="k3" required>
@@ -39,10 +40,14 @@
 <label>Agriment:</label><input type="text" class="form-control" name="Agriment" id="k6" required>
 <label>Woner Photo Url:</label><input type="Url" class="form-control" name="Woner Photo Url" id="k7" required>
         </div>
-        <div class="form-group">
-<label for="gender">Gender Type:</label>
-<select name="jender Type:" class="form-control"  id="k8" required><option value="ं"></option> <option value="ंMale">Male</option> <option value="Female">Female</option>                                                                                                                                                                                                                                                                                                                                                                  Transfar To Archived</option>
-</select></div>
+       <div class="form-group">
+            <label for="loc">Gender:</label>
+            <select class="form-control" name="gender type:" id="k8" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
 <div class="form-group mt-2">
 <label>Birthdate:</label>
 <input type="date" class="form-control" name="birthdate" id="k9" required>
@@ -52,13 +57,13 @@
 <label>Area(Dhur):</label><input type="Number" class="form-control" name="Area(Dhur)"  id="k13" required>
     </div>
 <div class="form-group">
-<label>Worker Selection:</label>
-<select  name="Worker Selection" class="form-control"  id="k14" required>
-<option value=""></option>
-<option value="Self">Self</option>
-<option value="other">other</option>
-</select>
-</div>
+            <label for="loc">Worker Selecion:</label>
+            <select class="form-control" name="Worker Selecion:" id="k14" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="Self">Self</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 <div class="form-group form-check">
 <label class="form-check-label">Are You Conform?</label>
 <input type="checkbox" class="form-check-input" name="Are You Conform?"  id="k15" required>
