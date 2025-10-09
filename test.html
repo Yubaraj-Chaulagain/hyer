@@ -1,3 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dependent Select Boxes</title>
+    <script>
+        function populateCities(countrySelectId, citySelectId) {
+            var countrySelect = document.getElementById(countrySelectId);
+            var citySelect = document.getElementById(citySelectId);
+            citySelect.innerHTML = ""; // Clear existing options
+
+            var selectedCountry = countrySelect.value;
+            var cities = [];
+
+            if (selectedCountry === "USA") {
+                cities = ["New York", "Los Angeles", "Chicago"];
+            } else if (selectedCountry === "Canada") {
+                cities = ["Toronto", "Vancouver", "Montreal"];
+            } else if (selectedCountry === "UK") {
+                cities = ["London", "Manchester", "Edinburgh"];
+            }
+
+            // Add a default "Select City" option
+            var defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Select City";
+            citySelect.appendChild(defaultOption);
+
+            // Populate cities
+            for (var i = 0; i < cities.length; i++) {
+                var option = document.createElement("option");
+                option.value = cities[i];
+                option.textContent = cities[i];
+                citySelect.appendChild(option);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Dependent Select Boxes Example</h2>
+
+    <label for="country">Select Country:</label>
+    <select id="country" name="country" onchange="populateCities('country', 'city')">
+        <option value="">Select Country</option>
+        <option value="USA">USA</option>
+        <option value="Canada">Canada</option>
+        <option value="UK">UK</option>
+    </select>
+
+    <br><br>
+
+    <label for="city">Select City:</label>
+    <select id="city" name="city">
+        <option value="">Select City</option>
+    </select>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
 <html>
 <body>
 <div class="mb-3">
