@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Member Registration Gmail Verifycation Form</title>
+    
+ <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+      <style>
+      .form-container {
+        max-width: 500px;
+        margin: auto;
+        margin-top: 50px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+      }
+    </style>
+</head>
+   <body class="bg-light">
+    <div class="container">
+      <div class="form-container">
+        <form id="whatsappForm" onsubmit="submitForm(event)">
+            <p><a href="Home"><b>Back</b></a></p>
+            <h1>Form To Gmail Sender</h1>
+<div class="form-group">
+            <label for="loc">Rejister Type:</label>
+            <select class="form-control" name="Rejister Type:" id="k1" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="New User">New User</option>
+              <option value="Transfar To Archived">Transfar To Archived</option>
+              <option value="Dropout Member">Dropout Member</option>  
+            </select>
+          </div>
+        <div class="form-group mt-2">
+<label>Woner Name:</label><input type="text" class="form-control" name="Wonner Name:" id="k2" required>
+<label>Woner Phone Number:</label><input type="tel" class="form-control" pattern="[0-9]{10}" title="Ten digits code" name="Woner Phone Number:" id="k3" required>
+<label>Woner Address:</label><input type="text" class="form-control" name="Wonner Address:" id="k4" required>
+<label>Woner Gmail:</label><input type="email" class="form-control" name="Wonner Gmail:" id="k5" required>
+<label>Agriment:</label><input type="text" class="form-control" name="Agriment:" id="k6" required>
+<label>Woner Photo Url:</label><input type="Url" class="form-control" name="Wonner Photo Url:" id="k7" required>
+        </div>
+       <div class="form-group">
+            <label for="loc">Gender:</label>
+            <select class="form-control" name="Gender:" id="k8" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+<div class="form-group mt-2">
+<label>Birthdate:</label>
+<input type="date" class="form-control" name="Birthdate:" id="k9" required>
+<label id="Num3">Transfar From Name:</label><input type="text" class="form-control" name="Transfar From Name:"  id="k10" required>
+<label>Area(Bigha):</label><input type="Number" id="k11" class="form-control" name="Area(Bigha):" required>
+<label>Area(Katha):</label><input type="Number" class="form-control" name="Area(Katha):"  id="k12" required >
+<label>Area(Dhur):</label><input type="Number" class="form-control" name="Area(dhur):"  id="k13" required>
+    </div>
+<div class="form-group">
+            <label for="loc">Worker Selecion:</label>
+            <select class="form-control" name="Worker Selection:" id="k14" required>
+              <option value="" disabled selected hidden>Choose...</option>
+              <option value="Self">Self</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+<div class="form-group form-check">
+<label class="form-check-label">Are You Conform?</label>
+<input type="checkbox" class="form-check-input" name="Your Conformation:"  id="k15" required>
+</div>
+<div class="form-group mt-2">
+<label>Worker Name:</label><input type="text" class="form-control" name="Worker Name:" id="k16" required >
+<label>Worker Address:</label><input type="text" class="form-control" name="Worker Address:" id="k17" required >
+<label>Worker Phone Number:</label><input type="tel" class="form-control" name="Worker Phone Number:" id="k18" required>
+<label>Worker Gmail:</label><input type="email" class="form-control" name="Worker Gmail:" id="k19"required>
+<label>Wonner Citizenship Photo Link:</label><input type="Url" class="form-control" name="Wonner Citizenship Photo url:" id="k20" required>
+<label>Wonner Lalpurja Photo Link:</label><input type="Url" class="form-control" name="Wonner Lalpurja Photo url:" id="k21"  required>
+<label>Registeration Charge:</label><input type="Number" class="form-control" name="Registeration Charge:" id="k22"  required>
+<label>Registeration Code:</label><input type="text" class="form-control" name="Registeration Code:" id="k23"  required>
+</div>
+<button onclick="sendMail(); return false">Send to Gmails</button><input type="submit" value="Submit">
+            </form>
+      </div>
+    </div>
+</body>
+<script>
+function sendMail() {
+    var link = "mailto:yubarajchaulagain5@gmail.com,"
+             + "?subject=" + encodeURIComponent(document.getElementById('k1').value)+ encodeURIComponent(" Register processing ")+ encodeURIComponent("Notification")
+             + "&cc=marinfant45912@gmail.com,"
+             + "&bcc=" + encodeURIComponent(document.getElementById('k5').value) +","
+             + encodeURIComponent(document.getElementById('k19').value)
+             + ", nepalikranti5@gmail.com"
+             + "&body="
+        + "Register Type:" + encodeURIComponent(document.getElementById('k1').value)+ "%0D"
+        + "Wonner Name:" + encodeURIComponent(document.getElementById('k2').value)+ "%0D"
+        + "Wonner Mobile N.:" + encodeURIComponent(document.getElementById('k3').value)+ "%0D"
+        + "Wonner Address:" + encodeURIComponent(document.getElementById('k4').value)+ "%0D"
+        + "Wonner Gmail:" + encodeURIComponent(document.getElementById('k5').value)+ "%0D"
+        + "Agriment:" + encodeURIComponent(document.getElementById('k6').value)+ "%0D"
+        + "Wonner Photo Url:" + encodeURIComponent(document.getElementById('k7').value)+ "%0D"
+        + "Gender:" + encodeURIComponent(document.getElementById('k8').value)+ "%0D"
+        + "Birthdate:" + encodeURIComponent(document.getElementById('k9').value)+ "%0D"
+        + "Transfar From Name:" + encodeURIComponent(document.getElementById('k10').value)+ "%0D"
+        + "Area(Bigha):" + encodeURIComponent(document.getElementById('k11').value)+ "%0D"
+        + "Area(Katha):" + encodeURIComponent(document.getElementById('k12').value)+ "%0D"
+        + "Area(dhur):" + encodeURIComponent(document.getElementById('k13').value)+ "%0D"
+        + "Worker Selection:" + encodeURIComponent(document.getElementById('k14').value)+ "%0D"
+        + "Your Conformation:" + encodeURIComponent(document.getElementById('k15').value)+ "%0D"
+        + "Worker Name:" + encodeURIComponent(document.getElementById('k16').value)+ "%0D"
+        + "Worker Address:" + encodeURIComponent(document.getElementById('k17').value)+ "%0D"
+        + "Worker Phone Number:" + encodeURIComponent(document.getElementById('k18').value)+ "%0D"
+        + "Worker Gmail:" + encodeURIComponent(document.getElementById('k19').value)+ "%0D"
+        + "Wonner Citizenship Photo url:" + encodeURIComponent(document.getElementById('k20').value)+ "%0D"
+        + "Wonner Lalpurja Photo url:" + encodeURIComponent(document.getElementById('k21').value)+ "%0D" 
+        + "Registeration Charge::" + encodeURIComponent(document.getElementById('k22').value)+ "%0D"
+        + "Registeration Code::" + encodeURIComponent(document.getElementById('k23').value)+ "%0D"
+    ;
+    
+    window.location.href = link;
+}
+</script>
+
+    <script>
+    
+            function submitForm(events) {
+              event.preventDefault(); // Prevent default form submission
+              const form = events.target;
+              const formData = new FormData(form);
+              const url = "https://script.google.com/macros/s/AKfycbxGdXLWq0dx_4XNQZoYKvND8iLtNTmc7sxezlv9SGebLj04bf3VjR4glyXdv5q311MQ/exec"; // Replace with your deployed Apps Script URL
+
+              fetch(url, {
+                method: "POST",
+                body: formData
+              })
+              .then(response => response.text())
+              .then(data => {
+                alert("Data submitted successfully!");
+                form.reset(); // Clear the form
+              })
+              .catch(error => {
+                console.error("Error:", error);
+                alert("Error submitting data.");
+              });
+            }
+          </script>
+
+
+</html>
+
+
+    
