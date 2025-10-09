@@ -22,6 +22,23 @@
       }
     </style>
 </head>
+        <div class="mb-3">
+  <label for="countrySelect" class="form-label">Select Country</label>
+  <select class="form-select" id="countrySelect">
+    <option value="">Choose...</option>
+    <option value="USA">United States</option>
+    <option value="CAN">Canada</option>
+    <option value="GBR">United Kingdom</option>
+    <!-- Add more countries as needed -->
+  </select>
+</div>
+
+<div class="mb-3">
+  <label for="areaSelect" class="form-label">Select Area</label>
+  <select class="form-select" id="areaSelect" disabled>
+    <option value="">Choose...</option>
+  </select>
+</div>
    <body class="bg-light">
     <div class="container">
       <div class="form-container">
@@ -149,7 +166,38 @@ function sendMail() {
               });
             }
           </script>
+    
+<Script>
+const countrySelect = document.getElementById('countrySelect');
+const areaSelect = document.getElementById('areaSelect');
 
+const areasByCountry = {
+  USA: ['California', 'New York', 'Texas'],
+  CAN: ['Ontario', 'Quebec', 'British Columbia'],
+  GBR: ['England', 'Scotland', 'Wales']
+  // Add more areas for each country
+};
+
+countrySelect.addEventListener('change', function() {
+  const selectedCountry = this.value;
+  areaSelect.innerHTML = '<option value="">Choose...</option>'; // Clear previous options
+  areaSelect.disabled = true; // Disable until a country is selected
+
+  if (selectedCountry) {
+    const areas = areasByCountry[selectedCountry];
+    if (areas) {
+      areas.forEach(area => {
+        const option = document.createElement('option');
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+      });
+      areaSelect.disabled = false; // Enable area select
+    }
+  }
+});
+    
+</Script>
 
 </html>
 
