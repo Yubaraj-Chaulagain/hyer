@@ -1,0 +1,19 @@
+<!-- HTML Form -->
+<form id="myForm">
+  <input type="text" name="name" id="name" placeholder="Name">
+  <input type="email" name="email" id="email" placeholder="Email">
+  <textarea name="message" id="message" placeholder="Message"></textarea>
+  <button type="submit">Send</button>
+</form>
+
+<script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcAriR9qHZnfZvofyIZRMfPiPHq4f3v8MOWIEUWFiwgE-hLDle75J2DlvunsN-1WXN/exec'; // Replace with your URL
+  const form = document.getElementById('myForm');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+      .then(response => alert('Success!', response))
+      .catch(error => alert('Error!', error.message));
+  });
+</script>
