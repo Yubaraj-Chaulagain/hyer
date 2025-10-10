@@ -1,116 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dependent Select Boxes</title>
-    <script>
-        function populateCities(countrySelectId, citySelectId) {
-            var countrySelect = document.getElementById(countrySelectId);
-            var citySelect = document.getElementById(citySelectId);
-            citySelect.innerHTML = ""; // Clear existing options
-
-            var selectedCountry = countrySelect.value;
-            var cities = [];
-
-            if (selectedCountry === "USA") {
-                cities = ["New York", "Los Angeles", "Chicago"];
-            } else if (selectedCountry === "Canada") {
-                cities = ["Toronto", "Vancouver", "Montreal"];
-            } else if (selectedCountry === "UK") {
-                cities = ["London", "Manchester", "Edinburgh"];
-            }
-
-            // Add a default "Select City" option
-            var defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "Select City";
-            citySelect.appendChild(defaultOption);
-
-            // Populate cities
-            for (var i = 0; i < cities.length; i++) {
-                var option = document.createElement("option");
-                option.value = cities[i];
-                option.textContent = cities[i];
-                citySelect.appendChild(option);
-            }
-        }
-    </script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+var subjectObject = {
+"Saving & Received Tranjection": {
+"General Saving Received": ["Links", "Images", "Tables", "Lists"],
+"Official Pt cash Tranjection Received": ["Borders", "Margins", "Backgrounds", "Float"],
+"Bank Tranjection Bank Received": ["Variables", "Operators", "Functions", "Conditions"],
+"Loan Tranjection Received": ["Variables", "Operators", "Functions", "Conditions"],
+"Marketing Tranjection Received": ["Variables", "Operators", "Functions", "Conditions"]
+},
+"Withdrawal & Payment Tranjection": {
+"General Saving Payment": ["Variables", "Strings", "Arrays"],
+"Official Pt cash Tranjection Payment": ["SELECT", "UPDATE", "DELETE"],
+"Bank Tranjection Payment": ["SELECT", "UPDATE", "DELETE"],
+"Loan Tranjection Payment": ["SELECT", "UPDATE", "DELETE"],
+"Marketing Tranjection Payment": ["SELECT", "UPDATE", "DELETE"]
+}
+}
+window.onload = function() {
+var subjectSel = document.getElementById("subject");
+var topicSel = document.getElementById("topic");
+var chapterSel = document.getElementById("chapter");
+for (var x in subjectObject) {
+subjectSel.options[subjectSel.options.length] = new Option(x, x);
+}
+subjectSel.onchange = function() {
+//empty Chapters- and Topics- dropdowns
+chapterSel.length = 1;
+topicSel.length = 1;
+//display correct values
+for (var y in subjectObject[this.value]) {
+topicSel.options[topicSel.options.length] = new Option(y, y);
+}
+}
+topicSel.onchange = function() {
+//empty Chapters dropdown
+chapterSel.length = 1;
+//display correct values
+var z = subjectObject[subjectSel.value][this.value];
+for (var i = 0; i < z.length; i++) {
+chapterSel.options[chapterSel.options.length] = new Option(z[i], z[i]);
+}
+}
+}
+</script>
 </head>
 <body>
-    <h2>Dependent Select Boxes Example</h2>
 
-    <label for="country">Select Country:</label>
-    <select id="country" name="country" onchange="populateCities('country', 'city')">
-        <option value="">Select Country</option>
-        <option value="USA">USA</option>
-        <option value="Canada">Canada</option>
-        <option value="UK">UK</option>
-    </select>
+<h1>Cascading Dropdown Example</h1>
 
-    <br><br>
+<form name="form1" id="form1" action="/action_page.php">
+Subjects: <select name="subject" id="subject">
+<option value="" selected="selected">Select subject</option>
+</select>
+<br><br>
+Topics: <select name="topic" id="topic">
+<option value="" selected="selected">Please select subject first</option>
+</select>
+<br><br>
+Chapters: <select name="chapter" id="chapter">
+<option value="" selected="selected">Please select topic first</option>
+</select>
+<br><br>
+<input type="submit" value="Submit">
+</form>
 
-    <label for="city">Select City:</label>
-    <select id="city" name="city">
-        <option value="">Select City</option>
-    </select>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-<html>
-<body>
-<div class="mb-3">
-  <label for="countrySelect" class="form-label">Select Country</label>
-  <select class="form-select" id="countrySelect">
-    <option value="">Choose...</option>
-    <option value="USA">United States</option>
-    <option value="CAN">Canada</option>
-    <option value="GBR">United Kingdom</option>
-    <!-- Add more countries as needed -->
-  </select>
-</div>
-
-<div class="mb-3">
-  <label for="areaSelect" class="form-label">Select Area</label>
-  <select class="form-select" id="areaSelect" disabled>
-    <option value="">Choose...</option>
-  </select>
-</div>
-</body>
-</html>
-<script>
-const countrySelect = document.getElementById('countrySelect');
-const areaSelect = document.getElementById('areaSelect');
-
-const areasByCountry = {
-  USA: ['California', 'New York', 'Texas'],
-  CAN: ['Ontario', 'Quebec', 'British Columbia'],
-  GBR: ['England', 'Scotland', 'Wales']
-  // Add more areas for each country
-};
-
-countrySelect.addEventListener('change', function() {
-  const selectedCountry = this.value;
-  areaSelect.innerHTML = '<option value="">Choose...</option>'; // Clear previous options
-  areaSelect.disabled = true; // Disable until a country is selected
-
-  if (selectedCountry) {
-    const areas = areasByCountry[selectedCountry];
-    if (areas) {
-      areas.forEach(area => {
-        const option = document.createElement('option');
-        option.value = area;
-        option.textContent = area;
-        areaSelect.appendChild(option);
-      });
-      areaSelect.disabled = false; // Enable area select
-    }
-  }
-});
-</script>
