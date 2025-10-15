@@ -1,0 +1,62 @@
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <base target="_top">
+        <style>
+          table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+          }
+          th, td {
+            padding: 8px;
+            text-align: left;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Data from Google Sheet</h1>
+        <div id="table-container"></div>
+
+        <script>
+          google.script.run.withSuccessHandler(displayData).getDataFromSheet();
+
+          function displayData(data) {
+            var tableHtml = '<table>';
+            // Add table headers
+            tableHtml += '<thead><tr>';
+            for (var i = 0; i < data[0].length; i++) {
+              tableHtml += '<th>' + data[0][i] + '</th>';
+            }
+            tableHtml += '</tr></thead>';
+
+            // Add table rows
+            tableHtml += '<tbody>';
+            for (var i = 1; i < data.length; i++) { // Start from 1 to skip header row
+              tableHtml += '<tr>';
+              for (var j = 0; j < data[i].length; j++) {
+                tableHtml += '<td>' + data[i][j] + '</td>';
+              }
+              tableHtml += '</tr>';
+            }
+            tableHtml += '</tbody></table>';
+
+            document.getElementById('table-container').innerHTML = tableHtml;
+          }
+        </script>
+      </body>
+    </html>
+
+
+
+<script>
+function getDataFromSheet() {
+      var spreadsheetId = '1CF6XnmQ3HMt8-bDyjUXsgPyhfDXCgAbPp_SdRVtP_IU'; // Replace with your Spreadsheet ID
+      var sheetName = 'Sheet1'; // Replace with your sheet name
+      var ss = SpreadsheetApp.openById(spreadsheetId);
+      var sheet = ss.getSheetByName(sheetName);
+      var range = sheet.getDataRange(); // Get all data in the sheet
+      var values = range.getValues();
+      return values;
+    }
+
+  </script>
