@@ -1,62 +1,56 @@
     <!DOCTYPE html>
     <html>
-      <head>
-        <base target="_top">
-        <style>
-          table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-          }
-          th, td {
-            padding: 8px;
-            text-align: left;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>Data from Google Sheet</h1>
-        <div id="table-container"></div>
+    <head>
+        <title>Google Sheet Data</title>
+    </head>
+    <body>
+        <table id="data-table" border="1">
+            <thead>
+                <tr>
+                    <!-- Headers will be added here by JavaScript -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows will be added here by JavaScript -->
+            </tbody>
+        </table>
 
         <script>
-          google.script.run.withSuccessHandler(displayData).getDataFromSheet();
+            const webAppUrl = 'https://script.google.com/macros/s/AKfycbz_jjJPyGjaYb32p5gEsxDzTtCkGE7ZZ_owR7NnIU--LQJ1mNmBarel7pGeqKVKJVn6Jw/exec'; // Replace with your actual URL
 
-          function displayData(data) {
-            var tableHtml = '<table>';
-            // Add table headers
-            tableHtml += '<thead><tr>';
-            for (var i = 0; i < data[0].length; i++) {
-              tableHtml += '<th>' + data[0][i] + '</th>';
-            }
-            tableHtml += '</tr></thead>';
+            fetch(webAppUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById('data-table');
+                    const thead = table.querySelector('thead tr');
+                    const tbody = table.querySelector('tbody');
 
-            // Add table rows
-            tableHtml += '<tbody>';
-            for (var i = 1; i < data.length; i++) { // Start from 1 to skip header row
-              tableHtml += '<tr>';
-              for (var j = 0; j < data[i].length; j++) {
-                tableHtml += '<td>' + data[i][j] + '</td>';
-              }
-              tableHtml += '</tr>';
-            }
-            tableHtml += '</tbody></table>';
+                    // Create headers
+                    if (data.length > 0) {
+                        Object.keys(data[0]).forEach(key => {
+                            const th = document.createElement('th');
+                            th.textContent = key;
+                            thead.appendChild(th);
+                        });
+                    }
 
-            document.getElementById('table-container').innerHTML = tableHtml;
-          }
+                    // Populate table body
+                    data.forEach(rowData => {
+                        const tr = document.createElement('tr');
+                        Object.values(rowData).forEach(value => {
+                            const td = document.createElement('td');
+                            td.textContent = value;
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                })
+                .catch(error => console.error('Error fetching data:', error));
         </script>
-      </body>
+    </body>
     </html>
 
 
 
-<script>
-function getDataFromSheet() {
-      var spreadsheetId = '1CF6XnmQ3HMt8-bDyjUXsgPyhfDXCgAbPp_SdRVtP_IU'; // Replace with your Spreadsheet ID
-      var sheetName = 'Sheet1'; // Replace with your sheet name
-      var ss = SpreadsheetApp.openById(spreadsheetId);
-      var sheet = ss.getSheetByName(sheetName);
-      var range = sheet.getDataRange(); // Get all data in the sheet
-      var values = range.getValues();
-      return values;
-    }
-
-  </script>
+        
+    </html>
