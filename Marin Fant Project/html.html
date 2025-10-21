@@ -1,0 +1,14 @@
+    <div id="sheetData"></div>
+
+    <script>
+      const sheetCSVUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRCQ0zDJ-9fk3HkdIYBh9Or7-Cr0DosAKsG198TtxUmfBH60suNwECZ-I7rzpDRd0-ahbe-LfrS1yjr/pub?output=csv'; // Replace with your published CSV URL
+
+      fetch(sheetCSVUrl)
+        .then(response => response.text())
+        .then(csvData => {
+          // Parse CSV data (e.g., using a library or manual parsing)
+          // For simplicity, let's just display the raw CSV for now
+          document.getElementById('sheetData').innerText = csvData;
+        })
+        .catch(error => console.error('Error fetching sheet data:', error));
+    </script>
