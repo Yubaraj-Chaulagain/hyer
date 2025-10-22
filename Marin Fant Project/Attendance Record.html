@@ -1,4 +1,6 @@
+<input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search table...">
 <div id="sheetTable"></div>
+
 
     <script>
       const sheetId = '1Ka1Gmcj2_ifRo4kEzDhlrFUGccutelWJ9HlCkXPyF5c'; // Get this from your sheet's URL
@@ -12,7 +14,7 @@
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table><thead><tr>';
+          let html = '<table id="myTable"><thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
@@ -57,3 +59,23 @@ td {
 
 }
 </style>
+<script>
+function filterTable() {
+  const searchInput = document.getElementById("searchInput");
+  const filter = searchInput.value.toLowerCase();
+  const table = document.getElementById("myTable");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 0; i < tr.length; i++) {
+    let td = tr[i].getElementsByTagName("td");
+    if (td.length > 0) { // Ensure it's a data row, not a header
+      let rowText = tr[i].innerText.toLowerCase();
+      if (rowText.includes(filter)) {
+        tr[i].style.display = ""; // Show the row
+      } else {
+        tr[i].style.display = "none"; // Hide the row
+      }
+    }
+  }
+}
+</script>
