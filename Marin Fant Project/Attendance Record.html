@@ -1,5 +1,35 @@
 <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search table...">
+<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search first column...">
 <div id="sheetTable"></div>
+<script>
+function filterTable() {
+  // Declare variables
+  let input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase(); // Convert input to uppercase for case-insensitive search
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr");
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    // Skip the header row
+    if (tr[i].getElementsByTagName("th").length > 0) {
+      continue;
+    }
+
+    td = tr[i].getElementsByTagName("td")[0]; // Get the first column's data cell
+    if (td) {
+      txtValue = td.textContent || td.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = ""; // Show the row
+      } else {
+        tr[i].style.display = "none"; // Hide the row
+      }
+    }
+  }
+}
+
+</script>
 
 
     <script>
