@@ -1,6 +1,38 @@
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
-Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code...">
+Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code..."></br>
+<label for="startDate">Start Date:</label>
+<input type="date" id="startDate">
+
+<label for="endDate">End Date:</label>
+<input type="date" id="endDate">
+
+<button onclick="filterTableByDate()">Filter</button>
 <div id="sheetTable"></div>
+<script>
+ function filterTableByDate() {
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  const table = document.getElementById('myTable');
+  const rows = table.getElementsByTagName('tr');
+
+  const startDate = new Date(startDateInput.value);
+  const endDate = new Date(endDateInput.value);
+
+  // Loop through all table rows, and hide those that don't match the search query
+  for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+    const dateCell = rows[i].getElementsByTagName('td')[0]; // Assuming date is in the first column (index 1)
+    if (dateCell) {
+      const rowDate = new Date(dateCell.textContent);
+
+      if (rowDate >= startDate && rowDate <= endDate) {
+        rows[i].style.display = ''; // Show the row
+      } else {
+        rows[i].style.display = 'none'; // Hide the row
+      }
+    }
+  }
+} 
+</script>
 <script>
 function filterTable() {
   // Declare variables
