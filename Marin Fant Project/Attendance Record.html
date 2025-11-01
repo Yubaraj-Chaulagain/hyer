@@ -1,52 +1,3 @@
-<!DOCTYPE html>
-<head>
-	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-	<title>Marin Fant Sanchai</title>
-	<link rel="shortcut icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGmXbq43U6t2HHnO0gFTKeyX4z8hah6UABcbrq7rBI_w&s">
-	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.datatables.net/rss.xml">
-	<link rel="stylesheet" type="text/css" href="/media/css/site-examples.css?_=41cab7b2e63a641a482f02634433cc4c1">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
-	<style type="text/css" class="init">
-	</style>
-	<script src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fhtml5%2Fsimple.html"></script>
-	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-<script type="text/javascript" class="init">
-$(document).ready(function() {
-	$('#table').DataTable( {
-		dom: 'Bfrtip',
-		buttons: [
-			'copyHtml5',
-			'excelHtml5',
-			'csvHtml5',
-			'pdfHtml5'
-		]
-	} );
-} );
-
-</script>
-	
-<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
-	
-<script>
-function printDiv() {
-window.frames["print_frame"].document.body.innerHTML = document.getElementById("table4").innerHTML;
-window.frames["print_frame"].window.focus();
-window.frames["print_frame"].window.print();
-}
-</script>
-	
-	</head>
-<body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
-
-
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
 Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code..."></br>
 <label for="startDate">Start Date:</label>
@@ -56,6 +7,7 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
 <input type="text" id="endDate">
 
 <button onclick="filterTableByDate()">Filter</button>
+<div id="sheetTable"></div>
 <script>
  function filterTableByDate() {
   const startDateInput = document.getElementById('startDate');
@@ -81,7 +33,6 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
   }
 } 
 </script>
-
 <script>
 function filterTable() {
   // Declare variables
@@ -113,7 +64,6 @@ function filterTable() {
 </script>
 
 
-	<div id="table4"></div>
     <script>
       const sheetId = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
       const gid = '1605291961'; // Get this from your sheet's URL (0 for the first sheet)
@@ -126,8 +76,7 @@ function filterTable() {
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="myTable" class="display" cellspacing="0" width="100%">
-<thead><tr>';
+          let html = '<table id="myTable"><thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
@@ -140,13 +89,38 @@ function filterTable() {
             });
             html += '</tr>';
           });
-          html += '</tbody></table></div></body>';
+          html += '</tbody></table>';
 
-          document.getElementById('table4').innerHTML = html;
+          document.getElementById('sheetTable').innerHTML = html;
         })
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
+<style>
+   table {
+  border-collapse: collapse; /* Essential for single borders */
+}
 
+th, td {
+  border: 1px solid black; /* Applies a 1px solid black border to all header and data cells */
+  padding: 4px; /* Adds spacing within cells */
+  text-align: center;
+  font-size: 15px;
+}
+
+tr {
+  border-bottom: 1px solid grey; /* Applies a bottom border to each row */
+}
+    th {
+  background-color: darkgray;
+  color: white; /* For better contrast with dark background */
+}
+
+td {
+  background-color: white;
+}
+
+}
+</style>
 <script>
 function filterTablee() {
   const searchInput = document.getElementById("searchInput");
