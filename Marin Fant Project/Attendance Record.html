@@ -131,7 +131,8 @@ function filterTable() {
           const table = jsonData.table;
 
           let html = '<div class="demo-html">
-<div id="table4"><table id="myTable"><thead><tr>';
+<div id="table4"><table id="table" class="display" cellspacing="0" width="100%">
+<thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
