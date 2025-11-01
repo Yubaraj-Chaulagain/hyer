@@ -10,7 +10,6 @@
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 	<style type="text/css" class="init">
-
 	</style>
 	<script src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fhtml5%2Fsimple.html"></script>
 	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -21,9 +20,6 @@
 	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
 <script type="text/javascript" class="init">
-
-
-
 $(document).ready(function() {
 	$('#table').DataTable( {
 		dom: 'Bfrtip',
@@ -36,10 +32,10 @@ $(document).ready(function() {
 	} );
 } );
 
-
-
-	</script>
+</script>
+	
 <iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+	
 <script>
 function printDiv() {
 window.frames["print_frame"].document.body.innerHTML = document.getElementById("table4").innerHTML;
@@ -47,6 +43,7 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }
 </script>
+	
 	</head>
 <body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 
@@ -60,7 +57,6 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
 <input type="text" id="endDate">
 
 <button onclick="filterTableByDate()">Filter</button>
-<div id="sheetTable"></div>
 <script>
  function filterTableByDate() {
   const startDateInput = document.getElementById('startDate');
@@ -86,6 +82,7 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
   }
 } 
 </script>
+
 <script>
 function filterTable() {
   // Declare variables
@@ -117,7 +114,7 @@ function filterTable() {
 </script>
 
 
-
+	<div id="table4"></div>
     <script>
       const sheetId = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
       const gid = '1605291961'; // Get this from your sheet's URL (0 for the first sheet)
@@ -130,8 +127,7 @@ function filterTable() {
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<div class="demo-html">
-<div id="table4"><table id="myTable" class="display" cellspacing="0" width="100%">
+          let html = '<table id="myTable" class="display" cellspacing="0" width="100%">
 <thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
@@ -145,7 +141,7 @@ function filterTable() {
             });
             html += '</tr>';
           });
-          html += '</tbody></table></div></div></body>';
+          html += '</tbody></table></div></body>';
 
           document.getElementById('sheetTable').innerHTML = html;
         })
