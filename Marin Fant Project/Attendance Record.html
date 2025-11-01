@@ -131,7 +131,7 @@ function filterTable() {
           const table = jsonData.table;
 
           let html = '<div class="demo-html">
-<div id="table4"><table id="table" class="display" cellspacing="0" width="100%">
+<div id="table4"><table id="myTable" class="display" cellspacing="0" width="100%">
 <thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
@@ -151,32 +151,7 @@ function filterTable() {
         })
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
-<style>
-   table {
-  border-collapse: collapse; /* Essential for single borders */
-}
 
-th, td {
-  border: 1px solid black; /* Applies a 1px solid black border to all header and data cells */
-  padding: 4px; /* Adds spacing within cells */
-  text-align: center;
-  font-size: 15px;
-}
-
-tr {
-  border-bottom: 1px solid grey; /* Applies a bottom border to each row */
-}
-    th {
-  background-color: darkgray;
-  color: white; /* For better contrast with dark background */
-}
-
-td {
-  background-color: white;
-}
-
-}
-</style>
 <script>
 function filterTablee() {
   const searchInput = document.getElementById("searchInput");
