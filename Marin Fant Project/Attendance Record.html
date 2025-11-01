@@ -17,7 +17,7 @@ function filterTable() {
       continue;
     }
 
-    td = tr[i].getElementsByTagName("td")[0]; // Get the first column's data cell
+    td = tr[i].getElementsByTagName("td")[2]; // Get the first column's data cell
     if (td) {
       txtValue = td.textContent || td.innerText;
       if (txtValue.toUpperCase().indexOf(filter) > -1) {
