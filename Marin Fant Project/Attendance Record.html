@@ -13,6 +13,37 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
 </head>
+<button class="btn" data-clipboard-action="copy" data-clipboard-target="#htmlContent">Copy</button>
+ <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+    <script>
+        new ClipboardJS('.btn', {
+            text: function(trigger) {
+                return document.getElementById('myDivToExport').innerHTML;
+            }
+        });
+    </script>
+    <script>
+        async function copyHtmlToClipboard(htmlContent) {
+        try {
+            const htmlBlob = new Blob([myDivToExport], { type: 'text/html' });
+            const textBlob = new Blob([myDivToExport], { type: 'text/plain' }); // Optional: for plain text fallback
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    'text/html': htmlBlob,
+                    'text/plain': textBlob // Include if you want plain text fallback
+                })
+            ]);
+            console.log('HTML copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy HTML to clipboard:', err);
+        }
+    }
+
+    // Example usage:
+    const myHtml = '<h1>Hello, World!</h1><p>This is some <strong>HTML</strong> content.</p>';
+    copyHtmlToClipboard(myHtml);
+    </script>
+    
             <input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
         <script>
         var tableToExcel = (function () {
