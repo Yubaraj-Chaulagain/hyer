@@ -1,3 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+	<title>Marin Fant Sanchai</title>
+	<link rel="shortcut icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGmXbq43U6t2HHnO0gFTKeyX4z8hah6UABcbrq7rBI_w&s">
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.datatables.net/rss.xml">
+	<link rel="stylesheet" type="text/css" href="/media/css/site-examples.css?_=41cab7b2e63a641a482f02634433cc4c1">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+	<style type="text/css" class="init">
+
+	</style>
+	<script src="/media/js/dynamic.php?comments-page=extensions%2Fbuttons%2Fexamples%2Fhtml5%2Fsimple.html"></script>
+	<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+	<script type="text/javascript" class="init">
+
+
+
+$(document).ready(function() {
+	$('#table').DataTable( {
+		dom: 'Bfrtip',
+		buttons: [
+			'copyHtml5',
+			'excelHtml5',
+			'csvHtml5',
+			'pdfHtml5'
+		]
+	} );
+} );
+
+
+
+	</script>
+<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+<script>
+function printDiv() {
+window.frames["print_frame"].document.body.innerHTML = document.getElementById("table4").innerHTML;
+window.frames["print_frame"].window.focus();
+window.frames["print_frame"].window.print();
+}</script>
+
+</head>
+
+
+
+
+
 <body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
 Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code..."></br>
