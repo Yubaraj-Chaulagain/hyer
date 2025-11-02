@@ -13,38 +13,38 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
 </head>
-     <button onclick="copyHtmlTableToClipboard(document.getElementById('myTable'))">Copy</button>
+     <button onclick="copyTableToClipboard('myTable')">Copy Table</button>
     <script>
-async function copyHtmlTableToClipboard(tableElement) {
+function copyTableToClipboard(tableId) {
+  const table = document.getElementById(tableId);
+
+  // Check if the table exists
+  if (!table) {
+    console.error("Table with ID '" + tableId + "' not found.");
+    return;
+  }
+
+  // Create a Range object
+  const range = document.createRange();
+
+  // Set the Node to select the table
+  range.selectNode(table);
+
+  // Add the Range to the set of window selections
+  window.getSelection().removeAllRanges(); // Clear any existing selections
+  window.getSelection().addRange(range);
+
   try {
-    // Get the outerHTML of the table element
-    const tableHtml = tableElement.outerHTML;
-
-    // Create a Blob with the HTML content and 'text/html' MIME type
-    const htmlBlob = new Blob([tableHtml], { type: 'text/html' });
-
-    // Create a ClipboardItem with the 'text/html' Blob
-    const clipboardItem = new ClipboardItem({ 'text/html': htmlBlob });
-
-    // Write the ClipboardItem to the clipboard
-    await navigator.clipboard.write([clipboardItem]);
-
-    console.log('HTML table copied to clipboard successfully!');
+    // Execute the 'copy' command
+    document.execCommand('copy');
+    console.log("Table copied to clipboard!");
   } catch (err) {
-    console.error('Failed to copy HTML table to clipboard:', err);
-    alert('Failed to copy table. Please ensure your browser grants clipboard access.');
+    console.error("Failed to copy table: ", err);
+  } finally {
+    // Clear the selection after copying
+    window.getSelection().removeAllRanges();
   }
 }
-
-// Example usage:
-// Assuming you have an HTML table with id="myTable"
-// <table id="myTable">...</table>
-
-// Get the table element
-const myTable = document.getElementById('myTable');
-
-// Call the function to copy the table when a button is clicked, for instance
-// <button onclick="copyHtmlTableToClipboard(document.getElementById('myTable'))">Copy Table</button>
 </script>
 
             <input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
