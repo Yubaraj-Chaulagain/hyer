@@ -9,26 +9,20 @@ window.frames["print_frame"].document.body.innerHTML = document.getElementById("
 window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
- <button onclick="exportToExcel('dataToExport', 'EmployeeData.xls')">Export to Excel</button>
-
-    <script>
-        function exportToExcel("myDivToExport", filename = 'export.xls') {
-            var html = document.getElementById("myDivToExport").outerHTML;
-            var uri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
-            var link = document.createElement("a");
-            link.href = uri;
-            link.style = "visibility:hidden";
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
 </head>
+ 
+<script src="path/to/table2excel.js"></script>
+        <script>
+         document.getElementById('exportButton').addEventListener('click', function() {
+            var table = document.getElementById('myTable');
+            new Table2Excel().export(table, 'MyExportedTable');
+        });
+        </script>
 
 
 
 
+<button id="exportButton">Export to Excel</button>
 
 <body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
