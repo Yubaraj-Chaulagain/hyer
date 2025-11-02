@@ -17,7 +17,7 @@ window.frames["print_frame"].window.print();
         <button onclick="copyTableHtml()">Copy Table HTML</button>
     <script>
 async function copyTableHtml() {
-        const table = document.getElementById('myTable');
+        const table = document.getElementById('myDivToExport');
         if (!table) {
             alert('Table not found!');
             return;
