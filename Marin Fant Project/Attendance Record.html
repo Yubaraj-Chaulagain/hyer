@@ -10,21 +10,39 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
 </head>
-<script> 
-function fnExcelReport() {
-  / Example using table2excel.js (after including the library)
-document.getElementById('exportButton').addEventListener('click', function() {
-    // 'myTable' is the ID of your HTML table
-    var table = document.getElementById('myTable');
-    TableToExcel.convert(table, {
-        name: 'exported_data.xlsx',
-        sheet: {
-            name: 'Sheet1'
-        }
-    });
-});
+<script>
+  function exportTableToExcel(tableID, filename = '') {
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+    // Specify file name
+    filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+    // Create download link element
+    downloadLink = document.createElement("a");
+
+    document.body.appendChild(downloadLink);
+
+    if (navigator.msSaveOrOpenBlob) {
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+        // Setting the file name
+        downloadLink.download = filename;
+
+        //triggering the function
+        downloadLink.click();
+    }
+}
 </script>
-<button id="btnExport" onClick="fnExcelReport()">Export to xls</button>
+<button onclick="exportTableToExcel('myTable', 'MyReport')">Export to Excel</button>
 <body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
 Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code..."></br>
