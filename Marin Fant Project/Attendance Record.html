@@ -12,8 +12,8 @@ window.frames["print_frame"].window.print();
  <button onclick="exportToExcel('dataToExport', 'EmployeeData.xls')">Export to Excel</button>
 
     <script>
-        function exportToExcel(divId, filename = 'export.xls') {
-            var html = document.getElementById(divId).outerHTML;
+        function exportToExcel("myDivToExport", filename = 'export.xls') {
+            var html = document.getElementById("myDivToExport").outerHTML;
             var uri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
             var link = document.createElement("a");
             link.href = uri;
