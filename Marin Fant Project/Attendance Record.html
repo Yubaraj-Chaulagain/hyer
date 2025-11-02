@@ -12,7 +12,7 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
  function filterTableByDate() {
   const startDateInput = document.getElementById('startDate');
   const endDateInput = document.getElementById('endDate');
-  const table = document.getElementById('myTable');
+  const table = document.getElementById('table');
   const rows = table.getElementsByTagName('tr');
 
   const startDate = new Date(startDateInput.value);
@@ -39,7 +39,7 @@ function filterTable() {
   let input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase(); // Convert input to uppercase for case-insensitive search
-  table = document.getElementById("myTable");
+  table = document.getElementById("table");
   tr = table.getElementsByTagName("tr");
 
   // Loop through all table rows, and hide those who don't match the search query
@@ -76,7 +76,7 @@ function filterTable() {
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="myTable"><thead><tr>';
+          let html = '<table id="table"><thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
@@ -125,7 +125,7 @@ td {
 function filterTablee() {
   const searchInput = document.getElementById("searchInput");
   const filter = searchInput.value.toLowerCase();
-  const table = document.getElementById("myTable");
+  const table = document.getElementById("table");
   const tr = table.getElementsByTagName("tr");
 
   for (let i = 0; i < tr.length; i++) {
