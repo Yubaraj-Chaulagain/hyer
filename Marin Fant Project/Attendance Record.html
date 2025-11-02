@@ -9,20 +9,20 @@ window.frames["print_frame"].document.body.innerHTML = document.getElementById("
 window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
-<button id="exportButton">Export to Excel</button>
+ <button onclick="exportToExcel('dataToExport', 'EmployeeData.xls')">Export to Excel</button>
 
-		<script src="path/to/table2excel.js"></script> 
-
-	<script>
-        document.getElementById('exportButton').addEventListener('click', function() {
-            let table = document.getElementById('myTable');
-            TableToExcel.convert(table, {
-                name: `myExportedData.xlsx`, // File name
-                sheet: {
-                    name: 'Sheet 1' // Sheet name
-                }
-            });
-        });
+    <script>
+        function exportToExcel(divId, filename = 'export.xls') {
+            var html = document.getElementById(divId).outerHTML;
+            var uri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
+            var link = document.createElement("a");
+            link.href = uri;
+            link.style = "visibility:hidden";
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     </script>
 </head>
 
