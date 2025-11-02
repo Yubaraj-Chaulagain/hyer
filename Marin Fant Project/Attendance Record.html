@@ -13,6 +13,40 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
 </head>
+     <button onclick="copyTableToClipboard('myTable')">Copy</button>
+    <script>
+function copyTableToClipboard(tableId) {
+  const table = document.getElementById(tableId);
+
+  // Check if the table exists
+  if (!table) {
+    console.error("Table with ID '" + tableId + "' not found.");
+    return;
+  }
+
+  // Create a Range object
+  const range = document.createRange();
+
+  // Set the Node to select the table
+  range.selectNode(table);
+
+  // Add the Range to the set of window selections
+  window.getSelection().removeAllRanges(); // Clear any existing selections
+  window.getSelection().addRange(range);
+
+  try {
+    // Execute the 'copy' command
+    document.execCommand('copy');
+    console.log("Table copied to clipboard!");
+  } catch (err) {
+    console.error("Failed to copy table: ", err);
+  } finally {
+    // Clear the selection after copying
+    window.getSelection().removeAllRanges();
+  }
+}
+</script>
+
     
             <input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
         <script>
