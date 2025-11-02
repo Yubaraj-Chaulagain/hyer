@@ -14,22 +14,25 @@ window.frames["print_frame"].window.print();
 }</script>
 </head>
     
-        <button onclick="myFunctionss()">Copy text</button>
+        <button onclick="copyTableHtml()">Copy Table HTML</button>
     <script>
-function myFunctionss() {
-  // Get the text field
-  var copyText = document.getElementById("myDivToExport");
+async function copyTableHtml() {
+        const table = document.getElementById('myTable');
+        if (!table) {
+            alert('Table not found!');
+            return;
+        }
 
-  // Select the text field
-  copyText.select();
-  copyText.setSelectionRange(0, 99999); // For mobile devices
+        const tableHtml = table.outerHTML; // Use outerHTML to include the <table> tag itself
 
-  // Copy the text inside the text field
-  navigator.clipboard.writeText(copyText.value);
-  
-  // Alert the copied text
-  alert("Copied the text: " + copyText.value);
-}
+        try {
+            await navigator.clipboard.writeText(tableHtml);
+            alert('Table HTML copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy table HTML: ', err);
+            alert('Failed to copy table HTML. Please try again or copy manually.');
+        }
+    }
 </script>
 
             <input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
