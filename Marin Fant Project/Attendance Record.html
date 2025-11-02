@@ -9,7 +9,21 @@ window.frames["print_frame"].document.body.innerHTML = document.getElementById("
 window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
+<button id="exportButton">Export to Excel</button>
 
+		<script src="path/to/table2excel.js"></script> 
+
+	<script>
+        document.getElementById('exportButton').addEventListener('click', function() {
+            let table = document.getElementById('myTable');
+            TableToExcel.convert(table, {
+                name: `myExportedData.xlsx`, // File name
+                sheet: {
+                    name: 'Sheet 1' // Sheet name
+                }
+            });
+        });
+    </script>
 </head>
 
 
@@ -32,7 +46,7 @@ Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filt
  function filterTableByDate() {
   const startDateInput = document.getElementById('startDate');
   const endDateInput = document.getElementById('endDate');
-  const table = document.getElementById('table');
+  const table = document.getElementById('myTable');
   const rows = table.getElementsByTagName('tr');
 
   const startDate = new Date(startDateInput.value);
@@ -59,7 +73,7 @@ function filterTable() {
   let input, filter, table, tr, td, i, txtValue;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase(); // Convert input to uppercase for case-insensitive search
-  table = document.getElementById("table");
+  table = document.getElementById("myTable");
   tr = table.getElementsByTagName("tr");
 
   // Loop through all table rows, and hide those who don't match the search query
@@ -83,9 +97,6 @@ function filterTable() {
 
 </script>
 
-	<script src="path/to/table2excel.js"></script> 
-
-
     <script>
       const sheetId = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
       const gid = '1605291961'; // Get this from your sheet's URL (0 for the first sheet)
@@ -98,7 +109,7 @@ function filterTable() {
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="table" class="display" cellspacing="0" width="100%"><thead><tr>';
+          let html = '<table id="myTable" class="display" cellspacing="0" width="100%"><thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
@@ -113,7 +124,7 @@ function filterTable() {
           });
           html += '</tbody></table>';
 
-          document.getElementById('table4').innerHTML = html;
+          document.getElementById('myDivToExport').innerHTML = html;
         })
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
@@ -122,7 +133,7 @@ function filterTable() {
 function filterTablee() {
   const searchInput = document.getElementById("searchInput");
   const filter = searchInput.value.toLowerCase();
-  const table = document.getElementById("table");
+  const table = document.getElementById("myTable");
   const tr = table.getElementsByTagName("tr");
 
   for (let i = 0; i < tr.length; i++) {
