@@ -10,20 +10,35 @@ window.frames["print_frame"].window.focus();
 window.frames["print_frame"].window.print();
 }</script>
 </head>
- 
-<script src="path/to/table2excel.js"></script>
-        <script>
-         document.getElementById('exportButton').addEventListener('click', function() {
-            var table = document.getElementById('myTable');
-            new Table2Excel().export(table, 'MyExportedTable');
-        });
-        </script>
+<script> 
+function fnExcelReport() {
+  var table = document.getElementById('myTable'); // id of table
+  var tableHTML = table.outerHTML;
+  var fileName = 'download.xls';
 
+  var msie = window.navigator.userAgent.indexOf("MSIE ");
 
-
-
-<button id="exportButton">Export to Excel</button>
-
+  // If Internet Explorer
+  if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+    dummyFrame.document.open('txt/html', 'replace');
+    dummyFrame.document.write(tableHTML);
+    dummyFrame.document.close();
+    dummyFrame.focus();
+    return dummyFrame.document.execCommand('SaveAs', true, fileName);
+  }
+  //other browsers
+  else {
+    var a = document.createElement('a');
+    tableHTML = tableHTML.replace(/  /g, '').replace(/ /g, '%20'); // replaces spaces
+    a.href = 'data:application/vnd.ms-excel,' + tableHTML;
+    a.setAttribute('download', fileName);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+</script>
+<button id="btnExport" onClick="fnExcelReport()">Export to xls</button>
 <body class="wide comments example"><p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 Search For Table..<input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search table...">
 Search for Tranjection Member Code:<input type="text" id="myInput" onkeyup="filterTable()" placeholder="Search For Tranjection Member Code..."></br>
