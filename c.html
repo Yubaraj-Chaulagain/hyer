@@ -967,19 +967,7 @@ body {
             }
 
             const data = response.getDataTable();
-            const options = {
-                title: 'Data from Google Sheet',
-                chartArea: {width: '50%'},
-               is3D: true,
-                hAxis: {
-                    title: 'Value',
-                    minValue: 0
-                },
-                vAxis: {
-                    title: 'Category'
-                  
-                }
-            };
+            
 
             const chart = new google.visualization.PieChart(document.getElementById('piechart'));
             chart.draw(data, options);
