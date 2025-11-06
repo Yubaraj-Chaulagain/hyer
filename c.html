@@ -969,8 +969,8 @@ body {
             const data = response.getDataTable();
           const options = {
                 title: 'Data from Google Sheet',
-                chartArea: {width: '25%'},
-               is3D: true,
+                chartArea: {width: '10%'},
+               is2D: true,
                 hAxis: {
                     title: 'Value',
                     minValue: 0
@@ -985,7 +985,7 @@ body {
             
 
             const chart = new google.visualization.PieChart(document.getElementById('piechart'));
-            chart.draw(data);
+            chart.draw(data,options);
         }
     </script>
   
@@ -1017,8 +1017,8 @@ body {
             const datas = responses.getDataTable();
             const optionss = {
                 title: 'Data from Google Sheet',
-                chartArea: {width: '50%'},
-               is3D: true,
+                chartArea: {width: '10%'},
+               is2D: true,
                 hAxis: {
                     title: 'Value',
                     minValue: 0
