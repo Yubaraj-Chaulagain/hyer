@@ -741,9 +741,9 @@ body {
             <div class="cardBox">
                 <div class="card">
                     <div>
-                        <div class="numbers">1,504</div>
-                        <div class="cardName">Daily Views</div>
-                    </div>
+                     <div class="numbers"><p id="Total-Member">Loading...</p></div>
+                        <div class="cardName"><h3>Total Member</h3></div>
+                  </div>
 
                     <div class="iconBx">
                         <ion-icon name="eye-outline"></ion-icon>
@@ -752,8 +752,8 @@ body {
 
                 <div class="card">
                     <div>
-                        <div class="numbers">80</div>
-                        <div class="cardName">Sales</div>
+                        <div class="numbers"><p id="total-income">Loading...</p></div>
+                        <div class="cardName"><h3>Total Income</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -763,8 +763,8 @@ body {
 
                 <div class="card">
                     <div>
-                        <div class="numbers">284</div>
-                        <div class="cardName">Comments</div>
+                        <div class="numbers"><p id="total-expenses">Loading...</p></div>
+                        <div class="cardName"><h3>Total Expenses</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -774,8 +774,8 @@ body {
 
                 <div class="card">
                     <div>
-                        <div class="numbers">$7,842</div>
-                        <div class="cardName">Earning</div>
+                        <div class="numbers"><p id="pending-value">Loading...</p></div>
+                        <div class="cardName"><h3>Pending Value</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -997,14 +997,14 @@ body {
         setInterval(() => {
             generateNewData(); // Get new data (e.g., from an API call)
             createOrUpdateChart(); // Update the chart with new data
-        }, 3000); // Refresh every 3 seconds (3000 milliseconds)
+        }, 5000); // Refresh every 3 seconds (3000 milliseconds)
     </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    <script>
         // Refresh the current page after 5 seconds
         setTimeout(function() {
             location.reload();
-        }, 5000); // 5000 milliseconds = 5 seconds
+        }, 10000); // 5000 milliseconds = 5 seconds
 
         // Or, redirect to a new URL after 10 seconds
         // setTimeout(function() {
@@ -1043,8 +1043,49 @@ toggle.onclick = function () {
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>
+  <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .data-container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .data-card {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .data-card h3 { margin: 0; color: #555; }
+        .data-card p { font-size: 24px; font-weight: bold; margin: 10px 0 0; }
+    </style>
+
+    <script>
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxC0Ttxl0v9ZUDBnbVkeC5GpKvxUUPk0cJXGt9xKaiJffCs1vFSvyYxWtchk519m-KR/exec'; // Paste your Web App URL here
+
+        async function fetchData() {
+            try {
+                const response = await fetch(webAppUrl);
+                const data = await response.json();
+
+                // Update the HTML elements with the fetched data
+                document.getElementById('Total-Member').textContent = data.TotalMember || 'N/A';
+                document.getElementById('total-income').textContent = `$${data.TotalIncome}` || 'N/A';
+                document.getElementById('total-expenses').textContent = `$${data.TotalExpenses}` || 'N/A';
+                document.getElementById('pending-value').textContent = `$${data.PendingValue}` || 'N/A';
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('Total-Member').textContent = 'Error';
+                document.getElementById('total-income').textContent = 'Error';
+                document.getElementById('total-expenses').textContent = 'Error';
+                document.getElementById('pending-value').textContent = 'Error';
+            }
+        }
+
+        fetchData();
+    </script>
+
+
+
 
 </html>
+
 
 
 
