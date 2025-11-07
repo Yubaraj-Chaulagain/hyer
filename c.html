@@ -116,47 +116,6 @@
             color: red;
         }
     </style>
-     <script>
-    const webAppUrl = 'https://script.google.com/macros/s/AKfycbz4_1TorKyvEFRb7fvaZU-pgqzJ1Kr7kis6BYUosnkeRsD07jFw6_LXwbmGKG5w7mRB/exec'; // Paste your Google Apps Script URL here
-
-async function fetchSheetData() {
-    try {
-        const response = await fetch(webAppUrl);
-        const data = await response.json();
-        renderCards(data);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
-function renderCards(data) {
-    const container = document.getElementById('card-container');
-    container.innerHTML = ''; // Clear previous content
-
-    data.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        let cardContent = '';
-        
-        // Assuming the first column is the title and the rest are details
-        const columns = Object.keys(item);
-        if (columns.length > 0) {
-            cardContent += `<h3>${item[columns[0]]}</h3>`;
-            for (let i = 1; i < columns.length; i++) {
-                cardContent += `<p><strong>${columns[i]}:</strong> ${item[columns[i]]}</p>`;
-            }
-        }
-
-        card.innerHTML = cardContent;
-        container.appendChild(card);
-    });
-}
-
-// Fetch data when the page loads
-document.addEventListener('DOMContentLoaded', fetchSheetData);
-    
-  </script>  
     <style>
        /* =========== Google Fonts ============ */
 @import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap");
