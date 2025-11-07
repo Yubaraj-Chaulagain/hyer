@@ -742,7 +742,7 @@ body {
                 <div class="card">
                     <div>
                      <div class="numbers"><p id="Total-Member">Loading...</p></div>
-                        <div class="cardName"><h3 id="name1">Loading...</h3></div>
+                        <div class="cardName"><h3 id="name1-value">Loading...</h3></div>
                   </div>
 
                     <div class="iconBx">
@@ -753,7 +753,7 @@ body {
                 <div class="card">
                     <div>
                         <div class="numbers"><p id="total-income">Loading...</p></div>
-                        <div class="cardName"><h3 id="name2">Loading...</h3></div>
+                        <div class="cardName"><h3 id="name2-value">Loading...</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -764,7 +764,7 @@ body {
                 <div class="card">
                     <div>
                         <div class="numbers"><p id="total-expenses">Loading...</p></div>
-                        <div class="cardName"><h3 id="name3">Loading...</h3></div>
+                        <div class="cardName"><h3 id="name3-value">Loading...</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -775,7 +775,7 @@ body {
                 <div class="card">
                     <div>
                         <div class="numbers"><p id="pending-value">Loading...</p></div>
-                        <div class="cardName"><h3 id="name4">Loading...</h3></div>
+                        <div class="cardName"><h3 id="name4-value">Loading...</h3></div>
                     </div>
 
                     <div class="iconBx">
@@ -1069,20 +1069,20 @@ toggle.onclick = function () {
                 document.getElementById('total-income').textContent = `$${data.TotalIncome}` || 'N/A';
                 document.getElementById('total-expenses').textContent = `$${data.TotalExpenses}` || 'N/A';
                 document.getElementById('pending-value').textContent = `$${data.PendingValue}` || 'N/A';
-                document.getElementById('name1').textContent = `$${data.Name1}` || 'N/A';
-                document.getElementById('Name2').textContent = `$${data.Name2}` || 'N/A';
-                document.getElementById('name3').textContent = `$${data.Name3}` || 'N/A';
-                document.getElementById('name4').textContent = `$${data.Name4}` || 'N/A';
+                document.getElementById('name1-value').textContent = `$${data.Name1}` || 'N/A';
+                document.getElementById('Name2-value').textContent = `$${data.Name2}` || 'N/A';
+                document.getElementById('name3-value').textContent = `$${data.Name3}` || 'N/A';
+                document.getElementById('name4.value').textContent = `$${data.Name4}` || 'N/A';
             } catch (error) {
                 console.error("Error fetching data:", error);
                 document.getElementById('Total-Member').textContent = 'Error';
                 document.getElementById('total-income').textContent = 'Error';
                 document.getElementById('total-expenses').textContent = 'Error';
                 document.getElementById('pending-value').textContent = 'Error';
-                document.getElementById('name1').textContent = 'Error';
-                document.getElementById('name2').textContent = 'Error';
-                document.getElementById('name3').textContent = 'Error';
-                document.getElementById('name4').textContent = 'Error';
+                document.getElementById('name1.value').textContent = 'Error';
+                document.getElementById('name2.value').textContent = 'Error';
+                document.getElementById('name3.value').textContent = 'Error';
+                document.getElementById('name4.value').textContent = 'Error';
             }
         }
 
