@@ -753,8 +753,8 @@ body {
             <div class="cardBox">
                 <div class="card">
                     <div>
-                     <div class="numbers"><p id="Total-Member">Loading...</p></div>
-                        <div class="cardName">Total Member</div>
+                     <div class="numbers"><p id="Now Balance">Loading...</p></div>
+                        <div class="cardName">Now Balance</div>
                   </div>
 
                     <div class="iconBx">
@@ -978,14 +978,14 @@ toggle.onclick = function () {
                 const data = await response.json();
 
                 // Update the HTML elements with the fetched data
-                document.getElementById('Total-Member').textContent = data.TotalMember || 'N/A';
+                document.getElementById('Now Balance').textContent = `$${data.NowBalance}` || 'N/A';
                 document.getElementById('total-income').textContent = `$${data.TotalIncome}` || 'N/A';
                 document.getElementById('total-expenses').textContent = `$${data.TotalExpenses}` || 'N/A';
                 document.getElementById('pending-value').textContent = `$${data.PendingValue}` || 'N/A';
                 
             } catch (error) {
                 console.error("Error fetching data:", error);
-                document.getElementById('Total-Member').textContent = 'Error';
+                document.getElementById('Now Balance').textContent = 'Error';
                 document.getElementById('total-income').textContent = 'Error';
                 document.getElementById('total-expenses').textContent = 'Error';
                 document.getElementById('pending-value').textContent = 'Error';
