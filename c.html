@@ -6,15 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive Admin Dashboard</title>
-    <script>
-<audio controls>
-  var bgAudio = document.getElementById("bgMusic");
-
-  function unmuteAudio() {
-    bgAudio.muted = false;
-  }
-        </audio>
-</script>
+    <audio controls autoplay>
+  <source src="horse.ogg" type="audio/ogg">
+  <source src="horse.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
     <audio id="bgMusic" autoplay muted loop>
   <source src="https://fulkumari.com.np/mixkit-little-birds-singing-in-the-trees-17.wav" type="audio/mpeg">
   <source src="https://fulkumari.com.np/mixkit-little-birds-singing-in-the-trees-17.wav" type="audio/ogg">
@@ -749,7 +745,7 @@ body {
                     <ion-icon name="menu-outline"></ion-icon>
                 </div>
 
-                <div class="search"><button onclick="unmuteAudio()">Unmute Sound</button>
+                <div class="search">
                     <label>
                         <input type="text" placeholder="Search here">
                         <ion-icon name="search-outline"></ion-icon>
