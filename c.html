@@ -8,6 +8,17 @@
     <title>Responsive Admin Dashboard</title>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+       <script>
+        // Refresh the current page after 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000); // 30000 milliseconds = 20 seconds
+
+        // Or, redirect to a new URL after 10 seconds
+        // setTimeout(function() {
+        //     window.location.href = "https://www.example.com/another-page.html";
+        // }, 10000); // 10000 milliseconds = 10 seconds
+    </script>
     <!-- ======= Styles ====== -->
     
     <style>
@@ -910,20 +921,10 @@ body {
         setInterval(() => {
             generateNewData(); // Get new data (e.g., from an API call)
             createOrUpdateChart(); // Update the chart with new data
-        }, 5000); // Refresh every 3 seconds (3000 milliseconds)
+        }, 10000); // Refresh every 3 seconds (3000 milliseconds)
     </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-   <script>
-        // Refresh the current page after 5 seconds
-        setTimeout(function() {
-            location.reload();
-        }, 10000); // 5000 milliseconds = 5 seconds
 
-        // Or, redirect to a new URL after 10 seconds
-        // setTimeout(function() {
-        //     window.location.href = "https://www.example.com/another-page.html";
-        // }, 10000); // 10000 milliseconds = 10 seconds
-    </script>
   
   
     <!-- =========== Scripts =========  -->
