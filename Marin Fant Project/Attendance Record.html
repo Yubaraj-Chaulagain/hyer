@@ -197,11 +197,11 @@ function filterTable() {
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
     <script>
-      const sheetId = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
-      const gid = '857092232'; // Get this from your sheet's URL (0 for the first sheet)
-      const queryUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+      const sheetIds = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
+      const gids = '857092232'; // Get this from your sheet's URL (0 for the first sheet)
+      const queryUrls = `https://docs.google.com/spreadsheets/d/${sheetIds}/gviz/tq?tqx=out:json&tq&gid=${gids}`;
 
-      fetch(queryUrl)
+      fetch(queryUrls)
         .then(response => response.text())
         .then(data => {
           const jsonString = data.substring(data.indexOf("google.visualization.Query.setResponse(") + 39, data.lastIndexOf(");"));
