@@ -1026,18 +1026,18 @@ toggle.onclick = function () {
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
 <script>
-      const sheetId = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Get this from your sheet's URL
-      const gid = '43821471'; // Get this from your sheet's URL (0 for the first sheet)
-      const queryUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+      const sheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Get this from your sheet's URL
+      const gids = '43821471'; // Get this from your sheet's URL (0 for the first sheet)
+      const queryUrls = `https://docs.google.com/spreadsheets/d/${sheetIds}/gviz/tq?tqx=out:json&tq&gid=${gids}`;
 
-      fetch(queryUrl)
+      fetch(queryUrls)
         .then(response => response.text())
         .then(data => {
           const jsonString = data.substring(data.indexOf("google.visualization.Query.setResponse(") + 39, data.lastIndexOf(");"));
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="myTable" class="display" padding: 10px; cellspacing="0" width="100%"><thead padding: 10px;><tr padding: 10px;>';
+          let html = '<table id="myTable" class="display" cellspacing="0" width="100%"><thead><tr>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
@@ -1052,11 +1052,9 @@ toggle.onclick = function () {
           });
           html += '</tbody></table>';
 
-          document.getElementById('software').innerHTML = html;
+          document.getElementById('myDivToExports').innerHTML = html;
         })
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
-
-
 
 </html>
