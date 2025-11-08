@@ -15,18 +15,6 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
-
-td, th {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #04AA6D;
-  color: white;
-}
 </style>
     <style>
         html, body {
@@ -1045,7 +1033,7 @@ toggle.onclick = function () {
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="myTable" class="display" cellspacing="0" width="100%"><thead><tr>';
+          let html = '<table id="myTable" class="display" padding: 10px; cellspacing="0" width="100%"><thead padding: 10px;><tr padding: 10px;>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
