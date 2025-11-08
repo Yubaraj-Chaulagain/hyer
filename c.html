@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<audio id="bg-music" src="background.mp3" loop></audio>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responsive Admin Dashboard</title>
+    <script>
+        const bgMusic = document.getElementById('bg-music');
+         bgMusic.play().catch(e => console.error("Audio playback failed:", e));
+
+       
+    </script>
     <audio controls autoplay>
   <source src="https://fulkumari.com.np/audio-for-video-editing-11-368969.mp3" type="audio/ogg">
   <source src="https://fulkumari.com.np/audio-for-video-editing-11-368969.mp3" type="audio/mpeg">
