@@ -732,7 +732,27 @@ body {
         </div>
 <meta charset="UTF-8">
         <!-- ========================= Main ==================== <ion-icon name="telescope-outline"></ion-icon>-->
-        <div class="main">
+       <script>
+function filterTablee() {
+  const searchInput = document.getElementById("searchInput");
+  const filter = searchInput.value.toLowerCase();
+  const table = document.getElementById("myDivToExport");
+  const tr = table.getElementsByTagName("tr");
+
+  for (let i = 0; i < tr.length; i++) {
+    let td = tr[i].getElementsByTagName("td");
+    if (td.length > 0) { // Ensure it's a data row, not a header
+      let rowText = tr[i].innerText.toLowerCase();
+      if (rowText.includes(filter)) {
+        tr[i].style.display = ""; // Show the row
+      } else {
+        tr[i].style.display = "none"; // Hide the row
+      }
+    }
+  }
+}
+</script> 
+      <div class="main">
             <div class="topbar">
                 <div class="toggle">
                     <ion-icon name="menu-outline"></ion-icon>
@@ -740,7 +760,7 @@ body {
 
                 <div class="search">
                     <label>
-                        <input type="text" placeholder="Search here">
+                        <input type="text" id="searchInput" onkeyup="filterTablee()" placeholder="Search Samiti Staff...">
                         <ion-icon name="search-outline"></ion-icon>
                         
                     </label>
