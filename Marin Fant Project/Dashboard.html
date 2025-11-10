@@ -831,11 +831,57 @@ function filterTablee() {
                         <h2>Samiti Staffs</h2>
                         <a href="#" class="btn">View All</a>
                     </div>
+                  <div class="scroll-containerr">
 <div id="myDivToExport"></div>
                     
                 </div>
+                  </div>
 
                 <!-- ================= New Customers ================ -->
+              <style>
+  .scroll-containerr {
+  height: 200px; /* Set a fixed height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrollbar only when content overflows */
+  border: 1px solid #ccc; /* Optional: Add a border for visual clarity */
+}
+
+/* Optional: Style the table itself */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+  
+</style>
+              <script>
+  window.onload = function() {
+    const scrollContainerr = document.querySelector('.scroll-containerr');
+    let scrollDirectionr = 1; // 1 for down, -1 for up
+    let scrollSpeedr = 2; // Adjust scroll speed as needed
+
+    function autoScroll() {
+      if (scrollDirectionr === 1) {
+        scrollContainerr.scrollTop += scrollSpeedr;
+        if (scrollContainerr.scrollTop + scrollContainerr.clientHeight >= scrollContainerr.scrollHeight) {
+          scrollDirectionr = -1; // Reached bottom, now scroll up
+        }
+      } else {
+        scrollContainerr.scrollTop -= scrollSpeedr;
+        if (scrollContainerr.scrollTop <= 0) {
+          scrollDirectionr = 1; // Reached top, now scroll down
+        }
+      }
+      requestAnimationFrame(autoScroll); // Continue scrolling
+    }
+
+    autoScroll(); // Start the automatic scrolling
+  };
+</script>
                <div class="recentCustomers">
                     <div class="cardHeader">
                         <h2>Software Devlopers</h2>
