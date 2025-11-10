@@ -12,7 +12,63 @@
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-          let html = '<table id="myTable" class="animated-table" padding: 10px; cellspacing="0" width="100%"><thead padding: 10px;><tr padding: 10px;>';
+          let html = '<table id="myTable" class="animated-table" padding: 10px; cellspacing="0" width="100%" style="/* Default styles for larger screens (e.g., desktops) */
+.responsive-table {
+  width: 100%; /* Table takes full width */
+  border-collapse: collapse;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Media query for smaller screens (e.g., mobile devices) */
+@media only screen and (max-width: 600px) {
+  .responsive-table,
+  .responsive-table thead,
+  .responsive-table tbody,
+  .responsive-table th,
+  .responsive-table td,
+  .responsive-table tr {
+    display: block; /* Stack table elements */
+  }
+
+  .responsive-table thead tr {
+    position: absolute;
+    top: -9999px; /* Hide table headers visually */
+    left: -9999px;
+  }
+
+  .responsive-table tr {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+  }
+
+  .responsive-table td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%; /* Space for data labels */
+  }
+
+  .responsive-table td:before {
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    /* You'll need to add content for each data cell here */
+    /* Example: content: attr(data-label); */
+  }
+
+  /* Specific content for each cell's label (adjust as needed) */
+  .responsive-table td:nth-of-type(1):before { content: "Header 1:"; }
+  .responsive-table td:nth-of-type(2):before { content: "Header 2:"; }
+  .responsive-table td:nth-of-type(3):before { content: "Header 3:"; }
+}"><thead padding: 10px;><tr padding: 10px;>';
           table.cols.forEach(col => {
             html += `<th>${col.label}</th>`;
           });
