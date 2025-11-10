@@ -12,7 +12,11 @@
           const jsonData = JSON.parse(jsonString);
           const table = jsonData.table;
 
-        let  html += '</tr></thead><tbody>';
+          let html = '<table id="myTable" class="animated-table" padding: 10px; cellspacing="0" width="100%"><thead padding: 10px;><tr padding: 10px;>';
+          table.cols.forEach(col => {
+            html += `<th>${col.label}</th>`;
+          });
+         html += '</tr></thead><tbody>';
 
           table.rows.forEach(row => {
             html += '<tr>';
