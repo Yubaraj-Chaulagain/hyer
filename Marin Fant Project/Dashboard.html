@@ -825,27 +825,13 @@ function filterTablee() {
             </div>
 
             <!-- ================ Order Details List ================= -->
-            <div class="details">
-                <div class="recentOrders">
-                    <div class="cardHeader">
-                        <h2>Samiti Staffs</h2>
-                        <a href="#" class="btn">View All</a>
-                    </div>
-                  <div class="scroll-containerr">
-<div id="myDivToExport"></div>
-                    
-                </div>
-                  </div>
-
-                <!-- ================= New Customers ================ -->
-              <style>
-  height: 500px; /* Set a fixed height for the scrollable area */
+        <style>
+  height: 300px; /* Set a fixed height for the scrollable area */
   .scroll-containerr {
   overflow-y: auto; /* Enable vertical scrollbar only when content overflows */
   border: 1px solid #ccc; /* Optional: Add a border for visual clarity */
 }
-</style>
-              <script>
+          <script>
   window.onload = function() {
     const scrollContainerr = document.querySelector('.scroll-containerr');
     let scrollDirectionr = 1; // 1 for down, -1 for up
@@ -869,7 +855,21 @@ function filterTablee() {
     autoScroll(); // Start the automatic scrolling
   };
 </script>
-               <div class="recentCustomers">
+</style>
+            <div class="details">
+                <div class="recentOrders">
+                    <div class="cardHeader">
+                        <h2>Samiti Staffs</h2>
+                        <a href="#" class="btn">View All</a>
+                    </div>
+                  <div class="scroll-containerr">
+<div id="myDivToExport"></div>
+                    
+                </div>
+                  </div>
+
+                <!-- ================= New Customers ================ -->
+            <div class="recentCustomers">
                     <div class="cardHeader">
                         <h2>Software Devlopers</h2>
                         <a href="#" class="btn">View All</a>
