@@ -826,11 +826,14 @@ function filterTablee() {
 
             <!-- ================ Order Details List ================= -->
         <style>
-  height: 300px; /* Set a fixed height for the scrollable area */
+          .scroll-containerr {
+   width: 100%;
+            height: 100%; /* Set a fixed height for the scrollable area */
   .scroll-containerr {
   overflow-y: auto; /* Enable vertical scrollbar only when content overflows */
   border: 1px solid #ccc; /* Optional: Add a border for visual clarity */
 }
+          </style>
           <script>
   window.onload = function() {
     const scrollContainerr = document.querySelector('.scroll-containerr');
@@ -855,7 +858,7 @@ function filterTablee() {
     autoScroll(); // Start the automatic scrolling
   };
 </script>
-</style>
+
             <div class="details">
                 <div class="recentOrders">
                     <div class="cardHeader">
