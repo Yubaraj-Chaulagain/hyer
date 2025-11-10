@@ -4,6 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Animated Scrolling Table</title>
+    <script>
+  window.onload = function() {
+    const scrollContainerr = document.querySelector('.scroll-containerr');
+    let scrollDirectionr = 1; // 1 for down, -1 for up
+    let scrollSpeedr = 2; // Adjust scroll speed as needed
+
+    function autoScroll() {
+      if (scrollDirectionr === 1) {
+        scrollContainerr.scrollTop += scrollSpeedr;
+        if (scrollContainerr.scrollTop + scrollContainerr.clientHeight >= scrollContainerr.scrollHeight) {
+          scrollDirectionr = -1; // Reached bottom, now scroll up
+        }
+      } else {
+        scrollContainerr.scrollTop -= scrollSpeedr;
+        if (scrollContainerr.scrollTop <= 0) {
+          scrollDirectionr = 1; // Reached top, now scroll down
+        }
+      }
+      requestAnimationFrame(autoScroll); // Continue scrolling
+    }
+
+    autoScroll(); // Start the automatic scrolling
+  };
+</script>
 <style>
     /* Container for the table to enable scrolling */
     .table-container {
