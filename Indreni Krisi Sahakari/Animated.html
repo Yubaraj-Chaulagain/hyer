@@ -1,108 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Animated Scrolling Table</title>
-    <script>
-  window.onload = function() {
-    const scrollContainerr = document.querySelector('.scroll-containerr');
-    let scrollDirectionr = 1; // 1 for down, -1 for up
-    let scrollSpeedr = 2; // Adjust scroll speed as needed
-
-    function autoScroll() {
-      if (scrollDirectionr === 1) {
-        scrollContainerr.scrollTop += scrollSpeedr;
-        if (scrollContainerr.scrollTop + scrollContainerr.clientHeight >= scrollContainerr.scrollHeight) {
-          scrollDirectionr = -1; // Reached bottom, now scroll up
-        }
-      } else {
-        scrollContainerr.scrollTop -= scrollSpeedr;
-        if (scrollContainerr.scrollTop <= 0) {
-          scrollDirectionr = 1; // Reached top, now scroll down
-        }
-      }
-      requestAnimationFrame(autoScroll); // Continue scrolling
-    }
-
-    autoScroll(); // Start the automatic scrolling
-  };
-</script>
-<style>
-    /* Container for the table to enable scrolling */
-    .table-container {
-        height: 500px; /* Fixed height for the scrollable area */
-        overflow: hidden; /* Hide the scrollbar */
-        border: 1px solid #ccc;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    /* The actual table for the content */
-    .animated-table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    /* Style for table cells */
-    .animated-table td {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        font-family: sans-serif;
-    }
-
-    /* Alternating row colors for better readability */
-    .animated-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-</style>
-</head>
-<body>
-
-<h1>Automatic Animated Scrolling Table</h1>
-
-<div class="table-container">
-  <div id="myDivToExport"></div>
-    
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const container = document.querySelector('.table-container');
-        const table = document.querySelector('.animated-table');
-        let scrollSpeed = 10; // Speed in milliseconds (lower is faster)
-        let scrollStep = 1; // Pixels per step
-
-        function autoScrollUp() {
-            // Scroll the container up by one pixel
-            container.scrollTop += scrollStep;
-
-            // Check if the scroll has reached the end
-            if (container.scrollTop + container.clientHeight >= table.scrollHeight) {
-                // If at the end, jump back to the top seamlessly
-                // This is done by appending the first row to the end, then scrolling back to 0
-                const firstRow = table.querySelector('tr');
-                table.appendChild(firstRow.cloneNode(true));
-                firstRow.remove();
-                container.scrollTop = container.scrollTop - firstRow.offsetHeight;
-            }
-        }
-
-        // Set an interval to call the scrolling function
-        let scrollInterval = setInterval(autoScrollUp, scrollSpeed);
-
-        // Optional: Pause scrolling on hover
-        container.addEventListener('mouseenter', () => {
-            clearInterval(scrollInterval);
-        });
-
-        container.addEventListener('mouseleave', () => {
-            scrollInterval = setInterval(autoScrollUp, scrollSpeed);
-        });
-    });
-</script>
-
-</body>
-  
+<div class="scroll-containerr">
+ <div id="myDivToExport"></div> 
     <script>
       const sheetId = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Get this from your sheet's URL
       const gid = '1071393189'; // Get this from your sheet's URL (0 for the first sheet)
@@ -133,6 +30,49 @@
           document.getElementById('myDivToExport').innerHTML = html;
         })
         .catch(error => console.error('Error fetching sheet data:', error));
-    </script>
+    </script> 
+  
+  
+  
+  
+  
+</div>        
+          <script>
+  window.onload = function() {
+    const scrollContainerr = document.querySelector('.scroll-containerr');
+    let scrollDirectionr = 1; // 1 for down, -1 for up
+    let scrollSpeedr = 2; // Adjust scroll speed as needed
 
-</html>
+    function autoScroll() {
+      if (scrollDirectionr === 1) {
+        scrollContainerr.scrollTop += scrollSpeedr;
+        if (scrollContainerr.scrollTop + scrollContainerr.clientHeight >= scrollContainerr.scrollHeight) {
+          scrollDirectionr = -1; // Reached bottom, now scroll up
+        }
+      } else {
+        scrollContainerr.scrollTop -= scrollSpeedr;
+        if (scrollContainerr.scrollTop <= 0) {
+          scrollDirectionr = 1; // Reached top, now scroll down
+        }
+      }
+      requestAnimationFrame(autoScroll); // Continue scrolling
+    }
+
+    autoScroll(); // Start the automatic scrolling
+  };
+</script>
+        
+
+
+
+
+
+<style>
+          .scroll-containerr {
+   height: 500px;
+  overflow-x: auto; /* Enables horizontal scrolling if content overflows */
+            /* Set a fixed height for the scrollable area */
+  overflow-y: auto; /* Enable vertical scrollbar only when content overflows */
+  border: 1px solid #ccc; /* Optional: Add a border for visual clarity */
+}
+          </style>
