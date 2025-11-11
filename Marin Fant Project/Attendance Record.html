@@ -196,39 +196,7 @@ function filterTable() {
         })
         .catch(error => console.error('Error fetching sheet data:', error));
     </script>
-    <script>
-      const sheetIds = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0'; // Get this from your sheet's URL
-      const gids = '857092232'; // Get this from your sheet's URL (0 for the first sheet)
-      const queryUrls = `https://docs.google.com/spreadsheets/d/${sheetIds}/gviz/tq?tqx=out:json&tq&gid=${gids}`;
-
-      fetch(queryUrls)
-        .then(response => response.text())
-        .then(data => {
-          const jsonString = data.substring(data.indexOf("google.visualization.Query.setResponse(") + 39, data.lastIndexOf(");"));
-          const jsonData = JSON.parse(jsonString);
-          const table = jsonData.table;
-
-          let html = '<table id="myTable" class="display" cellspacing="0" width="100%"><thead><tr>';
-          table.cols.forEach(col => {
-            html += `<th>${col.label}</th>`;
-          });
-          html += '</tr></thead><tbody>';
-
-          table.rows.forEach(row => {
-            html += '<tr>';
-            row.c.forEach(cell => {
-              html += `<td>${cell && (cell.f || cell.v) ? (cell.f || cell.v) : ''}</td>`;
-            });
-            html += '</tr>';
-          });
-          html += '</tbody></table>';
-
-          document.getElementById('myDivToExports').innerHTML = html;
-        })
-        .catch(error => console.error('Error fetching sheet data:', error));
-    </script>
-
-
+   
 <script>
 function filterTablee() {
   const searchInput = document.getElementById("searchInput");
