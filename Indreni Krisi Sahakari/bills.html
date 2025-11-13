@@ -14,79 +14,59 @@
     <link rel="stylesheet"  href="invoice.css">
 
     <!-- jQuery CDN -->
-    <!--<script src="https://code.jquery.com/jquery-3.6.2.slim.js" integrity="sha256-OflJKW8Z8amEUuCaflBZJ4GOg4+JnNh9JdVfoV+6biw=" crossorigin="anonymous"></script>-->
-    <script src="https://code.jquery.com/jquery-3.6.3.js" ></script>
+    <script src="https://code.jquery.com/jquery-3.6.2.slim.js" integrity="sha256-OflJKW8Z8amEUuCaflBZJ4GOg4+JnNh9JdVfoV+6biw=" crossorigin="anonymous"></script>
+    
     <!-- For Invoice  -->
     <script src="invoice.js"></script>
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
 
 </head>
   <body>
     
 
     <div class="container ">
+       
 
-      <form method="POST" class="needs-validation" novalidate   action="https://script.google.com/macros/s/.../exec"   >
-
-        <div class="card mt-3">
+        <div class="card">
             <div class="card-header text-center">
-             <h4>Imagination (INVOICE) Apps Script</h4>
+              <h4>INVOICE</h4>
             </div>
             <div class="card-body">
-               <div class="row">
+
+                <div class="row">
                     <div class="col-8">
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Customer</span>
-                            <input type="text" class="form-control"   
-                                   placeholder="Customer" name="cust_nm" 
-                                   required minlength="4"  >
-
-                            <div class="invalid-feedback">
-                                Please Enter Customer Name </div>                          
+                            <input type="text" class="form-control" placeholder="Customer"  >
                         </div>
             
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Address</span>
-                            <input type="text" 
-                                   class="form-control" placeholder="Address" 
-                                   name="addr"  >
+                            <input type="text" class="form-control" placeholder="Address"  >
                         </div>
             
                         <div class="input-group mb-3">
                             <span class="input-group-text" >City</span>
-                            <input type="text" class="form-control" 
-                                   placeholder="City"  name="city">
+                            <input type="text" class="form-control" placeholder="City"  >
                         </div>
                     </div>
                     <div class="col-4">
                       
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Inv. No</span>
-                            <input type="text" class="form-control" 
-                                   placeholder="Inv. No"  id="inv_no" 
-                                   name="inv_no" autocomplete="off" 
-                                   required >
-                            <div class="input-group-append">
-                                  <button class="btn btn-outline-secondary"  
-                                          type="button" onclick="Search();">
-                                      <i class="bi bi-search"></i></button>
-                            </div>
-                            <div class="valid-feedback">Invoice No. is 
-                            OK</div>
+                            <input type="text" class="form-control" placeholder="Inv. No"  >
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Inv. Date</span>
-                            <input type="date" class="form-control" 
-                                   placeholder="Inv. Date" name="inv_dt">
+                            <input type="date" class="form-control" placeholder="Inv. Date"  >
                         </div>
-                    </div>
-               </div>
 
-               <input type="hidden"  id="IsNew"    name="IsNew"    value="Y">
-               <input type="hidden"  id="StartRow" name="StartRow" value="0"> 
-               <input type="hidden"  id="RowCount" name="RowCount" value="0"> 
+
+
+                    </div>
+                </div>
+
 
                 <table class="table table-bordered">
                     <thead class="table-success">
@@ -97,9 +77,8 @@
                         <th scope="col" class="text-end">Rate</th>
                         <th scope="col" class="text-end">Amount</th>
                         <th scope="col" class="NoPrint">                         
-                            <button type="button" 
-                                    class="btn btn-sm btn-success" 
-                                    onclick="BtnAdd()">+</button>
+                            <button type="button" class="btn btn-sm btn-success" onclick="BtnAdd()">+</button>
+                          
                         </th>
 
                       </tr>
@@ -107,87 +86,48 @@
                     <tbody id="TBody">
                       <tr id="TRow" class="d-none">
                         <th scope="row">1</th>
-                        <td>
-                          <input class="form-control " name="item_nm" 
-                                 list="mylist" autocomplete="off" 
-                                 required value="a"  >
-                          <datalist id="mylist" ></datalist>
-                        </td>
-                        <td><input type="number" 
-                                   class="form-control text-end" name="qty"  
-                                   onchange="Calc(this);" ></td>
-                        <td><input type="number" 
-                                   class="form-control text-end" name="rate" 
-                                   onchange="Calc(this);"></td>
-                        <td><input type="number" 
-                                   class="form-control text-end" name="amt" 
-                                   value="0" readonly=""></td>
-                        <td class="NoPrint">
-                          <button type="button" class="btn btn-sm btn-danger" 
-                                  onclick="BtnDel(this)">X</button></td>
+                        <td><input type="text" class="form-control" ></td>
+                        <td><input type="number" class="form-control text-end" name="qty" onchange="Calc(this);"></td>
+                        <td><input type="number" class="form-control text-end" name="rate"  onchange="Calc(this);"></td>
+                        <td><input type="number" class="form-control text-end" name="amt" value="0" disabled=""></td>
+                        <td class="NoPrint"><button type="button" class="btn btn-sm btn-danger" onclick="BtnDel(this)">X</button></td>
                       </tr>
                     </tbody>
                   </table>
 
+
                   <div class="row">
                     <div class="col-8">
-                        <button type="submit" 
-                                class="btn btn-primary" >Submit</button>
-                        <button type="button" class="btn btn-primary"  
-                                onclick="GetPrint()">Print</button>
-						<button type="button" class="btn btn-primary"  
-                                onclick="ShowAllData()">Show All Data</button>
+                      
+                        <button type="button" class="btn btn-primary" onclick="GetPrint()">Print</button>
+
                     </div>
                     <div class="col-4">
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Total</span>
-                            <input type="number" 
-                                   class="form-control text-end" id="FTotal" 
-                                   name="FTotal" disabled="">
+                            <input type="number" class="form-control text-end" id="FTotal" name="FTotal" disabled="">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text" >GST</span>
-                            <input type="number" 
-                                   class="form-control text-end" id="FGST" 
-                                   name="FGST" onchange="GetTotal()">
+                            <input type="number" class="form-control text-end" id="FGST" name="FGST" onchange="GetTotal()">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text" >Net Amt</span>
-                            <input type="number" 
-                                   class="form-control text-end" id="FNet" 
-                                   name="FNet" disabled="">
+                            <input type="number" class="form-control text-end" id="FNet" name="FNet" disabled="">
                         </div>
+
+
                     </div>
                 </div>
-            </div>
+             </div>
           </div>
-        </form>
-    </div>
-	
-	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Show Invoice</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-       <table class="table table-striped">
-		<tbody id="MyTBody"></tbody>
-	   </table>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        
-      </div>
-    </div>
-  </div>
-</div>
-	
-	
-	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
 
+    </div>
+
+
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
   </body>
 </html>
 <style>
@@ -477,5 +417,4 @@ function ShowAllData()
 
 }
 </script>
-  
-</script>
+
