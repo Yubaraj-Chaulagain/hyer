@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice</title>
+<style>
+@media print {
+table {
+width: 100%;
+}
+}
+body { font-family: Arial, sans-serif; margin: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th { background-color: #f2f2f2; }
+.invoice-header { text-align: center; margin-bottom: 30px; }
+.invoice-header h1 { margin: 0; }
+.totals-row td { font-weight: bold; }
+input {
+text-align: up;
+min-inline-size: 3ch; /* Optional: Prevent collapsing too small */
+border: none; /* Removes the standard border */
+outline: none; /* Removes the outline that appears on focus */
+box-shadow: none;
+/* Removes any box-shadow that might be acting as a visual border */
+}
+textarea {
+text-align: up;
+border: none; /* Removes the standard border */
+outline: none; /* Removes the outline that appears on focus */
+box-shadow: none; /* Removes any box-shadow that might be acting as a visual border */
+overflow: hidden;
+field-sizing: content;
+}
+::placeholder {
+font-size: 14px; /* Changes size of placeholder text */
+color: white; /* Styles the placeholder color */
+}
+td{
+vertical-align: top;
+}
+</style>
+</head>
+<body><div>
+<div class="invoice-details">
+<table>
+<tr>
+<td><strong>Your Company Name:</strong><input type="text"></td>
+<td class="text-right"><strong>Your Company Email:</strong><input type="text"></td>
+</tr>
+<tr>
+<td><strong>Your Company Address:</strong><input type="text"></td>
+<td class="text-right"><strong>Your Company Telphone:</strong><input type="text"></td>
+</tr>
+<tr>
+<td><strong>Invoice #:</strong> INV-<input type="text"></td>
+<td class="text-right"><strong>Date:</strong> <input type="date"></td>
+</tr>
+<tr>
+<td><strong>Bill To:</strong><input type="text"></td>
+<td class="text-right"><strong>Due Date:</strong><input type="date"></td>
+</tr>
+<tr>
+<td colspan="2"><strong>Client Address:</strong><input type="text"></td>
+</tr>
+</table>
+</div>
+<table>
+<thead>
+<tr>  <th>S.N.</th>
+<th>Item Description</th>
+<th>Quantity</th>
+<th>Unit Price</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td>
+<td><input type="text" size="30" id="Item1" name="Item1" onkeyup="check()"  ></td>
+<td><input type="text" size="10" id="Q1" name="Quantity1" onkeyup="check()"  ></td>
+<td><input type="text" size="10" id="pr1" name="prize1" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt1" name="amount1" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>2</td>
+<td><textarea cols="40" name="Item2" placeholder="welcome our website ok ji" wrap="soft" id="t2" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q2" name="Quantity2" onkeyup="check()"  ></td>
+<td><input type="text" size="10"  id="pr2" name="prize2" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt2" name="amount2" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>3</td>
+<td><textarea cols="40" name="Item3" placeholder="welcome our website ok ji" wrap="soft" id="t3" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q3" name="Quantity3" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr3" name="prize3" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt3" name="amount3" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>4</td>
+<td><textarea cols="40" name="Item4" placeholder="welcome our website ok ji" wrap="soft" id="t4"onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q4" name="Quantity4" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr4" name="prize4" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt4" name="amount4" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>5</td>
+<td><textarea cols="40" name="Item5" placeholder="welcome our website ok ji" wrap="soft" id="t5" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q5" name="Quantity5" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr5" name="prize5" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt5" name="amount5" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>6</td>
+<td><textarea cols="40" name="Item6" placeholder="welcome our website ok ji" wrap="soft" id="t6" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10"  id="Q6" name="Quantity6" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr6" name="prize6" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt6" name="amount6" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>7</td>
+<td><textarea cols="40" name="Item7" placeholder="welcome our website ok ji" wrap="soft" id="t7" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q7" name="Quantity7" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr7" name="prize7" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt7" name="amount7" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>8</td>
+<td><textarea cols="40" name="Item8" placeholder="welcome our website ok ji" wrap="soft" id="t8" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q8" name="Quantity8" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr8" name="prize8" onkeyup="check()"></td>
+<td><input type="text" size="10" id="amt8" name="amount8" onkeyup="check()" readonly></td>
+</tr>
+<tr><td>9</td>
+<td><textarea cols="40" name="Item9" placeholder="welcome our website ok ji" wrap="soft" id="t9" onkeyup="check()"></textarea></td>
+<td><input type="text" size="10" id="Q9" name="Quantity9" onkeyup="check()" ></td>
+<td><input type="text" size="10"  id="pr9" name="prize9" onkeyup="check()" ></td>
+<td><input type="text" size="10" id="amt9" name="amount9" onkeyup="check()" readonly></td>
+</tr>
+</tbody>
+<tfoot>
+<tr class="totals-row">
+<td colspan="4" style="text-align: right;">Subtotal:</td>
+<td>$<input type="text" id="Subt" name="Subtotal" onkeyup="check()" readonly></td>
+</tr>
+<tr class="totals-row">
+<td colspan="4" style="text-align: right;">Tax (5%):</td>
+<td>$<input type="text" id="Tax" name="Tax" onkeyup="check()"></td>
+</tr>
+<tr class="totals-row">
+<td colspan="4" style="text-align: right;">Total Due:</td>
+<td>$<input type="text" id="Total Due" name="Total Due" onkeyup="check()" readonly></td>
+</tr>
+</tfoot>
+</table>
+</div>
+</body>
+</html>
+<script>
+function printDivContent() {
+var divToPrint = document.getElementById('printArea');
+var newWin = window.open('');
+var htmlToPrint = '<style type="text/css">' +
+table th, table td {' +
+border:1px solid #000;' +
+padding:0.5em;' +
+}' +
+</style>';
+htmlToPrint += divToPrint.outerHTML;
+newWin.document.write(htmlToPrint);
+newWin.print();
+newWin.close();
+}
+</script>
+ (e) => {
+ (e) => {
