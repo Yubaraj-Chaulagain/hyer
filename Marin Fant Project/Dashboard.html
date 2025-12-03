@@ -935,7 +935,7 @@ function filterTablee() {
                 }
             };
 
-            const charts = new google.visualization.LineChart(document.getElementById('barchart'));
+            const charts = new google.visualization.pieChart(document.getElementById('barchart'));
             charts.draw(datas, optionss); 
         }
        createOrUpdateChart();
