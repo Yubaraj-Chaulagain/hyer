@@ -898,7 +898,7 @@ function filterTablee() {
   <!-- Piechart2 -->
   
      <script type="text/javascript">
-        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.load('current', {'packages': ['gauge']});
         google.charts.setOnLoadCallback(PieCharts);
 
         function PieCharts() {
@@ -935,7 +935,7 @@ function filterTablee() {
                 }
             };
 
-            const charts = new google.visualization.pieChart(document.getElementById('barchart'));
+            const charts = new google.visualization.gauge(document.getElementById('barchart'));
             charts.draw(datas, optionss); 
         }
        createOrUpdateChart();
