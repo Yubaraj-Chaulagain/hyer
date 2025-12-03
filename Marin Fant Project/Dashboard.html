@@ -895,13 +895,13 @@ function filterTablee() {
         }
     </script>
   
-  <!-- barchart -->
+  <!-- Piechart2 -->
   
      <script type="text/javascript">
         google.charts.load('current', {'packages': ['corechart']});
-        google.charts.setOnLoadCallback(drawCharts);
+        google.charts.setOnLoadCallback(PieCharts);
 
-        function drawCharts() {
+        function PieCharts() {
             // Replace 'YOUR_SPREADSHEET_ID' and 'YOUR_SHEET_GID' with your actual IDs
             const spreadsheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo';
             const sheetGids = '212097941'; // Use '0' if using the first sheet
