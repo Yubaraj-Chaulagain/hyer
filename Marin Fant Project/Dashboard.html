@@ -898,53 +898,45 @@ function filterTablee() {
   <!-- Piechart2 -->
   
      <script type="text/javascript">
-        google.charts.load('current', {'packages': ['gauge']});
-        google.charts.setOnLoadCallback(gaugeCharts);
+        // Loads the Google Charts library for Gauge charts
+google.charts.load('current', {'packages': ['gauge']});
+// Calls the gaugeCharts function once the library is loaded
+google.charts.setOnLoadCallback(gaugeCharts);
 
-        function gaugeCharts() {
-            // Replace 'YOUR_SPREADSHEET_ID' and 'YOUR_SHEET_GID' with your actual IDs
-            const spreadsheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo';
-            const sheetGids = '212097941'; // Use '0' if using the first sheet
+function gaugeCharts() {
+  const spreadsheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Your Sheet ID
+  const sheetGids = '212097941'; // Your Sheet GID (or '0' for the first sheet)
+  const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids; // URL to get data
 
-            // Construct the Query URL for Google Sheets
-            const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids;
+  const querys = new google.visualization.Query(queryUrls);
+  querys.send(handleQueryResponses); // Sends request to Google Sheets
+}
 
-            // Use the Google Visualization Query to fetch the data
-            const querys = new google.visualization.Query(queryUrls);
-            querys.send(handleQueryResponses);
-        }
+function handleQueryResponses(responses) {
+  if (responses.isError()) { // Checks for errors in data fetching
+    alert('Error in query: ' + responses.getMessage() + ' ' + responses.getDetailedMessage());
+    return;
+  }
+  const datas = responses.getDataTable(); // Gets the data from the sheet
+  const optionss = { // Sets chart options (title, size, 3D, axis labels)
+    title: 'Data from Google Sheet',
+    chartArea: {width: '50%'},
+    is3D: true, // Note: is3D is for Pie charts, might not apply well to Gauge
+    hAxis: { title: 'Value', minValue: 0 },
+    vAxis: { title: 'Category' }
+  };
+  const charts = new google.visualization.gauge(document.getElementById('barchart')); // Gets the 'barchart' div
+  charts.draw(datas, optionss); // Draws the gauge chart
+}
 
-        function handleQueryResponses(responses) {
-            if (responses.isError()) {
-                alert('Error in query: ' + responses.getMessage() + ' ' + responses.getDetailedMessage());
-                return;
-            }
+// createOrUpdateChart(); // Initial call (commented out in your snippet, but implied)
 
-            const datas = responses.getDataTable();
-            const optionss = {
-                title: 'Data from Google Sheet',
-                chartArea: {width: '50%'},
-               is3D: true,
-                hAxis: {
-                    title: 'Value',
-                    minValue: 0
-                },
-                vAxis: {
-                    title: 'Category'
-                  
-                }
-            };
+// Sets up a recurring refresh every 10 seconds (10000 ms)
+setInterval(() => {
+  // generateNewData(); // Placeholder for getting new data (not defined in snippet)
+  // createOrUpdateChart(); // Placeholder for re-drawing
+}, 10000);
 
-            const charts = new google.visualization.gauge(document.getElementById('barchart'));
-            charts.draw(datas, optionss); 
-        }
-       createOrUpdateChart();
-
-        // Auto-refresh mechanism
-        setInterval(() => {
-            generateNewData(); // Get new data (e.g., from an API call)
-            createOrUpdateChart(); // Update the chart with new data
-        }, 10000); // Refresh every 3 seconds (3000 milliseconds)
     </script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
               <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
