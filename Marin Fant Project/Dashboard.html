@@ -821,7 +821,7 @@ function filterTablee() {
             <!-- ================ Add Charts JS ================= -->
             <div class="chartsBx">
               <div class="chart" id="piechart"><canvas></canvas></div>
-              <div class="chart" id="barchart"><canvas></canvas></div>
+              <div class="chart" id="barcharts"><canvas></canvas></div>
             </div>
 
             <!-- ================ Order Details List ================= -->
@@ -939,7 +939,7 @@ function filterTablee() {
 
             
 
-            const chart = new google.visualization.barChart(document.getElementById('barchart'));
+            const chart = new google.visualization.pieChart(document.getElementById('barcharts'));
             chart.draw(data,options);
         }
     </script>
