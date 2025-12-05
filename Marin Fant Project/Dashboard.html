@@ -821,7 +821,7 @@ function filterTablee() {
             <!-- ================ Add Charts JS ================= -->
             <div class="chartsBx">
               <div class="chart" id="piechart"><canvas></canvas></div>
-              <div class="chart" id="barchart" style="width: 400px; height: 120px;"><canvas></canvas></div>
+              <div class="chart" id="barchart" style="width: 400px; height: 120px;"><canvas></canvas></div><div id="barchart" style="width: 400px; height: 200px;"></div>
             </div>
 
             <!-- ================ Order Details List ================= -->
@@ -897,47 +897,45 @@ function filterTablee() {
   
   <!-- Piechart2 -->
   
-     <script type="text/javascript">
-        // Loads the Google Charts library for Gauge charts
-google.charts.load('current', {'packages': ['gauge']});
-// Calls the gaugeCharts function once the library is loaded
-google.charts.setOnLoadCallback(gaugeCharts);
+<script type="text/javascript">
+  // Loads the Google Charts library for Gauge charts
+  google.charts.load('current', {'packages': ['gauge']});
+  // Calls the gaugeCharts function once the library is loaded
+  google.charts.setOnLoadCallback(gaugeCharts);
 
-function gaugeCharts() {
-  const spreadsheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Your Sheet ID
-  const sheetGids = '212097941'; // Your Sheet GID (or '0' for the first sheet)
-  const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids; // URL to get data
+  function gaugeCharts() {
+    const spreadsheetIds = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Your Sheet ID
+    const sheetGids = '212097941'; // Your Sheet GID (or '0' for the first sheet)
 
-  const querys = new google.visualization.Query(queryUrls);
-  querys.send(handleQueryResponses); // Sends request to Google Sheets
-}
+    // IMPORTANT: Specify the columns you need in the TQ query for a specific format.
+    // Assuming your sheet has a label in column A and a number in column B
+    const queryStr = 'select A, B'; 
+    const queryUrls = 'docs.google.com' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids + '&tq=' + encodeURIComponent(queryStr); // URL to get data
 
-function handleQueryResponses(responses) {
-  if (responses.isError()) { // Checks for errors in data fetching
-    alert('Error in query: ' + responses.getMessage() + ' ' + responses.getDetailedMessage());
-    return;
+    const querys = new google.visualization.Query(queryUrls);
+    querys.send(handleQueryResponses); // Sends request to Google Sheets
   }
-  const datas = responses.getDataTable(); // Gets the data from the sheet
-  const optionss = { // Sets chart options (title, size, 3D, axis labels)
-    title: 'Data from Google Sheet',
-    chartArea: {width: '50%'},
-    is3D: true, // Note: is3D is for Pie charts, might not apply well to Gauge
-    hAxis: { title: 'Value', minValue: 0 },
-    vAxis: { title: 'Category' }
-  };
-  const charts = new google.visualization.gauge(document.getElementById('barchart')); // Gets the 'barchart' div
-  charts.draw(datas, optionss); // Draws the gauge chart
-}
 
-// createOrUpdateChart(); // Initial call (commented out in your snippet, but implied)
-
-// Sets up a recurring refresh every 10 seconds (10000 ms)
-setInterval(() => {
-  // generateNewData(); // Placeholder for getting new data (not defined in snippet)
-  // createOrUpdateChart(); // Placeholder for re-drawing
-}, 10000);
-
-    </script>
+  function handleQueryResponses(responses) {
+    if (responses.isError()) { // Checks for errors in data fetching
+      alert('Error in query: ' + responses.getMessage() + ' ' + responses.getDetailedMessage());
+      return;
+    }
+    const datas = responses.getDataTable(); // Gets the data from the sheet
+    const optionss = { // Sets chart options (size, value ranges, ticks)
+      title: 'Data from Google Sheet', // Title will appear above chart area
+      width: 400, // Set a fixed width
+      height: 200, // Set a fixed height
+      // is3D: true, // Removed: This option is not applicable to Gauge charts
+      // The hAxis and vAxis options are not applicable to Gauge charts either
+      minorTicks: 5, // Add minor ticks for better visualization
+      min: 0, // Set the minimum value for the gauge
+      max: 100 // Set the maximum value for the gauge
+    };
+    const charts = new google.visualization.Gauge(document.getElementById('barchart')); // Gets the 'barchart' div
+    charts.draw(datas, optionss); // Draws the gauge chart
+  }
+</script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
               <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
