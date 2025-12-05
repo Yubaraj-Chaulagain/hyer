@@ -896,8 +896,6 @@ function filterTablee() {
     </script>
   
   <!-- Piechart2 -->
-  
-<!-- piechart2 -->
     <script type="text/javascript">
         google.charts.load('current', {'packages': ['corechart']});
         google.charts.setOnLoadCallback(drawCharts);
@@ -908,11 +906,11 @@ function filterTablee() {
             const sheetGids = '34948127'; // Use '0' if using the first sheet
 
             // Construct the Query URL for Google Sheets
-            const queryUrl = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids;
+            const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids;
 
             // Use the Google Visualization Query to fetch the data
-            const query = new google.visualization.Query(queryUrl);
-            query.send(handleQueryResponses);
+            const querys = new google.visualization.Query(queryUrls);
+            querys.send(handleQueryResponses);
         }
 
         function handleQueryResponses(response) {
@@ -921,8 +919,8 @@ function filterTablee() {
                 return;
             }
             
-            const data = response.getDataTable();
-          const options = {
+            const datas = response.getDataTable();
+          const optionss = {
                 title: 'Data from  marin fant project',
                 chartArea: {width: '80%'},
                is3D: true,
@@ -939,8 +937,8 @@ function filterTablee() {
 
             
 
-            const chart = new google.visualization.pieChart(document.getElementById('barcharts'));
-            chart.draw(data,options);
+            const charts = new google.visualization.pieChart(document.getElementById('barcharts'));
+            charts.draw(datas,optionss);
         }
     </script>
   
