@@ -821,29 +821,7 @@ function filterTablee() {
             <!-- ================ Add Charts JS ================= -->
             <div class="chartsBx">
               <div class="chart" id="piechart"><canvas></canvas></div>
-              <script>    const ctx = document.getElementById('barchart').querySelector('canvas').getContext('2d');
-    const myChart = new Chart(ctx, {
-        // Chart configuration
-    });
-              </script>
-              <style>
-                    const ctx = document.getElementById('barchart').querySelector('canvas').getContext('2d');
-    const myChart = new Chart(ctx, {
-        // Chart configuration
-    });
-                </style>
-              <script>
-                    const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: { /* ... */ },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            // other options
-        }
-    });
-              </script>
-              <div class="chart" id="barchart" style="width: 400px; height: 120px;"><canvas></canvas></div>
+              <div class="chart" id="barchart"><canvas></canvas></div>
             </div>
 
             <!-- ================ Order Details List ================= -->
