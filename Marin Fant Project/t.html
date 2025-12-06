@@ -11,15 +11,37 @@
 <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>  
 	<style>
-		    .scrool {
-      width: 100%; /* Or a specific width */
-      height: 100px; /* Or a specific height to enable vertical scrolling */
-      overflow: auto; /* Enables scrollbars only when content overflows */
-      /* overflow-y: scroll; /* Use this for vertical scrolling always visible */
-      /* overflow-x: scroll; /* Use this for horizontal scrolling always visible */
+		    .table table-striped table-bordered table-responsive table-hover tbody {
+        display: block; /* Important for applying height and overflow */
+        height: 200px; /* Set a fixed height for the scrollable area */
+        overflow-y: auto; /* Enable vertical scrollbar when content exceeds height */
+    }
+
+    .table table-striped table-bordered table-responsive table-hover thead,
+    .table table-striped table-bordered table-responsive table-hover tbody tr {
+        display: table; /* Or block, depending on desired layout */
+        width: 100%;
+        table-layout: fixed; /* Optional: ensures consistent column widths */
+    }
+
+    .table table-striped table-bordered table-responsive table-hover thead th,
+    .table table-striped table-bordered table-responsive table-hover tbody td {
+        /* Adjust width as needed to match header and body cells */
+        width: 50%; /* Example for two columns */
     }
 	</style>
 <body style="margin:20px auto"> 
+	<script>
+		function scrollToBottom(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.scrollTop = element.scrollHeight;
+        }
+    }
+
+    // Call this function when new content is added or on page load
+    // Example: scrollToBottom('myScrollableTableBody');
+	</script>
 	<script>
 	function searchTable() {
   // Declare variables
