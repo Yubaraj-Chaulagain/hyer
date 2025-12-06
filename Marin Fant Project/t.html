@@ -2,7 +2,8 @@
 <html lang="en">   
 <head>   
 <meta charset="utf-8">   
-<title>Marin Fant Project</title>   
+<title>Marin Fant Project Members</title> 
+	<link rel="shortcut icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGmXbq43U6t2HHnO0gFTKeyX4z8hah6UABcbrq7rBI_w&s">
 <meta name="description" content="Bootstrap.">  
 <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">   
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -35,17 +36,34 @@
         white-space: nowrap; /* Prevent text from wrapping */
     }
 	</style>
+	<script src="ajax.googleapis.com"></script>
+	
 <body style="margin:20px auto"> 
 	<script>
-		function scrollToBottom(elementId) {
-        const element = document.getElementById(elementId);
-        if (element) {
-            element.scrollTop = element.scrollHeight;
-        }
+		$(document).ready(function() {
+    var $scrollableArea = $(".table-wrap");
+
+    function autoScroll() {
+        var currentScrollTop = $scrollableArea.scrollTop();
+        var scrollBottom = $scrollableArea.prop("scrollHeight") - $scrollableArea.innerHeight();
+
+        // Animate scrolling to the bottom (scrollBottom) or top (0)
+        $scrollableArea.animate({
+            scrollTop: currentScrollTop < scrollBottom / 2 ? scrollBottom : 0
+        }, 4000, "linear", autoScroll); // 4000ms (4 seconds) duration
     }
 
-    // Call this function when new content is added or on page load
-    // Example: scrollToBottom('myScrollableTableBody');
+    // Start the scrolling animation
+    autoScroll();
+
+    // Optional: Pause animation on hover
+    $scrollableArea.hover(function() {
+        $(this).stop();
+    }, function() {
+        autoScroll();
+    });
+});
+
 	</script>
 	<script>
 	function searchTable() {
@@ -89,7 +107,7 @@
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
 </div><div><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
-	<div class="scrool" id="myDivToExport"></div>
+	<div class="table-wrap" id="myDivToExport"></div>
 	</div>
 </div>
 </body>  
