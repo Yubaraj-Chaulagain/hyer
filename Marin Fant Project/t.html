@@ -10,6 +10,15 @@
 <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>  
+	<style>
+		    .scrool {
+      width: 100%; /* Or a specific width */
+      height: 100px; /* Or a specific height to enable vertical scrolling */
+      overflow: auto; /* Enables scrollbars only when content overflows */
+      /* overflow-y: scroll; /* Use this for vertical scrolling always visible */
+      /* overflow-x: scroll; /* Use this for horizontal scrolling always visible */
+    }
+	</style>
 <body style="margin:20px auto"> 
 	<script>
 	function searchTable() {
@@ -53,7 +62,7 @@
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
 </div><div><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
-	<div id="myDivToExport"></div>
+	<div class="scrool" id="myDivToExport"></div>
 	</div>
 </div>
 </body>  
