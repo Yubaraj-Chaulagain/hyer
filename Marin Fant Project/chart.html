@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Charts Example</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+        google.charts.setOnLoadCallback(drawCharts); // Call the second chart's drawing function as well
+
+        function drawChart() {
+            const spreadsheetId = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo';
+            const sheetGid = '0';
+            const queryUrl = 'https://docs.google.com/spreadsheets/d/' + spreadsheetId + '/gviz/tq?gid=' + sheetGid;
+            const query = new google.visualization.Query(queryUrl);
+            query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+            if (response.isError()) {
+                alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                return;
+            }
+            const data = response.getDataTable();
+            const options = {
+                title: 'Data from marin fant project (Chart 1)',
+                chartArea: {width: '80%'},
+                is3D: true,
+                hAxis: { title: 'Value', minValue: 0 },
+                vAxis: { title: 'Category' }
+            };
+            const chart = new google.visualization.PieChart(document.getElementById('piechart'));
+            chart.draw(data, options);
+        }
+
+        function drawCharts() { // Renamed function for clarity
+            const spreadsheetIds = '1u8yzAsGgFOkGT1_u3XwpClV1Z6bzOTDnxxOJfCDcOLs';
+            const sheetGids = '34948127';
+            const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids;
+            const querys = new google.visualization.Query(queryUrls);
+            querys.send(handleQueryResponses);
+        }
+
+        function handleQueryResponses(response) {
+            if (response.isError()) {
+                alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                return;
+            }
+            const datas = response.getDataTable();
+            const optionss = {
+                title: 'Data from marin fant project (Chart 2)',
+                chartArea: {width: '80%'},
+                is3D: true,
+                hAxis: { title: 'Value', minValue: 0 },
+                vAxis: { title: 'Category' }
+            };
+            const charts = new google.visualization.PieChart(document.getElementById('barcharts')); // Corrected target ID
+            charts.draw(datas, optionss);
+        }
+    </script>
+</head>
+<body>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+    <div id="barcharts" style="width: 900px; height: 500px;"></div> <!-- Added this div -->
+</body>
+</html>
