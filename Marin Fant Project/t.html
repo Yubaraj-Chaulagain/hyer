@@ -10,12 +10,50 @@
 <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>  
-<body style="margin:20px auto">  
+<body style="margin:20px auto"> 
+	<script>
+	function searchTable() {
+  // Declare variables
+  var input, filter, table, tr, td, i, j, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase(); // Get the search input and convert to uppercase for case-insensitive search
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr"); // Get all table rows
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    // Skip the header row if present (optional, adjust based on your table structure)
+    if (tr[i].getElementsByTagName("th").length > 0) {
+      continue;
+    }
+
+    var found = false;
+    td = tr[i].getElementsByTagName("td"); // Get all cells in the current row
+
+    // Loop through all cells in the current row
+    for (j = 0; j < td.length; j++) {
+      txtValue = td[j].textContent || td[j].innerText; // Get the text content of the cell
+      if (txtValue.toUpperCase().indexOf(filter) > -1) { // Check if the cell content contains the filter text
+        found = true;
+        break; // If found in any cell, no need to check further in this row
+      }
+    }
+
+    // Show or hide the row based on whether a match was found
+    if (found) {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
+    }
+  }
+}
+	</script>
+	
 <div class="container">
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
 </div>
-	<div id="myDivToExport"></div>
+	<div id="myDivToExport"><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names.."></div>
 	</div>
 </body>  
 
