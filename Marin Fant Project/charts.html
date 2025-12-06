@@ -53,7 +53,7 @@
                 hAxis: { title: 'Value', minValue: 0 },
                 vAxis: { title: 'Category' }
             };
-            const charts = new google.visualization.BarChart(document.getElementById('barcharts')); // Corrected target ID
+            const charts = new google.visualization.barChart(document.getElementById('barcharts')); // Corrected target ID
             charts.draw(datas, optionss);
         }
     </script>
