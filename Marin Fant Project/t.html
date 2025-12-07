@@ -57,39 +57,7 @@ window.frames["print_frame"].window.print();
   }
 }
 	</script>
-	<script>
-function copyTableToClipboard(tableId) {
-  const table = document.getElementById(tableId);
-
-  // Check if the table exists
-  if (!table) {
-    console.error("Table with ID '" + tableId + "' not found.");
-    return;
-  }
-
-  // Create a Range object
-  const range = document.createRange();
-
-  // Set the Node to select the table
-  range.selectNode(table);
-
-  // Add the Range to the set of window selections
-  window.getSelection().removeAllRanges(); // Clear any existing selections
-  window.getSelection().addRange(range);
-
-  try {
-    // Execute the 'copy' command
-    document.execCommand('copy');
-    console.log("Table copied to clipboard!");
-  } catch (err) {
-    console.error("Failed to copy table: ", err);
-  } finally {
-    // Clear the selection after copying
-    window.getSelection().removeAllRanges();
-  }
-}
-</script>
-	<input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
+	
         <script>
         var tableToExcel = (function () {
             var uri = 'data:application/vnd.ms-excel;base64,'
@@ -104,14 +72,14 @@ function copyTableToClipboard(tableId) {
         })()
     </script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-    <button id="downloadPdfButton">Download as PDF</button>
+    
     <script>
         document.getElementById('downloadPdfButton').addEventListener('click', function() {
             const element = document.getElementById('myDivToExport');
             html2pdf().from(element).save('my_document.pdf');
         });
     </script>
-    <button id="exportCsv">Export to CSV</button>
+    
     <script>
  document.getElementById('exportCsv').addEventListener('click', function() {
         const table = document.getElementById('myTable');
@@ -139,7 +107,9 @@ function copyTableToClipboard(tableId) {
 <div class="container">
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
-</div><div><button class="Button Button--outline" onclick="printDiv()">Print</button><button onclick="copyTableToClipboard('myTable')">Copy</button><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+</div><div><button class="Button Button--outline" onclick="printDiv()">Print</button><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+	<input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;"><button id="exportCsv">Export to CSV</button>
+	<button id="downloadPdfButton">Download as PDF</button>
 	<div class="table-wrap" id="myDivToExport"></div>
 	</div>
 </div>
