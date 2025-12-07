@@ -134,13 +134,12 @@ function copyTableToClipboard(tableId) {
         document.body.removeChild(link);
     });
                 </script>
-	<p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
 	
 	
 <div class="container">
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
-</div><div><button onclick="copyTableToClipboard('myTable')">Copy</button><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+</div><div><button class="Button Button--outline" onclick="printDiv()">Print</button><button onclick="copyTableToClipboard('myTable')">Copy</button><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
 	<div class="table-wrap" id="myDivToExport"></div>
 	</div>
 </div>
