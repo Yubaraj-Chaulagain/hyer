@@ -39,30 +39,30 @@
 	<script src="ajax.googleapis.com"></script>
 	
 <body style="margin:20px auto"> 
-	<script>
-		$(document).ready(function() {
-    var $scrollableArea = $(".table-wrap");
+	<script>const container = document.getElementById('myDivToExport');
+let scrollInterval;
+let scrollSpeed = 10; // Lower value = faster (milliseconds)
+let scrollAmount = 2; // Pixels to scroll per interval
 
-    function autoScroll() {
-        var currentScrollTop = $scrollableArea.scrollTop();
-        var scrollBottom = $scrollableArea.prop("scrollHeight") - $scrollableArea.innerHeight();
+function startAutoScroll() {
+  scrollInterval = setInterval(() => {
+    // Scroll down (positive scrollAmount) or up (negative)
+    myDivToExport.scrollBy(0, scrollAmount);
 
-        // Animate scrolling to the bottom (scrollBottom) or top (0)
-        $scrollableArea.animate({
-            scrollTop: currentScrollTop < scrollBottom / 2 ? scrollBottom : 0
-        }, 4000, "linear", autoScroll); // 4000ms (4 seconds) duration
+    // Reverse direction when reaching bottom/top (or just keep going up/down)
+    // For fast up and down, you might want to flip scrollAmount
+    if (myDivToExport.scrollTop + myDivToExport.clientHeight >= myDivToExport.scrollHeight || myDivToExport.scrollTop <= 0) {
+      scrollAmount *= -1; // Reverse direction
     }
+  }, scrollSpeed); // Adjust 'scrollSpeed' for faster/slower movement
+}
 
-    // Start the scrolling animation
-    autoScroll();
+// Start scrolling when the page loads or on a button click
+window.onload = startAutoScroll;
 
-    // Optional: Pause animation on hover
-    $scrollableArea.hover(function() {
-        $(this).stop();
-    }, function() {
-        autoScroll();
-    });
-});
+// To stop it:
+// clearInterval(scrollInterval);
+
 
 	</script>
 	<script>
