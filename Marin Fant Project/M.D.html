@@ -110,7 +110,13 @@ window.frames["print_frame"].window.print();
 </div><div>
 	<input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;"><button id="exportCsv">Export to CSV</button>
 	<button id="downloadPdfButton">Download as PDF</button><button class="Button Button--outline" onclick="printDiv()">Print</button> Search:
-	<input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+	<input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names.."><a 
+       href="raw.githubusercontent.com" 
+       download="M.D.html"
+       class="download-button"
+    >
+       Click to Download HTML File
+    </a>
 	<div class="table-wrap" id="myDivToExport"></div>
 	</div>
 </div>
