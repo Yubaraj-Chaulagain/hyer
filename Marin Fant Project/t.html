@@ -10,6 +10,13 @@
 <link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
 <script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+<script>
+function printDiv() {
+window.frames["print_frame"].document.body.innerHTML = document.getElementById("myDivToExport").innerHTML;
+window.frames["print_frame"].window.focus();
+window.frames["print_frame"].window.print();
+}</script>
 </head>  
 	
 	<script src="ajax.googleapis.com"></script>
@@ -50,11 +57,90 @@
   }
 }
 	</script>
+	<script>
+function copyTableToClipboard(tableId) {
+  const table = document.getElementById(tableId);
+
+  // Check if the table exists
+  if (!table) {
+    console.error("Table with ID '" + tableId + "' not found.");
+    return;
+  }
+
+  // Create a Range object
+  const range = document.createRange();
+
+  // Set the Node to select the table
+  range.selectNode(table);
+
+  // Add the Range to the set of window selections
+  window.getSelection().removeAllRanges(); // Clear any existing selections
+  window.getSelection().addRange(range);
+
+  try {
+    // Execute the 'copy' command
+    document.execCommand('copy');
+    console.log("Table copied to clipboard!");
+  } catch (err) {
+    console.error("Failed to copy table: ", err);
+  } finally {
+    // Clear the selection after copying
+    window.getSelection().removeAllRanges();
+  }
+}
+</script>
+	<input type="button" class="btn btn-primary font-weight-bold" onclick="tableToExcel('myTable', 'Example Table')" value="&nbsp; Export to Excel &nbsp;">
+        <script>
+        var tableToExcel = (function () {
+            var uri = 'data:application/vnd.ms-excel;base64,'
+                , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><meta charset="UTF-8"><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+                , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+                , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+            return function (table, name) {
+                if (!table.nodeType) table = document.getElementById(table)
+                var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
+                window.location.href = uri + base64(format(template, ctx))
+            }
+        })()
+    </script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <button id="downloadPdfButton">Download as PDF</button>
+    <script>
+        document.getElementById('downloadPdfButton').addEventListener('click', function() {
+            const element = document.getElementById('myDivToExport');
+            html2pdf().from(element).save('my_document.pdf');
+        });
+    </script>
+    <button id="exportCsv">Export to CSV</button>
+    <script>
+ document.getElementById('exportCsv').addEventListener('click', function() {
+        const table = document.getElementById('myTable');
+        let csv = [];
+        for (let i = 0; i < table.rows.length; i++) {
+            let row = [], cols = table.rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length; j++) {
+                row.push(cols[j].innerText);
+            }
+            csv.push(row.join(','));
+        }
+
+        const csvString = csv.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download', 'table_data.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+                </script>
+	<p style="Align:center"><button class="Button Button--outline" onclick="printDiv()">Print</button></p>
+	
 	
 <div class="container">
 <div class="row header" style="text-align:center;color:green">
 <h3>Marin Fant Project Members</h3>
-</div><div><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+</div><div><button onclick="copyTableToClipboard('myTable')">Copy</button><input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
 	<div class="table-wrap" id="myDivToExport"></div>
 	</div>
 </div>
