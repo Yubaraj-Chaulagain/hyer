@@ -1,0 +1,108 @@
+<!DOCTYPE html>   
+<html lang="en">   
+<head>   
+<meta charset="utf-8">   
+<title>Marin Fant Project Members Details</title> 
+	<link rel="shortcut icon" type="image/png" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGmXbq43U6t2HHnO0gFTKeyX4z8hah6UABcbrq7rBI_w&s">
+<meta name="description" content="Bootstrap.">  
+<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">   
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css"></style>
+<script type="text/javascript" src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+	<iframe name="print_frame" width="0" height="0" frameborder="0" src="about:blank"></iframe>
+<script>
+function printDiv() {
+window.frames["print_frame"].document.body.innerHTML = document.getElementById("myDivToExport").innerHTML;
+window.frames["print_frame"].window.focus();
+window.frames["print_frame"].window.print();
+}</script>
+</head>  
+	
+	<script src="ajax.googleapis.com"></script>
+	<script>
+	function searchTable() {
+  // Declare variables
+  var input, filter, table, tr, td, i, j, txtValue;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase(); // Get the search input and convert to uppercase for case-insensitive search
+  table = document.getElementById("myTable");
+  tr = table.getElementsByTagName("tr"); // Get all table rows
+
+  // Loop through all table rows, and hide those who don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    // Skip the header row if present (optional, adjust based on your table structure)
+    if (tr[i].getElementsByTagName("th").length > 0) {
+      continue;
+    }
+
+    var found = false;
+    td = tr[i].getElementsByTagName("td"); // Get all cells in the current row
+
+    // Loop through all cells in the current row
+    for (j = 0; j < td.length; j++) {
+      txtValue = td[j].textContent || td[j].innerText; // Get the text content of the cell
+      if (txtValue.toUpperCase().indexOf(filter) > -1) { // Check if the cell content contains the filter text
+        found = true;
+        break; // If found in any cell, no need to check further in this row
+      }
+    }
+
+    // Show or hide the row based on whether a match was found
+    if (found) {
+      tr[i].style.display = "";
+    } else {
+      tr[i].style.display = "none";
+    }
+  }
+}
+	</script>
+<div class="container">
+<div class="row header" style="text-align:center;color:green">
+<h3>Marin Fant Project Members</h3>
+</div><div>
+<button class="Button Button--outline" onclick="printDiv()">Print</button> Search:
+	<input type="text" id="myInput" onkeyup="searchTable()" placeholder="Search for names..">
+	<div class="table-wrap" id="myDivToExport"></div>
+	</div>
+</div>
+</body>  
+
+
+	<script>
+      const sheetId = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo'; // Get this from your sheet's URL
+      const gid = '458873815'; // Get this from your sheet's URL (0 for the first sheet)
+      const queryUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+
+      fetch(queryUrl)
+        .then(response => response.text())
+        .then(data => {
+          const jsonString = data.substring(data.indexOf("google.visualization.Query.setResponse(") + 39, data.lastIndexOf(");"));
+          const jsonData = JSON.parse(jsonString);
+          const table = jsonData.table;
+
+          let html = '<table id="myTable" class="table table-striped table-bordered table-responsive table-hover" ><thead><tr>';
+          table.cols.forEach(col => {
+            html += `<th>${col.label}</th>`;
+          });
+          html += '</tr></thead><tbody>';
+
+          table.rows.forEach(row => {
+            html += '<tr>';
+            row.c.forEach(cell => {
+              html += `<td>${cell && (cell.f || cell.v) ? (cell.f || cell.v) : ''}</td>`;
+            });
+            html += '</tr>';
+          });
+          html += '</tbody></table>';
+
+          document.getElementById('myDivToExport').innerHTML = html;
+        })
+        .catch(error => console.error('Error fetching sheet data:', error));
+    </script>
+<script>
+$(document).ready(function(){
+    $('#myTable').dataTable();
+});
+</script>
+</html> 
