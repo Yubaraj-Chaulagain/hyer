@@ -846,7 +846,7 @@ function filterTablee() {
 <div id="myDivToExports"></div>
                     
                 </div>
-   <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
   
   <!-- piechart -->
     <script type="text/javascript">
@@ -855,8 +855,8 @@ function filterTablee() {
 
         function drawChart() {
             // Replace 'YOUR_SPREADSHEET_ID' and 'YOUR_SHEET_GID' with your actual IDs
-            const spreadsheetId = '1PwjlV_rc3ybi66Fc2GmagAOUILrwzeo7wU2E9PteTRo';
-            const sheetGid = '0'; // Use '0' if using the first sheet
+            const spreadsheetId = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0';
+            const sheetGid = '609432300'; // Use '0' if using the first sheet
 
             // Construct the Query URL for Google Sheets
             const queryUrl = 'https://docs.google.com/spreadsheets/d/' + spreadsheetId + '/gviz/tq?gid=' + sheetGid;
@@ -874,7 +874,7 @@ function filterTablee() {
             
             const data = response.getDataTable();
           const options = {
-                title: 'Data from marin fant project',
+                title: 'Data from Google Sheet',
                 chartArea: {width: '80%'},
                is3D: true,
                 hAxis: {
@@ -895,15 +895,16 @@ function filterTablee() {
         }
     </script>
   
-  <!-- Piechart2 -->
-    <script type="text/javascript">
+  <!-- barchart -->
+  
+     <script type="text/javascript">
         google.charts.load('current', {'packages': ['corechart']});
         google.charts.setOnLoadCallback(drawCharts);
 
         function drawCharts() {
             // Replace 'YOUR_SPREADSHEET_ID' and 'YOUR_SHEET_GID' with your actual IDs
-            const spreadsheetIds = '1u8yzAsGgFOkGT1_u3XwpClV1Z6bzOTDnxxOJfCDcOLs';
-            const sheetGids = '34948127'; // Use '0' if using the first sheet
+            const spreadsheetIds = '1tqLxrlHP4V_-DHhUQT_x3Fq-1gBCGRcH5ABJyzs2nU0';
+            const sheetGids = '1418862515'; // Use '0' if using the first sheet
 
             // Construct the Query URL for Google Sheets
             const queryUrls = 'https://docs.google.com/spreadsheets/d/' + spreadsheetIds + '/gviz/tq?gid=' + sheetGids;
@@ -913,16 +914,16 @@ function filterTablee() {
             querys.send(handleQueryResponses);
         }
 
-        function handleQueryResponses(response) {
-            if (response.isError()) {
-                alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+        function handleQueryResponses(responses) {
+            if (responses.isError()) {
+                alert('Error in query: ' + responses.getMessage() + ' ' + responses.getDetailedMessage());
                 return;
             }
-            
-            const datas = response.getDataTable();
-          const optionss = {
-                title: 'Data from  marin fant project',
-                chartArea: {width: '80%'},
+
+            const datas = responses.getDataTable();
+            const optionss = {
+                title: 'Data from Google Sheet',
+                chartArea: {width: '50%'},
                is3D: true,
                 hAxis: {
                     title: 'Value',
@@ -930,18 +931,22 @@ function filterTablee() {
                 },
                 vAxis: {
                     title: 'Category'
-                  }
-                
+                  
+                }
             };
-            
 
-            
-
-            const charts = new google.visualization.pieChart(document.getElementById('barcharts'));
-            charts.draw(datas,optionss);
+            const charts = new google.visualization.LineChart(document.getElementById('barchart'));
+            charts.draw(datas, optionss); 
         }
+       createOrUpdateChart();
+
+        // Auto-refresh mechanism
+        setInterval(() => {
+            generateNewData(); // Get new data (e.g., from an API call)
+            createOrUpdateChart(); // Update the chart with new data
+        }, 10000); // Refresh every 3 seconds (3000 milliseconds)
     </script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- =========== Scripts =========  -->
     <script>
         // add hovered class to selected list item
