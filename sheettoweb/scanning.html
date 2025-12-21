@@ -2,104 +2,201 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>QR → Sheet Invoice</title>
+<title>QR Invoice Cart System</title>
 <style>
-  body { font-family: sans-serif; padding: 1rem; }
-  #reader { width: 100%; max-width: 500px; margin: auto; }
-  #status { margin: 1rem 0; }
-  #invoice { display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem; }
+  body { font-family: sans-serif; padding: 1rem; max-width: 700px; margin: auto;}
+  #reader { width: 100%; max-width: 400px; margin-bottom: 1rem; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem;}
+  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+  #invoice { margin-top: 1rem; border: 1px solid #333; padding: 1rem; display:none;}
+  button { margin: 0.3rem; padding: 0.5rem 1rem; }
 </style>
 </head>
 <body>
 
-<h1>Scan QR & Send to Sheet</h1>
-<div id="reader"></div>
-<div id="status">Ready to scan.</div>
+<h1>QR Invoice Cart System</h1>
 
-<!-- Simple invoice preview -->
+<div>
+  <label>Admin PIN: <input type="password" id="adminPin" maxlength="10"></label>
+</div>
+
+<div id="reader"></div>
+<div id="status">Ready to scan...</div>
+
+<table id="cartTable" style="display:none;">
+  <thead>
+    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th><th>Remove</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<button id="clearCart" style="display:none;">Clear Cart</button>
+<button id="submitCart" style="display:none;">Submit Invoice</button>
+
 <div id="invoice">
-  <h2>Invoice</h2>
-  <p><strong>Item:</strong> <span id="invItem"></span></p>
-  <p><strong>Price:</strong> <span id="invPrice"></span></p>
-  <p><strong>Qty:</strong> <span id="invQty"></span></p>
-  <p><strong>QR Text:</strong> <span id="invQR"></span></p>
+  <h2>Invoice Preview</h2>
+  <div id="invoiceContent"></div>
   <button onclick="window.print()">Print Invoice</button>
 </div>
 
-<!-- Include html5-qrcode from CDN -->
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 <script>
-const sheetEndpoint = 'https://script.google.com/macros/s/AKfycbz5imFjK3fMtJobcS43w6_87v2MOs1VvGUKDV9CW54oMqE8QhjHtyu-5HbQdtJYfKSkRQ/exec'; // <— paste the Apps Script URL
+
+// Global cart array
+let cart = [];
+
+const sheetEndpoint = 'https://script.google.com/macros/s/AKfycbwhNePvlM_qI2Nq4I9-mdzMujshkv1ynbCl9NoWrwEt8nNQVMfYnOO4WOrpdER6s4HAnQ/exec';
+
+function updateCartTable() {
+  const tbody = document.querySelector("#cartTable tbody");
+  tbody.innerHTML = "";
+  if(cart.length === 0) {
+    document.getElementById("cartTable").style.display = "none";
+    document.getElementById("clearCart").style.display = "none";
+    document.getElementById("submitCart").style.display = "none";
+    document.getElementById("invoice").style.display = "none";
+    return;
+  }
+  document.getElementById("cartTable").style.display = "table";
+  document.getElementById("clearCart").style.display = "inline-block";
+  document.getElementById("submitCart").style.display = "inline-block";
+
+  cart.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${item.item}</td>
+      <td>${item.price}</td>
+      <td><input type="number" min="1" value="${item.qty}" data-index="${index}" class="qtyInput" style="width:50px;"></td>
+      <td>${(item.price * item.qty).toFixed(2)}</td>
+      <td><button data-index="${index}" class="removeBtn">X</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Attach event listeners for qty changes and remove
+  document.querySelectorAll(".qtyInput").forEach(input => {
+    input.addEventListener("change", e => {
+      const idx = e.target.getAttribute("data-index");
+      let val = parseInt(e.target.value);
+      if(val < 1) val = 1;
+      cart[idx].qty = val;
+      updateCartTable();
+    });
+  });
+
+  document.querySelectorAll(".removeBtn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const idx = btn.getAttribute("data-index");
+      cart.splice(idx,1);
+      updateCartTable();
+    });
+  });
+}
 
 function startScanner() {
   const html5QrCode = new Html5Qrcode("reader");
-  const qrConfig = { fps: 10, qrbox: 250 };
+  const config = { fps: 10, qrbox: 250 };
 
   html5QrCode.start(
-    { facingMode: "environment" }, // use back camera if available
-    qrConfig,
+    { facingMode: "environment" },
+    config,
     qrCodeMessage => {
-      // Stop scanning once detected
-      html5QrCode.stop().then(() => {
-        document.getElementById('status').innerText = 'QR Detected: ' + qrCodeMessage;
-        handleQrResult(qrCodeMessage);
-      }).catch(err => {
-        console.error('Stop failed', err);
-      });
+      html5QrCode.stop();
+      document.getElementById("status").innerText = "QR Scanned: " + qrCodeMessage;
+      handleQr(qrCodeMessage);
     },
     errorMessage => {
-      // optionally log scan failures
-      // console.log('Scan error', errorMessage);
-    })
-  .catch(err => {
-    console.error('Unable to start scanner', err);
-    document.getElementById('status').innerText = 'Error starting scanner: ' + err;
-  });
-}
-
-function handleQrResult(qrText) {
-  // Example: suppose the QR contains JSON like {"item":"Pen","price":"10","qty":"2"}
-  // If not JSON, you can parse differently or set fields manually.
-  let data = { qrText: qrText, item: "", price: "", qty: "" };
-  try {
-    const obj = JSON.parse(qrText);
-    data.item = obj.item || "";
-    data.price = obj.price || "";
-    data.qty = obj.qty || "";
-  } catch (e) {
-    // not JSON, just keep qrText
-  }
-
-  // Show invoice preview
-  document.getElementById('invItem').innerText = data.item;
-  document.getElementById('invPrice').innerText = data.price;
-  document.getElementById('invQty').innerText = data.qty;
-  document.getElementById('invQR').innerText = data.qrText;
-  document.getElementById('invoice').style.display = 'block';
-
-  // Send to Sheet via POST
-  fetch(sheetEndpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-  .then(resp => resp.json())
-  .then(result => {
-    if (result.status === 'ok') {
-      document.getElementById('status').innerText = 'Saved to sheet.';
-    } else {
-      document.getElementById('status').innerText = 'Error saving: ' + (result.message || 'unknown');
+      // scanning failure or ignore
     }
-  })
-  .catch(err => {
-    console.error('POST failed', err);
-    document.getElementById('status').innerText = 'POST failed: ' + err;
+  ).catch(err => {
+    document.getElementById("status").innerText = "Error starting scanner: " + err;
   });
 }
 
-// Start the scanner on load
-window.addEventListener('load', startScanner);
+function handleQr(qrText) {
+  try {
+    const data = JSON.parse(qrText);
+    if(!data.item || !data.price) {
+      alert("QR JSON missing 'item' or 'price' fields.");
+      return;
+    }
+    // Add to cart or update quantity
+    const existing = cart.find(c => c.item === data.item);
+    if(existing) {
+      existing.qty += Number(data.qty || 1);
+    } else {
+      cart.push({item: data.item, price: Number(data.price), qty: Number(data.qty || 1), qrText: qrText});
+    }
+    updateCartTable();
+  } catch(e) {
+    alert("QR content must be valid JSON with item and price fields.");
+  }
+}
+
+document.getElementById("clearCart").onclick = () => {
+  cart = [];
+  updateCartTable();
+};
+
+document.getElementById("submitCart").onclick = () => {
+  const adminPin = document.getElementById("adminPin").value.trim();
+  if(!adminPin) {
+    alert("Please enter Admin PIN before submitting.");
+    return;
+  }
+  if(cart.length === 0) {
+    alert("Cart is empty.");
+    return;
+  }
+  // Send all cart items one by one
+  let promises = cart.map(item => {
+    return fetch(sheetEndpoint, {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        adminPin: adminPin,
+        qrText: item.qrText,
+        item: item.item,
+        price: item.price,
+        qty: item.qty,
+        user: "user"
+      })
+    }).then(res => res.json());
+  });
+
+  Promise.all(promises).then(results => {
+    const errors = results.filter(r => r.status !== "ok");
+    if(errors.length > 0) {
+      alert("Some items failed to save: " + JSON.stringify(errors));
+    } else {
+      alert("All items saved successfully!");
+      showInvoice();
+      cart = [];
+      updateCartTable();
+    }
+  }).catch(err => {
+    alert("Submit error: " + err);
+  });
+};
+
+function showInvoice() {
+  const invoiceDiv = document.getElementById("invoiceContent");
+  let html = "<table style='width:100%;border-collapse:collapse;'><tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th></tr>";
+  let grandTotal = 0;
+  cart.forEach(i => {
+    const total = i.price * i.qty;
+    grandTotal += total;
+    html += `<tr><td>${i.item}</td><td>${i.price.toFixed(2)}</td><td>${i.qty}</td><td>${total.toFixed(2)}</td></tr>`;
+  });
+  html += `<tr><td colspan="3"><strong>Grand Total</strong></td><td><strong>${grandTotal.toFixed(2)}</strong></td></tr></table>`;
+  invoiceDiv.innerHTML = html;
+  document.getElementById("invoice").style.display = "block";
+}
+
+window.onload = () => {
+  startScanner();
+};
+
 </script>
 
 </body>
