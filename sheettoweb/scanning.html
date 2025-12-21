@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>QR → Sheet Invoice</title>
+<style>
+  body { font-family: sans-serif; padding: 1rem; }
+  #reader { width: 100%; max-width: 500px; margin: auto; }
+  #status { margin: 1rem 0; }
+  #invoice { display:none; border:1px solid #ccc; padding:1rem; margin-top:1rem; }
+</style>
+</head>
+<body>
+
+<h1>Scan QR & Send to Sheet</h1>
+<div id="reader"></div>
+<div id="status">Ready to scan.</div>
+
+<!-- Simple invoice preview -->
+<div id="invoice">
+  <h2>Invoice</h2>
+  <p><strong>Item:</strong> <span id="invItem"></span></p>
+  <p><strong>Price:</strong> <span id="invPrice"></span></p>
+  <p><strong>Qty:</strong> <span id="invQty"></span></p>
+  <p><strong>QR Text:</strong> <span id="invQR"></span></p>
+  <button onclick="window.print()">Print Invoice</button>
+</div>
+
+<!-- Include html5-qrcode from CDN -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+const sheetEndpoint = 'YOUR_WEB_APP_URL_HERE'; // <— paste the Apps Script URL
+
+function startScanner() {
+  const html5QrCode = new Html5Qrcode("reader");
+  const qrConfig = { fps: 10, qrbox: 250 };
+
+  html5QrCode.start(
+    { facingMode: "environment" }, // use back camera if available
+    qrConfig,
+    qrCodeMessage => {
+      // Stop scanning once detected
+      html5QrCode.stop().then(() => {
+        document.getElementById('status').innerText = 'QR Detected: ' + qrCodeMessage;
+        handleQrResult(qrCodeMessage);
+      }).catch(err => {
+        console.error('Stop failed', err);
+      });
+    },
+    errorMessage => {
+      // optionally log scan failures
+      // console.log('Scan error', errorMessage);
+    })
+  .catch(err => {
+    console.error('Unable to start scanner', err);
+    document.getElementById('status').innerText = 'Error starting scanner: ' + err;
+  });
+}
+
+function handleQrResult(qrText) {
+  // Example: suppose the QR contains JSON like {"item":"Pen","price":"10","qty":"2"}
+  // If not JSON, you can parse differently or set fields manually.
+  let data = { qrText: qrText, item: "", price: "", qty: "" };
+  try {
+    const obj = JSON.parse(qrText);
+    data.item = obj.item || "";
+    data.price = obj.price || "";
+    data.qty = obj.qty || "";
+  } catch (e) {
+    // not JSON, just keep qrText
+  }
+
+  // Show invoice preview
+  document.getElementById('invItem').innerText = data.item;
+  document.getElementById('invPrice').innerText = data.price;
+  document.getElementById('invQty').innerText = data.qty;
+  document.getElementById('invQR').innerText = data.qrText;
+  document.getElementById('invoice').style.display = 'block';
+
+  // Send to Sheet via POST
+  fetch(sheetEndpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(resp => resp.json())
+  .then(result => {
+    if (result.status === 'ok') {
+      document.getElementById('status').innerText = 'Saved to sheet.';
+    } else {
+      document.getElementById('status').innerText = 'Error saving: ' + (result.message || 'unknown');
+    }
+  })
+  .catch(err => {
+    console.error('POST failed', err);
+    document.getElementById('status').innerText = 'POST failed: ' + err;
+  });
+}
+
+// Start the scanner on load
+window.addEventListener('load', startScanner);
+</script>
+
+</body>
+</html>
