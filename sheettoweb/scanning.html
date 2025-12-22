@@ -1,203 +1,429 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<title>QR Invoice Cart System</title>
+<meta charset="UTF-8">
+<title>Mini ERP System</title>
 <style>
-  body { font-family: sans-serif; padding: 1rem; max-width: 700px; margin: auto;}
-  #reader { width: 100%; max-width: 400px; margin-bottom: 1rem; }
-  table { width: 100%; border-collapse: collapse; margin-top: 1rem;}
-  th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-  #invoice { margin-top: 1rem; border: 1px solid #333; padding: 1rem; display:none;}
-  button { margin: 0.3rem; padding: 0.5rem 1rem; }
+body{font-family:Arial,sans-serif;padding:20px;background:#f7f7f7}
+h2{color:#333}
+input, select, button{padding:5px;margin:5px}
+table{border-collapse:collapse;width:100%;margin:10px 0}
+th, td{border:1px solid #ccc;padding:5px;text-align:left}
+button{cursor:pointer}
+section{background:#fff;padding:15px;margin-bottom:20px;box-shadow:0 0 5px #ccc}
 </style>
 </head>
 <body>
 
-<h1>QR Invoice Cart System</h1>
+<h1>Mini ERP System</h1>
 
-<div>
-  <label>Admin PIN: <input type="password" id="adminPin" maxlength="10"></label>
-</div>
+<!-- LOGIN -->
+<section id="loginSection">
+<h2>Login</h2>
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginMsg"></p>
+</section>
 
-<div id="reader"></div>
-<div id="status">Ready to scan...</div>
+<!-- MEMBER MANAGEMENT -->
+<section id="memberSection" style="display:none">
+<h2>Members</h2>
+<input id="memberId" type="hidden">
+<input id="memberName" placeholder="Name">
+<input id="memberDOB" type="date">
+<input id="memberAddress" placeholder="Address">
+<input id="memberFather" placeholder="Father Name">
+<input id="memberMother" placeholder="Mother Name">
+<input id="memberSpouse" placeholder="Spouse Name">
+<input id="memberSpouseFather" placeholder="Spouse Father">
+<input id="memberEntryDate" type="date">
+<input id="memberEntryCharge" placeholder="Entry Charge">
+<input id="memberPhoto" placeholder="Member Photo URL">
+<input id="memberIdentity" placeholder="Identity Photo URL">
+<input id="memberSaving" placeholder="Saving Balance">
+<input id="memberCredit" placeholder="Credit Balance">
+<br>
+<button onclick="addMember()">Add Member</button>
+<button onclick="updateMember()">Update Member</button>
+<h3>Member List</h3>
+<table id="memberTable"><thead><tr>
+<th>ID</th><th>Name</th><th>DOB</th><th>Address</th><th>Father</th><th>Mother</th><th>Spouse</th><th>Spouse Father</th><th>Entry Date</th><th>Entry Charge</th><th>Saving</th><th>Credit</th><th>Action</th>
+</tr></thead>
+<tbody></tbody></table>
+</section>
 
-<table id="cartTable" style="display:none;">
-  <thead>
-    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th><th>Remove</th></tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<!-- USERS MANAGEMENT -->
+<section id="userSection" style="display:none">
+<h2>Users</h2>
+<input id="userId" type="hidden">
+<input id="userName" placeholder="Name">
+<input id="userDOB" type="date">
+<input id="userAddress" placeholder="Address">
+<input id="userFather" placeholder="Father Name">
+<input id="userMother" placeholder="Mother Name">
+<input id="userSpouse" placeholder="Spouse Name">
+<input id="userSpouseFather" placeholder="Spouse Father">
+<input id="userEntryDate" type="date">
+<input id="userEntryCharge" placeholder="Entry Charge">
+<input id="userPhoto" placeholder="User Photo URL">
+<input id="userIdentity" placeholder="Identity Photo URL">
+<br>
+<button onclick="addUser()">Add User</button>
+<button onclick="updateUser()">Update User</button>
+<h3>User List</h3>
+<table id="userTable"><thead><tr>
+<th>ID</th><th>Name</th><th>DOB</th><th>Address</th><th>Father</th><th>Mother</th><th>Spouse</th><th>Spouse Father</th><th>Entry Date</th><th>Entry Charge</th><th>Action</th>
+</tr></thead>
+<tbody></tbody></table>
+</section>
 
-<button id="clearCart" style="display:none;">Clear Cart</button>
-<button id="submitCart" style="display:none;">Submit Invoice</button>
+<!-- ITEMS / STOCK MANAGEMENT -->
+<section id="itemSection" style="display:none">
+<h2>Items / Stock</h2>
+<input id="itemId" type="hidden">
+<input id="itemName" placeholder="Item Name">
+<input id="fixRate" placeholder="Fix Rate">
+<input id="buyRate" placeholder="Buying Rate">
+<input id="warranty" placeholder="Warranty">
+<br>
+<button onclick="addItem()">Add Item</button>
+<button onclick="updateItem()">Update Item</button>
+<h3>Item List</h3>
+<table id="itemTable"><thead><tr>
+<th>ID</th><th>Name</th><th>Fix Rate</th><th>Buy Rate</th><th>Warranty</th><th>Action</th>
+</tr></thead>
+<tbody></tbody></table>
 
-<div id="invoice">
-  <h2>Invoice Preview</h2>
-  <div id="invoiceContent"></div>
-  <button onclick="window.print()">Print Invoice</button>
-</div>
+<h3>Stock</h3>
+<table id="stockTable"><thead><tr>
+<th>ID</th><th>Name</th><th>In Qty</th><th>Out Qty</th><th>Balance</th>
+</tr></thead>
+<tbody></tbody></table>
+</section>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+<!-- BUY / SELL -->
+<section id="transactionSection" style="display:none">
+<h2>Buy / Sell Items</h2>
+<select id="transType">
+<option value="buy">Buy</option>
+<option value="sell">Sell</option>
+</select>
+<input id="transItemId" placeholder="Item ID">
+<input id="transItemName" placeholder="Item Name">
+<input id="transQty" placeholder="Quantity">
+<button onclick="transaction()">Submit</button>
+<h3>Transactions Completed</h3>
+<div id="transMsg"></div>
+</section>
+
+<!-- LOAN / PAYMENT -->
+<section id="loanSection" style="display:none">
+<h2>Loan / Payment</h2>
+<input id="loanMemberId" placeholder="Member ID">
+<input id="loanAmount" placeholder="Loan Amount">
+<input id="loanMonth" placeholder="Months">
+<input id="loanEMI" placeholder="EMI">
+<button onclick="addLoan()">Add Loan</button>
+
+<h3>Loan Payment</h3>
+<input id="payLoanId" placeholder="Loan ID">
+<input id="payAmount" placeholder="Amount">
+<button onclick="payLoan()">Pay Loan</button>
+</section>
+
+<!-- REPORTS -->
+<section id="reportSection" style="display:none">
+<h2>Reports</h2>
+<button onclick="loadReports()">Load Reports</button>
+<pre id="reportOutput"></pre>
+</section>
+
 <script>
+const url = "YOUR_APPS_SCRIPT_WEB_APP_URL"; // Paste your Apps Script Web App URL
 
-// Global cart array
-let cart = [];
+let role = "";
 
-const sheetEndpoint = 'https://script.google.com/macros/s/AKfycbwhNePvlM_qI2Nq4I9-mdzMujshkv1ynbCl9NoWrwEt8nNQVMfYnOO4WOrpdER6s4HAnQ/exec';
-
-function updateCartTable() {
-  const tbody = document.querySelector("#cartTable tbody");
-  tbody.innerHTML = "";
-  if(cart.length === 0) {
-    document.getElementById("cartTable").style.display = "none";
-    document.getElementById("clearCart").style.display = "none";
-    document.getElementById("submitCart").style.display = "none";
-    document.getElementById("invoice").style.display = "none";
-    return;
-  }
-  document.getElementById("cartTable").style.display = "table";
-  document.getElementById("clearCart").style.display = "inline-block";
-  document.getElementById("submitCart").style.display = "inline-block";
-
-  cart.forEach((item, index) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${item.item}</td>
-      <td>${item.price}</td>
-      <td><input type="number" min="1" value="${item.qty}" data-index="${index}" class="qtyInput" style="width:50px;"></td>
-      <td>${(item.price * item.qty).toFixed(2)}</td>
-      <td><button data-index="${index}" class="removeBtn">X</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  // Attach event listeners for qty changes and remove
-  document.querySelectorAll(".qtyInput").forEach(input => {
-    input.addEventListener("change", e => {
-      const idx = e.target.getAttribute("data-index");
-      let val = parseInt(e.target.value);
-      if(val < 1) val = 1;
-      cart[idx].qty = val;
-      updateCartTable();
-    });
-  });
-
-  document.querySelectorAll(".removeBtn").forEach(btn => {
-    btn.addEventListener("click", e => {
-      const idx = btn.getAttribute("data-index");
-      cart.splice(idx,1);
-      updateCartTable();
-    });
-  });
-}
-
-function startScanner() {
-  const html5QrCode = new Html5Qrcode("reader");
-  const config = { fps: 10, qrbox: 250 };
-
-  html5QrCode.start(
-    { facingMode: "environment" },
-    config,
-    qrCodeMessage => {
-      html5QrCode.stop();
-      document.getElementById("status").innerText = "QR Scanned: " + qrCodeMessage;
-      handleQr(qrCodeMessage);
-    },
-    errorMessage => {
-      // scanning failure or ignore
-    }
-  ).catch(err => {
-    document.getElementById("status").innerText = "Error starting scanner: " + err;
-  });
-}
-
-function handleQr(qrText) {
-  try {
-    const data = JSON.parse(qrText);
-    if(!data.item || !data.price) {
-      alert("QR JSON missing 'item' or 'price' fields.");
-      return;
-    }
-    // Add to cart or update quantity
-    const existing = cart.find(c => c.item === data.item);
-    if(existing) {
-      existing.qty += Number(data.qty || 1);
+// ------------- LOGIN -------------
+function login(){
+  fetch(`${url}?action=login&username=${username.value}&password=${password.value}`)
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status=="success"){
+      role = res.role;
+      loginSection.style.display="none";
+      memberSection.style.display="block";
+      userSection.style.display="block";
+      itemSection.style.display="block";
+      transactionSection.style.display="block";
+      loanSection.style.display="block";
+      reportSection.style.display="block";
+      loadMembers(); loadUsers(); loadItems(); loadStock();
     } else {
-      cart.push({item: data.item, price: Number(data.price), qty: Number(data.qty || 1), qrText: qrText});
+      loginMsg.textContent = res.message;
     }
-    updateCartTable();
-  } catch(e) {
-    alert("QR content must be valid JSON with item and price fields.");
+  });
+}
+
+// ------------- MEMBERS -------------
+function addMember(){
+  const params = new URLSearchParams({
+    action:"addMember",
+    name:memberName.value,
+    dob:memberDOB.value,
+    address:memberAddress.value,
+    father:memberFather.value,
+    mother:memberMother.value,
+    spouse:memberSpouse.value,
+    spouseFather:memberSpouseFather.value,
+    entryDate:memberEntryDate.value,
+    entryCharge:memberEntryCharge.value,
+    memberPhoto:memberPhoto.value,
+    identityPhoto:memberIdentity.value,
+    savingBalance:memberSaving.value,
+    creditBalance:memberCredit.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadMembers();});
+}
+
+function updateMember(){
+  const params = new URLSearchParams({
+    action:"updateMember",
+    id:memberId.value,
+    name:memberName.value,
+    dob:memberDOB.value,
+    address:memberAddress.value,
+    father:memberFather.value,
+    mother:memberMother.value,
+    spouse:memberSpouse.value,
+    spouseFather:memberSpouseFather.value,
+    entryDate:memberEntryDate.value,
+    entryCharge:memberEntryCharge.value,
+    memberPhoto:memberPhoto.value,
+    identityPhoto:memberIdentity.value,
+    savingBalance:memberSaving.value,
+    creditBalance:memberCredit.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadMembers();});
+}
+
+function deleteMember(id){
+  if(confirm("Delete member?")){
+    fetch(`${url}?action=deleteMember&id=${id}`).then(r=>r.json()).then(res=>{alert(res.message);loadMembers();});
   }
 }
 
-document.getElementById("clearCart").onclick = () => {
-  cart = [];
-  updateCartTable();
-};
-
-document.getElementById("submitCart").onclick = () => {
-  const adminPin = document.getElementById("adminPin").value.trim();
-  if(!adminPin) {
-    alert("Please enter Admin PIN before submitting.");
-    return;
-  }
-  if(cart.length === 0) {
-    alert("Cart is empty.");
-    return;
-  }
-  // Send all cart items one by one
-  let promises = cart.map(item => {
-    return fetch(sheetEndpoint, {
-      method: "POST",
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        adminPin: adminPin,
-        qrText: item.qrText,
-        item: item.item,
-        price: item.price,
-        qty: item.qty,
-        user: "user"
-      })
-    }).then(res => res.json());
+function loadMembers(){
+  fetch(`${url}?action=getMembers`).then(r=>r.json()).then(data=>{
+    let html="";
+    data.slice(1).forEach(r=>{
+      html+=`<tr>
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td><td>${r[9]}</td><td>${r[12]}</td><td>${r[13]}</td>
+      <td><button onclick="fillMember('${r[0]}')">Edit</button> <button onclick="deleteMember('${r[0]}')">Delete</button></td>
+      </tr>`;
+    });
+    memberTable.querySelector("tbody").innerHTML=html;
   });
-
-  Promise.all(promises).then(results => {
-    const errors = results.filter(r => r.status !== "ok");
-    if(errors.length > 0) {
-      alert("Some items failed to save: " + JSON.stringify(errors));
-    } else {
-      alert("All items saved successfully!");
-      showInvoice();
-      cart = [];
-      updateCartTable();
-    }
-  }).catch(err => {
-    alert("Submit error: " + err);
-  });
-};
-
-function showInvoice() {
-  const invoiceDiv = document.getElementById("invoiceContent");
-  let html = "<table style='width:100%;border-collapse:collapse;'><tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th></tr>";
-  let grandTotal = 0;
-  cart.forEach(i => {
-    const total = i.price * i.qty;
-    grandTotal += total;
-    html += `<tr><td>${i.item}</td><td>${i.price.toFixed(2)}</td><td>${i.qty}</td><td>${total.toFixed(2)}</td></tr>`;
-  });
-  html += `<tr><td colspan="3"><strong>Grand Total</strong></td><td><strong>${grandTotal.toFixed(2)}</strong></td></tr></table>`;
-  invoiceDiv.innerHTML = html;
-  document.getElementById("invoice").style.display = "block";
 }
 
-window.onload = () => {
-  startScanner();
-};
+function fillMember(id){
+  fetch(`${url}?action=getMembers`).then(r=>r.json()).then(data=>{
+    const member = data.find(r=>r[0]==id);
+    memberId.value=member[0];
+    memberName.value=member[1];
+    memberDOB.value=member[2];
+    memberAddress.value=member[3];
+    memberFather.value=member[4];
+    memberMother.value=member[5];
+    memberSpouse.value=member[6];
+    memberSpouseFather.value=member[7];
+    memberEntryDate.value=member[8];
+    memberEntryCharge.value=member[9];
+    memberPhoto.value=member[10];
+    memberIdentity.value=member[11];
+    memberSaving.value=member[12];
+    memberCredit.value=member[13];
+  });
+}
 
+// ------------- USERS -------------
+function addUser(){
+  const params = new URLSearchParams({
+    action:"addUser",
+    name:userName.value,
+    dob:userDOB.value,
+    address:userAddress.value,
+    father:userFather.value,
+    mother:userMother.value,
+    spouse:userSpouse.value,
+    spouseFather:userSpouseFather.value,
+    entryDate:userEntryDate.value,
+    entryCharge:userEntryCharge.value,
+    userPhoto:userPhoto.value,
+    identityPhoto:userIdentity.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadUsers();});
+}
+
+function updateUser(){
+  const params = new URLSearchParams({
+    action:"updateUser",
+    id:userId.value,
+    name:userName.value,
+    dob:userDOB.value,
+    address:userAddress.value,
+    father:userFather.value,
+    mother:userMother.value,
+    spouse:userSpouse.value,
+    spouseFather:userSpouseFather.value,
+    entryDate:userEntryDate.value,
+    entryCharge:userEntryCharge.value,
+    userPhoto:userPhoto.value,
+    identityPhoto:userIdentity.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadUsers();});
+}
+
+function deleteUser(id){
+  if(confirm("Delete user?")){
+    fetch(`${url}?action=deleteUser&id=${id}`).then(r=>r.json()).then(res=>{alert(res.message);loadUsers();});
+  }
+}
+
+function loadUsers(){
+  fetch(`${url}?action=getUsers`).then(r=>r.json()).then(data=>{
+    let html="";
+    data.slice(1).forEach(r=>{
+      html+=`<tr>
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td><td>${r[8]}</td><td>${r[9]}</td>
+      <td><button onclick="fillUser('${r[0]}')">Edit</button> <button onclick="deleteUser('${r[0]}')">Delete</button></td>
+      </tr>`;
+    });
+    userTable.querySelector("tbody").innerHTML=html;
+  });
+}
+
+function fillUser(id){
+  fetch(`${url}?action=getUsers`).then(r=>r.json()).then(data=>{
+    const user = data.find(r=>r[0]==id);
+    userId.value=user[0];
+    userName.value=user[1];
+    userDOB.value=user[2];
+    userAddress.value=user[3];
+    userFather.value=user[4];
+    userMother.value=user[5];
+    userSpouse.value=user[6];
+    userSpouseFather.value=user[7];
+    userEntryDate.value=user[8];
+    userEntryCharge.value=user[9];
+    userPhoto.value=user[10];
+    userIdentity.value=user[11];
+  });
+}
+
+// ------------- ITEMS / STOCK -------------
+function addItem(){
+  const params = new URLSearchParams({
+    action:"addItem",
+    itemName:itemName.value,
+    fixRate:fixRate.value,
+    buyRate:buyRate.value,
+    warranty:warranty.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadItems();});
+}
+
+function updateItem(){
+  const params = new URLSearchParams({
+    action:"updateItem",
+    id:itemId.value,
+    itemName:itemName.value,
+    fixRate:fixRate.value,
+    buyRate:buyRate.value,
+    warranty:warranty.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);loadItems();});
+}
+
+function deleteItem(id){
+  if(confirm("Delete item?")){
+    fetch(`${url}?action=deleteItem&id=${id}`).then(r=>r.json()).then(res=>{alert(res.message);loadItems();});
+  }
+}
+
+function loadItems(){
+  fetch(`${url}?action=getItems`).then(r=>r.json()).then(data=>{
+    let html="";
+    data.slice(1).forEach(r=>{
+      html+=`<tr>
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td>
+      <td><button onclick="fillItem('${r[0]}')">Edit</button> <button onclick="deleteItem('${r[0]}')">Delete</button></td>
+      </tr>`;
+    });
+    itemTable.querySelector("tbody").innerHTML=html;
+  });
+  fetch(`${url}?action=getStock`).then(r=>r.json()).then(data=>{
+    let html="";
+    data.slice(1).forEach(r=>{
+      html+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`;
+    });
+    stockTable.querySelector("tbody").innerHTML=html;
+  });
+}
+
+function fillItem(id){
+  fetch(`${url}?action=getItems`).then(r=>r.json()).then(data=>{
+    const item = data.find(r=>r[0]==id);
+    itemId.value=item[0];
+    itemName.value=item[1];
+    fixRate.value=item[2];
+    buyRate.value=item[3];
+    warranty.value=item[4];
+  });
+}
+
+// ------------- BUY / SELL -------------
+function transaction(){
+  const type = transType.value;
+  const params = new URLSearchParams({
+    action:type=="buy"?"buyItem":"sellItem",
+    itemId:transItemId.value,
+    itemName:transItemName.value,
+    quantity:transQty.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{
+    transMsg.textContent=res.message;
+    loadItems();
+  });
+}
+
+// ------------- LOAN / PAYMENT -------------
+function addLoan(){
+  const params = new URLSearchParams({
+    action:"addLoan",
+    memberId:loanMemberId.value,
+    loanAmount:loanAmount.value,
+    month:loanMonth.value,
+    EMI:loanEMI.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);});
+}
+
+function payLoan(){
+  const params = new URLSearchParams({
+    action:"payLoan",
+    loanId:payLoanId.value,
+    amount:payAmount.value
+  });
+  fetch(url+"?"+params).then(r=>r.json()).then(res=>{alert(res.message);});
+}
+
+// ------------- REPORTS -------------
+function loadReports(){
+  fetch(`${url}?action=generateReport`).then(r=>r.json()).then(data=>{
+    reportOutput.textContent=JSON.stringify(data,null,2);
+  });
+}
 </script>
-
 </body>
 </html>
