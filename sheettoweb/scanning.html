@@ -1,212 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>All-in-One Mini ERP</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{font-family:Arial;background:#f2f2f2;margin:0;padding:10px}
-h2{margin-top:0}
-section{background:#fff;padding:10px;margin-bottom:15px;border-radius:6px}
-input,select,button{padding:6px;margin:4px;width:100%}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{border:1px solid #ccc;padding:4px}
-button{background:#007bff;color:#fff;border:none;border-radius:4px}
-button.danger{background:#dc3545}
-.hidden{display:none}
-</style>
+<meta charset="utf-8">
+<title>Mini ERP</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="p-4">
 
-<h1>Mini ERP System</h1>
+<h3>Mini ERP (Free)</h3>
 
-<!-- LOGIN -->
-<section id="login">
-<h2>Login</h2>
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<p id="loginMsg"></p>
-</section>
+<div id="login">
+ <input id="u" class="form-control mb-2" placeholder="Username">
+ <input id="p" type="password" class="form-control mb-2" placeholder="Password">
+ <button class="btn btn-primary" onclick="login()">Login</button>
+</div>
 
-<!-- MAIN -->
-<div id="app" class="hidden">
-
-<!-- MEMBER -->
-<section>
-<h2>Members</h2>
-<input id="m_name" placeholder="Name">
-<input id="m_address" placeholder="Address">
-<input id="m_saving" placeholder="Saving Balance">
-<input id="m_credit" placeholder="Credit Balance">
-<button onclick="addMember()">Add Member</button>
-<table id="memberTable"></table>
-</section>
-
-<!-- USERS -->
-<section>
-<h2>Users</h2>
-<input id="u_name" placeholder="Name">
-<input id="u_address" placeholder="Address">
-<button onclick="addUser()">Add User</button>
-<table id="userTable"></table>
-</section>
-
-<!-- ITEMS -->
-<section>
-<h2>Items</h2>
-<input id="i_name" placeholder="Item Name">
-<input id="i_fix" placeholder="Fix Rate">
-<input id="i_buy" placeholder="Buy Rate">
-<input id="i_warranty" placeholder="Warranty (months)">
-<button onclick="addItem()">Add Item</button>
-<table id="itemTable"></table>
-</section>
-
-<!-- BUY / SELL -->
-<section>
-<h2>Buy / Sell</h2>
-<select id="bs_type">
-<option value="buyItem">Buy</option>
-<option value="sellItem">Sell</option>
-</select>
-<input id="bs_itemId" placeholder="Item ID">
-<input id="bs_itemName" placeholder="Item Name">
-<input id="bs_qty" placeholder="Quantity">
-<button onclick="buySell()">Submit</button>
-</section>
-
-<!-- LOAN -->
-<section>
-<h2>Loan</h2>
-<input id="l_member" placeholder="Member ID">
-<input id="l_amount" placeholder="Loan Amount">
-<input id="l_month" placeholder="Months">
-<input id="l_emi" placeholder="EMI">
-<button onclick="addLoan()">Add Loan</button>
-</section>
-
-<!-- PAYMENT -->
-<section>
-<h2>Payment</h2>
-<input id="p_ref" placeholder="Reference ID">
-<input id="p_member" placeholder="Member ID">
-<input id="p_amount" placeholder="Amount">
-<select id="p_type">
-<option>Cash</option>
-<option>Loan</option>
-<option>Bank</option>
-</select>
-<button onclick="addPayment()">Add Payment</button>
-</section>
-
-<!-- WARRANTY -->
-<section>
-<h2>Warranty</h2>
-<input id="w_itemId" placeholder="Item ID">
-<input id="w_itemName" placeholder="Item Name">
-<input id="w_memberId" placeholder="Member ID">
-<input id="w_memberName" placeholder="Member Name">
-<input id="w_months" placeholder="Warranty Months">
-<select id="w_type">
-<option>Warranty</option>
-<option>Guarantee</option>
-</select>
-<button onclick="addWarranty()">Add Warranty</button>
-</section>
-
-<!-- REPORT -->
-<section>
-<h2>Reports</h2>
-<button onclick="loadReports()">Load Reports</button>
-<pre id="reportBox"></pre>
-</section>
-
+<div id="app" style="display:none">
+ <h5>Add Member</h5>
+ <input id="mname" class="form-control mb-2" placeholder="Name">
+ <input id="madd" class="form-control mb-2" placeholder="Address">
+ <button class="btn btn-success" onclick="addMember()">Save</button>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const url = "https://script.google.com/macros/s/AKfycbzP-5XSaqXhsgWi79-synGJ_BnzOtFTVMWLrW80JXaDJE7yl9NtdUmt_giYlxSrW4_2/exec";
+const API="https://script.google.com/macros/s/AKfycbzqmSmz3CWU_t-oYns1q2am6Obz3PvhbFY2glgEebKfu3UVZ2QnMacm3I6YGWIUygVg/exec";
 
-/* ================= LOGIN ================= */
 function login(){
-  fetch(`${url}?action=login&username=${username.value}&password=${password.value}`)
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.status=="success"){
-      login.classList.add("hidden");
-      app.classList.remove("hidden");
-      loadAll();
-    }else loginMsg.innerText=d.message;
-  });
+ fetch(API,{
+  method:"POST",
+  body:new URLSearchParams({
+   action:"login",
+   u:u.value,
+   p:p.value
+  })
+ }).then(r=>r.json()).then(d=>{
+  if(d.status=="success"){
+   login.style.display="none";
+   app.style.display="block";
+  }else alert("Login Failed");
+ });
 }
 
-/* ================= LOAD ================= */
-function loadAll(){
-  loadTable("getMembers","memberTable");
-  loadTable("getUsers","userTable");
-  loadTable("getItems","itemTable");
-}
-
-function loadTable(action,tableId){
-  fetch(`${url}?action=${action}`)
-  .then(r=>r.json())
-  .then(d=>{
-    let h="";
-    d.forEach((r,i)=>{
-      h+="<tr>"+r.map(x=>`<td>${x}</td>`).join("")+"</tr>";
-    });
-    document.getElementById(tableId).innerHTML=h;
-  });
-}
-
-/* ================= MEMBERS ================= */
 function addMember(){
-  fetch(`${url}?action=addMember&name=${m_name.value}&address=${m_address.value}&savingBalance=${m_saving.value}&creditBalance=${m_credit.value}`)
-  .then(()=>loadTable("getMembers","memberTable"));
-}
-
-/* ================= USERS ================= */
-function addUser(){
-  fetch(`${url}?action=addUser&name=${u_name.value}&address=${u_address.value}`)
-  .then(()=>loadTable("getUsers","userTable"));
-}
-
-/* ================= ITEMS ================= */
-function addItem(){
-  fetch(`${url}?action=addItem&itemName=${i_name.value}&fixRate=${i_fix.value}&buyRate=${i_buy.value}&warranty=${i_warranty.value}`)
-  .then(()=>loadTable("getItems","itemTable"));
-}
-
-/* ================= BUY / SELL ================= */
-function buySell(){
-  fetch(`${url}?action=${bs_type.value}&itemId=${bs_itemId.value}&itemName=${bs_itemName.value}&quantity=${bs_qty.value}`)
-  .then(()=>alert("Done"));
-}
-
-/* ================= LOAN ================= */
-function addLoan(){
-  fetch(`${url}?action=addLoan&memberId=${l_member.value}&loanAmount=${l_amount.value}&month=${l_month.value}&EMI=${l_emi.value}`)
-  .then(()=>alert("Loan Added"));
-}
-
-/* ================= PAYMENT ================= */
-function addPayment(){
-  fetch(`${url}?action=addPayment&refId=${p_ref.value}&memberId=${p_member.value}&amount=${p_amount.value}&type=${p_type.value}&status=PAID`)
-  .then(()=>alert("Payment Added"));
-}
-
-/* ================= WARRANTY ================= */
-function addWarranty(){
-  fetch(`${url}?action=addWarranty&itemId=${w_itemId.value}&itemName=${w_itemName.value}&memberId=${w_memberId.value}&memberName=${w_memberName.value}&saleDate=${new Date().toISOString()}&warrantyType=${w_type.value}&warrantyMonths=${w_months.value}`)
-  .then(()=>alert("Warranty Added"));
-}
-
-/* ================= REPORT ================= */
-function loadReports(){
-  fetch(`${url}?action=getReports`)
-  .then(r=>r.json())
-  .then(d=>reportBox.textContent=JSON.stringify(d,null,2));
+ fetch(API,{
+  method:"POST",
+  body:new URLSearchParams({
+   action:"addMember",
+   name:mname.value,
+   address:madd.value
+  })
+ }).then(r=>r.json()).then(d=>alert("Saved"));
 }
 </script>
 
