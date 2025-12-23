@@ -28,13 +28,12 @@ th,td{border:1px solid #ccc;padding:8px;}
   <div id="cards"></div>
   <h3>Stock Alerts</h3>
   <div id="stockAlerts"></div>
+
   <h3>Sell Item</h3>
-  <input id="itemID" placeholder="ItemID/QR">
+  <input id="itemID" placeholder="ItemID / QR">
   <input id="quantity" type="number" placeholder="Quantity">
   <input id="memberID" placeholder="MemberID">
-  <select id="paymentType">
-    <option>Cash</option><option>Credit</option><option>Loan</option><option>Banking</option>
-  </select>
+  <select id="paymentType"><option>Cash</option><option>Credit</option><option>Loan</option><option>Banking</option></select>
   <button onclick="sellItem()">Sell</button>
   <p id="sellMsg"></p>
 
@@ -47,12 +46,15 @@ th,td{border:1px solid #ccc;padding:8px;}
     <tbody></tbody>
   </table>
 </div>
-<script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyqEQlGO02rDrv7eUvyImPjLUo-V7n29A--nwjsHJB8rVbPlfg2n0iWGWuEA8n45Vza/exec';
+
+<script src="app.js">
+const API_URL = 'https://script.google.com/macros/s/AKfycbwzLswgUIBpI1KO17Ss_CI26YpfO2kjiu7B7vzDnkpghCHy3S5U2AGPbf2Vsxb3SM8L/exec';
 
 async function apiPost(funcName,data){
   const res = await fetch(API_URL+'?func='+funcName,{
-    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(data)
   });
   return res.json();
 }
@@ -65,7 +67,7 @@ async function doLogin(){
     document.getElementById('login').style.display='none';
     document.getElementById('dashboard').style.display='block';
     loadDashboard();
-  } else document.getElementById('loginMsg').innerText='Invalid login';
+  } else document.getElementById('loginMsg').innerText='Invalid username or password';
 }
 
 async function loadDashboard(){
@@ -95,7 +97,6 @@ async function filterReports(){
   let tbody=''; data.forEach(r=>{tbody+=`<tr><td>${r.Date}</td><td>${r.Type}</td><td>${r.RefID}</td><td>${r.Debit}</td><td>${r.Credit}</td><td>${r.Remark}</td></tr>`;});
   document.querySelector('#reportTable tbody').innerHTML=tbody;
 }
-
 </script>
 </body>
 </html>
