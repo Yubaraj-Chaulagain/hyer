@@ -1,102 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dashboard App</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>ERP Billing System</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 <style>
-body{font-family:sans-serif;background:#f5f5f5;margin:0;padding:0;}
-#login{width:300px;margin:100px auto;background:white;padding:20px;box-shadow:0 0 10px #000;}
-input,select{width:100%;margin:5px 0;padding:10px;}
-button{width:100%;padding:10px;background:#2196F3;color:white;border:none;}
-.card{display:inline-block;padding:20px;background:white;margin:10px;}
-table{width:100%;border-collapse:collapse;margin:10px 0;}
-th,td{border:1px solid #ccc;padding:8px;}
-#loginMsg{color:red;}
+body{margin:0;font-family:Arial;background:#f2f2f2}
+header{background:#0d6efd;color:white;padding:10px}
+nav button{margin:3px}
+.card{background:white;margin:10px;padding:15px;border-radius:8px}
+.hidden{display:none}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ccc;padding:5px}
+input,select,button{padding:6px;margin:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 </style>
 </head>
 <body>
-<div id="login">
-  <h3>Login</h3>
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="doLogin()">Login</button>
-  <p id="loginMsg"></p>
+<div id="login" class="card">
+<h2>Login</h2>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
+<button onclick="doLogin()">Login</button>
+<p id="err"></p>
 </div>
 
-<div id="dashboard" style="display:none;">
-  <h2>Dashboard</h2>
-  <div id="cards"></div>
-  <h3>Stock Alerts</h3>
-  <div id="stockAlerts"></div>
-
-  <h3>Sell Item</h3>
-  <input id="itemID" placeholder="ItemID / QR">
-  <input id="quantity" type="number" placeholder="Quantity">
-  <input id="memberID" placeholder="MemberID">
-  <select id="paymentType"><option>Cash</option><option>Credit</option><option>Loan</option><option>Banking</option></select>
-  <button onclick="sellItem()">Sell</button>
-  <p id="sellMsg"></p>
-
-  <h3>Reports</h3>
-  <input type="date" id="fromDate">
-  <input type="date" id="toDate">
-  <button onclick="filterReports()">Filter</button>
-  <table id="reportTable">
-    <thead><tr><th>Date</th><th>Type</th><th>RefID</th><th>Debit</th><th>Credit</th><th>Remark</th></tr></thead>
-    <tbody></tbody>
-  </table>
+<div id="app" class="hidden">
+<header>
+<b id="r"></b>
+<nav>
+<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('members')">Members</button>
+<button onclick="show('items')">Items</button>
+<button onclick="show('billing')">Billing</button>
+<button onclick="show('finance')">Finance</button>
+<button onclick="show('reports')">Reports</button>
+<button onclick="logout()">Logout</button>
+</nav>
+</header>
+<div id="dash" class="card">
+<div class="grid">
+<div class="card">Members <b id="mc">0</b></div>
+<div class="card">Items <b id="ic">0</b></div>
+<div class="card">Stock <b id="st">0</b></div>
 </div>
-
-<script src="app.js">
-const API_URL = 'https://script.google.com/macros/s/AKfycbwzLswgUIBpI1KO17Ss_CI26YpfO2kjiu7B7vzDnkpghCHy3S5U2AGPbf2Vsxb3SM8L/exec';
-
-async function apiPost(funcName,data){
-  const res = await fetch(API_URL+'?func='+funcName,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(data)
-  });
-  return res.json();
-}
-
-async function doLogin(){
-  const username=document.getElementById('username').value;
-  const password=document.getElementById('password').value;
-  const res = await apiPost('login',{username,password});
-  if(res.status){
-    document.getElementById('login').style.display='none';
-    document.getElementById('dashboard').style.display='block';
-    loadDashboard();
-  } else document.getElementById('loginMsg').innerText='Invalid username or password';
-}
-
-async function loadDashboard(){
-  const data = await apiPost('getDashboardData',{});
-  let cards=`<div class="card">Members: ${data.Members.length}</div>`;
-  cards+=`<div class="card">Users: ${data.Users.length}</div>`;
-  cards+=`<div class="card">Loans: ${data.Loan.length}</div>`;
-  document.getElementById('cards').innerHTML=cards;
-  let alerts=''; data.StockAlert.forEach(s=>alerts+=`<div class="card">${s.ItemID} - ${s.Balance}</div>`);
-  document.getElementById('stockAlerts').innerHTML=alerts;
-}
-
-async function sellItem(){
-  const itemID=document.getElementById('itemID').value;
-  const quantity=parseInt(document.getElementById('quantity').value);
-  const memberID=document.getElementById('memberID').value;
-  const paymentType=document.getElementById('paymentType').value;
-  const res = await apiPost('sellItem',{itemID,quantity,memberID,paymentType});
-  document.getElementById('sellMsg').innerText=res.status?'Sold! Balance:'+res.balance:res.message;
-  loadDashboard();
-}
-
-async function filterReports(){
-  const fromDate=document.getElementById('fromDate').value;
-  const toDate=document.getElementById('toDate').value;
-  const data = await apiPost('getReportByDate',{fromDate,toDate});
-  let tbody=''; data.forEach(r=>{tbody+=`<tr><td>${r.Date}</td><td>${r.Type}</td><td>${r.RefID}</td><td>${r.Debit}</td><td>${r.Credit}</td><td>${r.Remark}</td></tr>`;});
-  document.querySelector('#reportTable tbody').innerHTML=tbody;
-}
-</script>
-</body>
-</html>
+<canvas id="pie"></canvas>
+<canvas id="bar"></canvas>
+</div>
+<div id="members" class="card hidden">
+<h3>Members</h3>
+<form onsubmit="addMember(event)">
+<input id="mn" placeholder="Name">
+<input id="mp" placeholder="Phone">
+<button>Add</button>
+</form>
+<table id="mt"><tr><th>Name</th><th>Phone</th></tr></table>
+</div>
+<div id="items" class="card hidden">
+<h3>Items</h3>
+<form onsubmit="addItem(event)">
+<input id="in" placeholder="Item">
+<input id="br" placeholder="Buy">
+<input id="sr" placeholder="Sell">
+<button>Add</button>
+</form>
+<table id="it"><tr><th>Name</th><th>Sell</th></tr></table>
+</div>
+<div id="billing" class="card hidden">
+<h3>Billing</h3>
+<div id="qr"></div>
+<button onclick="scan()">Scan QR</button>
+<div id="invoice"></div>
+<button onclick="window.print()">Print</button>
+</div>
+<div id="finance" class="card hidden">
+<h3>Finance</h3>
+<form onsubmit="finance(event)">
+<select id="ft">
+<option>Saving</option>
+<option>Withdraw</option>
+<option>Transfer</option>
+<option>Loan</option>
+</select>
+<input id="fa" placeholder="Amount">
+<input id="months" placeholder="Months (Loan only)">
+<button>Submit</button>
+</form>
+</div>
+<div id="reports" class="card hidden">
+<h3>Reports</h3>
+<table id="rt"><tr><th>Date</th><th>Type</th><th>Amount</th></tr></table>
+</div>
+<script>
+const ID="YOUR_SHEET_ID";
+const API=s=>`https://opensheet.elk.sh/${ID}/${s}`;
+const FORM={
+member:"MEMBER_FORM_URL",
+item:"ITEM_FORM_URL",
+payment:"PAYMENT_FORM_URL"
+};
