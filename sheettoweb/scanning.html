@@ -1,48 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Co-Operative Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-body{font-family:Arial;background:#f4f6f8}
-.card{background:#fff;padding:15px;border-radius:8px;margin:10px;display:inline-block;width:200px}
-</style>
+  <title>ERP Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body{font-family:Arial;background:#f5f5f5}
+    .card{display:inline-block;width:200px;padding:15px;background:#fff;margin:10px;border-radius:8px}
+    .hidden{display:none}
+    input,select{padding:6px;width:200px}
+    button{padding:6px 10px}
+  </style>
 </head>
+
 <body>
 
-<h2>Dashboard</h2>
+<h2>Login</h2>
+<div id="loginBox">
+  <input id="username" placeholder="Username"><br>
+  <input id="password" type="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+</div>
 
-<div class="card" id="members">Members: 0</div>
-<div class="card" id="collection">Collection: 0</div>
+<div id="dashboard" class="hidden">
 
-<canvas id="chart" width="400"></canvas>
+  <h2>Dashboard</h2>
+
+  <div class="card">Members<br><b id="mcount">0</b></div>
+  <div class="card">Items<br><b id="icount">0</b></div>
+  <div class="card">Loans<br><b id="lcount">0</b></div>
+
+  <canvas id="chart" width="400"></canvas>
+
+  <h3>Add Member</h3>
+  <input id="mname" placeholder="Name">
+  <input id="mphone" placeholder="Phone">
+  <button onclick="addMember()">Add</button>
+
+</div>
 
 <script>
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbycxxXxgXOkTWYirzF37Uggtz9NOu-yp6-wd_lk_Yq5YQCl_OwHSnC9Dn9kOTGqdcfD/exec';
+const WEBAPP = "https://script.google.com/macros/s/AKfycbwuW28oVGLCjVRzqlKg6nNzJMn06K5dpchAt0ubbHtgB4LbchEbfTZzHuQ8iCsZKtvc/exec";
 
-function api(action,data={}){
-  return fetch(WEBAPP_URL,{
-    method:'POST',
-    body:JSON.stringify({...data,action})
-  }).then(r=>r.json());
+/* ---------- LOGIN ---------- */
+function login(){
+ fetch(WEBAPP+"?action=login",{
+   method:"POST",
+   body:JSON.stringify({
+     username:username.value,
+     password:password.value
+   })
+ }).then(r=>r.json()).then(d=>{
+   if(d.status){
+     loginBox.classList.add("hidden");
+     dashboard.classList.remove("hidden");
+     loadDashboard();
+   } else alert("Login Failed");
+ });
 }
 
-async function loadDashboard(){
-  const d = await api('dashboard');
-  document.getElementById('members').innerText='Members: '+d.members;
-  document.getElementById('collection').innerText='Collection: '+d.totalCollection;
+/* ---------- DASHBOARD ---------- */
+function loadDashboard(){
+ loadCount("Members","mcount");
+ loadCount("Items","icount");
+ loadCount("Loan","lcount");
 
-  new Chart(document.getElementById('chart'),{
-    type:'bar',
-    data:{
-      labels:['Members','Collection'],
-      datasets:[{data:[d.members,d.totalCollection]}]
-    }
-  });
+ new Chart(chart,{
+   type:"bar",
+   data:{
+     labels:["Members","Items","Loans"],
+     datasets:[{
+       data:[mcount.innerText,icount.innerText,lcount.innerText]
+     }]
+   }
+ });
 }
 
-loadDashboard();
+function loadCount(sheet,id){
+ fetch(WEBAPP,{
+  method:"POST",
+  body:JSON.stringify({sheet:sheet}),
+  headers:{"Content-Type":"application/json"},
+ }).then(r=>r.json()).then(d=>{
+   document.getElementById(id).innerText=d.data.length-1;
+ });
+}
+
+/* ---------- ADD MEMBER ---------- */
+function addMember(){
+ fetch(WEBAPP+"?action=add",{
+   method:"POST",
+   body:JSON.stringify({
+     sheet:"Members",
+     values:[
+       Date.now(),
+       mname.value,
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       mphone.value,
+       "",
+       new Date(),
+       0,0,"ACTIVE",0,"ACTIVE"
+     ]
+   })
+ }).then(r=>r.json()).then(d=>{
+   alert("Member Added");
+   loadDashboard();
+ });
+}
 </script>
 </body>
 </html>
