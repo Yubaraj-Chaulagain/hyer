@@ -1,14 +1,220 @@
-<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <title>ERP Billing System</title> <meta name="viewport" content="width=device-width,initial-scale=1"> <link rel="manifest" href="manifest.json"> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script src="https://unpkg.com/html5-qrcode"></script> <style> body{margin:0;font-family:Arial;background:#f2f2f2} header{background:#0d6efd;color:white;padding:10px} nav button{margin:3px} .card{background:white;margin:10px;padding:15px;border-radius:8px} .hidden{display:none} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ccc;padding:5px} input,select,button{padding:6px;margin:3px} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))} </style> </head> <body> 
-<div id="login" class="card"> <h2>Login</h2> <input id="u" placeholder="Username"> <input id="p" type="password" placeholder="Password"> <button onclick="doLogin()">Login</button> <p id="err"></p> </div> <div id="app" class="hidden"> <header> <b id="r"></b> <nav> <button onclick="show('dash')">Dashboard</button> <button onclick="show('members')">Members</button> <button onclick="show('items')">Items</button> <button onclick="show('billing')">Billing</button> <button onclick="show('finance')">Finance</button> <button onclick="show('reports')">Reports</button> <button onclick="logout()">Logout</button> </nav> </header>
-<div id="dash" class="card"> <div class="grid"> <div class="card">Members <b id="mc">0</b></div> <div class="card">Items <b id="ic">0</b></div> <div class="card">Stock <b id="st">0</b></div> </div> <canvas id="pie"></canvas> <canvas id="bar"></canvas> </div> 
-<div id="members" class="card hidden"> <h3>Members</h3> <form onsubmit="addMember(event)"> <input id="mn" placeholder="Name"> <input id="mp" placeholder="Phone"> <button>Add</button> </form> <table id="mt"><tr><th>Name</th><th>Phone</th></tr></table> </div> 
-<div id="items" class="card hidden"> <h3>Items</h3> <form onsubmit="addItem(event)"> <input id="in" placeholder="Item"> <input id="br" placeholder="Buy"> <input id="sr" placeholder="Sell"> <button>Add</button> </form> <table id="it"><tr><th>Name</th><th>Sell</th></tr></table> </div> 
-<div id="billing" class="card hidden"> <h3>Billing</h3> <div id="qr"></div> <button onclick="scan()">Scan QR</button> <div id="invoice"></div> <button onclick="window.print()">Print</button> </div> 
-<div id="finance" class="card hidden"> <h3>Finance</h3> <form onsubmit="finance(event)"> <select id="ft"> <option>Saving</option> <option>Withdraw</option> <option>Transfer</option> <option>Loan</option> </select> <input id="fa" placeholder="Amount"> <input id="months" placeholder="Months (Loan only)"> <button>Submit</button> </form> </div>
-<div id="reports" class="card hidden"> <h3>Reports</h3> <table id="rt"><tr><th>Date</th><th>Type</th><th>Amount</th></tr></table> </div> 
-<script> const ID="1LRvZ1kXb777L0FfNtQk8Yo_YC7Ewu35x68lIPkBQgjM"; const API=s=>`https://opensheet.elk.sh/${ID}/${s}`; const FORM={ member:"MEMBER_FORM_URL", item:"ITEM_FORM_URL", payment:"PAYMENT_FORM_URL" }; async function doLogin(){ const d=await fetch(API("Users_Login")).then(r=>r.json()); const u1=d.find(x=>x.username==u.value&&x.password==p.value&&x.Status=="ACTIVE"); if(!u1){err.innerText="Invalid";return;} localStorage.user=JSON.stringify(u1); init(); } function logout(){localStorage.clear();location.reload();} async function init(){ login.classList.add("hidden"); app.classList.remove("hidden"); const u1=JSON.parse(localStorage.user); r.innerText="Role: "+u1.Role; const m=await fetch(API("Members")).then(r=>r.json()); const i=await fetch(API("Items")).then(r=>r.json()); mc.innerText=m.length; ic.innerText=i.length; st.innerText=i.length*10; m.forEach(x=>mt.innerHTML+=`<tr><td>${x.Name}</td><td>${x.Phone}</td></tr>`); i.forEach(x=>it.innerHTML+=`<tr><td>${x.Name}</td><td>${x.SellingRate}</td></tr>`); new Chart(pie,{type:"pie",data:{labels:["Members","Items"],datasets:[{data:[m.length,i.length]}]}}); new Chart(bar,{type:"bar",data:{labels:["Stock"],datasets:[{data:[i.length*10]}]}}); } function show(id){ document.querySelectorAll(".card").forEach(x=>x.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); } function post(url,data){ fetch(url,{method:"POST",mode:"no-cors",body:new URLSearchParams(data)}); } function addMember(e){ e.preventDefault(); post(FORM.member,{Name:mn.value,Phone:mp.value,Status:"ACTIVE"}); alert("Member Added"); } function addItem(e){ e.preventDefault(); post(FORM.item,{Name:in.value,BuyRate:br.value,SellingRate:sr.value}); alert("Item Added"); } function finance(e){ e.preventDefault(); let amt=fa.value; if(ft.value=="Loan"){ let emi=(amt*1.2)/months.value; alert("Monthly EMI: "+emi.toFixed(2)); } post(FORM.payment,{Type:ft.value,Amount:amt,Date:new Date().toLocaleDateString()}); alert("Recorded"); } function scan(){ new Html5Qrcode("qr").start({facingMode:"environment"},{fps:10,qrbox:250}, t=>invoice.innerHTML+="<div>"+t+"</div>"); } if(localStorage.user) init(); </script> </body> </html> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All-in-One Sheet ERP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-manifest.json
+<!-- Charts + QR -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-{ "name":"ERP Billing", "short_name":"ERP", "start_url":"index.html", "display":"standalone", "background_color":"#ffffff" }
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f9}
+header{background:#0d6efd;color:#fff;padding:10px}
+nav button{margin:4px}
+.card{background:#fff;margin:10px;padding:15px;border-radius:8px;box-shadow:0 2px 5px #ccc}
+.hidden{display:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ccc;padding:6px}
+input,select,button{padding:6px;margin:4px}
+</style>
+</head>
 
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div id="login" class="card">
+<h2>🔐 Login</h2>
+<input id="luser" placeholder="Username">
+<input id="lpass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hidden">
+<header>
+<b id="roleTxt"></b>
+<nav>
+<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('members')">Members</button>
+<button onclick="show('items')">Items</button>
+<button onclick="show('billing')">Billing</button>
+<button onclick="show('finance')">Finance</button>
+<button onclick="show('reports')">Reports</button>
+<button onclick="logout()">Logout</button>
+</nav>
+</header>
+
+<!-- =============== DASHBOARD =============== -->
+<div id="dash" class="card">
+<div class="grid">
+<div class="card">Members <b id="mc">0</b></div>
+<div class="card">Items <b id="ic">0</b></div>
+<div class="card">Stock <b id="sc">0</b></div>
+</div>
+<canvas id="pie"></canvas>
+<canvas id="bar"></canvas>
+</div>
+
+<!-- =============== MEMBERS =============== -->
+<div id="members" class="card hidden">
+<h3>Members</h3>
+<input placeholder="Search" onkeyup="search(this,'mt')">
+<form onsubmit="addMember(event)">
+<input id="mname" placeholder="Name" required>
+<input id="mphone" placeholder="Phone" required>
+<button>Add</button>
+</form>
+<table id="mt"><tr><th>Name</th><th>Phone</th></tr></table>
+</div>
+
+<!-- =============== ITEMS =============== -->
+<div id="items" class="card hidden">
+<h3>Items</h3>
+<form onsubmit="addItem(event)">
+<input id="iname" placeholder="Item" required>
+<input id="buy" placeholder="Buy Rate" required>
+<input id="sell" placeholder="Sell Rate" required>
+<button>Add</button>
+</form>
+<table id="it"><tr><th>Name</th><th>Selling</th></tr></table>
+</div>
+
+<!-- =============== BILLING =============== -->
+<div id="billing" class="card hidden">
+<h3>Billing (QR / Barcode)</h3>
+<div id="qr"></div>
+<button onclick="scan()">Scan</button>
+<div id="invoice"></div>
+<button onclick="window.print()">Print</button>
+</div>
+
+<!-- =============== FINANCE =============== -->
+<div id="finance" class="card hidden">
+<h3>Finance</h3>
+<form onsubmit="finance(event)">
+<select id="ftype">
+<option>Saving</option>
+<option>Withdraw</option>
+<option>Transfer</option>
+<option>Loan</option>
+</select>
+<input id="famt" placeholder="Amount" required>
+<input id="months" placeholder="Months (Loan only)">
+<button>Submit</button>
+</form>
+</div>
+
+<!-- =============== REPORTS =============== -->
+<div id="reports" class="card hidden">
+<h3>Reports</h3>
+<table id="rt"><tr><th>Date</th><th>Type</th><th>Amount</th></tr></table>
+</div>
+</div>
+
+<script>
+/* ============== CONFIG ============== */
+const SHEET_ID = "1LRvZ1kXb777L0FfNtQk8Yo_YC7Ewu35x68lIPkBQgjM";
+const API = s => `https://opensheet.elk.sh/${SHEET_ID}/${s}`;
+
+/* Google Form POST URLs */
+const FORM = {
+  member: "YOUR_MEMBER_FORM_URL",
+  item: "YOUR_ITEM_FORM_URL",
+  payment: "YOUR_PAYMENT_FORM_URL"
+};
+
+/* ============== LOGIN ============== */
+async function login(){
+  const u=luser.value, p=lpass.value;
+  const users = await fetch(API("Users_Login")).then(r=>r.json());
+  const user = users.find(x=>x.username===u && x.password===p && x.Status==="ACTIVE");
+  if(!user){ msg.innerText="Invalid Login"; return; }
+  localStorage.user = JSON.stringify(user);
+  init();
+}
+function logout(){ localStorage.clear(); location.reload(); }
+
+/* ============== INIT ============== */
+async function init(){
+  login.classList.add("hidden");
+  app.classList.remove("hidden");
+  const user = JSON.parse(localStorage.user);
+  roleTxt.innerText = "Role: " + user.Role;
+
+  const members = await fetch(API("Members")).then(r=>r.json());
+  const items   = await fetch(API("Items")).then(r=>r.json());
+
+  mc.innerText = members.length;
+  ic.innerText = items.length;
+  sc.innerText = items.length; // simple demo stock
+
+  mt.innerHTML="<tr><th>Name</th><th>Phone</th></tr>";
+  it.innerHTML="<tr><th>Name</th><th>Selling</th></tr>";
+
+  members.forEach(m=>mt.innerHTML+=`<tr><td>${m.Name}</td><td>${m.Phone}</td></tr>`);
+  items.forEach(i=>it.innerHTML+=`<tr><td>${i.Name}</td><td>${i.SellingRate}</td></tr>`);
+
+  new Chart(pie,{type:"pie",data:{labels:["Members","Items"],datasets:[{data:[members.length,items.length]}]}});
+  new Chart(bar,{type:"bar",data:{labels:["Total"],datasets:[{data:[members.length+items.length]}]}});
+}
+
+/* ============== UI HELPERS ============== */
+function show(id){
+  document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function search(inp,table){
+  const f = inp.value.toUpperCase();
+  [...document.querySelectorAll(`#${table} tr`)].forEach(r=>{
+    r.style.display = r.innerText.toUpperCase().includes(f) ? "" : "none";
+  });
+}
+
+/* ============== WRITE (FORM POST) ============== */
+function post(url,data){
+  fetch(url,{method:"POST",mode:"no-cors",body:new URLSearchParams(data)});
+}
+
+/* MEMBERS */
+function addMember(e){
+  e.preventDefault();
+  post(FORM.member,{Name:mname.value,Phone:mphone.value,Status:"ACTIVE"});
+  alert("Member Saved");
+}
+
+/* ITEMS */
+function addItem(e){
+  e.preventDefault();
+  post(FORM.item,{Name:iname.value,BuyRate:buy.value,SellingRate:sell.value});
+  alert("Item Saved");
+}
+
+/* FINANCE */
+function finance(e){
+  e.preventDefault();
+  let amt = Number(famt.value);
+  if(ftype.value==="Loan" && months.value){
+    let emi = (amt*1.2)/Number(months.value);
+    alert("Monthly EMI: "+emi.toFixed(2));
+  }
+  post(FORM.payment,{Type:ftype.value,Amount:amt,Date:new Date().toLocaleDateString()});
+  alert("Transaction Recorded");
+}
+
+/* QR */
+function scan(){
+  new Html5Qrcode("qr").start({facingMode:"environment"},{fps:10,qrbox:250},
+    txt=>invoice.innerHTML+=`<div>${txt}</div>`
+  );
+}
+
+/* Auto login */
+if(localStorage.user) init();
+</script>
+
+</body>
+</html>
