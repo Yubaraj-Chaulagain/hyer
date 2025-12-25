@@ -2,163 +2,47 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ERP System</title>
+<title>Co-Operative Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
 <style>
-body{font-family:Arial;background:#f4f6f9;margin:0}
-header{background:#0d6efd;color:#fff;padding:10px}
-button{margin:3px}
-.card{background:#fff;margin:10px;padding:15px;border-radius:8px}
-.hidden{display:none}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ccc;padding:5px}
+body{font-family:Arial;background:#f4f6f8}
+.card{background:#fff;padding:15px;border-radius:8px;margin:10px;display:inline-block;width:200px}
 </style>
 </head>
-
 <body>
 
-<div id="login" class="card">
-<h3>Login</h3>
-<input id="u" placeholder="Username">
-<input id="p" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-<p id="msg"></p>
-</div>
+<h2>Dashboard</h2>
 
-<div id="app" class="hidden">
-<header>
-<b id="role"></b>
-<button onclick="show('dash')">Dashboard</button>
-<button onclick="show('members')">Members</button>
-<button onclick="show('items')">Items</button>
-<button onclick="show('billing')">Billing</button>
-<button onclick="show('finance')">Finance</button>
-<button onclick="logout()">Logout</button>
-</header>
+<div class="card" id="members">Members: 0</div>
+<div class="card" id="collection">Collection: 0</div>
 
-<div id="dash" class="card">
-<canvas id="chart"></canvas>
-</div>
-
-<div id="members" class="card hidden">
-<h3>Members</h3>
-<form onsubmit="addMember(event)">
-<input id="mn" placeholder="Name">
-<input id="mp" placeholder="Phone">
-<button>Add</button>
-</form>
-<table id="mt"></table>
-</div>
-
-<div id="items" class="card hidden">
-<h3>Items</h3>
-<form onsubmit="addItem(event)">
-<input id="inm" placeholder="Item">
-<input id="sr" placeholder="Sell Rate">
-<button>Add</button>
-</form>
-<table id="it"></table>
-</div>
-
-<div id="billing" class="card hidden">
-<h3>QR Billing</h3>
-<div id="qr"></div>
-<button onclick="scan()">Scan</button>
-<div id="bill"></div>
-</div>
-
-<div id="finance" class="card hidden">
-<h3>Finance</h3>
-<form onsubmit="finance(event)">
-<select id="ft">
-<option>Saving</option>
-<option>Withdraw</option>
-<option>Loan</option>
-</select>
-<input id="fa" placeholder="Amount">
-<button>Submit</button>
-</form>
-</div>
-</div>
+<canvas id="chart" width="400"></canvas>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyShwHTGcmzA3zCIZsesop84edXlTRUOd4cd58R0ocMWQJMgo3xIQpg_9sq9jBaZ69r/exec";
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbycxxXxgXOkTWYirzF37Uggtz9NOu-yp6-wd_lk_Yq5YQCl_OwHSnC9Dn9kOTGqdcfD/exec';
 
-/* LOGIN */
-async function login(){
-const u1=u.value,p1=p.value;
-const users=await fetch(`${API}?sheet=Users_Login`).then(r=>r.json());
-const user=users.find(x=>x.username==u1&&x.password==p1&&x.Status=="ACTIVE");
-if(!user){msg.innerText="Invalid";return;}
-localStorage.user=JSON.stringify(user);
-init();
+function api(action,data={}){
+  return fetch(WEBAPP_URL,{
+    method:'POST',
+    body:JSON.stringify({...data,action})
+  }).then(r=>r.json());
 }
 
-function logout(){localStorage.clear();location.reload();}
+async function loadDashboard(){
+  const d = await api('dashboard');
+  document.getElementById('members').innerText='Members: '+d.members;
+  document.getElementById('collection').innerText='Collection: '+d.totalCollection;
 
-/* INIT */
-async function init(){
-login.classList.add("hidden");
-app.classList.remove("hidden");
-const user=JSON.parse(localStorage.user);
-role.innerText="Role: "+user.Role;
-
-loadMembers();
-loadItems();
+  new Chart(document.getElementById('chart'),{
+    type:'bar',
+    data:{
+      labels:['Members','Collection'],
+      datasets:[{data:[d.members,d.totalCollection]}]
+    }
+  });
 }
 
-/* LOAD */
-async function loadMembers(){
-const d=await fetch(`${API}?sheet=Members`).then(r=>r.json());
-mt.innerHTML="<tr><th>Name</th><th>Phone</th></tr>";
-d.forEach((x,i)=>mt.innerHTML+=`<tr><td>${x.Name}</td><td>${x.Phone}</td></tr>`);
-}
-
-async function loadItems(){
-const d=await fetch(`${API}?sheet=Items`).then(r=>r.json());
-it.innerHTML="<tr><th>Name</th><th>Sell</th></tr>";
-d.forEach(x=>it.innerHTML+=`<tr><td>${x.Name}</td><td>${x.SellingRate}</td></tr>`);
-}
-
-/* WRITE */
-async function post(obj){
-await fetch(API,{method:"POST",body:JSON.stringify(obj)});
-}
-
-function addMember(e){
-e.preventDefault();
-post({sheet:"Members",action:"ADD",data:["",mn.value,"",mp.value,"ACTIVE"]});
-loadMembers();
-}
-
-function addItem(e){
-e.preventDefault();
-post({sheet:"Items",action:"ADD",data:["",inm.value,"",sr.value,"ACTIVE"]});
-loadItems();
-}
-
-/* FINANCE */
-function finance(e){
-e.preventDefault();
-post({sheet:"Payments",action:"ADD",data:["",ft.value,fa.value,new Date().toLocaleDateString()]});
-alert("Saved");
-}
-
-/* UI */
-function show(id){
-document.querySelectorAll(".card").forEach(x=>x.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-}
-
-/* QR */
-function scan(){
-new Html5Qrcode("qr").start({facingMode:"environment"},{fps:10,qrbox:250},
-t=>bill.innerHTML+=`<div>${t}</div>`);
-}
-
-if(localStorage.user) init();
+loadDashboard();
 </script>
-
 </body>
 </html>
