@@ -1,218 +1,162 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>All-in-One Sheet ERP</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Charts + QR -->
+<title>ERP System</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
-
 <style>
-body{margin:0;font-family:Arial;background:#f4f6f9}
+body{font-family:Arial;background:#f4f6f9;margin:0}
 header{background:#0d6efd;color:#fff;padding:10px}
-nav button{margin:4px}
-.card{background:#fff;margin:10px;padding:15px;border-radius:8px;box-shadow:0 2px 5px #ccc}
+button{margin:3px}
+.card{background:#fff;margin:10px;padding:15px;border-radius:8px}
 .hidden{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ccc;padding:6px}
-input,select,button{padding:6px;margin:4px}
+th,td{border:1px solid #ccc;padding:5px}
 </style>
 </head>
 
 <body>
 
-<!-- ================= LOGIN ================= -->
 <div id="login" class="card">
-<h2>🔐 Login</h2>
-<input id="luser" placeholder="Username">
-<input id="lpass" type="password" placeholder="Password">
+<h3>Login</h3>
+<input id="u" placeholder="Username">
+<input id="p" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
 <p id="msg"></p>
 </div>
 
-<!-- ================= APP ================= -->
 <div id="app" class="hidden">
 <header>
-<b id="roleTxt"></b>
-<nav>
+<b id="role"></b>
 <button onclick="show('dash')">Dashboard</button>
 <button onclick="show('members')">Members</button>
 <button onclick="show('items')">Items</button>
 <button onclick="show('billing')">Billing</button>
 <button onclick="show('finance')">Finance</button>
-<button onclick="show('reports')">Reports</button>
 <button onclick="logout()">Logout</button>
-</nav>
 </header>
 
-<!-- =============== DASHBOARD =============== -->
 <div id="dash" class="card">
-<div class="grid">
-<div class="card">Members <b id="mc">0</b></div>
-<div class="card">Items <b id="ic">0</b></div>
-<div class="card">Stock <b id="sc">0</b></div>
-</div>
-<canvas id="pie"></canvas>
-<canvas id="bar"></canvas>
+<canvas id="chart"></canvas>
 </div>
 
-<!-- =============== MEMBERS =============== -->
 <div id="members" class="card hidden">
 <h3>Members</h3>
-<input placeholder="Search" onkeyup="search(this,'mt')">
 <form onsubmit="addMember(event)">
-<input id="mname" placeholder="Name" required>
-<input id="mphone" placeholder="Phone" required>
+<input id="mn" placeholder="Name">
+<input id="mp" placeholder="Phone">
 <button>Add</button>
 </form>
-<table id="mt"><tr><th>Name</th><th>Phone</th></tr></table>
+<table id="mt"></table>
 </div>
 
-<!-- =============== ITEMS =============== -->
 <div id="items" class="card hidden">
 <h3>Items</h3>
 <form onsubmit="addItem(event)">
-<input id="iname" placeholder="Item" required>
-<input id="buy" placeholder="Buy Rate" required>
-<input id="sell" placeholder="Sell Rate" required>
+<input id="inm" placeholder="Item">
+<input id="sr" placeholder="Sell Rate">
 <button>Add</button>
 </form>
-<table id="it"><tr><th>Name</th><th>Selling</th></tr></table>
+<table id="it"></table>
 </div>
 
-<!-- =============== BILLING =============== -->
 <div id="billing" class="card hidden">
-<h3>Billing (QR / Barcode)</h3>
+<h3>QR Billing</h3>
 <div id="qr"></div>
 <button onclick="scan()">Scan</button>
-<div id="invoice"></div>
-<button onclick="window.print()">Print</button>
+<div id="bill"></div>
 </div>
 
-<!-- =============== FINANCE =============== -->
 <div id="finance" class="card hidden">
 <h3>Finance</h3>
 <form onsubmit="finance(event)">
-<select id="ftype">
+<select id="ft">
 <option>Saving</option>
 <option>Withdraw</option>
-<option>Transfer</option>
 <option>Loan</option>
 </select>
-<input id="famt" placeholder="Amount" required>
-<input id="months" placeholder="Months (Loan only)">
+<input id="fa" placeholder="Amount">
 <button>Submit</button>
 </form>
-</div>
-
-<!-- =============== REPORTS =============== -->
-<div id="reports" class="card hidden">
-<h3>Reports</h3>
-<table id="rt"><tr><th>Date</th><th>Type</th><th>Amount</th></tr></table>
 </div>
 </div>
 
 <script>
-/* ============== CONFIG ============== */
-const SHEET_ID = "1LRvZ1kXb777L0FfNtQk8Yo_YC7Ewu35x68lIPkBQgjM";
-const API = s => `https://opensheet.elk.sh/${SHEET_ID}/${s}`;
+const API="https://script.google.com/macros/s/AKfycbyShwHTGcmzA3zCIZsesop84edXlTRUOd4cd58R0ocMWQJMgo3xIQpg_9sq9jBaZ69r/exec";
 
-/* Google Form POST URLs */
-const FORM = {
-  member: "YOUR_MEMBER_FORM_URL",
-  item: "YOUR_ITEM_FORM_URL",
-  payment: "YOUR_PAYMENT_FORM_URL"
-};
-
-/* ============== LOGIN ============== */
+/* LOGIN */
 async function login(){
-  const u=luser.value, p=lpass.value;
-  const users = await fetch(API("Users_Login")).then(r=>r.json());
-  const user = users.find(x=>x.username===u && x.password===p && x.Status==="ACTIVE");
-  if(!user){ msg.innerText="Invalid Login"; return; }
-  localStorage.user = JSON.stringify(user);
-  init();
+const u1=u.value,p1=p.value;
+const users=await fetch(`${API}?sheet=Users_Login`).then(r=>r.json());
+const user=users.find(x=>x.username==u1&&x.password==p1&&x.Status=="ACTIVE");
+if(!user){msg.innerText="Invalid";return;}
+localStorage.user=JSON.stringify(user);
+init();
 }
-function logout(){ localStorage.clear(); location.reload(); }
 
-/* ============== INIT ============== */
+function logout(){localStorage.clear();location.reload();}
+
+/* INIT */
 async function init(){
-  login.classList.add("hidden");
-  app.classList.remove("hidden");
-  const user = JSON.parse(localStorage.user);
-  roleTxt.innerText = "Role: " + user.Role;
+login.classList.add("hidden");
+app.classList.remove("hidden");
+const user=JSON.parse(localStorage.user);
+role.innerText="Role: "+user.Role;
 
-  const members = await fetch(API("Members")).then(r=>r.json());
-  const items   = await fetch(API("Items")).then(r=>r.json());
-
-  mc.innerText = members.length;
-  ic.innerText = items.length;
-  sc.innerText = items.length; // simple demo stock
-
-  mt.innerHTML="<tr><th>Name</th><th>Phone</th></tr>";
-  it.innerHTML="<tr><th>Name</th><th>Selling</th></tr>";
-
-  members.forEach(m=>mt.innerHTML+=`<tr><td>${m.Name}</td><td>${m.Phone}</td></tr>`);
-  items.forEach(i=>it.innerHTML+=`<tr><td>${i.Name}</td><td>${i.SellingRate}</td></tr>`);
-
-  new Chart(pie,{type:"pie",data:{labels:["Members","Items"],datasets:[{data:[members.length,items.length]}]}});
-  new Chart(bar,{type:"bar",data:{labels:["Total"],datasets:[{data:[members.length+items.length]}]}});
+loadMembers();
+loadItems();
 }
 
-/* ============== UI HELPERS ============== */
-function show(id){
-  document.querySelectorAll('.card').forEach(x=>x.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
-function search(inp,table){
-  const f = inp.value.toUpperCase();
-  [...document.querySelectorAll(`#${table} tr`)].forEach(r=>{
-    r.style.display = r.innerText.toUpperCase().includes(f) ? "" : "none";
-  });
+/* LOAD */
+async function loadMembers(){
+const d=await fetch(`${API}?sheet=Members`).then(r=>r.json());
+mt.innerHTML="<tr><th>Name</th><th>Phone</th></tr>";
+d.forEach((x,i)=>mt.innerHTML+=`<tr><td>${x.Name}</td><td>${x.Phone}</td></tr>`);
 }
 
-/* ============== WRITE (FORM POST) ============== */
-function post(url,data){
-  fetch(url,{method:"POST",mode:"no-cors",body:new URLSearchParams(data)});
+async function loadItems(){
+const d=await fetch(`${API}?sheet=Items`).then(r=>r.json());
+it.innerHTML="<tr><th>Name</th><th>Sell</th></tr>";
+d.forEach(x=>it.innerHTML+=`<tr><td>${x.Name}</td><td>${x.SellingRate}</td></tr>`);
 }
 
-/* MEMBERS */
+/* WRITE */
+async function post(obj){
+await fetch(API,{method:"POST",body:JSON.stringify(obj)});
+}
+
 function addMember(e){
-  e.preventDefault();
-  post(FORM.member,{Name:mname.value,Phone:mphone.value,Status:"ACTIVE"});
-  alert("Member Saved");
+e.preventDefault();
+post({sheet:"Members",action:"ADD",data:["",mn.value,"",mp.value,"ACTIVE"]});
+loadMembers();
 }
 
-/* ITEMS */
 function addItem(e){
-  e.preventDefault();
-  post(FORM.item,{Name:iname.value,BuyRate:buy.value,SellingRate:sell.value});
-  alert("Item Saved");
+e.preventDefault();
+post({sheet:"Items",action:"ADD",data:["",inm.value,"",sr.value,"ACTIVE"]});
+loadItems();
 }
 
 /* FINANCE */
 function finance(e){
-  e.preventDefault();
-  let amt = Number(famt.value);
-  if(ftype.value==="Loan" && months.value){
-    let emi = (amt*1.2)/Number(months.value);
-    alert("Monthly EMI: "+emi.toFixed(2));
-  }
-  post(FORM.payment,{Type:ftype.value,Amount:amt,Date:new Date().toLocaleDateString()});
-  alert("Transaction Recorded");
+e.preventDefault();
+post({sheet:"Payments",action:"ADD",data:["",ft.value,fa.value,new Date().toLocaleDateString()]});
+alert("Saved");
+}
+
+/* UI */
+function show(id){
+document.querySelectorAll(".card").forEach(x=>x.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
 }
 
 /* QR */
 function scan(){
-  new Html5Qrcode("qr").start({facingMode:"environment"},{fps:10,qrbox:250},
-    txt=>invoice.innerHTML+=`<div>${txt}</div>`
-  );
+new Html5Qrcode("qr").start({facingMode:"environment"},{fps:10,qrbox:250},
+t=>bill.innerHTML+=`<div>${t}</div>`);
 }
 
-/* Auto login */
 if(localStorage.user) init();
 </script>
 
