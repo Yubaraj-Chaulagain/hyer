@@ -1,0 +1,26 @@
+<h3>Contact Us</h3>
+
+<input id="name" placeholder="Your Name"><br>
+<input id="email" placeholder="Your Email"><br>
+<input id="phone" placeholder="Phone"><br>
+<textarea id="msg" placeholder="Message"></textarea><br>
+
+<button onclick="send()">Submit</button>
+
+<script>
+const WEBAPP = "https://script.google.com/macros/s/AKfycbyVdeq8aOodhbrSIEfzCh-Yz3_x2IWD65Lf3dsze-VhbG_NJCbUP_bHHbk_GjSRBrskfw/exec";
+
+function send(){
+ fetch(WEBAPP,{
+  method:"POST",
+  body:JSON.stringify({
+    name:name.value,
+    email:email.value,
+    phone:phone.value,
+    message:msg.value
+  })
+ }).then(r=>r.json()).then(d=>{
+   alert("Thank you! Auto-reply sent to your email.");
+ });
+}
+</script>
