@@ -37,6 +37,100 @@
   <button onclick="addMember()">Add</button>
 
 </div>
+<h3>Members List</h3>
+<table border="1" id="mtable"></table>
+
+<script>
+function loadMembers(){
+ fetch(WEBAPP+"?action=list",{
+  method:"POST",
+  body:JSON.stringify({sheet:"Members"})
+ }).then(r=>r.json()).then(d=>{
+  localStorage.setItem("members",JSON.stringify(d.data));
+  drawTable(d.data);
+ }).catch(()=>{
+  drawTable(JSON.parse(localStorage.getItem("members")));
+ });
+}
+
+function drawTable(data){
+ let html="<tr>";
+ data[0].forEach(h=>html+="<th>"+h+"</th>");
+ html+="<th>Action</th></tr>";
+
+ for(let i=1;i<data.length;i++){
+  html+="<tr>";
+  data[i].forEach(v=>html+=`<td contenteditable>${v}</td>`);
+  html+=`<td>
+   <button onclick="updateRow(${i+1},this)">💾</button>
+   <button onclick="delRow(${i+1})">❌</button>
+  </td></tr>`;
+ }
+ mtable.innerHTML=html;
+}
+
+function updateRow(r,btn){
+ let row=[...btn.parentNode.parentNode.querySelectorAll("td")]
+   .slice(0,-1).map(td=>td.innerText);
+ fetch(WEBAPP+"?action=update",{
+  method:"POST",
+  body:JSON.stringify({sheet:"Members",row:r,values:row})
+ }).then(()=>alert("Updated"));
+}
+
+function delRow(r){
+ fetch(WEBAPP+"?action=delete",{
+  method:"POST",
+  body:JSON.stringify({sheet:"Members",row:r})
+ }).then(()=>loadMembers());
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+<div id="qr"></div>
+
+<script>
+function makeQR(id){
+ document.getElementById("qr").innerHTML="";
+ new QRCode(qr,{
+  text:id,
+  width:120,
+  height:120
+ });
+}
+</script>
+<h3>New Loan</h3>
+<input id="lamount" placeholder="Amount">
+<input id="lrate" placeholder="Rate">
+<input id="lperiod" placeholder="Months">
+<button onclick="addLoan()">Create Loan</button>
+
+<script>
+function addLoan(){
+ fetch(WEBAPP,{
+  method:"POST",
+  body:JSON.stringify({
+   action:"addLoan",
+   amount:lamount.value,
+   rate:lrate.value,
+   period:lperiod.value,
+   member:"MEM001",
+   start:new Date()
+  })
+ }).then(r=>r.json()).then(d=>{
+  alert("EMI: "+d.emi);
+ });
+}
+</script>
+<button onclick="window.print()">🖨 Print Report</button>
+
+<style>
+@media print{
+ body{background:#fff}
+ button{display:none}
+}
+</style>
+
 
 <script>
 const WEBAPP = "https://script.google.com/macros/s/AKfycbwuW28oVGLCjVRzqlKg6nNzJMn06K5dpchAt0ubbHtgB4LbchEbfTZzHuQ8iCsZKtvc/exec";
