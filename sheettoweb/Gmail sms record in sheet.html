@@ -1,26 +1,96 @@
-<h3>Contact Us</h3>
+<!DOCTYPE html>
+<html>
+<head>
+<title>ERP System</title>
 
-<input id="name" placeholder="Your Name"><br>
-<input id="email" placeholder="Your Email"><br>
-<input id="phone" placeholder="Phone"><br>
-<textarea id="msg" placeholder="Message"></textarea><br>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 
-<button onclick="send()">Submit</button>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+</head>
+<body class="p-3">
+
+<h3>Member Registration</h3>
+
+<input id="name" class="form-control mb-1" placeholder="Name">
+<input id="phone" class="form-control mb-1" placeholder="Phone">
+<input id="email" class="form-control mb-1" placeholder="Email">
+<input type="file" id="photo" class="form-control mb-1">
+
+<button class="btn btn-primary" onclick="submitForm()">Submit</button>
+
+<hr>
+
+<h3>OTP Verification</h3>
+<input id="otp" class="form-control mb-1" placeholder="Enter OTP">
+<button class="btn btn-success" onclick="verifyOTP()">Verify</button>
+
+<hr>
+
+<h3>Search Data</h3>
+<select id="sheet" class="form-select w-25 mb-2">
+  <option>Members</option>
+  <option>Transactions</option>
+</select>
+<button class="btn btn-info mb-2" onclick="loadData()">Load</button>
+
+<table id="table" class="table table-striped"></table>
 
 <script>
-const WEBAPP = "https://script.google.com/macros/s/AKfycbyVdeq8aOodhbrSIEfzCh-Yz3_x2IWD65Lf3dsze-VhbG_NJCbUP_bHHbk_GjSRBrskfw/exec";
+const WEBAPP = "https://script.google.com/macros/s/AKfycbzeYo_eQi1VIxiOf1q8MZv3cBth7dd7manatq65OjVUADNA2mGydz4HuZHOzhC7yAc-eQ/exec";
 
-function send(){
+/* ================= SUBMIT ================= */
+function submitForm(){
+ const f = photo.files[0];
+ const r = new FileReader();
+ r.onload=()=>{
+  fetch(WEBAPP,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"submitMember",
+      name:name.value,
+      phone:phone.value,
+      email:email.value,
+      photo:r.result
+    })
+  }).then(r=>r.json()).then(d=>alert(d.msg));
+ };
+ r.readAsDataURL(f);
+}
+
+/* ================= OTP ================= */
+function verifyOTP(){
  fetch(WEBAPP,{
   method:"POST",
   body:JSON.stringify({
-    name:name.value,
+    action:"verifyOTP",
     email:email.value,
-    phone:phone.value,
-    message:msg.value
+    otp:otp.value
   })
  }).then(r=>r.json()).then(d=>{
-   alert("Thank you! Auto-reply sent to your email.");
+   alert(d.status?"Verified":"Invalid OTP");
+ });
+}
+
+/* ================= SEARCH ================= */
+function loadData(){
+ fetch(WEBAPP,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"list",
+    sheet:sheet.value
+  })
+ }).then(r=>r.json()).then(d=>{
+  $("#table").DataTable({
+    destroy:true,
+    data:d.data.slice(1),
+    columns:d.data[0].map(h=>({title:h}))
+  });
  });
 }
 </script>
+
+</body>
+</html>
