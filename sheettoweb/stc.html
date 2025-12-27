@@ -28,7 +28,7 @@ td a { text-decoration:none; color:#0d6efd; }
 <tbody id="tbody"></tbody>
 </table>
 
-<!-- 🔵 MODAL -->
+<!-- MODAL -->
 <div class="modal fade" id="memberModal">
 <div class="modal-dialog modal-xl">
 <div class="modal-content">
@@ -66,16 +66,20 @@ td a { text-decoration:none; color:#0d6efd; }
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbz4q5VOS-TOZ2PdOJwZYrgAOswlGyOLXpiyyjdTwtEN6EdkIs2x9-dEwrcuU6V29FAUpg/exec";
+const API = "https://script.google.com/macros/s/AKfycbz4q5VOS-TOZ2PdOJwZYrgAOswlGyOLXpiyyjdTwtEN6EdkIs2x9-dEwrcuU6V29FAUpg/exec"; // Apps Script URL here
 
 let members=[], editMode=false;
 const modal = new bootstrap.Modal(document.getElementById("memberModal"));
 
 /* Load members */
-fetch(API).then(r=>r.json()).then(d=>{
-  members=d;
-  draw(d);
-});
+function loadMembers(){
+  fetch(API)
+    .then(res=>res.json())
+    .then(d=>{
+      members=d;
+      draw(members);
+    });
+}
 
 /* Draw table */
 function draw(data){
@@ -108,7 +112,7 @@ function draw(data){
 
 /* Search */
 search.onkeyup=()=>{
-  const v=search.value.toLowerCase();
+  const v = search.value.toLowerCase();
   draw(members.filter(m=>Object.values(m).join().toLowerCase().includes(v)));
 };
 
@@ -144,41 +148,59 @@ function openEdit(m){
   modal.show();
 }
 
-/* Save (Add or Update) */
+/* Save (Add / Update) */
 function save(){
+  const payload = {
+    action: editMode?"update":"add",
+    MemberID:MemberID.value,
+    Name:Name.value,
+    Address:Address.value,
+    "Father Name":FatherName.value,
+    "Grand Father Name":GrandFatherName.value,
+    "Spouse/Wife Name":SpouseName.value,
+    Phone:Phone.value,
+    Email:Email.value,
+    "Identy PhotoURL":IdentityPhotoURL.value,
+    "Member PhotoURL":MemberPhotoURL.value,
+    Status:Status.value,
+    OTP:OTP.value,
+    EntryDate:EntryDate.value
+  };
+
   fetch(API,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      action: editMode?"update":"add",
-      MemberID:MemberID.value,
-      Name:Name.value,
-      Address:Address.value,
-      "Father Name":FatherName.value,
-      "Grand Father Name":GrandFatherName.value,
-      "Spouse/Wife Name":SpouseName.value,
-      Phone:Phone.value,
-      Email:Email.value,
-      "Identy PhotoURL":IdentityPhotoURL.value,
-      "Member PhotoURL":MemberPhotoURL.value,
-      Status:Status.value,
-      OTP:OTP.value,
-      EntryDate:EntryDate.value
-    })
-  }).then(()=>location.reload());
+    body: JSON.stringify(payload)
+  })
+  .then(res=>res.json())
+  .then(d=>{
+    if(d.status){
+      modal.hide();
+      loadMembers();
+    }else{
+      alert("Error: "+d.message);
+    }
+  })
+  .catch(err=>console.error(err));
 }
 
-/* Delete */
+/* Delete member from modal */
 function remove(){
   if(confirm("Delete this member?")){
     fetch(API,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({
-        action:"delete",
-        MemberID:MemberID.value
-      })
-    }).then(()=>location.reload());
+      body: JSON.stringify({action:"delete", MemberID:MemberID.value})
+    })
+    .then(res=>res.json())
+    .then(d=>{
+      if(d.status){
+        modal.hide();
+        loadMembers();
+      }else{
+        alert("Error: "+d.message);
+      }
+    });
   }
 }
 
@@ -187,6 +209,9 @@ function openDelete(id){
   MemberID.value=id;
   remove();
 }
+
+/* Initial load */
+loadMembers();
 </script>
 
 </body>
