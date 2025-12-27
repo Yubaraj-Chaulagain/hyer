@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Member Management</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+td a { text-decoration:none; color:#0d6efd; }
+</style>
+</head>
+
+<body class="p-3">
+
+<h3>Members</h3>
+
+<input class="form-control mb-2" id="search" placeholder="Search members">
+
+<button class="btn btn-success mb-2" onclick="openAdd()">+ Add Member</button>
+
+<table class="table table-bordered table-hover table-sm">
+<thead class="table-dark">
+<tr>
+<th>ID</th><th>Name</th><th>Address</th><th>Father Name</th><th>Grand Father Name</th>
+<th>Spouse/Wife Name</th><th>Phone</th><th>Email</th><th>Identity Photo</th><th>Member Photo</th>
+<th>Status</th><th>OTP</th><th>Entry Date</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+<!-- 🔵 MODAL -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+
+<div class="modal-header">
+<h5 id="modalTitle">Member</h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body row g-2">
+
+<input id="MemberID" class="form-control col-6" placeholder="Member ID">
+<input id="Name" class="form-control col-6" placeholder="Name">
+<input id="Address" class="form-control col-6" placeholder="Address">
+<input id="FatherName" class="form-control col-6" placeholder="Father Name">
+<input id="GrandFatherName" class="form-control col-6" placeholder="Grand Father Name">
+<input id="SpouseName" class="form-control col-6" placeholder="Spouse/Wife Name">
+<input id="Phone" class="form-control col-6" placeholder="Phone">
+<input id="Email" class="form-control col-6" placeholder="Email">
+<input id="IdentityPhotoURL" class="form-control col-6" placeholder="Identity Photo URL">
+<input id="MemberPhotoURL" class="form-control col-6" placeholder="Member Photo URL">
+<input id="Status" class="form-control col-6" placeholder="Status">
+<input id="OTP" class="form-control col-6" placeholder="OTP">
+<input id="EntryDate" type="date" class="form-control col-6">
+
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-success" onclick="save()">Save</button>
+<button class="btn btn-danger" onclick="remove()">Delete</button>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycby5mzmjn4zZnYauzN5DiC0bOed5YgRL55DxDPAlu_IvUF0ik4ndOTgteK20o4OZNZzf/exec";
+
+let members=[], editMode=false;
+const modal = new bootstrap.Modal(document.getElementById("memberModal"));
+
+/* Load members */
+fetch(API).then(r=>r.json()).then(d=>{
+  members=d;
+  draw(d);
+});
+
+/* Draw table */
+function draw(data){
+  tbody.innerHTML="";
+  data.forEach(m=>{
+    tbody.innerHTML+=`
+      <tr>
+        <td>${m.MemberID||""}</td>
+        <td>${m.Name||""}</td>
+        <td>${m.Address||""}</td>
+        <td>${m["Father Name"]||""}</td>
+        <td>${m["Grand Father Name"]||""}</td>
+        <td>${m["Spouse/Wife Name"]||""}</td>
+        <td>${m.Phone||""}</td>
+        <td>${m.Email||""}</td>
+        <td><a href="${m["Identy PhotoURL"]||"#"}" target="_blank">View</a></td>
+        <td><a href="${m["Member PhotoURL"]||"#"}" target="_blank">View</a></td>
+        <td>${m.Status||""}</td>
+        <td>${m.OTP||""}</td>
+        <td>${m.EntryDate||""}</td>
+        <td>
+          <button class="btn btn-sm btn-warning"
+            onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
+          <button class="btn btn-sm btn-danger"
+            onclick='openDelete("${m.MemberID}")'>Del</button>
+        </td>
+      </tr>`;
+  });
+}
+
+/* Search */
+search.onkeyup=()=>{
+  const v=search.value.toLowerCase();
+  draw(members.filter(m=>Object.values(m).join().toLowerCase().includes(v)));
+};
+
+/* Open Add Modal */
+function openAdd(){
+  editMode=false;
+  modalTitle.innerText="Add Member";
+  document.querySelectorAll(".modal-body input").forEach(i=>i.value="");
+  MemberID.readOnly=false;
+  modal.show();
+}
+
+/* Open Edit Modal */
+function openEdit(m){
+  editMode=true;
+  modalTitle.innerText="Edit Member";
+  MemberID.readOnly=true;
+
+  MemberID.value=m.MemberID||"";
+  Name.value=m.Name||"";
+  Address.value=m.Address||"";
+  FatherName.value=m["Father Name"]||"";
+  GrandFatherName.value=m["Grand Father Name"]||"";
+  SpouseName.value=m["Spouse/Wife Name"]||"";
+  Phone.value=m.Phone||"";
+  Email.value=m.Email||"";
+  IdentityPhotoURL.value=m["Identy PhotoURL"]||"";
+  MemberPhotoURL.value=m["Member PhotoURL"]||"";
+  Status.value=m.Status||"";
+  OTP.value=m.OTP||"";
+  EntryDate.value=m.EntryDate||"";
+
+  modal.show();
+}
+
+/* Save (Add or Update) */
+function save(){
+  fetch(API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      action: editMode?"update":"add",
+      MemberID:MemberID.value,
+      Name:Name.value,
+      Address:Address.value,
+      "Father Name":FatherName.value,
+      "Grand Father Name":GrandFatherName.value,
+      "Spouse/Wife Name":SpouseName.value,
+      Phone:Phone.value,
+      Email:Email.value,
+      "Identy PhotoURL":IdentityPhotoURL.value,
+      "Member PhotoURL":MemberPhotoURL.value,
+      Status:Status.value,
+      OTP:OTP.value,
+      EntryDate:EntryDate.value
+    })
+  }).then(()=>location.reload());
+}
+
+/* Delete */
+function remove(){
+  if(confirm("Delete this member?")){
+    fetch(API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        action:"delete",
+        MemberID:MemberID.value
+      })
+    }).then(()=>location.reload());
+  }
+}
+
+/* Delete from table button */
+function openDelete(id){
+  MemberID.value=id;
+  remove();
+}
+</script>
+
+</body>
+</html>
