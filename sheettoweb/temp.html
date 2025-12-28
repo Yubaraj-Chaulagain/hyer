@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dynamic Member Management</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+.thumb{width:50px;height:50px;object-fit:cover;border-radius:5px}
+.hidden{display:none}
+</style>
+</head>
+
+<body class="p-3">
+
+<!-- LOGIN -->
+<div id="loginBox" class="container col-md-4">
+<h4>🔐 Login</h4>
+<input id="user" class="form-control mb-2" placeholder="Username">
+<input id="pass" type="password" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+<h3>📊 Dashboard</h3>
+<div class="row mb-3">
+<div class="col"><div class="card p-2">👥 Total: <b id="d_total"></b></div></div>
+<div class="col"><div class="card p-2">✅ Active: <b id="d_active"></b></div></div>
+<div class="col"><div class="card p-2">❌ Inactive: <b id="d_inactive"></b></div></div>
+</div>
+
+<input id="search" class="form-control mb-2" placeholder="Search">
+
+<button id="addBtn" class="btn btn-success mb-2" onclick="openAdd()">+ Add Member</button>
+
+<table class="table table-bordered table-sm">
+<thead id="thead" class="table-dark"></thead>
+<tbody id="tbody"></tbody>
+</table>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+<div class="modal-header">
+<h5 id="modalTitle"></h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body row g-2" id="formBody"></div>
+<div class="modal-footer">
+<button id="saveBtn" class="btn btn-success" onclick="save()">Save</button>
+<button id="delBtn" class="btn btn-danger" onclick="del()">Delete</button>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+const API_URL="YOUR_GOOGLE_SCRIPT_URL";
+const IMGBB_KEY="YOUR_IMGBB_KEY";
+
+let role="", headers=[], members=[], edit=false;
+const modal = new bootstrap.Modal(memberModal);
+
+/* ================= LOGIN ================= */
+function login(){
+fetch(API_URL,{method:"POST",body:JSON.stringify({
+action:"login",user:user.value,pass:pass.value
+})}).then(r=>r.json()).then(d=>{
+if(!d.ok)return alert("Login failed");
+role=d.role;
+loginBox.classList.add("hidden");
+app.classList.remove("hidden");
+if(role!=="admin"){
+addBtn.style.display="none";
+saveBtn.style.display="none";
+delBtn.style.display="none";
+}
+loadMembers();
+});
+}
+
+/* ================= LOAD MEMBERS ================= */
+function loadMembers(){
+fetch(API_URL).then(r=>r.json()).then(d=>{
+if(d.length===0) return;
+members=d;
+headers=Object.keys(d[0]); // dynamic headers
+buildTable();
+draw();
+buildForm();
+dashboard();
+});
+}
+
+/* ================= DASHBOARD ================= */
+function dashboard(){
+d_total.innerText=members.length;
+d_active.innerText=members.filter(m=>m.Status=="Active").length;
+d_inactive.innerText=members.filter(m=>m.Status=="Inactive").length;
+}
+
+/* ================= TABLE ================= */
+function buildTable(){
+thead.innerHTML = "";
+headers.forEach(h => thead.innerHTML += `<th>${h}</th>`);
+thead.innerHTML += `<th>Action</th>`;
+}
+
+function draw(){
+tbody.innerHTML="";
+members.forEach(m=>{
+let tr="<tr>";
+headers.forEach(h=>{
+let v = m[h] || "";
+if(h.toLowerCase().includes("photo") && v) 
+tr+=`<td><img src="${v}" class="thumb"></td>`;
+else 
+tr+=`<td>${v}</td>`;
+});
+tr+=`<td>
+${role==="admin"?`<button class="btn btn-sm btn-warning" onclick='editM(${JSON.stringify(m)})'>Edit</button>`:""}
+${role==="admin"?`<button class="btn btn-sm btn-danger" onclick='deleteM("${m[headers[0]]}")'>Del</button>`:""}
+</td>`;
+tr+="</tr>";
+tbody.innerHTML+=tr;
+});
+}
+
+/* ================= FORM ================= */
+function buildForm(){
+formBody.innerHTML="";
+headers.forEach(h=>{
+formBody.innerHTML+=`
+<div class="col-6">
+<label>${h}</label>
+<input class="form-control" id="f_${h}" placeholder="${h}">
+${h.toLowerCase().includes("photo")?`<input type="file" class="form-control mt-1" onchange="uploadImage(this,'${h}')"><img id="p_${h}" class="thumb hidden mt-1">`:""}
+</div>`;
+});
+}
+
+/* ================= MODAL ================= */
+function openAdd(){
+edit=false;
+modalTitle.innerText="Add Member";
+headers.forEach(h=>{
+document.getElementById("f_"+h).value="";
+let p = document.getElementById("p_"+h);
+if(p) p.classList.add("hidden");
+});
+modal.show();
+}
+
+function editM(m){
+edit=true;
+modalTitle.innerText="Edit Member";
+headers.forEach(h=>{
+if(document.getElementById("f_"+h)) document.getElementById("f_"+h).value=m[h]||"";
+let p=document.getElementById("p_"+h);
+if(p && m[h] && h.toLowerCase().includes("photo")){
+p.src=m[h]; p.classList.remove("hidden");
+}
+});
+modal.show();
+}
+
+/* ================= SAVE ================= */
+function save(){
+let data={action:edit?"update":"add"};
+headers.forEach(h=>{
+data[h]=document.getElementById("f_"+h).value;
+});
+fetch(API_URL,{method:"POST",body:JSON.stringify(data)})
+.then(()=>{modal.hide();loadMembers();});
+}
+
+/* ================= DELETE ================= */
+function deleteM(id){
+if(!confirm("Delete member?")) return;
+fetch(API_URL,{method:"POST",body:JSON.stringify({action:"delete",MemberID:id})})
+.then(()=>{loadMembers();});
+}
+
+/* ================= IMG UPLOAD ================= */
+function uploadImage(input,field){
+if(!input.files.length) return;
+const fd=new FormData();
+fd.append("image",input.files[0]);
+fd.append("name",field+"_"+Date.now());
+fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{method:"POST",body:fd})
+.then(r=>r.json()).then(d=>{
+if(d.success){
+document.getElementById("f_"+field).value=d.data.url;
+let img=document.getElementById("p_"+field);
+img.src=d.data.url;
+img.classList.remove("hidden");
+}else alert("Image upload failed");
+});
+}
+</script>
+</body>
+</html>
