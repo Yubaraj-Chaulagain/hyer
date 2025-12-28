@@ -1,96 +1,165 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Member Management</title>
-  <link rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<title>Member Management</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+td a{ text-decoration:none }
+</style>
 </head>
+
 <body class="p-3">
 
 <h3>Members</h3>
 
-<input class="form-control mb-2" id="search" placeholder="Searchs">
+<input id="search" class="form-control mb-2" placeholder="Search">
+
+<button class="btn btn-success mb-2" onclick="openAdd()">+ Add Member</button>
 
 <table class="table table-bordered table-sm">
-<thead>
-<tr>
-<th>ID</th><th>Name</th><th>Phone</th><th>Status</th><th>Action</th>
-</tr>
+<thead class="table-dark">
+<tr id="thead"></tr>
 </thead>
 <tbody id="tbody"></tbody>
 </table>
 
-<hr>
+<!-- MODAL -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
 
-<h5>Add / Edit</h5>
-<input id="MemberID" placeholder="MemberID" class="form-control mb-1">
-<input id="Name" placeholder="Name" class="form-control mb-1">
-<input id="Phone" placeholder="Phone" class="form-control mb-1">
-<input id="Status" placeholder="Status" class="form-control mb-1">
+<div class="modal-header">
+<h5 id="modalTitle"></h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
 
-<button class="btn btn-primary" onclick="save()">Save</button>
+<div class="modal-body row g-2" id="formBody"></div>
+
+<div class="modal-footer">
+<button class="btn btn-success" onclick="save()">Save</button>
+<button class="btn btn-danger" onclick="remove()">Delete</button>
+</div>
+
+</div>
+</div>
+</div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby5mzmjn4zZnYauzN5DiC0bOed5YgRL55DxDPAlu_IvUF0ik4ndOTgteK20o4OZNZzf/exec";
+const API = "https://script.google.com/macros/s/AKfycbwg9NNmf6S1iOAk44Kr8lKT_BUPFTKxe_PF4QW6cNsBXuxggXBmDJ-qGEGscSFHUm-5Fw/exec";
+let headers=[], members=[], editMode=false;
+const modal = new bootstrap.Modal(memberModal);
 
-let members=[];
+function loadMembers(){
+  fetch(API)
+  .then(r=>r.json())
+  .then(d=>{
+    headers = d.headers;
+    members = d.data;
+    buildTable();
+    draw(members);
+    buildForm();
+  });
+}
 
-fetch(API).then(r=>r.json()).then(d=>{
-  members=d; draw(d);
-});
+function buildTable(){
+  thead.innerHTML="";
+  headers.forEach(h=> thead.innerHTML+=`<th>${h}</th>`);
+  thead.innerHTML+=`<th>Action</th>`;
+}
 
 function draw(data){
   tbody.innerHTML="";
   data.forEach(m=>{
-    tbody.innerHTML+=`
-    <tr>
-      <td>${m.MemberID}</td>
-      <td>${m.Name}</td>
-      <td>${m.Phone}</td>
-      <td>${m.Status}</td>
+    let tr="<tr>";
+    headers.forEach(h=>{
+      let v=m[h]||"";
+      if(String(v).startsWith("http"))
+        tr+=`<td><a href="${v}" target="_blank">View</a></td>`;
+      else tr+=`<td>${v}</td>`;
+    });
+    tr+=`
       <td>
-        <button class="btn btn-sm btn-warning" onclick='edit(${JSON.stringify(m)})'>Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="del('${m.MemberID}')">Del</button>
+        <button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
+        <button class="btn btn-sm btn-danger" onclick='openDelete("${m[headers[0]]}")'>Del</button>
       </td>
     </tr>`;
+    tbody.innerHTML+=tr;
+  });
+}
+
+function buildForm(){
+  formBody.innerHTML="";
+  headers.forEach(h=>{
+    formBody.innerHTML+=`
+      <div class="col-6">
+        <input class="form-control" id="f_${h}" placeholder="${h}">
+      </div>`;
   });
 }
 
 search.onkeyup=()=>{
   const v=search.value.toLowerCase();
-  draw(members.filter(m=>
-    Object.values(m).join().toLowerCase().includes(v)
-  ));
+  draw(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v)));
+};
+
+function openAdd(){
+  editMode=false;
+  modalTitle.innerText="Add Member";
+  headers.forEach(h=>document.getElementById("f_"+h).value="");
+  document.getElementById("f_"+headers[0]).readOnly=false;
+  modal.show();
 }
 
-function edit(m){
-  MemberID.value=m.MemberID;
-  Name.value=m.Name;
-  Phone.value=m.Phone;
-  Status.value=m.Status;
+function openEdit(m){
+  editMode=true;
+  modalTitle.innerText="Edit Member";
+  headers.forEach(h=>{
+    document.getElementById("f_"+h).value=m[h]||"";
+  });
+  document.getElementById("f_"+headers[0]).readOnly=true;
+  modal.show();
 }
 
 function save(){
+  let payload={ action: editMode?"update":"add" };
+  headers.forEach(h=>{
+    payload[h]=document.getElementById("f_"+h).value;
+  });
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      modal.hide();
+      loadMembers();
+    } else alert(res.message);
+  });
+}
+
+function remove(){
+  if(!confirm("Delete member?")) return;
   fetch(API,{
     method:"POST",
     body:JSON.stringify({
-      action:"update",
-      MemberID:MemberID.value,
-      Name:Name.value,
-      Phone:Phone.value,
-      Status:Status.value
+      action:"delete",
+      key: document.getElementById("f_"+headers[0]).value
     })
-  }).then(()=>location.reload());
+  })
+  .then(r=>r.json())
+  .then(()=>{ modal.hide(); loadMembers(); });
 }
 
-function del(id){
-  if(confirm("Delete?")){
-    fetch(API,{
-      method:"POST",
-      body:JSON.stringify({action:"delete",MemberID:id})
-    }).then(()=>location.reload());
-  }
+function openDelete(id){
+  document.getElementById("f_"+headers[0]).value=id;
+  remove();
 }
+
+loadMembers();
 </script>
+
 </body>
 </html>
