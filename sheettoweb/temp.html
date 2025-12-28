@@ -114,24 +114,47 @@ thead.innerHTML += `<th>Action</th>`;
 }
 
 function draw(){
-tbody.innerHTML="";
-members.forEach(m=>{
-let tr="<tr>";
-headers.forEach(h=>{
-let v = m[h] || "";
-if(h.toLowerCase().includes("photo") && v) 
-tr+=`<td><img src="${v}" class="thumb"></td>`;
-else 
-tr+=`<td>${v}</td>`;
-});
-tr+=`<td>
-${role==="admin"?`<button class="btn btn-sm btn-warning" onclick='editM(${JSON.stringify(m)})'>Edit</button>`:""}
-${role==="admin"?`<button class="btn btn-sm btn-danger" onclick='deleteM("${m[headers[0]]}")'>Del</button>`:""}
-</td>`;
-tr+="</tr>";
-tbody.innerHTML+=tr;
-});
+  tbody.innerHTML="";
+  members.forEach(m=>{
+    let tr=document.createElement("tr");
+
+    headers.forEach(h=>{
+      let td=document.createElement("td");
+      let v = m[h] || "";
+
+      if(h.toLowerCase().includes("photo") && v){
+        let img = document.createElement("img");
+        img.src = v;
+        img.className = "thumb";
+        // force table redraw when image loads
+        img.onload = ()=>{ tbody.style.display='table'; };
+        td.appendChild(img);
+      } else td.innerText = v;
+
+      tr.appendChild(td);
+    });
+
+    // Action column
+    let tdAction=document.createElement("td");
+    if(role==="admin"){
+      let editBtn=document.createElement("button");
+      editBtn.className="btn btn-sm btn-warning me-1";
+      editBtn.innerText="Edit";
+      editBtn.onclick = ()=> editM(m);
+      tdAction.appendChild(editBtn);
+
+      let delBtn=document.createElement("button");
+      delBtn.className="btn btn-sm btn-danger";
+      delBtn.innerText="Del";
+      delBtn.onclick = ()=> deleteM(m[headers[0]]);
+      tdAction.appendChild(delBtn);
+    }
+    tr.appendChild(tdAction);
+
+    tbody.appendChild(tr);
+  });
 }
+
 
 /* ================= FORM ================= */
 function buildForm(){
