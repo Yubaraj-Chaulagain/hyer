@@ -5,7 +5,217 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 .hidden{display:none}
+.table-wrapper{overflow-x<!DOCTYPE html>
+<html>
+<head>
+<title>Member Management (OTP)</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+.hidden{display:none}
 .table-wrapper{overflow-x:auto}
+th,td{text-align:center;min-width:120px}
+.thumb{width:50px;height:50px;object-fit:cover}
+</style>
+</head>
+
+<body class="p-3">
+
+<!-- LOGIN -->
+<div id="loginBox" class="col-md-4 mx-auto">
+<h4>Login</h4>
+<input id="user" class="form-control mb-2" placeholder="Username">
+<input id="pass" type="password" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+<button class="btn btn-success mb-2" onclick="openAdd()">+ Add</button>
+
+<div class="table-wrapper">
+<table class="table table-bordered">
+<thead class="table-dark"><tr id="thead"></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- MEMBER MODAL -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-xl">
+<div class="modal-content">
+<div class="modal-header">
+<h5 id="modalTitle"></h5>
+<button class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body row g-2" id="formBody"></div>
+<div class="modal-footer">
+<button class="btn btn-success" onclick="save()">Save</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- OTP MODAL -->
+<div class="modal fade" id="otpModal">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header"><h5>OTP Verification</h5></div>
+<div class="modal-body">
+<input id="otpInput" class="form-control" placeholder="Enter OTP">
+</div>
+<div class="modal-footer">
+<button class="btn btn-primary" onclick="confirmOtp()">Verify</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyemVSjs6YjnHCfDWUR7aXhL4YiTXABHWWP_JLgnxqVl5p5o4eVWvtgQdAQotuSP3KwGw/exec";
+
+let headers=[], members=[];
+let editMode=false;
+let currentID=null;
+let otpCallback=null;
+
+const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+const otpModal = new bootstrap.Modal(document.getElementById("otpModal"));
+
+/* LOGIN */
+function login(){
+fetch(API,{
+method:"POST",
+body:JSON.stringify({action:"login",user:user.value,pass:pass.value})
+})
+.then(r=>r.json())
+.then(d=>{
+if(!d.ok) return alert("Login failed");
+loginBox.classList.add("hidden");
+app.classList.remove("hidden");
+load();
+});
+}
+
+/* LOAD */
+function load(){
+fetch(API).then(r=>r.json()).then(d=>{
+members=d;
+headers=Object.keys(d[0]);
+buildTable();
+draw();
+buildForm();
+});
+}
+
+/* TABLE */
+function buildTable(){
+thead.innerHTML="";
+headers.forEach(h=>thead.innerHTML+=`<th>${h}</th>`);
+thead.innerHTML+="<th>Action</th>";
+}
+
+function draw(){
+tbody.innerHTML="";
+members.forEach((m,i)=>{
+let tr="<tr>";
+headers.forEach(h=>{
+tr+=h.toLowerCase().includes("photo")
+?`<td>${m[h]?`<img src="${m[h]}" class="thumb">`:""}</td>`
+:`<td>${m[h]||""}</td>`;
+});
+tr+=`
+<td>
+<button class="btn btn-sm btn-warning" onclick="editM(${i})">Edit</button>
+<button class="btn btn-sm btn-danger" onclick="del('${m.MemberID}')">Del</button>
+</td></tr>`;
+tbody.innerHTML+=tr;
+});
+}
+
+/* FORM */
+function buildForm(){
+formBody.innerHTML="";
+headers.forEach(h=>{
+formBody.innerHTML+=`
+<div class="col-6">
+<label>${h}</label>
+<input id="f_${h}" class="form-control">
+</div>`;
+});
+}
+const f=h=>document.getElementById("f_"+h);
+
+/* ADD / EDIT */
+function openAdd(){
+editMode=false;
+modalTitle.innerText="Add Member";
+headers.forEach(h=>f(h).value="");
+memberModal.show();
+}
+
+function editM(i){
+editMode=true;
+currentID=members[i].MemberID;
+modalTitle.innerText="Edit Member";
+headers.forEach(h=>f(h).value=members[i][h]||"");
+memberModal.show();
+}
+
+/* SAVE */
+function save(){
+if(!editMode){
+let d={action:"add"};
+headers.forEach(h=>d[h]=f(h).value);
+post(d);
+}else{
+sendOtp(currentID,()=>{
+let d={action:"update",otp:otpInput.value};
+headers.forEach(h=>d[h]=f(h).value);
+post(d);
+});
+}
+}
+
+/* DELETE */
+function del(id){
+sendOtp(id,()=>{
+post({action:"delete",MemberID:id,otp:otpInput.value});
+});
+}
+
+/* OTP */
+function sendOtp(id,cb){
+otpCallback=cb;
+fetch(API,{
+method:"POST",
+body:JSON.stringify({action:"sendOtp",MemberID:id})
+})
+.then(r=>r.json())
+.then(d=>{
+if(!d.ok) return alert("OTP failed");
+otpInput.value="";
+otpModal.show();
+});
+}
+
+function confirmOtp(){
+otpModal.hide();
+otpCallback();
+}
+
+/* POST */
+function post(d){
+fetch(API,{method:"POST",body:JSON.stringify(d)})
+.then(()=>{memberModal.hide();load();});
+}
+</script>
+
+</body>
+</html>
+:auto}
 th,td{text-align:center;min-width:120px}
 .thumb{width:50px;height:50px;object-fit:cover}
 </style>
