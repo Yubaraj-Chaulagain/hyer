@@ -122,7 +122,8 @@ tr+=`<td class="photo-col">${m[h]?`<img src="${m[h]}" class="thumb">`:""}</td>`;
 else tr+=`<td>${m[h]||""}</td>`;
 });
 tr+=`<td class="action-col">
-${role==="admin"?`<button class="btn btn-sm btn-warning" onclick='editM(${JSON.stringify(m)})'>Edit</button>`:""}
+${role==="admin"?`<button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>`:""}
+${role==="admin"?`<button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>`:""}
 </td></tr>`;
 tbody.innerHTML+=tr;
 });
@@ -157,6 +158,15 @@ headers.forEach(h=>d[h]=f(h).value);
 fetch(API,{method:"POST",body:JSON.stringify(d)})
 .then(()=>{modal.hide();load()});
 }
+
+  function deleteMember(id){
+  if(!confirm("Are you sure to delete this member?")) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"delete", MemberID:id})
+  }).then(()=>load());
+}
+
 
 /* IMG */
 function upload(i,fld){
