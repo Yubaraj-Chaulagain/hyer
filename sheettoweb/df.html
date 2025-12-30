@@ -68,21 +68,30 @@ let headers=[], members=[], edit=false;
 const modal = new bootstrap.Modal(memberModal);
 
 /* LOGIN */
-async function login(){
- try{
-   const res = await fetch(API,{
-     method:"POST",
-     headers:{"Content-Type":"application/json"},
-     body: JSON.stringify({action:"login", user:user.value, pass:pass.value})
-   });
-   const data = await res.json();
-   if(!data.ok) return alert("❌ Login Failed");
-   loginBox.classList.add("hidden");
-   app.classList.remove("hidden");
-   load();
- } catch(err){
-   alert("❌ API Error: "+err);
- }
+function login(){
+  // get values safely
+  const username = document.getElementById("user").value.trim();
+  const password = document.getElementById("pass").value.trim();
+
+  if(!username || !password){
+    alert("Please enter username and password");
+    return;
+  }
+
+  fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({action: "login", user: username, pass: password})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(!d.ok) return alert("❌ Login failed: " + (d.error || "Unknown error"));
+    role = d.role;
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    load();
+  })
+  .catch(err => alert("❌ API Error: " + err));
 }
 
 /* LOAD MEMBERS */
