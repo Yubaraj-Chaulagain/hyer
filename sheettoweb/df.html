@@ -75,39 +75,38 @@ const modal=new bootstrap.Modal(memberModal);
 
 /* LOGIN */
 function login(){
-  fetch(API,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
+  fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
     },
-    body:JSON.stringify({
-      action:"login",
-      user: user.value.trim(),
-      pass: pass.value.trim()
+    body: JSON.stringify({
+      action: "login",
+      user: document.getElementById("user").value,
+      pass: document.getElementById("pass").value
     })
   })
-  .then(r => r.json())
-  .then(d=>{
-    console.log(d); // 👈 DEBUG
+  .then(res => {
+    if(!res.ok) throw new Error("Network error");
+    return res.json();
+  })
+  .then(d => {
+    console.log("LOGIN RESPONSE:", d);
 
     if(!d.ok){
       alert("Login failed");
       return;
     }
 
-    role = d.role;
     loginBox.classList.add("hidden");
     app.classList.remove("hidden");
-
-    if(role!=="admin") addBtn.style.display="none";
     load();
   })
-  .catch(err=>{
-    alert("API error");
+  .catch(err => {
     console.error(err);
+    alert("API error");
   });
 }
-
 
 /* LOAD */
 function load(){
