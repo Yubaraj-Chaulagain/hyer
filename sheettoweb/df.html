@@ -166,83 +166,47 @@ function buildForm(){
 
 /* ADD / EDIT */
 function openAdd(){edit=false;modalTitle.innerText="Add";modal.show()}
+
 function editM(m){
-  edit=true;
-  modalTitle.innerText="Edit";
-
-  // send OTP first
-  fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action:"sendOtp", MemberID:m.MemberID})
-  });
-
-  headers.forEach(h=>{
-    f(h).value=m[h]||"";
-    if(h==="MemberID") f(h).readOnly=true; // 🔒 lock ID
-  });
-
-  modal.show();
+edit=true;
+modalTitle.innerText="Edit";
+headers.forEach(h=>{
+f(h).value=m[h]||"";
+if(h==="MemberID") f(h).readOnly=true;
+});
+modal.show();
 }
 
 /* SAVE */
 function save(){
-  let d={action:edit?"update":"add"};
+let d={action:edit?"update":"add"};
+headers.forEach(h=>d[h]=f(h).value);
 
-  headers.forEach(h=>d[h]=f(h).value);
-
-  if(edit){
-    const otp = prompt("Enter OTP sent to email:");
-    if(!otp) return;
-    d.otp = otp;
-  }
-
-  fetch(API,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(d)
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.ok) alert("Save failed (OTP wrong)");
-    modal.hide();
-    load();
-  });
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify(d)
+})
+.then(r=>r.json())
+.then(res=>{
+  if(!res.ok) alert("❌ Failed");
+  modal.hide();
+  load();
+});
 }
 
-  function deleteMember(id){
+ function deleteMember(id){
+if(!confirm("Delete this member?")) return;
 
-  // 1️⃣ send OTP first
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"sendOtp",
-      MemberID:id
-    })
-  }).then(()=>{
-
-    // 2️⃣ ask OTP
-    const otp = prompt("Enter OTP sent to email:");
-    if(!otp) return;
-
-    // 3️⃣ delete
-    fetch(API,{
-      method:"POST",
-      body:JSON.stringify({
-        action:"delete",
-        MemberID:id,
-        otp:otp
-      })
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      if(!d.ok) alert("❌ Wrong OTP");
-      load();
-    });
-
-  });
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify({action:"delete", MemberID:id})
+})
+.then(r=>r.json())
+.then(d=>{
+  if(!d.ok) alert("❌ Delete failed");
+  load();
+});
 }
-
 
 /* IMG */
 function upload(i,fld){
