@@ -3,7 +3,6 @@
 <head>
 <title>Member Management</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
 .hidden{display:none}
 .table-wrapper{overflow-x:auto}
@@ -15,7 +14,6 @@ th,td{min-width:120px}
 .thumb{width:50px;height:50px;object-fit:cover;border-radius:6px}
 </style>
 </head>
-
 <body class="p-3">
 
 <!-- LOGIN -->
@@ -28,7 +26,6 @@ th,td{min-width:120px}
 
 <!-- APP -->
 <div id="app" class="hidden">
-
 <h4 class="mb-3">📊 Dashboard</h4>
 <div class="row mb-3">
 <div class="col">👥 Total: <b id="d_total"></b></div>
@@ -63,80 +60,71 @@ th,td{min-width:120px}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-const API = "https://script.google.com/macros/s/AKfycbydwJCKdsdPZuMKJj-IhFOjkgGJh9pX5PKUYwtgV1c6QLuO6cAjAXaiEciFzMQQ6WsKIQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbyzNCzmLYlOCf-v4guV673sMgBcAx8dIP093idua-4AS02m60lldcq1y5_pO1utHD0P1g/exec";
 const IMGBB = "f5d95811959fdcd59c8ea459aadb650b";
 
-let headers=[], members=[], role="", edit=false;
+let headers=[], members=[], edit=false;
 const modal = new bootstrap.Modal(memberModal);
 
 /* LOGIN */
-function login(){
-  fetch(API,{
-    method:"POST",
-    body: JSON.stringify({
-      action:"login",
-      user: user.value,
-      pass: pass.value
-    })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    console.log("LOGIN RESPONSE:", d);
-    if(!d.ok) return alert("❌ Login Failed");
-    role=d.role;
-    loginBox.classList.add("hidden");
-    app.classList.remove("hidden");
-    load();
-  })
-  .catch(err=>{
-    console.error(err);
-    alert("API error");
-  });
+async function login(){
+ try{
+   const res = await fetch(API,{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body: JSON.stringify({action:"login", user:user.value, pass:pass.value})
+   });
+   const data = await res.json();
+   if(!data.ok) return alert("❌ Login Failed");
+   loginBox.classList.add("hidden");
+   app.classList.remove("hidden");
+   load();
+ } catch(err){
+   alert("❌ API Error: "+err);
+ }
 }
 
-
-/* LOAD */
-function load(){
-fetch(API).then(r=>r.json()).then(d=>{
- members=d;
- headers=Object.keys(d[0]);
- buildTable(); draw(); buildForm(); dash();
-});
+/* LOAD MEMBERS */
+async function load(){
+ try{
+   const res = await fetch(API);
+   members = await res.json();
+   if(members.length==0) return;
+   headers = Object.keys(members[0]);
+   buildTable(); draw(); buildForm(); dash();
+ } catch(err){ console.error(err); }
 }
 
-/* DASH */
+/* DASHBOARD */
 function dash(){
- d_total.innerText=members.length;
- d_active.innerText=members.filter(x=>x.Status=="Active").length;
- d_inactive.innerText=members.filter(x=>x.Status=="Inactive").length;
+ d_total.innerText = members.length;
+ d_active.innerText = members.filter(x=>x.Status=="Active").length;
+ d_inactive.innerText = members.filter(x=>x.Status=="Inactive").length;
 }
 
 /* TABLE */
 function buildTable(){
- thead.innerHTML="";
+ thead.innerHTML = "";
  headers.forEach(h=>{
-  let cls=h.toLowerCase().includes("photo")?"photo-col":"";
-  thead.innerHTML+=`<th class="${cls}">${h}</th>`;
+   let cls = h.toLowerCase().includes("photo")?"photo-col":"";
+   thead.innerHTML += `<th class="${cls}">${h}</th>`;
  });
- thead.innerHTML+=`<th class="action-col">Action</th>`;
+ thead.innerHTML += `<th class="action-col">Action</th>`;
 }
 
 function draw(){
- tbody.innerHTML="";
+ tbody.innerHTML = "";
  members.forEach(m=>{
-  let tr="<tr>";
-  headers.forEach(h=>{
-   if(h.toLowerCase().includes("photo"))
-    tr+=`<td>${m[h]?`<img src="${m[h]}" class="thumb">`:""}</td>`;
-   else tr+=`<td>${m[h]||""}</td>`;
-  });
-  tr+=`<td>
-  <button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>
-  <button class="btn btn-sm btn-danger" onclick='del("${m.MemberID}")'>Delete</button>
-  </td></tr>`;
-  tbody.innerHTML+=tr;
+   let tr="<tr>";
+   headers.forEach(h=>{
+     tr += `<td>${m[h]||""}</td>`;
+   });
+   tr += `<td>
+     <button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>
+     <button class="btn btn-sm btn-danger" onclick='del("${m.MemberID}")'>Delete</button>
+   </td></tr>`;
+   tbody.innerHTML += tr;
  });
 }
 
@@ -144,52 +132,42 @@ function draw(){
 function buildForm(){
  formBody.innerHTML="";
  headers.forEach(h=>{
-  formBody.innerHTML+=`
-  <div class="col-6">
-   <label>${h}</label>
-   <input id="f_${h}" class="form-control">
-   ${h.toLowerCase().includes("photo")?
-   `<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
-  </div>`;
+   formBody.innerHTML += `
+   <div class="col-6">
+     <label>${h}</label>
+     <input id="f_${h}" class="form-control">
+     ${h.toLowerCase().includes("photo")?`<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
+   </div>`;
  });
 }
 
 /* ADD / EDIT */
 function openAdd(){ edit=false; modalTitle.innerText="Add Member"; modal.show(); }
-function editM(m){
- edit=true; modalTitle.innerText="Edit Member";
- headers.forEach(h=>f(h).value=m[h]||"");
- modal.show();
-}
+function editM(m){ edit=true; modalTitle.innerText="Edit Member"; headers.forEach(h=>f(h).value=m[h]||""); modal.show(); }
 
 /* SAVE */
-function save(){
- let d={action:edit?"update":"add"};
+async function save(){
+ let d={action: edit?"update":"add"};
  headers.forEach(h=>d[h]=f(h).value);
- fetch(API,{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body:JSON.stringify(d)
- }).then(()=>{ modal.hide(); load(); });
+ await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(d)});
+ modal.hide(); load();
 }
 
 /* DELETE */
-function del(id){
+async function del(id){
  if(!confirm("Delete this member?")) return;
- fetch(API,{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body:JSON.stringify({action:"delete",MemberID:id})
- }).then(()=>load());
+ await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"delete",MemberID:id})});
+ load();
 }
 
-/* IMAGE */
+/* IMAGE UPLOAD */
 function upload(i,fld){
- let fd=new FormData();
- fd.append("image",i.files[0]);
+ let fd = new FormData();
+ fd.append("image", i.files[0]);
  fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
  .then(r=>r.json()).then(d=>f(fld).value=d.data.url);
 }
+
 const f=h=>document.getElementById("f_"+h);
 </script>
 </body>
