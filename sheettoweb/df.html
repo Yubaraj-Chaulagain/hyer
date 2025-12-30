@@ -119,3 +119,69 @@ function draw(){
  members.forEach(m=>{
   let tr="<tr>";
   headers.forEach(h=>{
+   if(h.toLowerCase().includes("photo"))
+    tr+=`<td>${m[h]?`<img src="${m[h]}" class="thumb">`:""}</td>`;
+   else tr+=`<td>${m[h]||""}</td>`;
+  });
+  tr+=`<td>
+  <button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>
+  <button class="btn btn-sm btn-danger" onclick='del("${m.MemberID}")'>Delete</button>
+  </td></tr>`;
+  tbody.innerHTML+=tr;
+ });
+}
+
+/* FORM */
+function buildForm(){
+ formBody.innerHTML="";
+ headers.forEach(h=>{
+  formBody.innerHTML+=`
+  <div class="col-6">
+   <label>${h}</label>
+   <input id="f_${h}" class="form-control">
+   ${h.toLowerCase().includes("photo")?
+   `<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
+  </div>`;
+ });
+}
+
+/* ADD / EDIT */
+function openAdd(){ edit=false; modalTitle.innerText="Add Member"; modal.show(); }
+function editM(m){
+ edit=true; modalTitle.innerText="Edit Member";
+ headers.forEach(h=>f(h).value=m[h]||"");
+ modal.show();
+}
+
+/* SAVE */
+function save(){
+ let d={action:edit?"update":"add"};
+ headers.forEach(h=>d[h]=f(h).value);
+ fetch(API,{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify(d)
+ }).then(()=>{ modal.hide(); load(); });
+}
+
+/* DELETE */
+function del(id){
+ if(!confirm("Delete this member?")) return;
+ fetch(API,{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify({action:"delete",MemberID:id})
+ }).then(()=>load());
+}
+
+/* IMAGE */
+function upload(i,fld){
+ let fd=new FormData();
+ fd.append("image",i.files[0]);
+ fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
+ .then(r=>r.json()).then(d=>f(fld).value=d.data.url);
+}
+const f=h=>document.getElementById("f_"+h);
+</script>
+</body>
+</html>
