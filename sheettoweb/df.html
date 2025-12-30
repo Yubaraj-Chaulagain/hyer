@@ -75,36 +75,35 @@ const modal=new bootstrap.Modal(memberModal);
 
 /* LOGIN */
 function login(){
-  fetch(API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      action: "login",
-      user: document.getElementById("user").value,
-      pass: document.getElementById("pass").value
-    })
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"login",
+    user:user.value,
+    pass:pass.value
   })
-  .then(res => {
-    if(!res.ok) throw new Error("Network error");
-    return res.json();
-  })
+})
+  .then(r => r.json())
   .then(d => {
-  console.log("LOGIN RESPONSE:", d);
+    console.log("LOGIN RESPONSE =>", d);
 
-  if(!d.ok){
-    alert("Login failed");
-    return;
-  }
+    if(!d.ok){
+      alert("❌ Login failed");
+      return;
+    }
 
-  role = d.role; // 🔥 REQUIRED
+    role = d.role;
 
-  loginBox.classList.add("hidden");
-  app.classList.remove("hidden");
-  load();
-});
+    loginBox.classList.add("hidden");
+    app.classList.remove("hidden");
+    load();
+  })
+  .catch(err=>{
+    console.error("LOGIN API ERROR:", err);
+    alert("❌ API not responding");
+  });
 }
+
 
 /* LOAD */
 function load(){
