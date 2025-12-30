@@ -75,24 +75,37 @@ const modal=new bootstrap.Modal(memberModal);
 
 /* LOGIN */
 function login(){
-fetch(API,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-    action:"login",
-    user:user.value,
-    pass:pass.value
+  fetch(API,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      action:"login",
+      user: user.value.trim(),
+      pass: pass.value.trim()
+    })
   })
-})
-.then(r=>r.json())
-.then(d=>{
-  if(!d.ok) return alert("Login failed");
-  role=d.role;
-  loginBox.classList.add("hidden");
-  app.classList.remove("hidden");
-  if(role!=="admin") addBtn.style.display="none";
-  load();
-});
+  .then(r => r.json())
+  .then(d=>{
+    console.log(d); // 👈 DEBUG
+
+    if(!d.ok){
+      alert("Login failed");
+      return;
+    }
+
+    role = d.role;
+    loginBox.classList.add("hidden");
+    app.classList.remove("hidden");
+
+    if(role!=="admin") addBtn.style.display="none";
+    load();
+  })
+  .catch(err=>{
+    alert("API error");
+    console.error(err);
+  });
 }
 
 
