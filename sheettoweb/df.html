@@ -65,7 +65,7 @@ th,td{min-width:120px}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbx_3-URQMIA7D2Vbdv1uaH7Hg8zKtDzukNTp3Dh6S4QHiPl0PqnowckHZzCPi-94pfk0A/exec";
+const API = "https://script.google.com/macros/s/AKfycbydwJCKdsdPZuMKJj-IhFOjkgGJh9pX5PKUYwtgV1c6QLuO6cAjAXaiEciFzMQQ6WsKIQ/exec";
 const IMGBB = "f5d95811959fdcd59c8ea459aadb650b";
 
 let headers=[], members=[], role="", edit=false;
@@ -73,20 +73,29 @@ const modal = new bootstrap.Modal(memberModal);
 
 /* LOGIN */
 function login(){
-fetch(API,{
- method:"POST",
- headers:{ "Content-Type":"application/json" },
- body:JSON.stringify({action:"login",user:user.value,pass:pass.value})
-})
-.then(r=>r.json())
-.then(d=>{
- if(!d.ok) return alert("❌ Login Failed");
- role=d.role;
- loginBox.classList.add("hidden");
- app.classList.remove("hidden");
- load();
-});
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"login",
+      user: user.value,
+      pass: pass.value
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    console.log("LOGIN RESPONSE:", d);
+    if(!d.ok) return alert("❌ Login Failed");
+    role=d.role;
+    loginBox.classList.add("hidden");
+    app.classList.remove("hidden");
+    load();
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("API error");
+  });
 }
+
 
 /* LOAD */
 function load(){
