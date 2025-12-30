@@ -1,0 +1,123 @@
+
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyQuQ3VS9ECwX77DFIgfHLU1jQKfc_JqEZEYkyNgB1UQi-wID8j1lhK4NLdAzEXitT8mw/exec";
+
+let headers=[],members=[],role="",edit=false;
+const modal=new bootstrap.Modal(memberModal);
+
+/* LOGIN */
+function login(){
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"login",
+    user:user.value,
+    pass:pass.value
+  })
+})
+.then(r=>r.json())
+.then(d=>{
+  if(!d.ok) return alert("❌ Login failed");
+  role=d.role;
+  loginBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  load();
+});
+}
+
+/* LOAD */
+function load(){
+fetch(API).then(r=>r.json()).then(d=>{
+members=d;
+headers=Object.keys(d[0]);
+buildTable(); draw(); buildForm(); dash();
+});
+}
+
+/* DASH */
+function dash(){
+d_total.innerText=members.length;
+d_active.innerText=members.filter(x=>x.Status=="Active").length;
+d_inactive.innerText=members.filter(x=>x.Status=="Inactive").length;
+}
+
+/* TABLE */
+function buildTable(){
+thead.innerHTML="";
+headers.forEach(h=>thead.innerHTML+=`<th>${h}</th>`);
+thead.innerHTML+=`<th>Action</th>`;
+}
+
+function draw(){
+tbody.innerHTML="";
+members.forEach(m=>{
+let tr="<tr>";
+headers.forEach(h=>tr+=`<td>${m[h]||""}</td>`);
+tr+=`<td>
+<button class="btn btn-sm btn-warning" onclick='editM(${JSON.stringify(m)})'>Edit</button>
+<button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>
+</td></tr>`;
+tbody.innerHTML+=tr;
+});
+}
+
+/* FORM */
+function buildForm(){
+formBody.innerHTML="";
+headers.forEach(h=>{
+formBody.innerHTML+=`
+<div class="col-6">
+<label>${h}</label>
+<input id="f_${h}" class="form-control">
+</div>`;
+});
+}
+
+/* ADD / EDIT */
+function openAdd(){edit=false;modalTitle.innerText="Add";modal.show()}
+
+function editM(m){
+edit=true;
+modalTitle.innerText="Edit";
+headers.forEach(h=>{
+f(h).value=m[h]||"";
+if(h==="MemberID") f(h).readOnly=true;
+});
+modal.show();
+}
+
+/* SAVE */
+function save(){
+let d={action:edit?"update":"add"};
+headers.forEach(h=>d[h]=f(h).value);
+
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify(d)
+})
+.then(r=>r.json())
+.then(res=>{
+  if(!res.ok) alert("❌ Failed");
+  modal.hide();
+  load();
+});
+}
+
+/* DELETE */
+function deleteMember(id){
+if(!confirm("Delete this member?")) return;
+
+fetch(API,{
+  method:"POST",
+  body:JSON.stringify({action:"delete", MemberID:id})
+})
+.then(r=>r.json())
+.then(d=>{
+  if(!d.ok) alert("❌ Delete failed");
+  load();
+});
+}
+
+const f=h=>document.getElementById("f_"+h);
+</script>
