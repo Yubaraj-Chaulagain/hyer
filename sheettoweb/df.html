@@ -152,11 +152,11 @@ tbody.innerHTML+=tr;
 function buildForm(){
   formBody.innerHTML="";
   headers.forEach(h=>{
-    const disabled = (h==="OTP") ? "readonly" : "";
+    const enabled = (h==="OTP") ? "enable" : "";
     formBody.innerHTML+=`
     <div class="col-6">
       <label>${h}</label>
-      <input id="f_${h}" class="form-control" ${disabled}>
+      <input id="f_${h}" class="form-control" ${enable}>
       ${h.toLowerCase().includes("photo")?
       `<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
     </div>`;
