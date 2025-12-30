@@ -67,7 +67,7 @@ th,td{min-width:120px}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxff2UP_AuGPHxnZ8rJTfl1rfGEeUk3ZHpWr1nk18r21xn7yVBUoQCzRQSNqjMd4_bXEg/exec";
+const API="https://script.google.com/macros/s/AKfycbwf9sz8hNDylfmFQaQN7sziVPULRq3hdDMRNnfXGoG2yeJ5yAuCWTwbcEmoKG65lkM_mQ/exec";
 const IMGBB="f5d95811959fdcd59c8ea459aadb650b";
 
 let headers=[],members=[],role="",edit=false;
@@ -91,21 +91,19 @@ function login(){
     return res.json();
   })
   .then(d => {
-    console.log("LOGIN RESPONSE:", d);
+  console.log("LOGIN RESPONSE:", d);
 
-    if(!d.ok){
-      alert("Login failed");
-      return;
-    }
+  if(!d.ok){
+    alert("Login failed");
+    return;
+  }
 
-    loginBox.classList.add("hidden");
-    app.classList.remove("hidden");
-    load();
-  })
-  .catch(err => {
-    console.error(err);
-    alert("API error");
-  });
+  role = d.role; // 🔥 REQUIRED
+
+  loginBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  load();
+});
 }
 
 /* LOAD */
