@@ -68,7 +68,7 @@ th,td{min-width:120px}
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbyQuQ3VS9ECwX77DFIgfHLU1jQKfc_JqEZEYkyNgB1UQi-wID8j1lhK4NLdAzEXitT8mw/exec";
-
+const IMGBB="f5d95811959fdcd59c8ea459aadb650b";
 let headers=[],members=[],role="",edit=false;
 const modal=new bootstrap.Modal(memberModal);
 
@@ -184,6 +184,12 @@ fetch(API,{
   load();
 });
 }
-
+/* IMG */
+function upload(i,fld){
+const fd=new FormData();
+fd.append("image",i.files[0]);
+fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
+.then(r=>r.json()).then(d=>f(fld).value=d.data.url);
+}
 const f=h=>document.getElementById("f_"+h);
 </script>
