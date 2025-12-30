@@ -61,15 +61,14 @@ th,td{min-width:120px}
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxktvy0eJ7X_ROZY-X6aiZc3jN_Je8OCsUJj38apHeIgnYR6dOCiFrtd5o7lG1-Ui3gPA/exec";
+const API = "https://script.google.com/macros/s/AKfycbxfNeqaqGpcD61vyzRkEyLZrzJUI2uHWmm1L3Beqw2ybZnBYawtZXiHROwQ-BMDyoMmRA/exec";
 const IMGBB = "f5d95811959fdcd59c8ea459aadb650b";
 
 let headers=[], members=[], edit=false;
 const modal = new bootstrap.Modal(memberModal);
 
 /* LOGIN */
-function login(){
-  // get values safely
+async function login(){
   const username = document.getElementById("user").value.trim();
   const password = document.getElementById("pass").value.trim();
 
@@ -78,76 +77,77 @@ function login(){
     return;
   }
 
-  fetch(API, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({action: "login", user: username, pass: password})
-  })
-  .then(r => r.json())
-  .then(d => {
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({action: "login", user: username, pass: password})
+    });
+    const d = await res.json();
     if(!d.ok) return alert("❌ Login failed: " + (d.error || "Unknown error"));
-    role = d.role;
+
     document.getElementById("loginBox").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     load();
-  })
-  .catch(err => alert("❌ API Error: " + err));
+  } catch(err){
+    alert("❌ API Error: " + err);
+  }
 }
 
 /* LOAD MEMBERS */
 async function load(){
- try{
-   const res = await fetch(API);
-   members = await res.json();
-   if(members.length==0) return;
-   headers = Object.keys(members[0]);
-   buildTable(); draw(); buildForm(); dash();
- } catch(err){ console.error(err); }
+  try{
+    const res = await fetch(API);
+    members = await res.json();
+    if(members.length==0) return;
+    headers = Object.keys(members[0]);
+    buildTable(); draw(); buildForm(); dash();
+  } catch(err){ console.error(err); }
 }
 
 /* DASHBOARD */
 function dash(){
- d_total.innerText = members.length;
- d_active.innerText = members.filter(x=>x.Status=="Active").length;
- d_inactive.innerText = members.filter(x=>x.Status=="Inactive").length;
+  d_total.innerText = members.length;
+  d_active.innerText = members.filter(x=>x.Status=="Active").length;
+  d_inactive.innerText = members.filter(x=>x.Status=="Inactive").length;
 }
 
 /* TABLE */
 function buildTable(){
- thead.innerHTML = "";
- headers.forEach(h=>{
-   let cls = h.toLowerCase().includes("photo")?"photo-col":"";
-   thead.innerHTML += `<th class="${cls}">${h}</th>`;
- });
- thead.innerHTML += `<th class="action-col">Action</th>`;
+  thead.innerHTML = "";
+  headers.forEach(h=>{
+    let cls = h.toLowerCase().includes("photo")?"photo-col":"";
+    thead.innerHTML += `<th class="${cls}">${h}</th>`;
+  });
+  thead.innerHTML += `<th class="action-col">Action</th>`;
 }
 
 function draw(){
- tbody.innerHTML = "";
- members.forEach(m=>{
-   let tr="<tr>";
-   headers.forEach(h=>{
-     tr += `<td>${m[h]||""}</td>`;
-   });
-   tr += `<td>
-     <button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>
-     <button class="btn btn-sm btn-danger" onclick='del("${m.MemberID}")'>Delete</button>
-   </td></tr>`;
-   tbody.innerHTML += tr;
- });
+  tbody.innerHTML = "";
+  members.forEach(m=>{
+    let tr="<tr>";
+    headers.forEach(h=>{
+      tr += `<td>${m[h]||""}</td>`;
+    });
+    tr += `<td>
+      <button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>
+      <button class="btn btn-sm btn-danger" onclick='del("${m.MemberID}")'>Delete</button>
+    </td></tr>`;
+    tbody.innerHTML += tr;
+  });
 }
 
 /* FORM */
 function buildForm(){
- formBody.innerHTML="";
- headers.forEach(h=>{
-   formBody.innerHTML += `
-   <div class="col-6">
-     <label>${h}</label>
-     <input id="f_${h}" class="form-control">
-     ${h.toLowerCase().includes("photo")?`<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
-   </div>`;
- });
+  formBody.innerHTML="";
+  headers.forEach(h=>{
+    formBody.innerHTML += `
+    <div class="col-6">
+      <label>${h}</label>
+      <input id="f_${h}" class="form-control">
+      ${h.toLowerCase().includes("photo")?`<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
+    </div>`;
+  });
 }
 
 /* ADD / EDIT */
@@ -156,25 +156,25 @@ function editM(m){ edit=true; modalTitle.innerText="Edit Member"; headers.forEac
 
 /* SAVE */
 async function save(){
- let d={action: edit?"update":"add"};
- headers.forEach(h=>d[h]=f(h).value);
- await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(d)});
- modal.hide(); load();
+  let d={action: edit?"update":"add"};
+  headers.forEach(h=>d[h]=f(h).value);
+  await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(d)});
+  modal.hide(); load();
 }
 
 /* DELETE */
 async function del(id){
- if(!confirm("Delete this member?")) return;
- await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"delete",MemberID:id})});
- load();
+  if(!confirm("Delete this member?")) return;
+  await fetch(API,{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"delete",MemberID:id})});
+  load();
 }
 
 /* IMAGE UPLOAD */
 function upload(i,fld){
- let fd = new FormData();
- fd.append("image", i.files[0]);
- fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
- .then(r=>r.json()).then(d=>f(fld).value=d.data.url);
+  let fd = new FormData();
+  fd.append("image", i.files[0]);
+  fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
+  .then(r=>r.json()).then(d=>f(fld).value=d.data.url);
 }
 
 const f=h=>document.getElementById("f_"+h);
