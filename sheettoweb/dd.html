@@ -67,30 +67,47 @@ th,td{min-width:120px}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyQuQ3VS9ECwX77DFIgfHLU1jQKfc_JqEZEYkyNgB1UQi-wID8j1lhK4NLdAzEXitT8mw/exec";
+const API="https://script.google.com/macros/s/AKfycbxff2UP_AuGPHxnZ8rJTfl1rfGEeUk3ZHpWr1nk18r21xn7yVBUoQCzRQSNqjMd4_bXEg/exec";
 const IMGBB="f5d95811959fdcd59c8ea459aadb650b";
+
 let headers=[],members=[],role="",edit=false;
 const modal=new bootstrap.Modal(memberModal);
 
 /* LOGIN */
 function login(){
-fetch(API,{
-  method:"POST",
-  body:JSON.stringify({
-    action:"login",
-    user:user.value,
-    pass:pass.value
+  fetch(API,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      action:"login",
+      user: user.value.trim(),
+      pass: pass.value.trim()
+    })
   })
-})
-.then(r=>r.json())
-.then(d=>{
-  if(!d.ok) return alert("❌ Login failed");
-  role=d.role;
-  loginBox.classList.add("hidden");
-  app.classList.remove("hidden");
-  load();
-});
+  .then(r => r.json())
+  .then(d=>{
+    console.log(d); // 👈 DEBUG
+
+    if(!d.ok){
+      alert("Login failed");
+      return;
+    }
+
+    role = d.role;
+    loginBox.classList.add("hidden");
+    app.classList.remove("hidden");
+
+    if(role!=="admin") addBtn.style.display="none";
+    load();
+  })
+  .catch(err=>{
+    alert("API error");
+    console.error(err);
+  });
 }
+
 
 /* LOAD */
 function load(){
@@ -111,18 +128,25 @@ d_inactive.innerText=members.filter(x=>x.Status=="Inactive").length;
 /* TABLE */
 function buildTable(){
 thead.innerHTML="";
-headers.forEach(h=>thead.innerHTML+=`<th>${h}</th>`);
-thead.innerHTML+=`<th>Action</th>`;
+headers.forEach(h=>{
+let cls=h.toLowerCase().includes("photo")?"photo-col":"";
+thead.innerHTML+=`<th class="${cls}">${h}</th>`;
+});
+thead.innerHTML+=`<th class="action-col">Action</th>`;
 }
 
 function draw(){
 tbody.innerHTML="";
 members.forEach(m=>{
 let tr="<tr>";
-headers.forEach(h=>tr+=`<td>${m[h]||""}</td>`);
-tr+=`<td>
-<button class="btn btn-sm btn-warning" onclick='editM(${JSON.stringify(m)})'>Edit</button>
-<button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>
+headers.forEach(h=>{
+if(h.toLowerCase().includes("photo"))
+tr+=`<td class="photo-col">${m[h]?`<img src="${m[h]}" class="thumb">`:""}</td>`;
+else tr+=`<td>${m[h]||""}</td>`;
+});
+tr+=`<td class="action-col">
+${role==="admin"?`<button class="btn btn-sm btn-warning me-1" onclick='editM(${JSON.stringify(m)})'>Edit</button>`:""}
+${role==="admin"?`<button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>`:""}
 </td></tr>`;
 tbody.innerHTML+=tr;
 });
@@ -136,54 +160,80 @@ formBody.innerHTML+=`
 <div class="col-6">
 <label>${h}</label>
 <input id="f_${h}" class="form-control">
+${h.toLowerCase().includes("photo")?
+`<input type="file" class="form-control mt-1" onchange="upload(this,'${h}')">`:""}
 </div>`;
 });
 }
 
 /* ADD / EDIT */
 function openAdd(){edit=false;modalTitle.innerText="Add";modal.show()}
-
 function editM(m){
-edit=true;
-modalTitle.innerText="Edit";
-headers.forEach(h=>{
-f(h).value=m[h]||"";
-if(h==="MemberID") f(h).readOnly=true;
-});
-modal.show();
+  edit=true;
+  modalTitle.innerText="Edit";
+
+  // send OTP first
+  fetch(API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"sendOtp", MemberID:m.MemberID})
+  });
+
+  headers.forEach(h=>{
+    f(h).value=m[h]||"";
+    if(h==="MemberID") f(h).readOnly=true; // 🔒 lock ID
+  });
+
+  modal.show();
 }
 
 /* SAVE */
 function save(){
-let d={action:edit?"update":"add"};
-headers.forEach(h=>d[h]=f(h).value);
+  let d={action:edit?"update":"add"};
 
-fetch(API,{
-  method:"POST",
-  body:JSON.stringify(d)
-})
-.then(r=>r.json())
-.then(res=>{
-  if(!res.ok) alert("❌ Failed");
-  modal.hide();
-  load();
-});
+  headers.forEach(h=>d[h]=f(h).value);
+
+  if(edit){
+    const otp = prompt("Enter OTP sent to email:");
+    if(!otp) return;
+    d.otp = otp;
+  }
+
+  fetch(API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(d)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.ok) alert("Save failed (OTP wrong)");
+    modal.hide();
+    load();
+  });
 }
 
-/* DELETE */
-function deleteMember(id){
-if(!confirm("Delete this member?")) return;
+  function deleteMember(id){
+  const otp = prompt("Enter OTP sent to email:");
+  if(!otp) return;
 
-fetch(API,{
-  method:"POST",
-  body:JSON.stringify({action:"delete", MemberID:id})
-})
-.then(r=>r.json())
-.then(d=>{
-  if(!d.ok) alert("❌ Delete failed");
-  load();
-});
+  fetch(API,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      action:"delete",
+      MemberID:id,
+      otp:otp
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.ok) alert("Delete failed (OTP wrong)");
+    load();
+  });
 }
+
+
+
 /* IMG */
 function upload(i,fld){
 const fd=new FormData();
@@ -191,5 +241,8 @@ fd.append("image",i.files[0]);
 fetch(`https://api.imgbb.com/1/upload?key=${IMGBB}`,{method:"POST",body:fd})
 .then(r=>r.json()).then(d=>f(fld).value=d.data.url);
 }
+
 const f=h=>document.getElementById("f_"+h);
 </script>
+</body>
+</html>
