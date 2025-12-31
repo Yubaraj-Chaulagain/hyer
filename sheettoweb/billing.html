@@ -47,16 +47,16 @@ function login(){
     return;
   }
 
-  fetch(API,{
-    method:"POST",
-    redirect:"follow",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      action:"login",
-      user: username,
-      pass: password
-    })
+ fetch(API,{
+  method:"POST",
+  redirect:"follow",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify({
+    action:"login",
+    user: username,
+    pass: password
   })
+})
   .then(r=>{
     if(!r.ok) throw new Error("HTTP Error");
     return r.json();
