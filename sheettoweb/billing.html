@@ -47,35 +47,28 @@ function login(){
     return;
   }
 
- fetch(API,{
-  method:"POST",
-  redirect:"follow",
-  headers:{ "Content-Type":"application/json" },
-  body: JSON.stringify({
-    action:"login",
-    user: username,
-    pass: password
-  })
-})
-  .then(r=>{
-    if(!r.ok) throw new Error("HTTP Error");
-    return r.json();
-  })
-  .then(d=>{
-    console.log("LOGIN RESPONSE:", d);
-    if(!d.ok){
-      alert("❌ Login failed");
-      return;
-    }
-    role = d.role;
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    load();
-  })
-  .catch(err=>{
-    console.error("LOGIN FETCH ERROR:", err);
-    alert("❌ API Error (HTML side)");
-  });
+  const url = API + 
+    "?action=login" +
+    "&user=" + encodeURIComponent(username) +
+    "&pass=" + encodeURIComponent(password);
+
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      console.log("LOGIN RESPONSE:", d);
+      if(!d.ok){
+        alert("❌ Login failed");
+        return;
+      }
+      role = d.role;
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      load();
+    })
+    .catch(err=>{
+      console.error(err);
+      alert("❌ API Error (HTML side)");
+    });
 }
 
 </script>
