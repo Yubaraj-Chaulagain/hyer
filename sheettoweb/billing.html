@@ -34,49 +34,51 @@
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbw8w2n-ZTW0ojkJkt5VCKLkj5PN3qH2NFe0tZ-ZUB-UP3HsEAAQpkMKyLik4nxnQMSL/exec";
+const API = "https://script.google.com/macros/s/AKfycbxRRfANhHigYq0_rXLrDdUW7SeV7qJ4SwWusM-GSdLb_ZBjn2OFgECHIOCOMIrPJWvZ/exec";
 
 function login(){
-  const u = user.value.trim();
-  const p = pass.value.trim();
 
-  if(!u || !p){
-    alert("Enter username & password");
+  const username = document.getElementById("user").value.trim();
+  const password = document.getElementById("pass").value.trim();
+
+  if(!username || !password){
+    alert("Username & Password required");
     return;
   }
 
-  fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      action:"login",
-      user:u,
-      pass:p
+  fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: "login",
+      user: username,
+      pass: password
     })
   })
-  .then(r=>r.json())
-  .then(d=>{
+  .then(res => res.json())
+  .then(d => {
+    console.log("LOGIN RESPONSE:", d);
+
     if(!d.ok){
-      alert("❌ "+d.error);
+      alert("❌ Login failed");
       return;
     }
 
-    loginBox.classList.add("hidden");
+    // SUCCESS
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
 
-    if(d.role==="admin"){
-      adminUI.classList.remove("hidden");
-    }
-    else if(d.role==="staff"){
-      staffUI.classList.remove("hidden");
-    }
-    else if(d.role==="member"){
-      memberUI.classList.remove("hidden");
-      myInfo.innerHTML = "MemberID: <b>"+d.memberId+"</b>";
-    }
+    loadMembers(); // load table
   })
-  .catch(err=>alert("API error"));
+  .catch(err => {
+    console.error(err);
+    alert("❌ API Error");
+  });
 }
 </script>
+
 
 </body>
 </html>
