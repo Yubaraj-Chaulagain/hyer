@@ -68,8 +68,8 @@ function login(){
       return;
     }
     role = d.role;
-    loginBox.classList.add("hidden");
-    app.classList.remove("hidden");
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
     load();
   })
   .catch(err=>{
@@ -78,17 +78,6 @@ function login(){
   });
 }
 
-    // SUCCESS
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    loadMembers(); // load table
-  })
-  .catch(err => {
-    console.error(err);
-    alert("❌ API Error");
-  });
-}
 </script>
 
 
