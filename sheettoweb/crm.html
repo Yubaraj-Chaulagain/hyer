@@ -238,9 +238,29 @@ function openTransactionModal(){
   txnModalInstance.show();
 }
   </script>
-  
+
+  <h5>Loans</h5>
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>LoanID</th>
+      <th>MemberID</th>
+      <th>Amount</th>
+      <th>Paid</th>
+      <th>Monthly Payment</th>
+      <th>Remaining</th>
+      <th>Next Due Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="tbodyLoans"></tbody>
+</table>
+
 <script>
 // Load loans
+const tbodyLoans = document.getElementById("tbodyLoans");
+let loans = [];
+ 
 const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
 const LoanID = document.getElementById("LoanID");
 const LoanMemberID = document.getElementById("LoanMemberID");
@@ -257,29 +277,30 @@ function openLoanModal(){
 }
 
 function loadLoans(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"getLoans"})
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({action: "getLoans"})
   })
-  .then(r=>r.json())
-  .then(d=>{
+  .then(r => r.json())
+  .then(d => {
     loans = d;
     drawLoans();
   });
 }
 
+
 // Draw loans table
-function drawLoans(data=loans){
+function drawLoans(data = loans){
   tbodyLoans.innerHTML = "";
-  data.forEach(l=>{
+  data.forEach(l => {
     tbodyLoans.innerHTML += `<tr>
       <td>${l.LoanID}</td>
       <td>${l.MemberID}</td>
       <td>${l.Amount}</td>
-      <td>${l.Paid}</td>
-      <td>${l.MonthlyPayment}</td>
-      <td>${l.Remaining}</td>
-      <td>${l.NextDueDate}</td>
+      <td>${l.Paid || 0}</td>
+      <td>${l.MonthlyPayment || 0}</td>
+      <td>${l.Remaining || l.Amount}</td>
+      <td>${l.NextDueDate || ''}</td>
       <td>
         <button class="btn btn-sm btn-success" onclick="payLoan('${l.LoanID}')">Pay</button>
       </td>
