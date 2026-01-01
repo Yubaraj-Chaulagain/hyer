@@ -228,17 +228,6 @@ function showTab(tab){ document.querySelectorAll('#tabsContent > div').forEach(d
 
 // ===== FETCH DATA =====
 function loadMembers(){ fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers",username:currentUsername})}).then(r=>r.json()).then(d=>{members=d;drawMembers();}); }
-function drawMembers(){ tbody.innerHTML=""; members.forEach(m=>{tbody.innerHTML+=`<tr>
-<td>${m.MemberID}</td><td>${m.Name}</td><td>${m.Address}</td><td>${m['Father Name']}</td><td>${m['Grand Father Name']}</td>
-<td>${m['spouse/wife Name']}</td><td>${m.Phone}</td><td>${m.Email}</td>
-<td><a href="${m['Identy PhotoURL']}" target="_blank">View</a></td>
-<td><a href="${m['Member PhotoURL']}" target="_blank">View</a></td>
-<td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
-<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
-<button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td></tr>`}); }
-
-  
-
 // ===== SEARCH MEMBERS =====
 search.onkeyup=()=>{ const v=search.value.toLowerCase(); drawMembers(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v))); }
 function drawMembers(data){ tbody.innerHTML=""; data.forEach(m=>{tbody.innerHTML+=`<tr>
