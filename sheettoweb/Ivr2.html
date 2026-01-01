@@ -91,7 +91,7 @@ td a{text-decoration:none;}
   <h5>Member Balance</h5>
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
-      <tr><th>MemberID</th><th>Balance</th><th>Action</th></tr>
+      <tr><th>MemberID</th><th>Balance</th></tr>
     </thead>
     <tbody id="tbodyBalance"></tbody>
   </table>
@@ -137,15 +137,31 @@ td a{text-decoration:none;}
 </div></div>
 </div>
 
+<!-- User Modal -->
+<div class="modal fade" id="userModal">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 id="modalUserTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+  <input id="Username" class="form-control mb-2" placeholder="Username">
+  <input id="Password" class="form-control mb-2" placeholder="Password">
+  <select id="Role" class="form-control mb-2"><option value="admin">Admin</option><option value="user">User</option><option value="member">Member</option></select>
+  <input id="UserMemberID" class="form-control mb-2" placeholder="MemberID (optional)">
+</div>
+<div class="modal-footer">
+  <button class="btn btn-success" onclick="saveUser()">Save User</button>
+</div>
+</div></div>
+</div>
+
 <!-- Item Modal -->
 <div class="modal fade" id="itemModal">
 <div class="modal-dialog"><div class="modal-content">
 <div class="modal-header"><h5 id="modalItemTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
 <div class="modal-body">
-<input id="ItemID" class="form-control mb-2" placeholder="Item ID">
-<input id="ItemName" class="form-control mb-2" placeholder="Item Name">
-<input id="ItemPrice" type="number" class="form-control mb-2" placeholder="Price">
-<input id="ItemQty" type="number" class="form-control mb-2" placeholder="Quantity">
+  <input id="ItemID" class="form-control mb-2" placeholder="Item ID">
+  <input id="ItemName" class="form-control mb-2" placeholder="Item Name">
+  <input id="ItemPrice" type="number" class="form-control mb-2" placeholder="Price">
+  <input id="ItemQty" type="number" class="form-control mb-2" placeholder="Quantity">
 </div>
 <div class="modal-footer">
   <button class="btn btn-success" onclick="saveItem()">Save Item</button>
@@ -158,19 +174,18 @@ td a{text-decoration:none;}
 <div class="modal-dialog"><div class="modal-content">
 <div class="modal-header"><h5 id="modalTxnTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
 <div class="modal-body">
-<select id="TxnType" class="form-control mb-2">
-<option value="Deposit">Deposit</option>
-<option value="Withdraw">Withdraw</option>
-<option value="Transfer">Transfer</option>
-<option value="Invoice">Invoice</option>
-<option value="Loan">Loan</option>
-</select>
-<input id="TxnAmount" type="number" class="form-control mb-2" placeholder="Amount">
-<input id="TxnDetails" class="form-control mb-2" placeholder="Details / To MemberID">
-<select id="PaymentType" class="form-control mb-2">
-<option value="Cash">Cash</option>
-<option value="Bank">Bank</option>
-</select>
+  <select id="TxnType" class="form-control mb-2">
+    <option value="Deposit">Deposit</option>
+    <option value="Withdraw">Withdraw</option>
+    <option value="Transfer">Transfer</option>
+    <option value="Invoice">Invoice</option>
+  </select>
+  <input id="TxnAmount" type="number" class="form-control mb-2" placeholder="Amount">
+  <input id="TxnDetails" class="form-control mb-2" placeholder="Details / To MemberID">
+  <select id="PaymentType" class="form-control mb-2">
+    <option value="Cash">Cash</option>
+    <option value="Bank">Bank</option>
+  </select>
 </div>
 <div class="modal-footer">
   <button class="btn btn-success" onclick="saveTransaction()">Save Transaction</button>
@@ -183,36 +198,33 @@ td a{text-decoration:none;}
 <div class="modal-dialog"><div class="modal-content">
 <div class="modal-header"><h5 id="modalLoanTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
 <div class="modal-body">
-<input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
-<input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
-<input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
+  <input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
+  <input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
+  <input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
 </div>
 <div class="modal-footer">
-<button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
+  <button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
 </div>
 </div></div>
 </div>
 
 <script>
+// ===== API URL =====
 const API="https://script.google.com/macros/s/AKfycbxIZRARZltf0bVSh1Gl-MECQ38kxYWGg6SZMY8UMasc22cjULuPSmn4hxb_LwC9bLt24g/exec"; // replace with Apps Script URL
 
+// ===== Global =====
 let role="", currentUsername="", currentMemberID="";
 let members=[], users=[], items=[], transactions=[], balance=[], loans=[];
 
-// Modals
+// ===== Modals =====
 const memberModalInstance = new bootstrap.Modal(memberModal);
+const userModalInstance = new bootstrap.Modal(userModal);
 const itemModalInstance = new bootstrap.Modal(itemModal);
 const txnModalInstance = new bootstrap.Modal(transactionModal);
 const loanModalInstance = new bootstrap.Modal(loanModal);
 
-// ===== Notification =====
-function notify(msg){
-  const n=document.createElement('div');
-  n.className='alert alert-success';
-  n.innerText=msg;
-  document.getElementById('notification').appendChild(n);
-  setTimeout(()=>n.remove(),3000);
-}
+// ===== Notifications =====
+function notify(msg){const n=document.createElement('div');n.className='alert alert-success';n.innerText=msg;document.getElementById('notification').appendChild(n);setTimeout(()=>n.remove(),3000);}
 
 // ===== LOGIN =====
 function login(){
@@ -227,55 +239,45 @@ function login(){
   });
 }
 
-// ===== LOAD ALL =====
-function loadAll(){
-  loadMembers(); loadUsers(); loadItems(); loadTransactions(); loadBalance(); loadLoans();
-}
-
 // ===== SHOW TAB =====
-function showTab(tab){ document.querySelectorAll('#tabsContent > div').forEach(d=>d.style.display='none'); document.getElementById(tab).style.display='block'; }
+function showTab(tab){document.querySelectorAll('#tabsContent > div').forEach(d=>d.style.display='none');document.getElementById(tab).style.display='block';}
 
-// ===== SEARCH =====
-searchMembers.onkeyup=()=>{ const v=searchMembers.value.toLowerCase(); drawMembers(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v))); }
+// ===== LOAD DATA =====
+function loadAll(){loadMembers(); loadUsers(); loadItems(); loadTransactions(); loadBalance(); loadLoans();}
 
-/////////////////////////
-// MEMBERS FUNCTIONS
-/////////////////////////
-function loadMembers(){ fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers"})}).then(r=>r.json()).then(d=>{members=d; drawMembers(d);}); }
-function drawMembers(data){
+// ================== MEMBERS ==================
+function loadMembers(){fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers"})}).then(r=>r.json()).then(d=>{members=d; drawMembers();});}
+function drawMembers(){
   tbodyMembers.innerHTML="";
-  data.forEach(m=>{
+  members.forEach(m=>{
     tbodyMembers.innerHTML+=`<tr>
 <td>${m.MemberID}</td><td>${m.Name}</td><td>${m.Address}</td><td>${m['Father Name']}</td><td>${m['Grand Father Name']}</td>
 <td>${m['spouse/wife Name']}</td><td>${m.Phone}</td><td>${m.Email}</td>
 <td><a href="${m['Identy PhotoURL']}" target="_blank">View</a></td>
 <td><a href="${m['Member PhotoURL']}" target="_blank">View</a></td>
 <td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
-<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
-<button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>`:""}</td>
-</tr>`; 
+<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(m)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>`:""}</td>
+</tr>`;
   });
 }
-
-function openAddMember(){ memberModalInstance.show(); modalMemberTitle.innerText="Add Member"; MemberID.value=""; }
-function openEditMember(m){ memberModalInstance.show(); modalMemberTitle.innerText="Edit Member"; Object.keys(m).forEach(k=>{try{document.getElementById(k.replace(/ /g,"")).value=m[k];}catch(e){}}); }
-function saveMember(){
-  const obj={
-    action:'updateMember',
-    MemberID:MemberID.value, Name:Name.value, Address:Address.value,
-    "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value,
-    "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value,
-    "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value,
-    Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value
-  };
-  fetch(API,{method:"POST",body:JSON.stringify(obj)}).then(r=>r.json()).then(res=>{if(res.status){memberModalInstance.hide(); loadMembers(); notify("Member saved");} else alert(res.message);});
+function openAddMember(){memberModalInstance.show(); modalMemberTitle.innerText="Add Member"; Object.keys(document.getElementById('memberModal').querySelectorAll('input')).forEach(i=>i.value="");}
+function openEditMember(m){memberModalInstance.show(); modalMemberTitle.innerText="Edit Member"; for(let key in m){try{document.getElementById(key.replace(/ /g,"")).value=m[key];}catch(e){}}}
+function saveMember(){ 
+  let obj={action:'updateMember',MemberID:MemberID.value,Name:Name.value,Address:Address.value,'Father Name':FatherName.value,'Grand Father Name':GrandFatherName.value,'spouse/wife Name':SpouseName.value,Phone:Phone.value,Email:Email.value,'Identy PhotoURL':IdentityPhotoURL.value,'Member PhotoURL':MemberPhotoURL.value,Status:Status.value,OTP:OTP.value,EntryDate:EntryDate.value};
+  fetch(API,{method:"POST",body:JSON.stringify(obj)}).then(r=>r.json()).then(res=>{if(res.status){memberModalInstance.hide(); loadMembers(); notify("Member saved");}else alert(res.message);});
 }
-function deleteMember(id){ if(!confirm("Delete member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:'deleteMember',MemberID:id})}).then(r=>r.json()).then(res=>{if(res.status){loadMembers(); notify("Member deleted");}}); }
+function deleteMember(id){if(!confirm("Delete member?"))return;fetch(API,{method:"POST",body:JSON.stringify({action:'deleteMember',MemberID:id})}).then(r=>r.json()).then(res=>{if(res.status){loadMembers(); notify("Member deleted");}});}
 
-/////////////////////////
-// TODO: Add USERS, ITEMS, TRANSACTIONS, BALANCE, LOANS functions
-/////////////////////////
-</script>
+// ================== USERS ==================
+function loadUsers(){fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers"})}).then(r=>r.json()).then(d=>{users=d; drawUsers();});}
+function drawUsers(){tbodyUsers.innerHTML="";users.forEach(u=>{tbodyUsers.innerHTML+=`<tr><td>${u.Username}</td><td>${u.Password}</td><td>${u.Role}</td><td>${u.MemberID||""}</td><td><button class="btn btn-sm btn-warning" onclick='openEditUser(${JSON.stringify(u)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteUser("${u.Username}")'>Del</button></td></tr>`;});}
+function openAddUser(){userModalInstance.show(); modalUserTitle.innerText="Add User"; Username.value=""; Password.value=""; Role.value="user"; UserMemberID.value="";}
+function openEditUser(u){userModalInstance.show(); modalUserTitle.innerText="Edit User"; Username.value=u.Username; Password.value=u.Password; Role.value=u.Role; UserMemberID.value=u.MemberID||"";}
+function saveUser(){let obj={action:'updateUser',Username:Username.value,Password:Password.value,Role:Role.value,MemberID:UserMemberID.value};fetch(API,{method:"POST",body:JSON.stringify(obj)}).then(r=>r.json()).then(res=>{if(res.status){userModalInstance.hide(); loadUsers(); notify("User saved");}else alert(res.message);});}
+function deleteUser(username){if(!confirm("Delete user?"))return;fetch(API,{method:"POST",body:JSON.stringify({action:'deleteUser',Username:username})}).then(r=>r.json()).then(res=>{if(res.status){loadUsers(); notify("User deleted");}});}
 
-</body>
-</html>
+// ================== ITEMS ==================
+function loadItems(){fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})}).then(r=>r.json()).then(d=>{items=d; drawItems();});}
+function drawItems(){tbodyItems.innerHTML="";items.forEach(it=>{tbodyItems.innerHTML+=`<tr><td>${it.ItemID}</td><td>${it.Name}</td><td>${it.Price}</td><td>${it.Quantity}</td><td><button class="btn btn-sm btn-warning" onclick='openEditItem(${JSON.stringify(it)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteItem("${it.ItemID}")'>Del</button></td></tr>`;});}
+function openAddItem(){itemModalInstance.show(); modalItemTitle.innerText="Add Item"; ItemID.value=""; ItemName.value=""; ItemPrice.value=""; ItemQty.value="";}
+function openEditItem(it){itemModalInstance.show(); modalItemTitle.innerText="Edit Item"; ItemID.value=it.ItemID; ItemName.value=it.Name; Item
