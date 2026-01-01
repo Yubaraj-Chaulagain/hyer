@@ -240,7 +240,7 @@ function openTransactionModal(){
   </script>
 <script>
 // Load loans
-  const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
+const loanModalInstance = new bootstrap.Modal(loanModal);
 function loadLoans(){
   fetch(API,{
     method:"POST",
