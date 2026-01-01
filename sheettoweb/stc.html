@@ -30,6 +30,22 @@ td a { text-decoration:none; }
 </table>
 
 <!-- MODAL -->
+  <div class="modal fade" id="loginModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Login</h5>
+      </div>
+      <div class="modal-body">
+        <input id="loginUsername" class="form-control mb-2" placeholder="Username">
+        <input id="loginPassword" type="password" class="form-control mb-2" placeholder="Password">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="login()">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="memberModal">
 <div class="modal-dialog modal-xl">
 <div class="modal-content">
@@ -193,6 +209,55 @@ function openDelete(id){
 }
 
 loadMembers();
+  const loginModalInstance = new bootstrap.Modal(loginModal);
+let currentUser = null;
+
+function login(){
+  const payload = {
+    action:"login",
+    username: loginUsername.value,
+    password: loginPassword.value
+  };
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      currentUser = res.username;
+      loginModalInstance.hide();
+      alert("Welcome, "+currentUser);
+      loadMembers(); // load data only after login
+    } else alert(res.message);
+  });
+}
+
+// Show login modal on page load
+window.onload = () => loginModalInstance.show();
+  function changePasswordJS(){
+  const oldPass = prompt("Enter old password:");
+  const newPass = prompt("Enter new password:");
+  if(!oldPass || !newPass) return;
+
+  const payload = {
+    action:"changepass",
+    username: currentUser,
+    oldPassword: oldPass,
+    newPassword: newPass
+  };
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    alert(res.message);
+  });
+}
+
+
 </script>
 
 </body>
