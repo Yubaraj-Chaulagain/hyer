@@ -565,12 +565,13 @@ function loadBalance(){
 }
 
 function loadAll(){
-  loadMembers();
-  loadUsers();
-  loadItems();
-  loadTransactions();
-  loadBalance();
-  loadLoans();
+ loadMembers();
+loadUsers();   // ✅ ADD THIS LINE
+loadItems();
+loadTransactions();
+loadBalance();
+loadLoans();
+
 }
 
 // ===== TODO: Add USERS, ITEMS, TRANSACTIONS, BALANCE, LOANS functions here =====
