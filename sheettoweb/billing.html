@@ -198,7 +198,7 @@ td a { text-decoration:none; }
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxRdom95EWERCNrRa1uOhKy0QOgaePFNek0fH1FQE9Tc2pVEbyJEQgjXod85JPBEM-0TA/exec"; // replace with your Apps Script deploy URL
+const API = "https://script.google.com/macros/s/AKfycbz47rGlKNOb7Vg-Urt25hK37F_laIYXgzboO9sXralMBI4K3ki96VEa1kerRRUBaJ9UnQ/exec"; // replace with your Apps Script deploy URL
 let members=[], users=[], items=[], transactions=[], loans=[], role="", currentUsername="", currentMemberID="";
 const modal = new bootstrap.Modal(memberModal);
 const userModalInstance = new bootstrap.Modal(userModal);
@@ -253,26 +253,31 @@ function save(){ if(role==='member') return alert("Members cannot edit!"); const
 function remove(){ if(role==='member') return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}}); }
 function openDelete(id){ if(role==='member') return; MemberID.value=id; remove(); }
 function loadUsers(){
-  fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers"})})
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getUsers"})
+  })
   .then(r=>r.json())
   .then(d=>{
-    users=d;
     tbodyUsers.innerHTML="";
+    if(!Array.isArray(d)) return;
+
     d.forEach(u=>{
       tbodyUsers.innerHTML+=`
       <tr>
-        <td>${u.action}</td>
-        <td>${u.Username}</td>
-        <td>${u.Password}</td>
-        <td>${u.Role}</td>
-        <td>${u.MemberID||""}</td>
+        <td>${u.Username || ""}</td>
+        <td>${u.Password || ""}</td>
+        <td>${u.Role || ""}</td>
+        <td>${u.MemberID || ""}</td>
         <td>
-          <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.Username}')">Del</button>
+          <button class="btn btn-sm btn-danger"
+            onclick="deleteUser('${u.Username}')">Del</button>
         </td>
       </tr>`;
     });
   });
 }
+
 
 function openAddUser(){
   const username=prompt("Username");
