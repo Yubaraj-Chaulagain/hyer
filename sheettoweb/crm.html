@@ -237,9 +237,10 @@ function openTransactionModal(){
 
   txnModalInstance.show();
 }
-
-
+  </script>
+<script>
 // Load loans
+  const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
 function loadLoans(){
   fetch(API,{
     method:"POST",
