@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member Finance System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+@media(max-width:768px){ table{font-size:12px;} }
+</style>
+</head>
+<body class="p-2">
+
+<div id="login">
+  <h5>Login</h5>
+  <input id="u" class="form-control mb-1" placeholder="Username">
+  <input id="p" type="password" class="form-control mb-1" placeholder="Password">
+  <button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+
+<div id="app" style="display:none">
+<nav class="nav nav-pills flex-wrap mb-2">
+  <a class="nav-link active" onclick="loadMembers()">Members</a>
+  <a class="nav-link" onclick="loadBalance()">Balance</a>
+  <a class="nav-link" onclick="loadItems()">Items</a>
+  <a class="nav-link" onclick="loadTxns()">Reports</a>
+</nav>
+
+<div id="content"></div>
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbxYK9a_vyosdGpLxwwNeg5_y4AwkzIApf6g_djyQZppaQNgTmCjSG4QZS_8m5phGC8HDg/exec";
+let role="",memberID="";
+
+function login(){
+ fetch(API,{method:"POST",body:JSON.stringify({
+  action:"login",username:u.value,password:p.value
+ })}).then(r=>r.json()).then(d=>{
+  if(d.status){
+    role=d.role; memberID=d.MemberID;
+    login.style.display="none";
+    app.style.display="block";
+    loadMembers();
+  } else alert(d.message);
+ });
+}
+
+function drawTable(data){
+ if(!data.length){content.innerHTML="No data";return;}
+ let h="<table class='table table-sm table-bordered'><tr>";
+ Object.keys(data[0]).forEach(k=>h+=`<th>${k}</th>`);
+ h+="</tr>";
+ data.forEach(r=>{
+  h+="<tr>"; Object.values(r).forEach(v=>h+=`<td>${v}</td>`); h+="</tr>";
+ });
+ h+="</table>";
+ content.innerHTML=h+"<button class='btn btn-secondary' onclick='print()'>Print / Invoice</button>";
+}
+
+function loadMembers(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers"})})
+ .then(r=>r.json()).then(drawTable);
+}
+function loadBalance(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"getBalance"})})
+ .then(r=>r.json()).then(drawTable);
+}
+function loadItems(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})})
+ .then(r=>r.json()).then(drawTable);
+}
+function loadTxns(){
+ const d=new Date().toISOString().slice(0,10);
+ fetch(API,{method:"POST",body:JSON.stringify({action:"dailyReport",date:d})})
+ .then(r=>r.json()).then(drawTable);
+}
+</script>
+</body>
+</html>
