@@ -1,283 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Member & Finance System</title>
+<title>Member Finance System</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-td a{text-decoration:none;}
-#notification{position:fixed;top:20px;right:20px;z-index:9999;}
-</style>
+<style>td a{text-decoration:none;}</style>
 </head>
 <body class="p-3">
 
-<div id="notification"></div>
-
-<!-- LOGIN -->
 <div id="loginDiv">
-  <h3>Login</h3>
-  <input id="username" class="form-control mb-2" placeholder="Username">
-  <input id="password" type="password" class="form-control mb-2" placeholder="Password">
-  <button class="btn btn-primary" onclick="login()">Login</button>
+<h4>Login</h4>
+<input id="username" class="form-control mb-2" placeholder="Username">
+<input id="password" type="password" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary" onclick="login()">Login</button>
 </div>
 
-<!-- MAIN APP -->
 <div id="mainDiv" style="display:none;">
-<h3>Member & Finance System</h3>
-
-<ul class="nav nav-tabs mb-2" id="tabs">
-  <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('membersTab')">Members</a></li>
-  <li class="nav-item" id="usersTabBtn"><a class="nav-link" href="#" onclick="showTab('usersTab')">Users</a></li>
-  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('itemsTab')">Items</a></li>
-  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('transactionsTab')">Transactions</a></li>
-  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('balanceTab')">Balance</a></li>
-  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('loansTab')">Loans</a></li>
+<h4>Member & Finance System</h4>
+<ul class="nav nav-tabs mb-3">
+<li class="nav-item"><a class="nav-link active" onclick="tab('members')">Members</a></li>
+<li class="nav-item"><a class="nav-link" onclick="tab('users')">Users</a></li>
+<li class="nav-item"><a class="nav-link" onclick="tab('items')">Items</a></li>
+<li class="nav-item"><a class="nav-link" onclick="tab('transactions')">Transactions</a></li>
+<li class="nav-item"><a class="nav-link" onclick="tab('balance')">Balance</a></li>
+<li class="nav-item"><a class="nav-link" onclick="tab('loans')">Loans</a></li>
 </ul>
 
-<div id="tabsContent">
-
-<!-- MEMBERS -->
-<div id="membersTab">
-  <button class="btn btn-success mb-2" onclick="openAddMember()" id="btnAdd">+ Add Member</button>
-  <input class="form-control mb-2" id="searchMembers" placeholder="Search members">
-  <table class="table table-bordered table-sm table-hover">
-    <thead class="table-dark">
-      <tr>
-        <th>ID</th><th>Name</th><th>Address</th><th>Father</th><th>Grand Father</th>
-        <th>Spouse</th><th>Phone</th><th>Email</th>
-        <th>ID Photo</th><th>Member Photo</th>
-        <th>Status</th><th>OTP</th><th>Entry Date</th><th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="tbodyMembers"></tbody>
-  </table>
-</div>
-
-<!-- USERS -->
-<div id="usersTab" style="display:none;">
-  <button class="btn btn-success mb-2" onclick="openAddUser()">+ Add User</button>
-  <table class="table table-bordered table-sm table-hover">
-    <thead class="table-dark">
-      <tr><th>Username</th><th>Password</th><th>Role</th><th>MemberID</th><th>Action</th></tr>
-    </thead>
-    <tbody id="tbodyUsers"></tbody>
-  </table>
-</div>
-
-<!-- ITEMS -->
-<div id="itemsTab" style="display:none;">
-  <button class="btn btn-success mb-2" onclick="openAddItem()">+ Add Item</button>
-  <table class="table table-bordered table-sm table-hover">
-    <thead class="table-dark">
-      <tr><th>ItemID</th><th>Name</th><th>Price</th><th>Quantity</th><th>Action</th></tr>
-    </thead>
-    <tbody id="tbodyItems"></tbody>
-  </table>
-</div>
-
-<!-- TRANSACTIONS -->
-<div id="transactionsTab" style="display:none;">
-  <button class="btn btn-success mb-2" onclick="openTransaction()">+ New Transaction</button>
-  <table class="table table-bordered table-sm table-hover">
-    <thead class="table-dark">
-      <tr><th>TxnID</th><th>MemberID</th><th>Type</th><th>Amount</th><th>Details</th><th>PaymentType</th><th>Date</th></tr>
-    </thead>
-    <tbody id="tbodyTransactions"></tbody>
-  </table>
-</div>
-
-<!-- BALANCE -->
-<div id="balanceTab" style="display:none;">
-  <h5>Member Balance</h5>
-  <table class="table table-bordered table-sm">
-    <thead class="table-dark">
-      <tr><th>MemberID</th><th>Balance</th></tr>
-    </thead>
-    <tbody id="tbodyBalance"></tbody>
-  </table>
-</div>
-
-<!-- LOANS -->
-<div id="loansTab" style="display:none;">
-  <button class="btn btn-success mb-2" onclick="openAddLoan()">+ Add Loan</button>
-  <table class="table table-bordered table-sm table-hover">
-    <thead class="table-dark">
-      <tr><th>LoanID</th><th>MemberID</th><th>Amount</th><th>Paid</th><th>Monthly Payment</th><th>Remaining</th><th>NextDueDate</th><th>Action</th></tr>
-    </thead>
-    <tbody id="tbodyLoans"></tbody>
-  </table>
-</div>
-
-</div>
-
-<!-- ===== MODALS ===== -->
-<!-- Member Modal -->
-<div class="modal fade" id="memberModal">
-<div class="modal-dialog modal-xl"><div class="modal-content">
-<div class="modal-header"><h5 id="modalMemberTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-<div class="modal-body row g-2">
-  <input id="MemberID" class="form-control col-6" placeholder="Member ID">
-  <input id="Name" class="form-control col-6" placeholder="Name">
-  <input id="Address" class="form-control col-6" placeholder="Address">
-  <input id="FatherName" class="form-control col-6" placeholder="Father Name">
-  <input id="GrandFatherName" class="form-control col-6" placeholder="Grand Father Name">
-  <input id="SpouseName" class="form-control col-6" placeholder="Spouse/Wife Name">
-  <input id="Phone" class="form-control col-6" placeholder="Phone">
-  <input id="Email" class="form-control col-6" placeholder="Email">
-  <input id="IdentityPhotoURL" class="form-control col-6" placeholder="Identity Photo URL">
-  <input id="MemberPhotoURL" class="form-control col-6" placeholder="Member Photo URL">
-  <input id="Status" class="form-control col-6" placeholder="Status">
-  <input id="OTP" class="form-control col-6" placeholder="OTP">
-  <input id="EntryDate" type="date" class="form-control col-6">
-</div>
-<div class="modal-footer">
-  <button class="btn btn-success" onclick="saveMember()">Save</button>
-  <button class="btn btn-danger" onclick="deleteMember()">Delete</button>
-</div>
-</div></div>
-</div>
-
-<!-- User Modal -->
-<div class="modal fade" id="userModal">
-<div class="modal-dialog"><div class="modal-content">
-<div class="modal-header"><h5 id="modalUserTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-<div class="modal-body">
-  <input id="Username" class="form-control mb-2" placeholder="Username">
-  <input id="Password" class="form-control mb-2" placeholder="Password">
-  <select id="Role" class="form-control mb-2"><option value="admin">Admin</option><option value="user">User</option><option value="member">Member</option></select>
-  <input id="UserMemberID" class="form-control mb-2" placeholder="MemberID (optional)">
-</div>
-<div class="modal-footer">
-  <button class="btn btn-success" onclick="saveUser()">Save User</button>
-</div>
-</div></div>
-</div>
-
-<!-- Item Modal -->
-<div class="modal fade" id="itemModal">
-<div class="modal-dialog"><div class="modal-content">
-<div class="modal-header"><h5 id="modalItemTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-<div class="modal-body">
-  <input id="ItemID" class="form-control mb-2" placeholder="Item ID">
-  <input id="ItemName" class="form-control mb-2" placeholder="Item Name">
-  <input id="ItemPrice" type="number" class="form-control mb-2" placeholder="Price">
-  <input id="ItemQty" type="number" class="form-control mb-2" placeholder="Quantity">
-</div>
-<div class="modal-footer">
-  <button class="btn btn-success" onclick="saveItem()">Save Item</button>
-</div>
-</div></div>
-</div>
-
-<!-- Transaction Modal -->
-<div class="modal fade" id="transactionModal">
-<div class="modal-dialog"><div class="modal-content">
-<div class="modal-header"><h5 id="modalTxnTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-<div class="modal-body">
-  <select id="TxnType" class="form-control mb-2">
-    <option value="Deposit">Deposit</option>
-    <option value="Withdraw">Withdraw</option>
-    <option value="Transfer">Transfer</option>
-    <option value="Invoice">Invoice</option>
-  </select>
-  <input id="TxnAmount" type="number" class="form-control mb-2" placeholder="Amount">
-  <input id="TxnDetails" class="form-control mb-2" placeholder="Details / To MemberID">
-  <select id="PaymentType" class="form-control mb-2">
-    <option value="Cash">Cash</option>
-    <option value="Bank">Bank</option>
-  </select>
-</div>
-<div class="modal-footer">
-  <button class="btn btn-success" onclick="saveTransaction()">Save Transaction</button>
-</div>
-</div></div>
-</div>
-
-<!-- Loan Modal -->
-<div class="modal fade" id="loanModal">
-<div class="modal-dialog"><div class="modal-content">
-<div class="modal-header"><h5 id="modalLoanTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
-<div class="modal-body">
-  <input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
-  <input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
-  <input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
-</div>
-<div class="modal-footer">
-  <button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
-</div>
-</div></div>
+<input id="searchBox" class="form-control mb-2" placeholder="Search..." onkeyup="searchTable()">
+<div id="content"></div>
 </div>
 
 <script>
-// ===== API URL =====
-const API="https://script.google.com/macros/s/AKfycbxRdom95EWERCNrRa1uOhKy0QOgaePFNek0fH1FQE9Tc2pVEbyJEQgjXod85JPBEM-0TA/exec"; // replace with Apps Script URL
+const API="https://script.google.com/macros/s/AKfycbwsNtNSTcsMBvvXp4WwMa0FgTocC5JDRMutA-uLqrvKhd8TFbLnsCnUquFPSJwJDQyx1g/exec";
+let role="",memberID="",currentData=[],currentAction="";
 
-// ===== Global =====
-let role="", currentUsername="", currentMemberID="";
-let members=[], users=[], items=[], transactions=[], balance=[], loans=[];
-
-// ===== Modals =====
-const memberModalInstance = new bootstrap.Modal(memberModal);
-const userModalInstance = new bootstrap.Modal(userModal);
-const itemModalInstance = new bootstrap.Modal(itemModal);
-const txnModalInstance = new bootstrap.Modal(transactionModal);
-const loanModalInstance = new bootstrap.Modal(loanModal);
-
-// ===== Notifications =====
-function notify(msg){const n=document.createElement('div');n.className='alert alert-success';n.innerText=msg;document.getElementById('notification').appendChild(n);setTimeout(()=>n.remove(),3000);}
-
-// ===== LOGIN =====
 function login(){
-  fetch(API,{method:"POST",body:JSON.stringify({action:"login",username:username.value,password:password.value})})
-  .then(r=>r.json()).then(res=>{
-    if(res.status){ 
-      role=res.role; currentUsername=username.value; currentMemberID=res.MemberID||"";
-      loginDiv.style.display="none"; mainDiv.style.display="block";
-      if(role!=='admin') usersTabBtn.style.display='none';
-      loadAll();
-    } else alert(res.message);
-  });
+ fetch(API,{method:"POST",body:JSON.stringify({
+  action:"login",username:username.value,password:password.value
+ })}).then(r=>r.json()).then(d=>{
+   if(d.status){role=d.role; memberID=d.MemberID; loginDiv.style.display="none"; mainDiv.style.display="block"; tab('members');}
+   else alert(d.message);
+ });
 }
 
-// ===== SHOW TAB =====
-function showTab(tab){document.querySelectorAll('#tabsContent > div').forEach(d=>d.style.display='none');document.getElementById(tab).style.display='block';}
-
-// ===== LOAD DATA =====
-function loadAll(){loadMembers(); loadUsers(); loadItems(); loadTransactions(); loadBalance(); loadLoans();}
-
-// ================== MEMBERS ==================
-function loadMembers(){fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers"})}).then(r=>r.json()).then(d=>{members=d; drawMembers();});}
-function drawMembers(){
-  tbodyMembers.innerHTML="";
-  members.forEach(m=>{
-    tbodyMembers.innerHTML+=`<tr>
-<td>${m.MemberID}</td><td>${m.Name}</td><td>${m.Address}</td><td>${m['Father Name']}</td><td>${m['Grand Father Name']}</td>
-<td>${m['spouse/wife Name']}</td><td>${m.Phone}</td><td>${m.Email}</td>
-<td><a href="${m['Identy PhotoURL']}" target="_blank">View</a></td>
-<td><a href="${m['Member PhotoURL']}" target="_blank">View</a></td>
-<td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
-<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(m)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteMember("${m.MemberID}")'>Del</button>`:""}</td>
-</tr>`;
-  });
+function tab(t){
+ currentAction=t;
+ let actMap={
+   members:"getMembers", users:"getUsers", items:"getItems",
+   transactions:"getTransactions", balance:"getBalance", loans:"getLoans"
+ };
+ fetch(API,{method:"POST",body:JSON.stringify({action:actMap[t]})})
+ .then(r=>r.json()).then(d=>{
+   currentData=d;
+   drawTable(d);
+ });
 }
-function openAddMember(){memberModalInstance.show(); modalMemberTitle.innerText="Add Member"; Object.keys(document.getElementById('memberModal').querySelectorAll('input')).forEach(i=>i.value="");}
-function openEditMember(m){memberModalInstance.show(); modalMemberTitle.innerText="Edit Member"; for(let key in m){try{document.getElementById(key.replace(/ /g,"")).value=m[key];}catch(e){}}}
-function saveMember(){ 
-  let obj={action:'updateMember',MemberID:MemberID.value,Name:Name.value,Address:Address.value,'Father Name':FatherName.value,'Grand Father Name':GrandFatherName.value,'spouse/wife Name':SpouseName.value,Phone:Phone.value,Email:Email.value,'Identy PhotoURL':IdentityPhotoURL.value,'Member PhotoURL':MemberPhotoURL.value,Status:Status.value,OTP:OTP.value,EntryDate:EntryDate.value};
-  fetch(API,{method:"POST",body:JSON.stringify(obj)}).then(r=>r.json()).then(res=>{if(res.status){memberModalInstance.hide(); loadMembers(); notify("Member saved");}else alert(res.message);});
+
+function drawTable(data){
+ if(!data.length){content.innerHTML="No data";return;}
+ let h="<table class='table table-bordered table-sm'><tr>";
+ Object.keys(data[0]).forEach(k=>h+="<th>"+k+"</th>");
+ if(currentAction!=="balance") h+="<th>Action</th>";
+ h+="</tr>";
+ data.forEach(r=>{
+   h+="<tr>";
+   Object.values(r).forEach(v=>h+="<td>"+v+"</td>");
+   if(currentAction!=="balance"){
+     h+="<td>";
+     h+=`<button class='btn btn-sm btn-warning' onclick='editRow(${JSON.stringify(r)})'>Edit</button> `;
+     h+=`<button class='btn btn-sm btn-danger' onclick='deleteRow("${JSON.stringify(r)}")'>Del</button>`;
+     h+="</td>";
+   }
+   h+="</tr>";
+ });
+ h+="</table>";
+ content.innerHTML=h;
 }
-function deleteMember(id){if(!confirm("Delete member?"))return;fetch(API,{method:"POST",body:JSON.stringify({action:'deleteMember',MemberID:id})}).then(r=>r.json()).then(res=>{if(res.status){loadMembers(); notify("Member deleted");}});}
 
-// ================== USERS ==================
-function loadUsers(){fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers"})}).then(r=>r.json()).then(d=>{users=d; drawUsers();});}
-function drawUsers(){tbodyUsers.innerHTML="";users.forEach(u=>{tbodyUsers.innerHTML+=`<tr><td>${u.Username}</td><td>${u.Password}</td><td>${u.Role}</td><td>${u.MemberID||""}</td><td><button class="btn btn-sm btn-warning" onclick='openEditUser(${JSON.stringify(u)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteUser("${u.Username}")'>Del</button></td></tr>`;});}
-function openAddUser(){userModalInstance.show(); modalUserTitle.innerText="Add User"; Username.value=""; Password.value=""; Role.value="user"; UserMemberID.value="";}
-function openEditUser(u){userModalInstance.show(); modalUserTitle.innerText="Edit User"; Username.value=u.Username; Password.value=u.Password; Role.value=u.Role; UserMemberID.value=u.MemberID||"";}
-function saveUser(){let obj={action:'updateUser',Username:Username.value,Password:Password.value,Role:Role.value,MemberID:UserMemberID.value};fetch(API,{method:"POST",body:JSON.stringify(obj)}).then(r=>r.json()).then(res=>{if(res.status){userModalInstance.hide(); loadUsers(); notify("User saved");}else alert(res.message);});}
-function deleteUser(username){if(!confirm("Delete user?"))return;fetch(API,{method:"POST",body:JSON.stringify({action:'deleteUser',Username:username})}).then(r=>r.json()).then(res=>{if(res.status){loadUsers(); notify("User deleted");}});}
+function searchTable(){
+ let v=searchBox.value.toLowerCase();
+ drawTable(currentData.filter(r=>JSON.stringify(r).toLowerCase().includes(v)));
+}
 
-// ================== ITEMS ==================
-function loadItems(){fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})}).then(r=>r.json()).then(d=>{items=d; drawItems();});}
-function drawItems(){tbodyItems.innerHTML="";items.forEach(it=>{tbodyItems.innerHTML+=`<tr><td>${it.ItemID}</td><td>${it.Name}</td><td>${it.Price}</td><td>${it.Quantity}</td><td><button class="btn btn-sm btn-warning" onclick='openEditItem(${JSON.stringify(it)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='deleteItem("${it.ItemID}")'>Del</button></td></tr>`;});}
-function openAddItem(){itemModalInstance.show(); modalItemTitle.innerText="Add Item"; ItemID.value=""; ItemName.value=""; ItemPrice.value=""; ItemQty.value="";}
-function openEditItem(it){itemModalInstance.show(); modalItemTitle.innerText="Edit Item"; ItemID.value=it.ItemID; ItemName.value=it.Name; Item
+function editRow(r){
+ let keys=Object.keys(r),payload={action:"update"+capitalize(currentAction.slice(0,-1))};
+ keys.forEach(k=>payload[k]=prompt(k,r[k]));
+ fetch(API,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>tab(currentAction));
+}
+
+function deleteRow(r){
+ let obj=JSON.parse(r);
+ if(!confirm("Delete?")) return;
+ fetch(API,{method:"POST",body:JSON.stringify({action:"delete"+capitalize(currentAction.slice(0,-1)),...obj})})
+ .then(r=>r.json()).then(()=>tab(currentAction));
+}
+
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+</script>
+</body>
+</html>
