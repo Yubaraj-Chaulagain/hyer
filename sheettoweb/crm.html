@@ -238,9 +238,24 @@ function openTransactionModal(){
   txnModalInstance.show();
 }
   </script>
+  
 <script>
 // Load loans
-const loanModalInstance = new bootstrap.Modal(loanModal);
+const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
+const LoanID = document.getElementById("LoanID");
+const LoanMemberID = document.getElementById("LoanMemberID");
+const LoanAmount = document.getElementById("LoanAmount");
+const LoanMonths = document.getElementById("LoanMonths");
+const loanModalTitle = document.getElementById("loanModalTitle");
+function openLoanModal(){
+  loanModalTitle.innerText = "Add Loan";
+  LoanID.value = "LN" + Date.now();   // unique Loan ID
+  LoanMemberID.value = "";             // optionally set a current member
+  LoanAmount.value = "";
+  LoanMonths.value = "";
+  loanModalInstance.show();
+}
+
 function loadLoans(){
   fetch(API,{
     method:"POST",
