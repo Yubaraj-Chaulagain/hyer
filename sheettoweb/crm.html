@@ -689,18 +689,27 @@ function drawMembers(data){
 
 
 <div id="app" style="display:none;">
-<ul class="nav nav-tabs mb-3">
-<li class="nav-item"><a class="nav-link active" onclick="load('getMembers')">Members</a></li>
-<li class="nav-item admin"><a class="nav-link" onclick="load('getUsers')">Users</a></li>
-<li class="nav-item"><a class="nav-link" onclick="load('getItems')">Items</a></li>
-<li class="nav-item"><a class="nav-link" onclick="load('getTransactions')">Transactions</a></li>
-<li class="nav-item"><a class="nav-link" onclick="load('dailyReport')">Daily</a></li>
-<li class="nav-item"><a class="nav-link" onclick="load('monthlyReport')">Monthly</a></li>
-</ul>
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item"><a class="nav-link active" onclick="load('getMembers')">Members</a></li>
+    <li class="nav-item admin"><a class="nav-link" onclick="load('getUsers')">Users</a></li>
+    <li class="nav-item"><a class="nav-link" onclick="load('getItems')">Items</a></li>
+    <li class="nav-item"><a class="nav-link" onclick="load('getTransactions')">Transactions</a></li>
+    <li class="nav-item"><a class="nav-link" onclick="openLoanModal()">Loans</a></li>
+    <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
+  </ul>
 
-<button class="btn btn-success mb-2" onclick="openAdd()">+ Add</button>
-<table class="table table-bordered table-sm" id="tbl"></table>
+  <div class="mb-2">
+    <button class="btn btn-success" onclick="openAdd()">+ Add Member</button>
+    <button class="btn btn-primary admin" onclick="openUserModal()">+ Add User</button>
+    <button class="btn btn-warning" onclick="openItemModal()">+ Add Item</button>
+    <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
+    <button class="btn btn-secondary" onclick="openLoanModal()">+ Add Loan</button>
+    <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
+  </div>
+
+  <table class="table table-bordered table-sm" id="tbl"></table>
 </div>
+
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbyEohqm783728Y4Pws74ocBqiVVx6N7RPd6eDF8gm5M7Ewdtakpq1iipTPWRaXndqIX7A/exec";
