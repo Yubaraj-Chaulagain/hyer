@@ -732,6 +732,23 @@ function drawMembers(data){
   </div>
 
   <table class="table table-bordered table-sm" id="tbl"></table>
+  <!-- USERS SECTION -->
+<div id="userSection" style="display:none;">
+  <input id="searchUsers" class="form-control mb-2" placeholder="Search users">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>MemberID</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyUsers"></tbody>
+  </table>
+</div>
+
   <!-- LOANS TABLE -->
 <div id="loanSection" style="display:none;">
   <h5 class="mt-3">Loans</h5>
@@ -772,7 +789,16 @@ function login(){
 }
 
 function load(a){
+  tbl.style.display = "none";
   loanSection.style.display = "none";
+  userSection.style.display = "none";
+
+  if(a === "getUsers"){
+    userSection.style.display = "block";
+    loadUsers();
+    return;
+  }
+
   tbl.style.display = "table";
 
   fetch(API,{
@@ -782,6 +808,7 @@ function load(a){
   .then(r=>r.json())
   .then(draw);
 }
+
 
 
 function draw(d){
