@@ -252,6 +252,253 @@ function openEdit(m){ editMode=true; modalTitle.innerText="Edit Member"; MemberI
 function save(){ if(role==='member') return alert("Members cannot edit!"); const payload={action:editMode?"update":"add", MemberID:MemberID.value, Name:Name.value, Address:Address.value, "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value, "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value, "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value, Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value}; fetch(API,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
 function remove(){ if(role==='member') return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}}); }
 function openDelete(id){ if(role==='member') return; MemberID.value=id; remove(); }
+function loadUsers(){
+  fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers"})})
+  .then(r=>r.json())
+  .then(d=>{
+    users=d;
+    tbodyUsers.innerHTML="";
+    d.forEach(u=>{
+      tbodyUsers.innerHTML+=`
+      <tr>
+        <td>${u.Username}</td>
+        <td>${u.Password}</td>
+        <td>${u.Role}</td>
+        <td>${u.MemberID||""}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.Username}')">Del</button>
+        </td>
+      </tr>`;
+    });
+  });
+}
+
+function openAddUser(){
+  const username=prompt("Username");
+  const password=prompt("Password");
+  const role=prompt("Role (admin/user/member)");
+  const memberID=prompt("MemberID (optional)");
+  if(!username||!password||!role) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addUser",
+      Username:username,
+      Password:password,
+      Role:role,
+      MemberID:memberID
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){ notify("User added"); loadUsers(); }
+  });
+}
+
+function deleteUser(username){
+  if(!confirm("Delete user?")) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"deleteUser",Username:username})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){ notify("User deleted"); loadUsers(); }
+  });
+}
+  function loadItems(){
+  fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})})
+  .then(r=>r.json())
+  .then(d=>{
+    items=d;
+    tbodyItems.innerHTML="";
+    d.forEach(i=>{
+      tbodyItems.innerHTML+=`
+      <tr>
+        <td>${i.ItemID}</td>
+        <td>${i.Name}</td>
+        <td>${i.Price}</td>
+        <td>${i.Quantity}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="deleteItem('${i.ItemID}')">Del</button>
+        </td>
+      </tr>`;
+    });
+  });
+}
+
+function openAddItem(){
+  ItemID.value="";
+  ItemName.value="";
+  ItemPrice.value="";
+  ItemQty.value="";
+  modalItemTitle.innerText="Add Item";
+  itemModalInstance.show();
+}
+
+function saveItem(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addItem",
+      ItemID:ItemID.value,
+      Name:ItemName.value,
+      Price:ItemPrice.value,
+      Quantity:ItemQty.value
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      itemModalInstance.hide();
+      notify("Item added");
+      loadItems();
+    }
+  });
+}
+
+function deleteItem(id){
+  if(!confirm("Delete item?")) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"deleteItem",ItemID:id})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){ notify("Item deleted"); loadItems(); }
+  });
+}
+function loadTransactions(){
+  fetch(API,{method:"POST",body:JSON.stringify({action:"getTransactions"})})
+  .then(r=>r.json())
+  .then(d=>{
+    transactions=d;
+    tbodyTransactions.innerHTML="";
+    d.forEach(t=>{
+      tbodyTransactions.innerHTML+=`
+      <tr>
+        <td>${t.TxnID||""}</td>
+        <td>${t.MemberID}</td>
+        <td>${t.Type}</td>
+        <td>${t.Amount}</td>
+        <td>${t.Details||""}</td>
+        <td>${t.PaymentType}</td>
+        <td>${t.Date}</td>
+      </tr>`;
+    });
+  });
+}
+
+function openTransaction(){
+  TxnAmount.value="";
+  TxnDetails.value="";
+  modalTxnTitle.innerText="New Transaction";
+  txnModalInstance.show();
+}
+
+function saveTransaction(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addTransaction",
+      TxnID:"TXN"+Date.now(),
+      MemberID:currentMemberID,
+      Type:TxnType.value,
+      Amount:TxnAmount.value,
+      Details:TxnDetails.value,
+      PaymentType:PaymentType.value,
+      Date:new Date().toISOString().slice(0,10)
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      txnModalInstance.hide();
+      notify("Transaction completed");
+      loadTransactions();
+      loadBalance();
+    }
+  });
+}
+function loadLoans(){
+  fetch(API,{method:"POST",body:JSON.stringify({action:"getLoans"})})
+  .then(r=>r.json())
+  .then(d=>{
+    loans=d;
+    tbodyLoans.innerHTML="";
+    d.forEach(l=>{
+      tbodyLoans.innerHTML+=`
+      <tr>
+        <td>${l.LoanID}</td>
+        <td>${l.MemberID}</td>
+        <td>${l.Amount}</td>
+        <td>${l.Paid}</td>
+        <td>${l.MonthlyPayment}</td>
+        <td>${l.Remaining}</td>
+        <td>${l.NextDueDate}</td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick="payLoan('${l.LoanID}')">Pay</button>
+        </td>
+      </tr>`;
+    });
+  });
+}
+
+function openAddLoan(){
+  LoanMemberID.value=currentMemberID;
+  LoanAmount.value="";
+  LoanMonths.value="";
+  modalLoanTitle.innerText="Add Loan";
+  loanModalInstance.show();
+}
+
+function saveLoan(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addLoan",
+      LoanID:"LN"+Date.now(),
+      MemberID:LoanMemberID.value,
+      Amount:LoanAmount.value,
+      Months:LoanMonths.value
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      loanModalInstance.hide();
+      notify("Loan added");
+      loadLoans();
+    }
+  });
+}
+
+function payLoan(id){
+  const amt=prompt("Payment amount?");
+  if(!amt) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"payLoan",LoanID:id,Amount:amt})
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      notify("Loan payment done");
+      loadLoans();
+    }
+  });
+}
+function loadBalance(){
+  fetch(API,{method:"POST",body:JSON.stringify({action:"getBalance"})})
+  .then(r=>r.json())
+  .then(d=>{
+    tbodyBalance.innerHTML="";
+    d.forEach(b=>{
+      tbodyBalance.innerHTML+=`
+      <tr>
+        <td>${b.MemberID}</td>
+        <td>${b.Balance}</td>
+        <td>-</td>
+      </tr>`;
+    });
+  });
+}
+
+function loadAll(){
+  loadMembers();
+  loadUsers();
+  loadItems();
+  loadTransactions();
+  loadBalance();
+  loadLoans();
+}
 
 // ===== TODO: Add USERS, ITEMS, TRANSACTIONS, BALANCE, LOANS functions here =====
 // Similar structure: fetch data, draw table, modals, save actions
