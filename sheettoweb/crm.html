@@ -30,20 +30,35 @@
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxYK9a_vyosdGpLxwwNeg5_y4AwkzIApf6g_djyQZppaQNgTmCjSG4QZS_8m5phGC8HDg/exec";
+const API="https://script.google.com/macros/s/AKfycbxHFOrDIDz9BnDRQEQlBWTWXNHDYCIO3Zgk8oggWlAfpBdduncL_LP1-3i3bcfpC5er5A/exec";
 let role="",memberID="";
 
 function login(){
- fetch(API,{method:"POST",body:JSON.stringify({
-  action:"login",username:u.value,password:p.value
- })}).then(r=>r.json()).then(d=>{
-  if(d.status){
-    role=d.role; memberID=d.MemberID;
-    login.style.display="none";
-    app.style.display="block";
-    loadMembers();
-  } else alert(d.message);
- });
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"login",
+      username:document.getElementById("u").value,
+      password:document.getElementById("p").value
+    })
+  })
+  .then(r=>r.text())      // 👈 IMPORTANT (first text)
+  .then(t=>{
+    console.log("RAW:",t);
+    const res = JSON.parse(t);
+
+    if(res.status){
+      document.getElementById("login").style.display="none";
+      document.getElementById("app").style.display="block";
+      alert("Login success as "+res.role);
+    } else {
+      alert(res.message);
+    }
+  })
+  .catch(err=>{
+    alert("API error");
+    console.error(err);
+  });
 }
 
 function drawTable(data){
