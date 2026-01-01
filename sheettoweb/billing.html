@@ -53,11 +53,14 @@ td a { text-decoration:none; }
 <!-- ===== USERS TAB (ADMIN ONLY) ===== -->
 <div id="usersTab" style="display:none;">
   <button class="btn btn-success mb-2" onclick="openAddUser()" id="btnAddUser">+ Add User</button>
+    <input id="searchUsers" class="form-control mb-2" placeholder="Search users">
   <table class="table table-bordered table-sm table-hover">
     <thead class="table-dark">
       <tr><th>Username</th><th>Password</th><th>Role</th><th>MemberID</th><th>Action</th></tr>
     </thead>
     <tbody id="tbodyUsers"></tbody>
+  
+
   </table>
 </div>
 
@@ -234,6 +237,8 @@ function drawMembers(){ tbody.innerHTML=""; members.forEach(m=>{tbody.innerHTML+
 <td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
 <button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td></tr>`}); }
 
+  
+
 // ===== SEARCH MEMBERS =====
 search.onkeyup=()=>{ const v=search.value.toLowerCase(); drawMembers(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v))); }
 function drawMembers(data){ tbody.innerHTML=""; data.forEach(m=>{tbody.innerHTML+=`<tr>
@@ -252,7 +257,9 @@ function openEdit(m){ editMode=true; modalTitle.innerText="Edit Member"; MemberI
 function save(){ if(role==='member') return alert("Members cannot edit!"); const payload={action:editMode?"update":"add", MemberID:MemberID.value, Name:Name.value, Address:Address.value, "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value, "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value, "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value, Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value}; fetch(API,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
 function remove(){ if(role==='member') return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}}); }
 function openDelete(id){ if(role==='member') return; MemberID.value=id; remove(); }
-  
+
+let allUsers = [];
+
 function loadUsers(){
   fetch(API,{
     method:"POST",
@@ -260,25 +267,40 @@ function loadUsers(){
   })
   .then(r=>r.json())
   .then(d=>{
-    tbodyUsers.innerHTML="";
-    d.forEach(u=>{
-      tbodyUsers.innerHTML+=`
-      <tr>
-        <td>${u.Username}</td>
-        <td>${u.Password}</td>
-        <td>${u.Role}</td>
-        <td>${u.MemberID || ""}</td>
-        <td>
-          <button class="btn btn-sm btn-warning"
-            onclick='openEditUser(${JSON.stringify(u)})'>Edit</button>
-          <button class="btn btn-sm btn-danger"
-            onclick="deleteUser('${u.Username}')">Del</button>
-        </td>
-      </tr>`;
-    });
+    allUsers = d;
+    drawUsers(d);
   });
 }
 
+
+  function drawUsers(data){
+  tbodyUsers.innerHTML="";
+  data.forEach(u=>{
+    tbodyUsers.innerHTML+=`
+    <tr>
+      <td>${u.Username}</td>
+      <td>${u.Password}</td>
+      <td>${u.Role}</td>
+      <td>${u.MemberID || ""}</td>
+      <td>
+        <button class="btn btn-sm btn-warning"
+          onclick='openEditUser(${JSON.stringify(u)})'>Edit</button>
+        <button class="btn btn-sm btn-danger"
+          onclick="deleteUser('${u.Username}')">Del</button>
+      </td>
+    </tr>`;
+  });
+}
+searchUsers.onkeyup = () => {
+  const v = searchUsers.value.toLowerCase();
+  drawUsers(
+    allUsers.filter(u =>
+      Object.values(u).join(" ").toLowerCase().includes(v)
+    )
+  );
+};
+
+  
 
 function openAddUser(){
   const username = prompt("Username");
