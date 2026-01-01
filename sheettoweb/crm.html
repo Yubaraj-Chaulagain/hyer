@@ -223,18 +223,21 @@ function printReport(){
   </script>
 
   <script>
-    const loanModalInstance = new bootstrap.Modal(loanModal);
-let loans = [];
+    const txnModalInstance = new bootstrap.Modal(document.getElementById("transactionModal"));
 
-// Open modal
-function openLoanModal(){
-  loanModalTitle.innerText = "Add Loan";
-  LoanID.value = "LN" + Date.now();
-  LoanMemberID.value = currentMemberID;
-  LoanAmount.value = "";
-  LoanMonths.value = "";
-  loanModalInstance.show();
+function openTransactionModal(){
+  txnModalTitle.innerText = "New Transaction";
+  TxnType.value = "Deposit";
+  TxnAmount.value = "";
+  TxnDetails.value = "";
+  PaymentType.value = "Cash";
+
+  // यदि currentMemberID define छैन भने खाली राखौँ
+  if(typeof currentMemberID === "undefined") currentMemberID = "";
+
+  txnModalInstance.show();
 }
+
 
 // Load loans
 function loadLoans(){
