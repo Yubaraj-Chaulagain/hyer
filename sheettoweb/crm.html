@@ -239,23 +239,6 @@ function openTransactionModal(){
 }
   </script>
 
-  <h5>Loans</h5>
-<table class="table table-bordered table-sm">
-  <thead>
-    <tr>
-      <th>LoanID</th>
-      <th>MemberID</th>
-      <th>Amount</th>
-      <th>Paid</th>
-      <th>Monthly Payment</th>
-      <th>Remaining</th>
-      <th>Next Due Date</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="tbodyLoans"></tbody>
-</table>
-
 <script>
 // Load loans
 const tbodyLoans = document.getElementById("tbodyLoans");
@@ -734,7 +717,7 @@ function drawMembers(data){
     <li class="nav-item admin"><a class="nav-link" onclick="load('getUsers')">Users</a></li>
     <li class="nav-item"><a class="nav-link" onclick="load('getItems')">Items</a></li>
     <li class="nav-item"><a class="nav-link" onclick="load('getTransactions')">Transactions</a></li>
-    <li class="nav-item"><a class="nav-link" onclick="openLoanModal()">Loans</a></li>
+    <li class="nav-item"><a class="nav-link" onclick="showLoans()">Loans</a></li>
     <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
   </ul>
 
@@ -748,6 +731,24 @@ function drawMembers(data){
   </div>
 
   <table class="table table-bordered table-sm" id="tbl"></table>
+  <div>
+  <h5>Loans</h5>
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>LoanID</th>
+      <th>MemberID</th>
+      <th>Amount</th>
+      <th>Paid</th>
+      <th>Monthly Payment</th>
+      <th>Remaining</th>
+      <th>Next Due Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="tbodyLoans"></tbody>
+</table>
+</div>
 </div>
 
 
