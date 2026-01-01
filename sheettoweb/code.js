@@ -1,173 +1,168 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Member Management</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<style> td a{ text-decoration:none; } </style>
-</head>
-<body class="p-3">
+const SHEET_MEMBERS = "Members";
+const SHEET_USERS = "Users";
 
-<!-- LOGIN -->
-<div id="loginDiv">
-  <h3>Login</h3>
-  <input id="username" class="form-control mb-2" placeholder="Username">
-  <input id="password" type="password" class="form-control mb-2" placeholder="Password">
-  <button class="btn btn-primary" onclick="login()">Login</button>
-</div>
+// Serve HTML
+function doGet() {
+  return HtmlService.createHtmlOutputFromFile("index");
+}
 
-<!-- MAIN APP -->
-<div id="mainDiv" style="display:none;">
+// Handle API requests
+function doPost(e) {
+  if (!e.postData) return json({status:false,message:"No data"});
+  const d = JSON.parse(e.postData.contents);
 
-<h3>Members</h3>
-<input class="form-control mb-2" id="search" placeholder="Search members">
-<button class="btn btn-success mb-2" onclick="openAdd()" id="btnAdd">+ Add Member</button>
-<table class="table table-bordered table-sm table-hover">
-<thead class="table-dark">
-<tr>
-<th>ID</th><th>Name</th><th>Address</th><th>Father</th><th>Grand Father</th>
-<th>Spouse</th><th>Phone</th><th>Email</th>
-<th>ID Photo</th><th>Member Photo</th>
-<th>Status</th><th>OTP</th><th>Entry Date</th><th>Action</th>
-</tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
+  // --- LOGIN ---
+  if(d.action==="login") return json(login(d));
 
-<!-- MEMBER MODAL -->
-<div class="modal fade" id="memberModal">
-<div class="modal-dialog modal-xl"><div class="modal-content">
-<div class="modal-header">
-<h5 id="modalTitle"></h5>
-<button class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-<div class="modal-body row g-2">
-<input id="MemberID" class="form-control col-6" placeholder="Member ID">
-<input id="Name" class="form-control col-6" placeholder="Name">
-<input id="Address" class="form-control col-6" placeholder="Address">
-<input id="FatherName" class="form-control col-6" placeholder="Father Name">
-<input id="GrandFatherName" class="form-control col-6" placeholder="Grand Father Name">
-<input id="SpouseName" class="form-control col-6" placeholder="Spouse/Wife Name">
-<input id="Phone" class="form-control col-6" placeholder="Phone">
-<input id="Email" class="form-control col-6" placeholder="Email">
-<input id="IdentityPhotoURL" class="form-control col-6" placeholder="Identity Photo URL">
-<input id="MemberPhotoURL" class="form-control col-6" placeholder="Member Photo URL">
-<input id="Status" class="form-control col-6" placeholder="Status">
-<input id="OTP" class="form-control col-6" placeholder="OTP">
-<input id="EntryDate" type="date" class="form-control col-6">
-</div>
-<div class="modal-footer">
-<button class="btn btn-success" onclick="save()" id="btnSave">Save</button>
-<button class="btn btn-danger" onclick="remove()" id="btnDelete">Delete</button>
-</div>
-</div></div></div>
+  // --- MEMBERS ---
+  if(d.action==="getMembers") return json(getMembers(d.username));
+  if(d.action==="add") return json(addMember(d));
+  if(d.action==="update") return json(updateMember(d));
+  if(d.action==="delete") return json(deleteMember(d.MemberID));
 
-<!-- ADMIN USERS PANEL -->
-<div id="usersDiv" style="display:none;" class="mt-4">
-<h4>Manage Users</h4>
-<button class="btn btn-success mb-2" onclick="openAddUser()" id="btnAddUser">+ Add User</button>
-<table class="table table-bordered table-sm table-hover">
-<thead class="table-dark">
-<tr>
-<th>Username</th><th>Password</th><th>Role</th><th>MemberID</th><th>Action</th>
-</tr>
-</thead>
-<tbody id="tbodyUsers"></tbody>
-</table>
-</div>
+  // --- USERS (admin only) ---
+  if(d.action==="getUsers") return json(getUsers(d.username));
+  if(d.action==="addUser") return json(addUser(d));
+  if(d.action==="updateUser") return json(updateUser(d));
+  if(d.action==="deleteUser") return json(deleteUser(d.Username, d.admin));
 
-<!-- USER MODAL -->
-<div class="modal fade" id="userModal">
-<div class="modal-dialog"><div class="modal-content">
-<div class="modal-header">
-<h5 id="userModalTitle"></h5>
-<button class="btn-close" data-bs-dismiss="modal"></button>
-</div>
-<div class="modal-body">
-<input id="UUsername" class="form-control mb-2" placeholder="Username">
-<input id="UPassword" class="form-control mb-2" placeholder="Password">
-<select id="URole" class="form-control mb-2">
-<option value="admin">Admin</option>
-<option value="user">User</option>
-<option value="member">Member</option>
-</select>
-<input id="UMemberID" class="form-control mb-2" placeholder="MemberID (optional)">
-</div>
-<div class="modal-footer">
-<button class="btn btn-success" onclick="saveUser()">Save</button>
-<button class="btn btn-danger" onclick="deleteUser()">Delete</button>
-</div>
-</div></div></div>
-
-</div>
-
-<script>
-const API = "YOUR_SCRIPT_URL_HERE";
-let members=[], role="", currentUsername="", currentMemberID="";
-const modal = new bootstrap.Modal(memberModal);
-const userModalInstance = new bootstrap.Modal(userModal);
-let users=[], editMode=false, editUserMode=false;
+  return json({status:false,message:"Invalid action"});
+}
 
 // --- LOGIN ---
-function login(){
-  fetch(API,{method:"POST",body:JSON.stringify({action:"login", username:username.value, password:password.value})})
-  .then(r=>r.json()).then(res=>{
-    if(res.status){
-      role=res.role; currentUsername=username.value; currentMemberID=res.MemberID;
-      loginDiv.style.display="none"; mainDiv.style.display="block";
-      if(role==="member") btnAdd.style.display="none";
-      loadMembers(); if(role==="admin") loadUsers();
-    }else alert(res.message);
-  });
+function login(d){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  const header = data.shift();
+
+  for(let row of data){
+    if(row[0]===d.username && row[1]===d.password){
+      return {status:true, role:row[2], MemberID:row[3]||""};
+    }
+  }
+  return {status:false,message:"Invalid username or password"};
 }
 
-// --- LOAD MEMBERS ---
-function loadMembers(){
-  fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers", username:currentUsername})})
-  .then(r=>r.json()).then(d=>{ members=d; draw(d); });
+// --- MEMBER MANAGEMENT ---
+function getMembers(username){
+  const role = getUserRole(username);
+  const memberID = getMemberID(username);
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_MEMBERS);
+  const data = sh.getDataRange().getValues();
+  const header = data.shift();
+
+  if(role==="admin"||role==="user"){
+    return data.map(r=>{
+      let o={}; header.forEach((h,i)=>o[h]=r[i]); return o;
+    });
+  } else if(role==="member"){
+    const r = data.find(r=>r[0]==memberID);
+    if(!r) return [];
+    let o={}; header.forEach((h,i)=>o[h]=r[i]); return [o];
+  }
+  return [];
 }
 
-// --- DRAW MEMBERS ---
-function draw(data){
-  tbody.innerHTML="";
-  data.forEach(m=>{
-    tbody.innerHTML+=`<tr>
-      <td>${m.MemberID||""}</td>
-      <td>${m.Name||""}</td>
-      <td>${m.Address||""}</td>
-      <td>${m["Father Name"]||""}</td>
-      <td>${m["Grand Father Name"]||""}</td>
-      <td>${m["spouse/wife Name"]||""}</td>
-      <td>${m.Phone||""}</td>
-      <td>${m.Email||""}</td>
-      <td><a href="${m["Identy PhotoURL"]||"#"}" target="_blank">View</a></td>
-      <td><a href="${m["Member PhotoURL"]||"#"}" target="_blank">View</a></td>
-      <td>${m.Status||""}</td>
-      <td>${m.OTP||""}</td>
-      <td>${m.EntryDate||""}</td>
-      <td>${role!=="member"?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
-      <button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td>
-    </tr>`;
-  });
+function addMember(d){ return add(d); }
+function updateMember(d){ return update(d); }
+function deleteMember(id){ return del(id); }
+
+// --- USER MANAGEMENT (ADMIN) ---
+function getUsers(username){
+  if(getUserRole(username)!=="admin") return [];
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  const header = data.shift();
+  return data.map(r=>{ let o={}; header.forEach((h,i)=>o[h]=r[i]); return o; });
 }
 
-// --- SEARCH ---
-search.onkeyup=()=>{ const v=search.value.toLowerCase(); draw(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v))); };
+function addUser(d){
+  if(getUserRole(d.admin)!=="admin") return {status:false,message:"No permission"};
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  sh.appendRow([d.Username,d.Password,d.Role,d.MemberID||""]);
+  return {status:true};
+}
 
-// --- MEMBER MODAL ---
-function openAdd(){ if(role==="member") return; editMode=false; modalTitle.innerText="Add Member"; document.querySelectorAll(".modal-body input").forEach(i=>i.value=""); MemberID.readOnly=false; modal.show(); }
-function openEdit(m){ if(role==="member") return; editMode=true; modalTitle.innerText="Edit Member"; MemberID.readOnly=true; MemberID.value=m.MemberID||""; Name.value=m.Name||""; Address.value=m.Address||""; FatherName.value=m["Father Name"]||""; GrandFatherName.value=m["Grand Father Name"]||""; SpouseName.value=m["spouse/wife Name"]||""; Phone.value=m.Phone||""; Email.value=m.Email||""; IdentityPhotoURL.value=m["Identy PhotoURL"]||""; MemberPhotoURL.value=m["Member PhotoURL"]||""; Status.value=m.Status||""; OTP.value=m.OTP||""; EntryDate.value=m.EntryDate||""; modal.show(); }
-function save(){ if(role==="member") return alert("Members cannot edit!"); const payload={action:editMode?"update":"add", MemberID:MemberID.value, Name:Name.value, Address:Address.value, "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value, "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value, "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value, Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value }; fetch(API,{method:"POST", body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
-function remove(){ if(role==="member") return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST", body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
-function openDelete(id){ if(role==="member") return; MemberID.value=id; remove(); }
+function updateUser(d){
+  if(getUserRole(d.admin)!=="admin") return {status:false,message:"No permission"};
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  const header = data[0];
+  for(let i=1;i<data.length;i++){
+    if(data[i][0]===d.Username){
+      header.forEach((h,j)=>sh.getRange(i+1,j+1).setValue(d[h]||""));
+      return {status:true};
+    }
+  }
+  return {status:false,message:"User not found"};
+}
 
-// --- USER PANEL (ADMIN) ---
-function loadUsers(){ if(role!=="admin") return; fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers", username:currentUsername})}).then(r=>r.json()).then(d=>{users=d; drawUsers(d); usersDiv.style.display="block";}); }
-function drawUsers(data){ tbodyUsers.innerHTML=""; data.forEach(u=>{tbodyUsers.innerHTML+=`<tr><td>${u.Username}</td><td>${u.Password}</td><td>${u.Role}</td><td>${u.MemberID||""}</td><td><button class="btn btn-sm btn-warning" onclick='openEditUser(${JSON.stringify(u)})'>Edit</button> <button class="btn btn-sm btn-danger" onclick='openDeleteUser("${u.Username}")'>Del</button></td></tr>`}); }
-function openAddUser(){ editUserMode=false; userModalTitle.innerText="Add User"; UUsername.value=""; UPassword.value=""; URole.value="user"; UMemberID.value=""; UUsername.readOnly=false; userModalInstance.show(); }
-function openEditUser(u){ editUserMode=true; userModalTitle.innerText="Edit User"; UUsername.value=u.Username; UPassword.value=u.Password; URole.value=u.Role; UMemberID.value=u.MemberID||""; UUsername.readOnly=true; userModalInstance.show(); }
-function saveUser(){ const payload={admin:currentUsername, Username:UUsername.value, Password:UPassword.value, Role:URole.value, MemberID:UMemberID.value, action:editUserMode?"updateUser":"addUser"}; fetch(API,{method:"POST", body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){userModalInstance.hide();loadUsers();}else alert(res.message);}); }
-function openDeleteUser(username){ if(!confirm("Delete user "+username+"?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"deleteUser", Username:username, admin:currentUsername})}).then(r=>r.json()).then(res=>{if(res.status) loadUsers(); else alert(res.message);}); }
-</script>
+function deleteUser(username, admin){
+  if(getUserRole(admin)!=="admin") return {status:false,message:"No permission"};
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  for(let i=1;i<data.length;i++){
+    if(data[i][0]===username){
+      sh.deleteRow(i+1);
+      return {status:true};
+    }
+  }
+  return {status:false,message:"User not found"};
+}
 
-</body>
+// --- HELPER ---
+function getUserRole(username){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  const header = data.shift();
+  const userRow = data.find(r=>r[0]===username);
+  return userRow?userRow[2]:"";
+}
+
+function getMemberID(username){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_USERS);
+  const data = sh.getDataRange().getValues();
+  const header = data.shift();
+  const userRow = data.find(r=>r[0]===username);
+  return userRow?userRow[3]:"";
+}
+
+// --- EXISTING MEMBER FUNCTIONS ---
+function add(d){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_MEMBERS);
+  sh.appendRow([d.MemberID,d.Name,d.Address,d["Father Name"],d["Grand Father Name"],
+    d["spouse/wife Name"],d.Phone,d.Email,d["Identy PhotoURL"],d["Member PhotoURL"],
+    d.Status,d.OTP,d.EntryDate]);
+  return {status:true};
+}
+
+function update(d){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_MEMBERS);
+  const data = sh.getDataRange().getValues();
+  const header = data[0];
+  for(let i=1;i<data.length;i++){
+    if(data[i][0]==d.MemberID){
+      header.forEach((h,j)=>sh.getRange(i+1,j+1).setValue(d[h]||""));
+      return {status:true};
+    }
+  }
+  return {status:false,message:"Member not found"};
+}
+
+function del(id){
+  const sh = SpreadsheetApp.getActive().getSheetByName(SHEET_MEMBERS);
+  const data = sh.getDataRange().getValues();
+  for(let i=1;i<data.length;i++){
+    if(data[i][0]==id){
+      sh.deleteRow(i+1);
+      return {status:true};
+    }
+  }
+  return {status:false,message:"Member not found"};
+}
+
+// --- JSON HELPER ---
+function json(o){
+  return ContentService.createTextOutput(JSON.stringify(o))
+    .setMimeType(ContentService.MimeType.JSON);
+}
