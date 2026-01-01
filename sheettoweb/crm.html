@@ -14,6 +14,41 @@
 <input id="p" type="password" class="form-control mb-2" placeholder="Password">
 <button class="btn btn-primary" onclick="login()">Login</button>
 </div>
+ <!-- MEMBER MODAL -->
+<div class="modal fade" id="memberModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 id="memberModalTitle">Add Member</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body row g-2">
+        <input id="mMemberID" class="form-control col-6" placeholder="Member ID">
+        <input id="mName" class="form-control col-6" placeholder="Name">
+        <input id="mAddress" class="form-control col-6" placeholder="Address">
+        <input id="mFather" class="form-control col-6" placeholder="Father Name">
+        <input id="mGrand" class="form-control col-6" placeholder="Grand Father">
+        <input id="mSpouse" class="form-control col-6" placeholder="Spouse Name">
+        <input id="mPhone" class="form-control col-6" placeholder="Phone">
+        <input id="mEmail" class="form-control col-6" placeholder="Email">
+        <input id="mIDPhoto" class="form-control col-6" placeholder="Identity Photo URL">
+        <input id="mPhoto" class="form-control col-6" placeholder="Member Photo URL">
+        <input id="mStatus" class="form-control col-6" placeholder="Status">
+        <input id="mOTP" class="form-control col-6" placeholder="OTP">
+        <input id="mDate" type="date" class="form-control col-6">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="saveMember()">Save</button>
+        <button class="btn btn-danger" onclick="deleteMember()">Delete</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <div id="app" style="display:none;">
 <ul class="nav nav-tabs mb-3">
@@ -51,17 +86,24 @@ function load(a){
 }
 
 function draw(d){
- if(!d.length){tbl.innerHTML="No data";return;}
- let h="<tr>";
- Object.keys(d[0]).forEach(k=>h+=`<th>${k}</th>`);
- h+="</tr>";
- d.forEach(r=>{
-  h+="<tr>";
-  Object.values(r).forEach(v=>h+=`<td>${v}</td>`);
-  h+="</tr>";
- });
- tbl.innerHTML=h;
+  if(!d.length){tbl.innerHTML="No data";return;}
+
+  let h="<tr>";
+  Object.keys(d[0]).forEach(k=>h+=`<th>${k}</th>`);
+  h+="<th>Action</th></tr>";
+
+  d.forEach(r=>{
+    h+="<tr>";
+    Object.values(r).forEach(v=>h+=`<td>${v}</td>`);
+    h+=`<td>
+      <button class="btn btn-sm btn-warning"
+        onclick='openEditMember(${JSON.stringify(r)})'>Edit</button>
+    </td></tr>`;
+  });
+
+  tbl.innerHTML=h;
 }
+
 
 function openAdd(){
  alert("Add/Edit via modal – backend ready");
@@ -74,5 +116,89 @@ function printInvoice(txn){
  w.print();
 }
 </script>
+ <script>
+const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+let editMode = false;
+
+// ===== OPEN ADD =====
+function openAdd(){
+  editMode = false;
+  memberModalTitle.innerText = "Add Member";
+  document.querySelectorAll("#memberModal input").forEach(i=>i.value="");
+  mMemberID.readOnly = false;
+  memberModal.show();
+}
+
+// ===== OPEN EDIT =====
+function openEditMember(m){
+  editMode = true;
+  memberModalTitle.innerText = "Edit Member";
+  mMemberID.value = m.MemberID;
+  mMemberID.readOnly = true;
+
+  mName.value = m.Name;
+  mAddress.value = m.Address;
+  mFather.value = m.FatherName;
+  mGrand.value = m.GrandFatherName;
+  mSpouse.value = m.SpouseName;
+  mPhone.value = m.Phone;
+  mEmail.value = m.Email;
+  mIDPhoto.value = m.IdentityPhoto;
+  mPhoto.value = m.MemberPhoto;
+  mStatus.value = m.Status;
+  mOTP.value = m.OTP;
+  mDate.value = m.EntryDate;
+
+  memberModal.show();
+}
+
+// ===== SAVE =====
+function saveMember(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action: editMode ? "updateMember" : "addMember",
+      MemberID:mMemberID.value,
+      Name:mName.value,
+      Address:mAddress.value,
+      FatherName:mFather.value,
+      GrandFatherName:mGrand.value,
+      SpouseName:mSpouse.value,
+      Phone:mPhone.value,
+      Email:mEmail.value,
+      IdentityPhoto:mIDPhoto.value,
+      MemberPhoto:mPhoto.value,
+      Status:mStatus.value,
+      OTP:mOTP.value,
+      EntryDate:mDate.value
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    } else alert("Error saving");
+  });
+}
+
+// ===== DELETE =====
+function deleteMember(){
+  if(!editMode) return alert("Select member first");
+  if(!confirm("Delete this member?")) return;
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"deleteMember",
+      MemberID:mMemberID.value
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    }
+  });
+}
+</script>
+
 </body>
 </html>
