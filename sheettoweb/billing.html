@@ -1,78 +1,261 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Login System</title>
+<title>Member Management & Finance System</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <style>
-.hidden{display:none}
+td a { text-decoration:none; }
 </style>
 </head>
-<body class="p-4">
+<body class="p-3">
 
-<!-- LOGIN -->
-<div id="loginBox" class="col-md-4 mx-auto">
-  <h4>🔐 Login</h4>
-  <input id="user" class="form-control mb-2" placeholder="Username">
-  <input id="pass" type="password" class="form-control mb-2" placeholder="Password">
-  <button class="btn btn-primary w-100" onclick="login()">Login</button>
+<!-- ===== LOGIN ===== -->
+<div id="loginDiv">
+  <h3>Login</h3>
+  <input id="username" class="form-control mb-2" placeholder="Username">
+  <input id="password" type="password" class="form-control mb-2" placeholder="Password">
+  <button class="btn btn-primary" onclick="login()">Login</button>
 </div>
 
-<!-- ADMIN -->
-<div id="adminUI" class="hidden">
-  <h3>👑 Admin Dashboard</h3>
+<!-- ===== MAIN APP ===== -->
+<div id="mainDiv" style="display:none;">
+<h3>Member & Finance System</h3>
+
+<ul class="nav nav-tabs mb-2" id="tabs">
+  <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('membersTab')">Members</a></li>
+  <li class="nav-item" id="usersTabBtn"><a class="nav-link" href="#" onclick="showTab('usersTab')">Users</a></li>
+  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('itemsTab')">Items</a></li>
+  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('transactionsTab')">Transactions</a></li>
+  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('balanceTab')">Balance</a></li>
+  <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('loansTab')">Loans</a></li>
+</ul>
+
+<div id="tabsContent">
+
+<!-- ===== MEMBERS TAB ===== -->
+<div id="membersTab">
+  <button class="btn btn-success mb-2" onclick="openAdd()" id="btnAdd">+ Add Member</button>
+  <input class="form-control mb-2" id="search" placeholder="Search members">
+  <table class="table table-bordered table-sm table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th><th>Name</th><th>Address</th><th>Father</th><th>Grand Father</th>
+        <th>Spouse</th><th>Phone</th><th>Email</th>
+        <th>ID Photo</th><th>Member Photo</th>
+        <th>Status</th><th>OTP</th><th>Entry Date</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
 </div>
 
-<!-- STAFF -->
-<div id="staffUI" class="hidden">
-  <h3>🧑‍💼 Staff Dashboard</h3>
+<!-- ===== USERS TAB (ADMIN ONLY) ===== -->
+<div id="usersTab" style="display:none;">
+  <button class="btn btn-success mb-2" onclick="openAddUser()" id="btnAddUser">+ Add User</button>
+  <table class="table table-bordered table-sm table-hover">
+    <thead class="table-dark">
+      <tr><th>Username</th><th>Password</th><th>Role</th><th>MemberID</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyUsers"></tbody>
+  </table>
 </div>
 
-<!-- MEMBER -->
-<div id="memberUI" class="hidden">
-  <h3>👤 Member Dashboard</h3>
-  <div id="myInfo"></div>
+<!-- ===== ITEMS TAB ===== -->
+<div id="itemsTab" style="display:none;">
+  <button class="btn btn-success mb-2" onclick="openAddItem()">+ Add Item</button>
+  <table class="table table-bordered table-sm table-hover">
+    <thead class="table-dark">
+      <tr><th>ItemID</th><th>Name</th><th>Price</th><th>Quantity</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyItems"></tbody>
+  </table>
+</div>
+
+<!-- ===== TRANSACTIONS TAB ===== -->
+<div id="transactionsTab" style="display:none;">
+  <button class="btn btn-success mb-2" onclick="openTransaction()">+ New Transaction</button>
+  <table class="table table-bordered table-sm table-hover">
+    <thead class="table-dark">
+      <tr><th>TxnID</th><th>MemberID</th><th>Type</th><th>Amount</th><th>Details</th><th>PaymentType</th><th>Date</th></tr>
+    </thead>
+    <tbody id="tbodyTransactions"></tbody>
+  </table>
+</div>
+
+<!-- ===== BALANCE TAB ===== -->
+<div id="balanceTab" style="display:none;">
+  <h5>Member Balance</h5>
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr><th>MemberID</th><th>Balance</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyBalance"></tbody>
+  </table>
+</div>
+
+<!-- ===== LOANS TAB ===== -->
+<div id="loansTab" style="display:none;">
+  <button class="btn btn-success mb-2" onclick="openAddLoan()">+ Add Loan</button>
+  <table class="table table-bordered table-sm table-hover">
+    <thead class="table-dark">
+      <tr><th>LoanID</th><th>MemberID</th><th>Amount</th><th>Paid</th><th>Monthly Payment</th><th>Remaining</th><th>NextDueDate</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyLoans"></tbody>
+  </table>
+</div>
+
+</div>
+
+<!-- ===== MODALS ===== -->
+<!-- Member Modal -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-xl"><div class="modal-content">
+<div class="modal-header"><h5 id="modalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body row g-2">
+  <input id="MemberID" class="form-control col-6" placeholder="Member ID">
+  <input id="Name" class="form-control col-6" placeholder="Name">
+  <input id="Address" class="form-control col-6" placeholder="Address">
+  <input id="FatherName" class="form-control col-6" placeholder="Father Name">
+  <input id="GrandFatherName" class="form-control col-6" placeholder="Grand Father Name">
+  <input id="SpouseName" class="form-control col-6" placeholder="Spouse/Wife Name">
+  <input id="Phone" class="form-control col-6" placeholder="Phone">
+  <input id="Email" class="form-control col-6" placeholder="Email">
+  <input id="IdentityPhotoURL" class="form-control col-6" placeholder="Identity Photo URL">
+  <input id="MemberPhotoURL" class="form-control col-6" placeholder="Member Photo URL">
+  <input id="Status" class="form-control col-6" placeholder="Status">
+  <input id="OTP" class="form-control col-6" placeholder="OTP">
+  <input id="EntryDate" type="date" class="form-control col-6">
+</div>
+<div class="modal-footer">
+  <button class="btn btn-success" onclick="save()" id="btnSave">Save</button>
+  <button class="btn btn-danger" onclick="remove()" id="btnDelete">Delete</button>
+</div>
+</div></div>
+</div>
+
+<!-- User Modal -->
+<div class="modal fade" id="userModal">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 id="userModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<input id="UUsername" class="form-control mb-2" placeholder="Username">
+<input id="UPassword" class="form-control mb-2" placeholder="Password">
+<select id="URole" class="form-control mb-2">
+<option value="admin">Admin</option>
+<option value="user">User</option>
+<option value="member">Member</option>
+</select>
+<input id="UMemberID" class="form-control mb-2" placeholder="MemberID (optional)">
+</div>
+<div class="modal-footer">
+<button class="btn btn-success" onclick="saveUser()">Save</button>
+<button class="btn btn-danger" onclick="deleteUser()">Delete</button>
+</div>
+</div></div>
+</div>
+
+<!-- Transaction Modal -->
+<div class="modal fade" id="transactionModal">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 id="txnModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<select id="TxnType" class="form-control mb-2">
+  <option value="Deposit">Deposit</option>
+  <option value="Withdraw">Withdraw</option>
+  <option value="Transfer">Transfer</option>
+  <option value="Invoice">Invoice</option>
+  <option value="Loan">Loan</option>
+</select>
+<input id="TxnAmount" type="number" class="form-control mb-2" placeholder="Amount">
+<input id="TxnDetails" class="form-control mb-2" placeholder="Details / To MemberID">
+<select id="PaymentType" class="form-control mb-2">
+<option value="Cash">Cash</option>
+<option value="Bank">Bank</option>
+</select>
+</div>
+<div class="modal-footer">
+<button class="btn btn-success" onclick="saveTransaction()">Save</button>
+</div>
+</div></div>
+</div>
+
+<!-- Loan Modal -->
+<div class="modal fade" id="loanModal">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"><h5 id="loanModalTitle"></h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
+<input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
+<input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
+</div>
+<div class="modal-footer">
+<button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
+</div>
+</div></div>
+</div>
+
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbx3QtkGadxdeAcGh0Z2wWRQs5EmaLeE8mtKXIm4uPJxMX28ShblIvJI9H480N16dPUn/exec";
+const API = "https://script.google.com/macros/s/AKfycbxRdom95EWERCNrRa1uOhKy0QOgaePFNek0fH1FQE9Tc2pVEbyJEQgjXod85JPBEM-0TA/exec"; // replace with your Apps Script deploy URL
+let members=[], users=[], items=[], transactions=[], loans=[], role="", currentUsername="", currentMemberID="";
+const modal = new bootstrap.Modal(memberModal);
+const userModalInstance = new bootstrap.Modal(userModal);
+const txnModalInstance = new bootstrap.Modal(transactionModal);
+const loanModalInstance = new bootstrap.Modal(loanModal);
 
-let headers=[], members=[], edit=false, role="";
+let editMode=false, editUserMode=false;
 
+// ===== LOGIN =====
 function login(){
-  const username = document.getElementById("user").value.trim();
-  const password = document.getElementById("pass").value.trim();
-
-  if(!username || !password){
-    alert("Username & Password required");
-    return;
-  }
-
-  const url = API + 
-    "?action=login" +
-    "&user=" + encodeURIComponent(username) +
-    "&pass=" + encodeURIComponent(password);
-
-  fetch(url)
-    .then(r => r.json())
-    .then(d => {
-      console.log("LOGIN RESPONSE:", d);
-      if(!d.ok){
-        alert("❌ Login failed");
-        return;
-      }
-      role = d.role;
-      document.getElementById("loginBox").classList.add("hidden");
-      document.getElementById("app").classList.remove("hidden");
-      load();
-    })
-    .catch(err=>{
-      console.error(err);
-      alert("❌ API Error (HTML side)");
-    });
+  fetch(API,{method:"POST",body:JSON.stringify({action:"login",username:username.value,password:password.value})})
+  .then(r=>r.json()).then(res=>{
+    if(res.status){
+      role=res.role; currentUsername=username.value; currentMemberID=res.MemberID;
+      loginDiv.style.display="none"; mainDiv.style.display="block";
+      if(role!=="admin") usersTabBtn.style.display="none";
+      loadMembers(); loadItems(); loadTransactions(); loadBalance(); loadLoans();
+    }else alert(res.message);
+  });
 }
 
+// ===== SHOW TAB =====
+function showTab(tab){ document.querySelectorAll('#tabsContent > div').forEach(d=>d.style.display='none'); document.getElementById(tab).style.display='block'; }
+
+// ===== FETCH DATA =====
+function loadMembers(){ fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers",username:currentUsername})}).then(r=>r.json()).then(d=>{members=d;drawMembers();}); }
+function drawMembers(){ tbody.innerHTML=""; members.forEach(m=>{tbody.innerHTML+=`<tr>
+<td>${m.MemberID}</td><td>${m.Name}</td><td>${m.Address}</td><td>${m['Father Name']}</td><td>${m['Grand Father Name']}</td>
+<td>${m['spouse/wife Name']}</td><td>${m.Phone}</td><td>${m.Email}</td>
+<td><a href="${m['Identy PhotoURL']}" target="_blank">View</a></td>
+<td><a href="${m['Member PhotoURL']}" target="_blank">View</a></td>
+<td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
+<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
+<button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td></tr>`}); }
+
+// ===== SEARCH MEMBERS =====
+search.onkeyup=()=>{ const v=search.value.toLowerCase(); drawMembers(members.filter(m=>JSON.stringify(m).toLowerCase().includes(v))); }
+function drawMembers(data){ tbody.innerHTML=""; data.forEach(m=>{tbody.innerHTML+=`<tr>
+<td>${m.MemberID}</td><td>${m.Name}</td><td>${m.Address}</td><td>${m['Father Name']}</td><td>${m['Grand Father Name']}</td>
+<td>${m['spouse/wife Name']}</td><td>${m.Phone}</td><td>${m.Email}</td>
+<td><a href="${m['Identy PhotoURL']}" target="_blank">View</a></td>
+<td><a href="${m['Member PhotoURL']}" target="_blank">View</a></td>
+<td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
+<td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
+<button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td></tr>`}); }
+
+// ===== MODAL FUNCTIONS =====
+// Add/Edit member
+function openAdd(){ editMode=false; modalTitle.innerText="Add Member"; document.querySelectorAll("#memberModal input").forEach(i=>i.value=""); MemberID.readOnly=false; modal.show(); }
+function openEdit(m){ editMode=true; modalTitle.innerText="Edit Member"; MemberID.value=m.MemberID; MemberID.readOnly=true; Name.value=m.Name; Address.value=m.Address; FatherName.value=m['Father Name']; GrandFatherName.value=m['Grand Father Name']; SpouseName.value=m['spouse/wife Name']; Phone.value=m.Phone; Email.value=m.Email; IdentityPhotoURL.value=m['Identy PhotoURL']; MemberPhotoURL.value=m['Member PhotoURL']; Status.value=m.Status; OTP.value=m.OTP; EntryDate.value=m.EntryDate; modal.show(); }
+function save(){ if(role==='member') return alert("Members cannot edit!"); const payload={action:editMode?"update":"add", MemberID:MemberID.value, Name:Name.value, Address:Address.value, "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value, "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value, "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value, Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value}; fetch(API,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
+function remove(){ if(role==='member') return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}}); }
+function openDelete(id){ if(role==='member') return; MemberID.value=id; remove(); }
+
+// ===== TODO: Add USERS, ITEMS, TRANSACTIONS, BALANCE, LOANS functions here =====
+// Similar structure: fetch data, draw table, modals, save actions
+
 </script>
-
-
 </body>
 </html>
