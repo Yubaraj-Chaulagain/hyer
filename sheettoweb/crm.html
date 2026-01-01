@@ -274,6 +274,10 @@ function loadLoans(){
 
 // Draw loans table
 function drawLoans(data = loans){
+  if(!data.length){
+    tbodyLoans.innerHTML = "<tr><td colspan='8'>No loans</td></tr>";
+    return;
+  }
   tbodyLoans.innerHTML = "";
   data.forEach(l => {
     tbodyLoans.innerHTML += `<tr>
@@ -290,6 +294,7 @@ function drawLoans(data = loans){
     </tr>`;
   });
 }
+
 
 // Save loan
 function saveLoan(){
@@ -339,18 +344,7 @@ function payLoan(id){
   </script>
 
   <script>
-    const txnModalInstance = new bootstrap.Modal(transactionModal);
-let transactions = [];
 
-// Open modal
-function openTransactionModal(){
-  txnModalTitle.innerText = "New Transaction";
-  TxnType.value = "Deposit";
-  TxnAmount.value = "";
-  TxnDetails.value = "";
-  PaymentType.value = "Cash";
-  txnModalInstance.show();
-}
 
 // Load transactions from backend
 function loadTransactions(){
@@ -778,9 +772,17 @@ function login(){
 }
 
 function load(a){
- fetch(API,{method:"POST",body:JSON.stringify({action:a})})
- .then(r=>r.json()).then(draw);
+  loanSection.style.display = "none";
+  tbl.style.display = "table";
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:a})
+  })
+  .then(r=>r.json())
+  .then(draw);
 }
+
 
 function draw(d){
   if(!d.length){tbl.innerHTML="No data";return;}
