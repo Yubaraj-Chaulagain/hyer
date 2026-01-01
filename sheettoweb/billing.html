@@ -198,7 +198,7 @@ td a { text-decoration:none; }
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbz47rGlKNOb7Vg-Urt25hK37F_laIYXgzboO9sXralMBI4K3ki96VEa1kerRRUBaJ9UnQ/exec"; // replace with your Apps Script deploy URL
+const API = "https://script.google.com/macros/s/AKfycbzgfWLgp9TL-ZHL_rDsbO4IqUSb2gGZG58hD9I1It7bjPKSit0JxjlUnO-qpY87sBrogA/exec"; // replace with your Apps Script deploy URL
 let members=[], users=[], items=[], transactions=[], loans=[], role="", currentUsername="", currentMemberID="";
 const modal = new bootstrap.Modal(memberModal);
 const userModalInstance = new bootstrap.Modal(userModal);
@@ -252,6 +252,7 @@ function openEdit(m){ editMode=true; modalTitle.innerText="Edit Member"; MemberI
 function save(){ if(role==='member') return alert("Members cannot edit!"); const payload={action:editMode?"update":"add", MemberID:MemberID.value, Name:Name.value, Address:Address.value, "Father Name":FatherName.value, "Grand Father Name":GrandFatherName.value, "spouse/wife Name":SpouseName.value, Phone:Phone.value, Email:Email.value, "Identy PhotoURL":IdentityPhotoURL.value, "Member PhotoURL":MemberPhotoURL.value, Status:Status.value, OTP:OTP.value, EntryDate:EntryDate.value}; fetch(API,{method:"POST",body:JSON.stringify(payload)}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}else alert(res.message);}); }
 function remove(){ if(role==='member') return alert("Members cannot delete!"); if(!confirm("Delete this member?")) return; fetch(API,{method:"POST",body:JSON.stringify({action:"delete", MemberID:MemberID.value})}).then(r=>r.json()).then(res=>{if(res.status){modal.hide();loadMembers();}}); }
 function openDelete(id){ if(role==='member') return; MemberID.value=id; remove(); }
+  
 function loadUsers(){
   fetch(API,{
     method:"POST",
@@ -260,16 +261,16 @@ function loadUsers(){
   .then(r=>r.json())
   .then(d=>{
     tbodyUsers.innerHTML="";
-    if(!Array.isArray(d)) return;
-
     d.forEach(u=>{
       tbodyUsers.innerHTML+=`
       <tr>
-        <td>${u.Username || ""}</td>
-        <td>${u.Password || ""}</td>
-        <td>${u.Role || ""}</td>
+        <td>${u.Username}</td>
+        <td>${u.Password}</td>
+        <td>${u.Role}</td>
         <td>${u.MemberID || ""}</td>
         <td>
+          <button class="btn btn-sm btn-warning"
+            onclick='openEditUser(${JSON.stringify(u)})'>Edit</button>
           <button class="btn btn-sm btn-danger"
             onclick="deleteUser('${u.Username}')">Del</button>
         </td>
@@ -280,11 +281,16 @@ function loadUsers(){
 
 
 function openAddUser(){
-  const username=prompt("Username");
-  const password=prompt("Password");
-  const role=prompt("Role (admin/user/member)");
-  const memberID=prompt("MemberID (optional)");
-  if(!username||!password||!role) return;
+  const username = prompt("Username");
+  if(!username) return;
+
+  const password = prompt("Password");
+  if(!password) return;
+
+  const role = prompt("Role: admin / user / member");
+  if(!role) return;
+
+  const memberID = prompt("MemberID (only for member role)") || "";
 
   fetch(API,{
     method:"POST",
@@ -296,19 +302,58 @@ function openAddUser(){
       MemberID:memberID
     })
   }).then(r=>r.json()).then(res=>{
-    if(res.status){ notify("User added"); loadUsers(); }
+    if(res.status){
+      notify("User added");
+      loadUsers();
+    } else alert(res.message);
+  });
+}
+
+  function openEditUser(u){
+  const password = prompt("New Password", u.Password);
+  if(password===null) return;
+
+  const role = prompt("Role", u.Role);
+  if(role===null) return;
+
+  const memberID = prompt("MemberID", u.MemberID || "");
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"updateUser",
+      Username:u.Username,
+      Password:password,
+      Role:role,
+      MemberID:memberID
+    })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      notify("User updated");
+      loadUsers();
+    }
   });
 }
 
 function deleteUser(username){
-  if(!confirm("Delete user?")) return;
+  if(!confirm("Delete user "+username+" ?")) return;
+
   fetch(API,{
     method:"POST",
-    body:JSON.stringify({action:"deleteUser",Username:username})
+    body:JSON.stringify({
+      action:"deleteUser",
+      Username:username
+    })
   }).then(r=>r.json()).then(res=>{
-    if(res.status){ notify("User deleted"); loadUsers(); }
+    if(res.status){
+      notify("User deleted");
+      loadUsers();
+    }
   });
 }
+
+
+  
   function loadItems(){
   fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})})
   .then(r=>r.json())
