@@ -225,18 +225,114 @@ function printReport(){
   <script>
     const txnModalInstance = new bootstrap.Modal(document.getElementById("transactionModal"));
 
+let transactions = [];
+let editTxnMode = false;
+let currentTxnID = "";
+
 function openTransactionModal(){
+  editTxnMode = false;
+  currentTxnID = "";
   txnModalTitle.innerText = "New Transaction";
   TxnType.value = "Deposit";
   TxnAmount.value = "";
   TxnDetails.value = "";
   PaymentType.value = "Cash";
+  txnModalInstance.show();
+}
 
-  // यदि currentMemberID define छैन भने खाली राखौँ
-  if(typeof currentMemberID === "undefined") currentMemberID = "";
+// Open edit
+function openTxnEdit(t){
+  editTxnMode = true;
+  currentTxnID = t.TxnID;
+  txnModalTitle.innerText = "Edit Transaction";
+
+  TxnType.value = t.Type;
+  TxnAmount.value = t.Amount;
+  TxnDetails.value = t.Details || "";
+  PaymentType.value = t.PaymentType;
 
   txnModalInstance.show();
 }
+
+// Load
+function loadTransactions(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getTransactions"})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    transactions = d;
+    drawTransactions();
+  });
+}
+
+// Draw
+function drawTransactions(data=transactions){
+  tbodyTransactions.innerHTML = "";
+  data.forEach(t=>{
+    tbodyTransactions.innerHTML += `<tr>
+      <td>${t.TxnID}</td>
+      <td>${t.MemberID}</td>
+      <td>${t.Type}</td>
+      <td>${t.Amount}</td>
+      <td>${t.Details || ""}</td>
+      <td>${t.PaymentType}</td>
+      <td>${t.Date}</td>
+      <td>
+        <button class="btn btn-sm btn-warning"
+          onclick='openTxnEdit(${JSON.stringify(t)})'>Edit</button>
+        <button class="btn btn-sm btn-danger"
+          onclick='deleteTransaction("${t.TxnID}")'>Del</button>
+      </td>
+    </tr>`;
+  });
+}
+
+// Save (add/update)
+function saveTransaction(){
+  if(!TxnAmount.value || TxnAmount.value <= 0){
+    alert("Invalid amount"); return;
+  }
+
+  const payload = {
+    action: editTxnMode ? "updateTransaction" : "addTransaction",
+    TxnID: editTxnMode ? currentTxnID : "TXN"+Date.now(),
+    MemberID: currentMemberID || "",
+    Type: TxnType.value,
+    Amount: TxnAmount.value,
+    Details: TxnDetails.value,
+    PaymentType: PaymentType.value,
+    Date: new Date().toISOString().slice(0,10)
+  };
+
+  fetch(API,{method:"POST",body:JSON.stringify(payload)})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      txnModalInstance.hide();
+      loadTransactions();
+      alert("Transaction saved");
+    } else alert(res.message);
+  });
+}
+
+// Delete
+function deleteTransaction(id){
+  if(!confirm("Delete transaction "+id+" ?")) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"deleteTransaction",TxnID:id})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      loadTransactions();
+      alert("Transaction deleted");
+    }
+  });
+}
+
   </script>
 
 <script>
@@ -749,6 +845,43 @@ function drawMembers(data){
   </table>
 </div>
 
+<!-- ITEMS SECTION -->
+<div id="itemSection" style="display:none;">
+  <input id="searchItems" class="form-control mb-2" placeholder="Search items">
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ItemID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyItems"></tbody>
+  </table>
+</div>
+<!-- TRANSACTIONS SECTION -->
+<div id="transactionSection" style="display:none;">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>TxnID</th>
+        <th>MemberID</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Details</th>
+        <th>Payment</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyTransactions"></tbody>
+  </table>
+</div>
+
+  
   <!-- LOANS TABLE -->
 <div id="loanSection" style="display:none;">
   <h5 class="mt-3">Loans</h5>
@@ -792,6 +925,8 @@ function load(a){
   tbl.style.display = "none";
   loanSection.style.display = "none";
   userSection.style.display = "none";
+  itemSection.style.display = "none";
+  transactionSection.style.display = "none";
 
   if(a === "getUsers"){
     userSection.style.display = "block";
@@ -799,16 +934,23 @@ function load(a){
     return;
   }
 
+  if(a === "getItems"){
+    itemSection.style.display = "block";
+    loadItems();
+    return;
+  }
+
+  if(a === "getTransactions"){
+    transactionSection.style.display = "block";
+    loadTransactions();
+    return;
+  }
+
   tbl.style.display = "table";
 
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:a})
-  })
-  .then(r=>r.json())
-  .then(draw);
+  fetch(API,{method:"POST",body:JSON.stringify({action:a})})
+  .then(r=>r.json()).then(draw);
 }
-
 
 
 function draw(d){
