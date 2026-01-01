@@ -238,6 +238,12 @@ function drawMembers(data){ tbody.innerHTML=""; data.forEach(m=>{tbody.innerHTML
 <td>${m.Status}</td><td>${m.OTP}</td><td>${m.EntryDate}</td>
 <td>${role!=='member'?`<button class="btn btn-sm btn-warning" onclick='openEdit(${JSON.stringify(m)})'>Edit</button>
 <button class="btn btn-sm btn-danger" onclick='openDelete("${m.MemberID}")'>Del</button>`:""}</td></tr>`}); }
+search.onkeyup = () => {
+  const v = search.value.toLowerCase();
+  drawMembers(members.filter(m =>
+    JSON.stringify(m).toLowerCase().includes(v)
+  ));
+};
 
 // ===== MODAL FUNCTIONS =====
 // Add/Edit member
