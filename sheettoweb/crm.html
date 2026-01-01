@@ -14,9 +14,9 @@
 <input id="p" type="password" class="form-control mb-2" placeholder="Password">
 <button class="btn btn-primary" onclick="login()">Login</button>
 </div>
- <!-- MEMBER MODAL -->
+<!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -29,12 +29,12 @@
         <input id="mName" class="form-control col-6" placeholder="Name">
         <input id="mAddress" class="form-control col-6" placeholder="Address">
         <input id="mFather" class="form-control col-6" placeholder="Father Name">
-        <input id="mGrand" class="form-control col-6" placeholder="Grand Father">
-        <input id="mSpouse" class="form-control col-6" placeholder="Spouse Name">
+        <input id="mGrand" class="form-control col-6" placeholder="Grand Father Name">
+        <input id="mSpouse" class="form-control col-6" placeholder="Spouse/Wife Name">
         <input id="mPhone" class="form-control col-6" placeholder="Phone">
         <input id="mEmail" class="form-control col-6" placeholder="Email">
-        <input id="mIDPhoto" class="form-control col-6" placeholder="Identity Photo URL">
-        <input id="mPhoto" class="form-control col-6" placeholder="Member Photo URL">
+        <input id="mIDPhoto" class="form-control col-6" placeholder="Identy PhotoURL">
+        <input id="mPhoto" class="form-control col-6" placeholder="Member PhotoURL">
         <input id="mStatus" class="form-control col-6" placeholder="Status">
         <input id="mOTP" class="form-control col-6" placeholder="OTP">
         <input id="mDate" type="date" class="form-control col-6">
@@ -48,6 +48,112 @@
     </div>
   </div>
 </div>
+
+<script>
+const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+let editMode = false;
+let currentRole = "admin"; // change based on login
+
+// ===== OPEN ADD =====
+function openAdd(){
+  if(currentRole === "member") return alert("Members cannot add!");
+  editMode = false;
+  memberModalTitle.innerText = "Add Member";
+  document.querySelectorAll("#memberModal input").forEach(i=>i.value="");
+  mMemberID.readOnly = false;
+  memberModal.show();
+}
+
+// ===== OPEN EDIT =====
+function openEditMember(m){
+  if(currentRole === "member") return alert("Members cannot edit!");
+  editMode = true;
+  memberModalTitle.innerText = "Edit Member";
+  mMemberID.value = m.MemberID;
+  mMemberID.readOnly = true;
+
+  mName.value = m.Name;
+  mAddress.value = m.Address;
+  mFather.value = m["Father Name"];
+  mGrand.value = m["Grand Father Name"];
+  mSpouse.value = m["spouse/wife Name"];
+  mPhone.value = m.Phone;
+  mEmail.value = m.Email;
+  mIDPhoto.value = m["Identy PhotoURL"];
+  mPhoto.value = m["Member PhotoURL"];
+  mStatus.value = m.Status;
+  mOTP.value = m.OTP;
+  mDate.value = m.EntryDate;
+
+  memberModal.show();
+}
+
+// ===== SAVE =====
+function saveMember(){
+  const payload = {
+    action: editMode ? "updateMember" : "addMember",
+    "MemberID": mMemberID.value,
+    "Name": mName.value,
+    "Address": mAddress.value,
+    "Father Name": mFather.value,
+    "Grand Father Name": mGrand.value,
+    "spouse/wife Name": mSpouse.value,
+    "Phone": mPhone.value,
+    "Email": mEmail.value,
+    "Identy PhotoURL": mIDPhoto.value,
+    "Member PhotoURL": mPhoto.value,
+    "Status": mStatus.value,
+    "OTP": mOTP.value,
+    "EntryDate": mDate.value
+  };
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    } else alert("Error saving member");
+  });
+}
+
+// ===== DELETE =====
+function deleteMember(){
+  if(!editMode) return alert("Select member first!");
+  if(currentRole === "member") return alert("Members cannot delete!");
+  if(!confirm("Delete this member?")) return;
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({ action:"deleteMember", "MemberID": mMemberID.value })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    } else alert("Error deleting member");
+  });
+}
+
+// ===== DRAW TABLE =====
+function drawMembers(data){
+  if(!data.length){tbl.innerHTML="No members";return;}
+  let h = "<tr>";
+  Object.keys(data[0]).forEach(k=>h+=`<th>${k}</th>`);
+  h+="<th>Action</th></tr>";
+
+  data.forEach(r=>{
+    h+="<tr>";
+    Object.values(r).forEach(v=>h+=`<td>${v}</td>`);
+    h+=`<td>
+      ${currentRole !== "member"? `<button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(r)})'>Edit</button>` : ""}
+    </td></tr>`;
+  });
+
+  tbl.innerHTML = h;
+}
+</script>
+
 
 
 <div id="app" style="display:none;">
@@ -116,89 +222,7 @@ function printInvoice(txn){
  w.print();
 }
 </script>
- <script>
-const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
-let editMode = false;
 
-// ===== OPEN ADD =====
-function openAdd(){
-  editMode = false;
-  memberModalTitle.innerText = "Add Member";
-  document.querySelectorAll("#memberModal input").forEach(i=>i.value="");
-  mMemberID.readOnly = false;
-  memberModal.show();
-}
-
-// ===== OPEN EDIT =====
-function openEditMember(m){
-  editMode = true;
-  memberModalTitle.innerText = "Edit Member";
-  mMemberID.value = m.MemberID;
-  mMemberID.readOnly = true;
-
-  mName.value = m.Name;
-  mAddress.value = m.Address;
-  mFather.value = m.FatherName;
-  mGrand.value = m.GrandFatherName;
-  mSpouse.value = m.SpouseName;
-  mPhone.value = m.Phone;
-  mEmail.value = m.Email;
-  mIDPhoto.value = m.IdentityPhoto;
-  mPhoto.value = m.MemberPhoto;
-  mStatus.value = m.Status;
-  mOTP.value = m.OTP;
-  mDate.value = m.EntryDate;
-
-  memberModal.show();
-}
-
-// ===== SAVE =====
-function saveMember(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action: editMode ? "updateMember" : "addMember",
-      MemberID:mMemberID.value,
-      Name:mName.value,
-      Address:mAddress.value,
-      FatherName:mFather.value,
-      GrandFatherName:mGrand.value,
-      SpouseName:mSpouse.value,
-      Phone:mPhone.value,
-      Email:mEmail.value,
-      IdentityPhoto:mIDPhoto.value,
-      MemberPhoto:mPhoto.value,
-      Status:mStatus.value,
-      OTP:mOTP.value,
-      EntryDate:mDate.value
-    })
-  }).then(r=>r.json()).then(res=>{
-    if(res.status){
-      memberModal.hide();
-      load("getMembers");
-    } else alert("Error saving");
-  });
-}
-
-// ===== DELETE =====
-function deleteMember(){
-  if(!editMode) return alert("Select member first");
-  if(!confirm("Delete this member?")) return;
-
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"deleteMember",
-      MemberID:mMemberID.value
-    })
-  }).then(r=>r.json()).then(res=>{
-    if(res.status){
-      memberModal.hide();
-      load("getMembers");
-    }
-  });
-}
-</script>
 
 </body>
 </html>
