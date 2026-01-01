@@ -241,7 +241,6 @@ function openTransactionModal(){
 
 <script>
 // Load loans
-const tbodyLoans = document.getElementById("tbodyLoans");
 let loans = [];
  
 const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
@@ -250,6 +249,7 @@ const LoanMemberID = document.getElementById("LoanMemberID");
 const LoanAmount = document.getElementById("LoanAmount");
 const LoanMonths = document.getElementById("LoanMonths");
 const loanModalTitle = document.getElementById("loanModalTitle");
+  
 function openLoanModal(){
   loanModalTitle.innerText = "Add Loan";
   LoanID.value = "LN" + Date.now();   // unique Loan ID
@@ -330,21 +330,11 @@ function payLoan(id){
   });
 }
   function showLoans(){
-  tbl.style.display = "none";          // hide main table
-  loanSection.style.display = "block"; // show loan table
+  tbl.style.display = "none";
+  loanSection.style.display = "block";
   loadLoans();
 }
-function load(a){
-  loanSection.style.display = "none";
-  tbl.style.display = "table";
 
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:a})
-  })
-  .then(r=>r.json())
-  .then(draw);
-}
 
   </script>
 
@@ -820,6 +810,9 @@ function printInvoice(txn){
 }
 </script>
 
-
+<script>
+const loanSection = document.getElementById("loanSection");
+const tbodyLoans = document.getElementById("tbodyLoans");
+</script>
 </body>
 </html>
