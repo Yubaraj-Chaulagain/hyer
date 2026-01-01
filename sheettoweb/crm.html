@@ -329,6 +329,23 @@ function payLoan(id){
     } else alert(res.message);
   });
 }
+  function showLoans(){
+  tbl.style.display = "none";          // hide main table
+  loanSection.style.display = "block"; // show loan table
+  loadLoans();
+}
+function load(a){
+  loanSection.style.display = "none";
+  tbl.style.display = "table";
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:a})
+  })
+  .then(r=>r.json())
+  .then(draw);
+}
+
   </script>
 
   <script>
@@ -731,24 +748,26 @@ function drawMembers(data){
   </div>
 
   <table class="table table-bordered table-sm" id="tbl"></table>
-  <div>
-  <h5>Loans</h5>
-<table class="table table-bordered table-sm">
-  <thead>
-    <tr>
-      <th>LoanID</th>
-      <th>MemberID</th>
-      <th>Amount</th>
-      <th>Paid</th>
-      <th>Monthly Payment</th>
-      <th>Remaining</th>
-      <th>Next Due Date</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="tbodyLoans"></tbody>
-</table>
+  <!-- LOANS TABLE -->
+<div id="loanSection" style="display:none;">
+  <h5 class="mt-3">Loans</h5>
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>LoanID</th>
+        <th>MemberID</th>
+        <th>Amount</th>
+        <th>Paid</th>
+        <th>Monthly</th>
+        <th>Remaining</th>
+        <th>Next Due</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyLoans"></tbody>
+  </table>
 </div>
+
 </div>
 
 
