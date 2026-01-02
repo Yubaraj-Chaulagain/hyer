@@ -397,11 +397,20 @@ function payLoan(id){
     } else alert(res.message);
   });
 }
-  function showLoans(){
+ function showLoans(){
+  // Hide all sections
   tbl.style.display = "none";
+  userSection.style.display = "none";
+  itemSection.style.display = "none";
+  transactionSection.style.display = "none";
+
+  // Show loans section
   loanSection.style.display = "block";
+
+  // Load loans from backend
   loadLoans();
 }
+
 
 
   </script>
