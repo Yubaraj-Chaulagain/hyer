@@ -1000,47 +1000,7 @@ function printInvoice(txn){
 }
 </script>
 
-  <script>
-    function showTab(tabName) {
-  // Hide all sections
-  document.getElementById("MembersSection").style.display = "none";
-  document.getElementById("userSection").style.display = "none";
-  document.getElementById("itemSection").style.display = "none";
-  document.getElementById("transactionSection").style.display = "none";
-  document.getElementById("loanSection").style.display = "none";
-
-  // Remove 'active' class from all nav links
-  document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
-
-  // Show the selected tab
-  if(tabName === "MembersSection") {
-    document.getElementById("MembersSection").style.display = "block";
-    loadMembers();
-    document.querySelector('a.nav-link[onclick="showTab(\'MembersSection\')"]').classList.add("active");
-  }
-  else if(tabName === "userSection") {
-    document.getElementById("userSection").style.display = "block";
-    loadUsers();
-    document.querySelector('a.nav-link[onclick="showTab(\'userSection\')"]').classList.add("active");
-  }
-  else if(tabName === "itemSection") {
-    document.getElementById("itemSection").style.display = "block";
-    loadItems();
-    document.querySelector('a.nav-link[onclick="showTab(\'itemSection\')"]').classList.add("active");
-  }
-  else if(tabName === "transactionSection") {
-    document.getElementById("transactionSection").style.display = "block";
-    loadTransactions();
-    document.querySelector('a.nav-link[onclick="showTab(\'transactionSection\')"]').classList.add("active");
-  }
-  else if(tabName === "loanSection") {
-    document.getElementById("loanSection").style.display = "block";
-    loadLoans();
-    document.querySelector('a.nav-link[onclick="showTab(\'loanSection\')"]').classList.add("active");
-  }
-}
-  </script>
-
+  
 <script>
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
