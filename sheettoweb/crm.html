@@ -93,6 +93,9 @@
 </div></div>
 </div>
   <!-- TRANSACTIONS MODAL -->
+  <input id="searchTransactions"
+ class="form-control mb-2"
+ placeholder="Search transactions">
 <div class="modal fade" id="transactionModal">
 <div class="modal-dialog"><div class="modal-content">
   <div class="modal-header">
@@ -228,6 +231,14 @@ function printReport(){
 let transactions = [];
 let editTxnMode = false;
 let currentTxnID = "";
+searchTransactions.onkeyup = () => {
+  const v = searchTransactions.value.toLowerCase();
+  drawTransactions(
+    transactions.filter(t =>
+      Object.values(t).join(" ").toLowerCase().includes(v)
+    )
+  );
+};
 
 function openTransactionModal(){
   editTxnMode = false;
@@ -254,19 +265,6 @@ function openTxnEdit(t){
   txnModalInstance.show();
 }
 
-// Load
-function loadTransactions(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"getTransactions"})
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    transactions = d;
-    drawTransactions();
-  });
-}
-
 // Draw
 function drawTransactions(data=transactions){
   tbodyTransactions.innerHTML = "";
@@ -289,33 +287,6 @@ function drawTransactions(data=transactions){
   });
 }
 
-// Save (add/update)
-function saveTransaction(){
-  if(!TxnAmount.value || TxnAmount.value <= 0){
-    alert("Invalid amount"); return;
-  }
-
-  const payload = {
-    action: editTxnMode ? "updateTransaction" : "addTransaction",
-    TxnID: editTxnMode ? currentTxnID : "TXN"+Date.now(),
-    MemberID: currentMemberID || "",
-    Type: TxnType.value,
-    Amount: TxnAmount.value,
-    Details: TxnDetails.value,
-    PaymentType: PaymentType.value,
-    Date: new Date().toISOString().slice(0,10)
-  };
-
-  fetch(API,{method:"POST",body:JSON.stringify(payload)})
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.status){
-      txnModalInstance.hide();
-      loadTransactions();
-      alert("Transaction saved");
-    } else alert(res.message);
-  });
-}
 
 // Delete
 function deleteTransaction(id){
@@ -455,44 +426,42 @@ function loadTransactions(){
   });
 }
 
-// Draw transactions table
-function drawTransactions(data=transactions){
-  tbodyTransactions.innerHTML = "";
-  data.forEach(t=>{
-    tbodyTransactions.innerHTML += `<tr>
-      <td>${t.TxnID || ""}</td>
-      <td>${t.MemberID}</td>
-      <td>${t.Type}</td>
-      <td>${t.Amount}</td>
-      <td>${t.Details || ""}</td>
-      <td>${t.PaymentType}</td>
-      <td>${t.Date}</td>
-    </tr>`;
-  });
-}
 
 // Save transaction
 function saveTransaction(){
-  if(!TxnAmount.value || TxnAmount.value <= 0){ alert("Enter valid amount"); return; }
+  if(!TxnAmount.value || TxnAmount.value <= 0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  let action = "";
+
+  if(TxnType.value === "Deposit") action = "deposit";
+  if(TxnType.value === "Withdraw") action = "withdraw";
+  if(TxnType.value === "Transfer") action = "transfer";
+  if(TxnType.value === "Buy") action = "buy";
+  if(TxnType.value === "Sell") action = "sell";
+
   const payload = {
-    action: "addTransaction",
-    TxnID: "TXN"+Date.now(),
-    MemberID: currentMemberID,
-    Type: TxnType.value,
+    action: action,
+    MemberID: prompt("Enter MemberID"),
     Amount: TxnAmount.value,
     Details: TxnDetails.value,
     PaymentType: PaymentType.value,
-    Date: new Date().toISOString().slice(0,10)
+    ItemID: "", Qty: ""
   };
-  fetch(API,{method:"POST",body:JSON.stringify(payload)})
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  })
   .then(r=>r.json())
   .then(res=>{
     if(res.status){
       txnModalInstance.hide();
       loadTransactions();
-      loadBalance(); // update balance
-      alert("Transaction completed");
-    } else alert(res.message);
+      alert("Transaction saved");
+    } else alert("Failed");
   });
 }
 
