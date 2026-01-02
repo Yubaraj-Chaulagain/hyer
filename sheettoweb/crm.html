@@ -914,12 +914,13 @@ function load(a){
   tbl.style.display = "table";
 
   fetch(API,{method:"POST",body:JSON.stringify({action:a})})
-  .then(r=>r.json()).then(draw);
+  .then(r=>r.json()).then(drawMembers);
+
 }
 
 
-function draw(d){
-  if(!d.length){tbl.innerHTML="No data";return;}
+function drawMembers(d){
+  if(!d.length){tbl.innerHTML="No members";return;}
 
   let h="<tr>";
   Object.keys(d[0]).forEach(k=>h+=`<th>${k}</th>`);
@@ -934,7 +935,31 @@ function draw(d){
     </td></tr>`;
   });
 
-  tbl.innerHTML=h;
+  tbl.innerHTML = h;
+}
+  
+  let members = [];
+
+function loadMembers(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getMembers"})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    members = d;
+    drawMembers(d);
+  });
+}
+
+function searchMembers(){
+  const q = memberSearch.value.toLowerCase();
+  const filtered = members.filter(m =>
+    Object.values(m).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+  drawMembers(filtered);
 }
 
 
