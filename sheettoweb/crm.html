@@ -774,19 +774,23 @@ function drawMembers(data){
 
   tbl.innerHTML = h;
 }
+
+  showTab("MembersSection");
+
 </script>
 
 
 
 <div id="app" style="display:none;">
   <ul class="nav nav-tabs mb-3">
-    <li class="nav-item"><a class="nav-link active" onclick="load('getMembers')">Members</a></li>
-    <li class="nav-item admin"><a class="nav-link" onclick="load('getUsers')">Users</a></li>
-    <li class="nav-item"><a class="nav-link" onclick="load('getItems')">Items</a></li>
-    <li class="nav-item"><a class="nav-link" onclick="load('getTransactions')">Transactions</a></li>
-    <li class="nav-item"><a class="nav-link" onclick="showLoans()">Loans</a></li>
-    <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
-  </ul>
+  <li class="nav-item"><a class="nav-link active" onclick="showTab('MembersSection')">Members</a></li>
+  <li class="nav-item admin"><a class="nav-link" onclick="showTab('userSection')">Users</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('itemSection')">Items</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('transactionSection')">Transactions</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
+</ul>
+
 
   <div class="mb-2">
     <button class="btn btn-success" onclick="openAdd()">+ Add Member</button>
@@ -986,6 +990,47 @@ function printInvoice(txn){
  w.print();
 }
 </script>
+
+  <script>
+    function showTab(tabName) {
+  // Hide all sections
+  document.getElementById("MembersSection").style.display = "none";
+  document.getElementById("userSection").style.display = "none";
+  document.getElementById("itemSection").style.display = "none";
+  document.getElementById("transactionSection").style.display = "none";
+  document.getElementById("loanSection").style.display = "none";
+
+  // Remove 'active' class from all nav links
+  document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+
+  // Show the selected tab
+  if(tabName === "MembersSection") {
+    document.getElementById("MembersSection").style.display = "block";
+    loadMembers();
+    document.querySelector('a.nav-link[onclick="showTab(\'MembersSection\')"]').classList.add("active");
+  }
+  else if(tabName === "userSection") {
+    document.getElementById("userSection").style.display = "block";
+    loadUsers();
+    document.querySelector('a.nav-link[onclick="showTab(\'userSection\')"]').classList.add("active");
+  }
+  else if(tabName === "itemSection") {
+    document.getElementById("itemSection").style.display = "block";
+    loadItems();
+    document.querySelector('a.nav-link[onclick="showTab(\'itemSection\')"]').classList.add("active");
+  }
+  else if(tabName === "transactionSection") {
+    document.getElementById("transactionSection").style.display = "block";
+    loadTransactions();
+    document.querySelector('a.nav-link[onclick="showTab(\'transactionSection\')"]').classList.add("active");
+  }
+  else if(tabName === "loanSection") {
+    document.getElementById("loanSection").style.display = "block";
+    loadLoans();
+    document.querySelector('a.nav-link[onclick="showTab(\'loanSection\')"]').classList.add("active");
+  }
+}
+  </script>
 
 <script>
 const loanSection = document.getElementById("loanSection");
