@@ -1,1 +1,271 @@
-sheettoweb/crm.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Member Finance System</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+  body{background:#f7f7f7}
+</style>
+</head>
+<body class="p-3">
+
+<h4 class="mb-3">Member Finance System</h4>
+
+<!-- LOGIN -->
+<div id="login">
+  <input id="u" class="form-control mb-2" placeholder="Username">
+  <input id="p" type="password" class="form-control mb-2" placeholder="Password">
+  <button class="btn btn-primary w-100" onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+<!-- NAV -->
+<ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link active" onclick="showTab('MembersSection')">Members</a></li>
+  <li class="nav-item admin"><a class="nav-link" onclick="showTab('userSection')">Users</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('itemSection')">Items</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('transactionSection')">Transactions</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
+</ul>
+
+<!-- ACTION BUTTONS -->
+<div class="mb-3">
+  <button class="btn btn-success" onclick="openAdd()">+ Member</button>
+  <button class="btn btn-primary admin" onclick="openUserModal()">+ User</button>
+  <button class="btn btn-warning" onclick="openItemModal()">+ Item</button>
+  <button class="btn btn-info" onclick="openTransactionModal()">+ Transaction</button>
+  <button class="btn btn-secondary" onclick="openLoanModal()">+ Loan</button>
+</div>
+
+<!-- ================= MEMBERS ================= -->
+<div id="MembersSection">
+  <input id="memberSearch" class="form-control mb-2" placeholder="Search members" onkeyup="searchMembers()">
+  <table class="table table-bordered table-sm">
+    <tbody id="tbl"></tbody>
+  </table>
+</div>
+
+<!-- ================= USERS ================= -->
+<div id="userSection" style="display:none">
+  <input id="searchUsers" class="form-control mb-2" placeholder="Search users">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr><th>Username</th><th>Password</th><th>Role</th><th>MemberID</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyUsers"></tbody>
+  </table>
+</div>
+
+<!-- ================= ITEMS ================= -->
+<div id="itemSection" style="display:none">
+  <input id="searchItems" class="form-control mb-2" placeholder="Search items">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr><th>ID</th><th>Name</th><th>Price</th><th>Qty</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyItems"></tbody>
+  </table>
+</div>
+
+<!-- ================= TRANSACTIONS ================= -->
+<div id="transactionSection" style="display:none">
+  <input id="searchTransactions" class="form-control mb-2" placeholder="Search transactions">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr><th>TxnID</th><th>MemberID</th><th>Type</th><th>Amount</th><th>Details</th><th>Payment</th><th>Date</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyTransactions"></tbody>
+  </table>
+</div>
+
+<!-- ================= LOANS ================= -->
+<div id="loanSection" style="display:none">
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr><th>LoanID</th><th>MemberID</th><th>Amount</th><th>Paid</th><th>Remaining</th><th>Action</th></tr>
+    </thead>
+    <tbody id="tbodyLoans"></tbody>
+  </table>
+</div>
+
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- MEMBER MODAL -->
+<div class="modal fade" id="memberModal">
+<div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="memberModalTitle"></h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body row g-2">
+    <input id="mMemberID" class="form-control col-6" placeholder="MemberID">
+    <input id="mName" class="form-control col-6" placeholder="Name">
+    <input id="mPhone" class="form-control col-6" placeholder="Phone">
+    <input id="mEmail" class="form-control col-6" placeholder="Email">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveMember()">Save</button>
+    <button class="btn btn-danger" onclick="deleteMember()">Delete</button>
+  </div>
+</div></div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal fade" id="userModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 id="userModalTitle"></h5></div>
+  <div class="modal-body">
+    <input id="UUsername" class="form-control mb-2" placeholder="Username">
+    <input id="UPassword" class="form-control mb-2" placeholder="Password">
+    <select id="URole" class="form-control mb-2">
+      <option>admin</option><option>user</option>
+    </select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveUser()">Save</button>
+  </div>
+</div></div>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal fade" id="itemModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5 id="itemModalTitle"></h5></div>
+  <div class="modal-body">
+    <input id="ItemID" class="form-control mb-2" placeholder="Item ID">
+    <input id="ItemName" class="form-control mb-2" placeholder="Name">
+    <input id="ItemPrice" type="number" class="form-control mb-2" placeholder="Price">
+    <input id="ItemQty" type="number" class="form-control mb-2" placeholder="Qty">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveItem()">Save</button>
+  </div>
+</div></div>
+</div>
+
+<!-- LOAN MODAL -->
+<div class="modal fade" id="loanModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5>Add Loan</h5></div>
+  <div class="modal-body">
+    <input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
+    <input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Amount">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveLoan()">Save</button>
+  </div>
+</div></div>
+</div>
+
+<!-- ================= JS ================= -->
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyHXPUHLix7z-AkvDt-Y-km4olcH2SIXahnbsW2tJdZQEhei0E-17C-DNcVF5Epna_peQ/exec";
+
+let members=[],users=[],items=[],transactions=[],loans=[];
+let editMode=false,role="";
+
+const memberModal=new bootstrap.Modal(memberModal);
+const userModal=new bootstrap.Modal(userModal);
+const itemModal=new bootstrap.Modal(itemModal);
+const loanModal=new bootstrap.Modal(loanModal);
+
+function login(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"login",username:u.value,password:p.value})})
+ .then(r=>r.json()).then(d=>{
+  if(!d.status) return alert("Invalid");
+  role=d.role;
+  login.style.display="none";
+  app.style.display="block";
+  if(role!=="admin") document.querySelectorAll(".admin").forEach(x=>x.remove());
+  showTab("MembersSection");
+ });
+}
+
+function showTab(id){
+ ["MembersSection","userSection","itemSection","transactionSection","loanSection"]
+ .forEach(x=>document.getElementById(x).style.display="none");
+ document.getElementById(id).style.display="block";
+ if(id==="MembersSection") loadMembers();
+ if(id==="userSection") loadUsers();
+ if(id==="itemSection") loadItems();
+ if(id==="transactionSection") loadTransactions();
+ if(id==="loanSection") loadLoans();
+}
+
+function loadMembers(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"getMembers"})})
+ .then(r=>r.json()).then(d=>{members=d;drawMembers(d)});
+}
+
+function drawMembers(d){
+ tbl.innerHTML="";
+ if(!d.length) return tbl.innerHTML="<tr><td>No data</td></tr>";
+ let h="<tr>";
+ Object.keys(d[0]).forEach(k=>h+=`<th>${k}</th>`);
+ h+="<th>Action</th></tr>";
+ d.forEach(m=>{
+  h+="<tr>";
+  Object.values(m).forEach(v=>h+=`<td>${v}</td>`);
+  h+=`<td><button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(m)})'>Edit</button></td></tr>`;
+ });
+ tbl.innerHTML=h;
+}
+
+function searchMembers(){
+ const q=memberSearch.value.toLowerCase();
+ drawMembers(members.filter(m=>Object.values(m).join(" ").toLowerCase().includes(q)));
+}
+
+function openAdd(){
+ editMode=false;memberModalTitle.innerText="Add Member";
+ memberModal.show();
+}
+
+function openEditMember(m){
+ editMode=true;memberModalTitle.innerText="Edit Member";
+ mMemberID.value=m.MemberID;mName.value=m.Name;
+ memberModal.show();
+}
+
+function saveMember(){
+ fetch(API,{method:"POST",body:JSON.stringify({
+  action:editMode?"updateMember":"addMember",
+  MemberID:mMemberID.value,Name:mName.value,Phone:mPhone.value,Email:mEmail.value
+ })}).then(r=>r.json()).then(()=>{memberModal.hide();loadMembers()});
+}
+
+function deleteMember(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"deleteMember",MemberID:mMemberID.value})})
+ .then(()=>{memberModal.hide();loadMembers()});
+}
+
+/* USERS */
+function loadUsers(){fetch(API,{method:"POST",body:JSON.stringify({action:"getUsers"})}).then(r=>r.json()).then(d=>{users=d;tbodyUsers.innerHTML=d.map(u=>`<tr><td>${u.Username}</td><td>${u.Password}</td><td>${u.Role}</td><td><button onclick='openUserEdit(${JSON.stringify(u)})'>Edit</button></td></tr>`).join("")})}
+function openUserModal(){userModal.show()}
+function openUserEdit(u){UUsername.value=u.Username;UPassword.value=u.Password;URole.value=u.Role;userModal.show()}
+function saveUser(){fetch(API,{method:"POST",body:JSON.stringify({action:"addUser",Username:UUsername.value,Password:UPassword.value,Role:URole.value})}).then(()=>{userModal.hide();loadUsers()})}
+
+/* ITEMS */
+function loadItems(){fetch(API,{method:"POST",body:JSON.stringify({action:"getItems"})}).then(r=>r.json()).then(d=>{items=d;tbodyItems.innerHTML=d.map(i=>`<tr><td>${i.ItemID}</td><td>${i.Name}</td><td>${i.Price}</td><td>${i.Quantity}</td></tr>`).join("")})}
+function openItemModal(){itemModal.show()}
+function saveItem(){fetch(API,{method:"POST",body:JSON.stringify({action:"addItem",ItemID:ItemID.value,Name:ItemName.value,Price:ItemPrice.value,Quantity:ItemQty.value})}).then(()=>{itemModal.hide();loadItems()})}
+
+/* TRANSACTIONS */
+function loadTransactions(){fetch(API,{method:"POST",body:JSON.stringify({action:"getTransactions"})}).then(r=>r.json()).then(d=>{transactions=d;tbodyTransactions.innerHTML=d.map(t=>`<tr><td>${t.TxnID}</td><td>${t.MemberID}</td><td>${t.Type}</td><td>${t.Amount}</td><td>${t.Details||""}</td><td>${t.PaymentType||""}</td><td>${t.Date}</td></tr>`).join("")})}
+
+/* LOANS */
+function loadLoans(){fetch(API,{method:"POST",body:JSON.stringify({action:"getLoans"})}).then(r=>r.json()).then(d=>{loans=d;tbodyLoans.innerHTML=d.map(l=>`<tr><td>${l.LoanID}</td><td>${l.MemberID}</td><td>${l.Amount}</td><td>${l.Paid||0}</td><td>${l.Remaining}</td></tr>`).join("")})}
+function openLoanModal(){loanModal.show()}
+function saveLoan(){fetch(API,{method:"POST",body:JSON.stringify({action:"addLoan",MemberID:LoanMemberID.value,Amount:LoanAmount.value})}).then(()=>{loanModal.hide();loadLoans()})}
+</script>
+
+</body>
+</html>
