@@ -263,17 +263,17 @@ function openTxnEdit(t){
 }
 
 // Draw
-function drawTransactions(data=transactions){
+function drawTransactions(data = transactions){
   tbodyTransactions.innerHTML = "";
   data.forEach(t=>{
     tbodyTransactions.innerHTML += `<tr>
       <td>${t.TxnID}</td>
       <td>${t.MemberID}</td>
-      <td>${t.Type}</td>
-      <td>${t.Amount}</td>
-      <td>${t.Details || ""}</td>
-      <td>${t.PaymentType}</td>
-      <td>${t.Date}</td>
+      <td>${t.type || t.Type}</td>
+      <td>${t.amount || t.Amount}</td>
+      <td>${t.details || t.Details || ""}</td>
+      <td>${t.payment || t.PaymentType}</td>
+      <td>${t.date || t.Date}</td>
       <td>
         <button class="btn btn-sm btn-warning"
           onclick='openTxnEdit(${JSON.stringify(t)})'>Edit</button>
@@ -283,7 +283,6 @@ function drawTransactions(data=transactions){
     </tr>`;
   });
 }
-
 
 // Delete
 function deleteTransaction(id){
@@ -426,31 +425,25 @@ function loadTransactions(){
 
 // Save transaction
 function saveTransaction(){
+
   if(!TxnAmount.value || TxnAmount.value <= 0){
     alert("Enter valid amount");
     return;
   }
 
-  let action = "";
-
-  if(TxnType.value === "Deposit") action = "deposit";
-  if(TxnType.value === "Withdraw") action = "withdraw";
-  if(TxnType.value === "Transfer") action = "transfer";
-  if(TxnType.value === "Buy") action = "buy";
-  if(TxnType.value === "Sell") action = "sell";
-
   const payload = {
-    action: action,
+    action: editTxnMode ? "updateTransaction" : "addTransaction",
+    TxnID: editTxnMode ? currentTxnID : "",
     MemberID: prompt("Enter MemberID"),
+    Type: TxnType.value,
     Amount: TxnAmount.value,
     Details: TxnDetails.value,
-    PaymentType: PaymentType.value,
-    ItemID: "", Qty: ""
+    PaymentType: PaymentType.value
   };
 
   fetch(API,{
     method:"POST",
-    body:JSON.stringify(payload)
+    body: JSON.stringify(payload)
   })
   .then(r=>r.json())
   .then(res=>{
@@ -458,7 +451,9 @@ function saveTransaction(){
       txnModalInstance.hide();
       loadTransactions();
       alert("Transaction saved");
-    } else alert("Failed");
+    }else{
+      alert(res.message || "Failed");
+    }
   });
 }
 
@@ -829,10 +824,11 @@ function drawMembers(data){
   </table>
 </div>
 <!-- TRANSACTIONS SECTION -->
-  <input id="searchTransactions"
+<div id="transactionSection" style="display:none;">
+    <input id="searchTransactions"
  class="form-control mb-2"
  placeholder="Search transactions">
-<div id="transactionSection" style="display:none;">
+
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
