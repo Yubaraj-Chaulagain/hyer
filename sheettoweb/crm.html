@@ -799,11 +799,15 @@ function drawMembers(data){
  <!-- MEMBERS SECTION -->
   <div id="MembersSection" style="display:none;">
   <input id="memberSearch" class="form-control mb-2" placeholder="Search members" onkeyup="searchMembers()">
-  <table class="table table-bordered table-sm" id="tbl">
-  </div>
-  </table>
+  <table class="table table-bordered table-sm" id="tbl"></table>
+</div>
+
     
 <script>
+  tbl.style.display = "table";
+const tbl = document.getElementById("tbl");
+document.getElementById("MembersSection").style.display = "block";
+
   const memberSearch = document.getElementById("memberSearch");
 
 memberSearch.addEventListener("keyup", () => {
