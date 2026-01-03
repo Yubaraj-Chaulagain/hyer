@@ -758,27 +758,7 @@ function deleteMember(){
 }
 
 // ===== DRAW TABLE =====
-function drawMembers(data){
-  if(!data.length){tbl.innerHTML="No members";return;}
-  let h = "<tr>";
-  Object.keys(data[0]).forEach(k=>h+=`<th>${k}</th>`);
-  h+="<th>Action</th></tr>";
-
-  data.forEach(r=>{
-    h+="<tr>";
-    Object.values(r).forEach(v=>h+=`<td>${v}</td>`);
-    h+=`<td>
-      ${currentRole !== "member"? `<button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(r)})'>Edit</button>` : ""}
-    </td></tr>`;
-  });
-
-  tbl.innerHTML = h;
-}
-
-  showTab("MembersSection");
-
 </script>
-
 
 
 <div id="app" style="display:none;">
@@ -815,8 +795,8 @@ function drawMembers(data){
 
     
 <script>
+  const tbl = document.getElementById("tbl");
   tbl.style.display = "table";
-const tbl = document.getElementById("tbl");
 document.getElementById("MembersSection").style.display = "none;";
 
   const memberSearch = document.getElementById("memberSearch");
@@ -831,18 +811,7 @@ memberSearch.addEventListener("keyup", () => {
 </script>
   <script>
     let members = []; // global array
-
-function loadMembers(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"getMembers"})
-  })
-  .then(r => r.json())
-  .then(d => {
-    members = d;       // save global array for search
-    drawMembers(d);    // draw table
-  });
-}</script>
+</script>
   <!-- USERS SECTION -->
 <div id="userSection" style="display:none;">
   <input id="searchUsers" class="form-control mb-2" placeholder="Search users">
