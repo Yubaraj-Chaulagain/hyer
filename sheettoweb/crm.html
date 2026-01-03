@@ -14,6 +14,65 @@
 <input id="p" type="password" class="form-control mb-2" placeholder="Password">
 <button class="btn btn-primary" onclick="login()">Login</button>
 </div>
+  <!-- PAY LOAN MODAL -->
+<div class="modal fade" id="payLoanModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="payLoanModalTitle">Pay Loan</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>LoanID: <span id="payLoanID"></span></p>
+        <p>Remaining: <span id="payLoanRemaining"></span></p>
+        <input id="payLoanAmount" type="number" class="form-control" placeholder="Enter amount">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="confirmPayLoan()">Pay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const payLoanModalInstance = new bootstrap.Modal(document.getElementById("payLoanModal"));
+let selectedLoan = null;
+
+function payLoan(loanId){
+  selectedLoan = loans.find(l => l.LoanID === loanId);
+  if(!selectedLoan) return alert("Loan not found");
+
+  payLoanID.innerText = selectedLoan.LoanID;
+  payLoanRemaining.innerText = selectedLoan.Remaining || selectedLoan.Amount;
+  payLoanAmount.value = "";
+  payLoanModalInstance.show();
+}
+
+function confirmPayLoan(){
+  const amt = Number(payLoanAmount.value);
+  if(!amt || amt <= 0) return alert("Enter valid amount");
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action: "payLoan",
+      LoanID: selectedLoan.LoanID,
+      Amount: amt
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.status) return alert(d.message || "Payment failed");
+
+    payLoanModalInstance.hide();
+    loadLoans(); // refresh loan table
+    alert("Payment successful");
+  });
+}
+</script>
+
+  
+
 <!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
   <div class="modal-dialog modal-xl">
