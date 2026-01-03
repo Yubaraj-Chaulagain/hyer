@@ -908,6 +908,7 @@ function login(){
  .then(r=>r.json()).then(d=>{
   if(!d.status) return alert("Invalid");
   currentRole = d.role;
+  role = d.role;
   document.getElementById("login").style.display="none";
   document.getElementById("app").style.display="block";
   if(role!=="admin") document.querySelectorAll(".admin").forEach(x=>x.remove());
