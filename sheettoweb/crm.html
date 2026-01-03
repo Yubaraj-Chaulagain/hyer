@@ -801,7 +801,7 @@ function drawMembers(data){
     <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
   </div>
   <table class="form-control mb-2">
-    <tbody id="tbl"></tbody>
+    <tbody id="tbl1"></tbody>
   </table>
  <!-- MEMBERS SECTION -->
 <div id="MembersSection">
@@ -818,6 +818,7 @@ function drawMembers(data){
     
 <script>
   tbl.style.display = "table";
+  const tbl1 = document.getElementById("tbl");
 const tbl = document.getElementById("tbl");
 document.getElementById("MembersSection").style.display = "block";
 
