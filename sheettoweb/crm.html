@@ -797,11 +797,16 @@ function deleteMember(){
 <script>
   const tbl = document.getElementById("tbl");
   tbl.style.display = "table";
-document.getElementById("MembersSection").style.display = "none;";
+document.getElementById("MembersSection").style.display = "none";
 
   const memberSearch = document.getElementById("memberSearch");
 
-memberSearch.addEventListener("keyup", () => {
+  
+
+<input id="memberSearch" onkeyup="searchMembers()">
+
+  
+ {
   const q = memberSearch.value.toLowerCase();
   const filtered = members.filter(m =>
     Object.values(m).some(v => String(v).toLowerCase().includes(q))
@@ -901,17 +906,17 @@ function login(){
  fetch(API,{method:"POST",body:JSON.stringify({action:"login",username:u.value,password:p.value})})
  .then(r=>r.json()).then(d=>{
   if(!d.status) return alert("Invalid");
-  role=d.role;
+  currentRole = d.role;
   document.getElementById("login").style.display="none";
   document.getElementById("app").style.display="block";
   if(role!=="admin") document.querySelectorAll(".admin").forEach(x=>x.remove());
-  load("getMembers");
+  showTab("MembersSection");
+
  });
 }
 
 function load(a){
-  // hide all
-  tbl.style.display = "none";
+  MembersSection.style.display = "none";
   loanSection.style.display = "none";
   userSection.style.display = "none";
   itemSection.style.display = "none";
@@ -920,9 +925,22 @@ function load(a){
   if(a === "getUsers"){ userSection.style.display="block"; loadUsers(); return; }
   if(a === "getItems"){ itemSection.style.display="block"; loadItems(); return; }
   if(a === "getTransactions"){ transactionSection.style.display="block"; loadTransactions(); return; }
+
+  MembersSection.style.display = "block";
+  loadMembers();
+}
+
   
-  tbl.style.display = "table";
-  loadMembers();  // <- important for search to work
+function loadMembers(){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({action:"getMembers"})
+  })
+  .then(r => r.json())
+  .then(d => {
+    members = d;
+    drawMembers(d);
+  });
 }
 
 
