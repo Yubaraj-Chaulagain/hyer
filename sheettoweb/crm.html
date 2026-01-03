@@ -39,28 +39,39 @@
 let selectedLoan = null;
 
 function payLoan(loanId){
-  selectedLoan = loans.find(l => l.LoanID === loanId);
-  if(!selectedLoan) return alert("Loan not found");
+  loadLoans(); // refresh loans first
+  setTimeout(()=>{
+    selectedLoan = loans.find(l => l.LoanID === loanId);
+    if(!selectedLoan) return alert("Loan not found");
 
-  payLoanID.innerText = selectedLoan.LoanID;
-  payLoanRemaining.innerText = selectedLoan.Remaining || selectedLoan.Amount;
-  payLoanAmount.value = "";
-  payLoanModalInstance.show();
+    payLoanID.innerText = selectedLoan.LoanID;
+    payLoanRemaining.innerText = selectedLoan.Remaining ?? selectedLoan.Amount;
+    payLoanAmount.value = "";
+    payLoanModalInstance.show();
+  }, 300); // small delay to ensure fetch completes
 }
+
 
 function confirmPayLoan(){
   const amt = Number(payLoanAmount.value);
   if(!amt || amt <= 0) return alert("Enter valid amount");
+
+  if(!selectedLoan || !selectedLoan.LoanID || !selectedLoan.MemberID){
+    return alert("Loan info missing. Reload the loans and try again.");
+  }
+
+  const remaining = (selectedLoan.Remaining ?? selectedLoan.Amount) - amt;
+  const nextDue = calculateNextDueDate(selectedLoan) || null;
 
   fetch(API,{
     method:"POST",
     body: JSON.stringify({
       action: "payLoan",
       LoanID: selectedLoan.LoanID,
-      MemberID: selectedLoan.MemberID,       // include MemberID
+      MemberID: selectedLoan.MemberID,
       Amount: amt,
-      Remaining: selectedLoan.Remaining - amt, // optionally pre-calc Remaining
-      NextDueDate: calculateNextDueDate(selectedLoan) // if needed
+      Remaining: remaining,
+      NextDueDate: nextDue
     })
   })
   .then(r=>r.json())
@@ -73,6 +84,9 @@ function confirmPayLoan(){
   });
 }
 
+
+
+  
 
   function calculateNextDueDate(loan){
   if(!loan.NextDueDate) return ""; 
