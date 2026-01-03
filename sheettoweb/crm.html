@@ -439,26 +439,6 @@ function saveLoan(){
   });
 }
 
-// Pay loan
-function payLoan(){
-  let amt = Number(payAmount.value);
-
-  fetch(API,{
-    method:"POST",
-    body: JSON.stringify({
-      action:"payLoan",
-      loanId: currentLoan.id,
-      amount: amt
-    })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    if(!d.status) return alert("Payment failed");
-
-    loanModal.hide();
-    loadLoans();      // ✅ refresh loan list
-  });
-}
 
  function showLoans(){
   // Hide all sections
