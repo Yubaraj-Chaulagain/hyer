@@ -381,22 +381,26 @@ function saveLoan(){
 }
 
 // Pay loan
-function payLoan(id){
-  const amt = prompt("Enter payment amount");
-  if(!amt) return;
+function payLoan(){
+  let amt = Number(payAmount.value);
+
   fetch(API,{
     method:"POST",
-    body:JSON.stringify({action:"payLoan",LoanID:id,Amount:amt})
+    body: JSON.stringify({
+      action:"payLoan",
+      loanId: currentLoan.id,
+      amount: amt
+    })
   })
   .then(r=>r.json())
-  .then(res=>{
-    if(res.status){
-      loadLoans();
-      loadBalance();
-      alert("Loan payment done");
-    } else alert(res.message);
+  .then(d=>{
+    if(!d.status) return alert("Payment failed");
+
+    loanModal.hide();
+    loadLoans();      // ✅ refresh loan list
   });
 }
+
  function showLoans(){
   // Hide all sections
   tbl.style.display = "none";
