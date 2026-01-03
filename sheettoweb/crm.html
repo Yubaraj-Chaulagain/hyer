@@ -630,6 +630,7 @@ function drawUsers(data=users){
 }
 
 // Search users
+  const searchUsers = document.getElementById("searchUsers");
 searchUsers.onkeyup = () => {
   const v = searchUsers.value.toLowerCase();
   drawUsers(users.filter(u =>
