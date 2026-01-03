@@ -57,7 +57,10 @@ function confirmPayLoan(){
     body: JSON.stringify({
       action: "payLoan",
       LoanID: selectedLoan.LoanID,
-      Amount: amt
+      MemberID: selectedLoan.MemberID,       // include MemberID
+      Amount: amt,
+      Remaining: selectedLoan.Remaining - amt, // optionally pre-calc Remaining
+      NextDueDate: calculateNextDueDate(selectedLoan) // if needed
     })
   })
   .then(r=>r.json())
@@ -69,6 +72,16 @@ function confirmPayLoan(){
     alert("Payment successful");
   });
 }
+
+
+  function calculateNextDueDate(loan){
+  if(!loan.NextDueDate) return ""; 
+  const next = new Date(loan.NextDueDate);
+  next.setMonth(next.getMonth() + 1);
+  return next.toISOString().split("T")[0]; // YYYY-MM-DD
+}
+
+
 </script>
 
   
