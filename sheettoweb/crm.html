@@ -203,6 +203,7 @@ function confirmPayLoan(){
 </div>
   
 <!-- LOANS History MODAL -->
+  
 <div class="modal fade" id="loanHistoryModal">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -216,8 +217,9 @@ function confirmPayLoan(){
 </div>
 
 <script>
-const loanHistoryModal =
-  new bootstrap.Modal(document.getElementById("loanHistoryModal"));
+const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
+const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
+
 
 function showLoanHistory(loanID){
   fetch(API,{
