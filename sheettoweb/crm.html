@@ -58,48 +58,24 @@ function payLoan(loanId){
 
 
 function confirmPayLoan(){
-  if(!selectedLoan){
-    alert("Loan not selected");
-    return;
-  }
-
   const amt = Number(payLoanAmount.value);
-  if(!amt || amt <= 0){
-    alert("Enter valid amount");
-    return;
-  }
+  if(!amt || amt <= 0) return alert("Enter valid amount");
 
-  const currentRemaining = selectedLoan.Remaining ?? selectedLoan.Amount;
-  const newRemaining = currentRemaining - amt;
-
-  if(newRemaining < 0){
-    alert("Payment exceeds remaining amount");
-    return;
-  }
-
-  const payload = {
-    action: "payLoan",
-    LoanID: selectedLoan.LoanID,
-    MemberID: selectedLoan.MemberID,
-    Amount: amt,
-    Remaining: newRemaining,
-    NextDueDate: calculateNextDueDate(selectedLoan)
-  };
-
-  fetch(API,{
-    method:"POST",
-    body: JSON.stringify(payload)
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "payLoan",
+      LoanID: selectedLoan.LoanID,
+      Amount: amt
+    })
   })
   .then(r => r.json())
-  .then(res => {
-    if(!res.status){
-      alert(res.message || "Payment failed");
-      return;
-    }
+  .then(d => {
+    if(!d.status) return alert(d.message || "Payment failed");
 
     payLoanModalInstance.hide();
-    loadLoans(); // ✅ reload ONLY AFTER success
-    alert("Payment successful");
+    loadLoans(); // refresh loan table
+    alert(d.message || "Payment successful");
   });
 }
 
@@ -228,60 +204,37 @@ function confirmPayLoan(){
   
 <!-- LOANS History MODAL -->
 <div class="modal fade" id="loanHistoryModal">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5>Loan Payment History</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        <div id="loanHistoryContent"></div>
-      </div>
+      <div class="modal-body" id="loanHistoryModalBody"></div>
     </div>
   </div>
 </div>
+
 <script>
 const loanHistoryModal =
   new bootstrap.Modal(document.getElementById("loanHistoryModal"));
 
-function viewLoanHistory(loanId){
+function showLoanHistory(loanID){
   fetch(API,{
-    method:"POST",
-    body: JSON.stringify({
-      action:"getLoanPayments",
-      LoanID: loanId
-    })
+    method: "POST",
+    body: JSON.stringify({ action: "getLoanPayments", LoanID: loanID })
   })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.status){
-      alert("No history found");
-      return;
-    }
-
+  .then(r => r.json())
+  .then(data => {
     let html = `<table class="table table-bordered table-sm">
-      <thead class="table-dark">
-        <tr>
-          <th>Date</th>
-          <th>Amount</th>
-          <th>Remaining</th>
-        </tr>
-      </thead><tbody>`;
-
-    res.message.forEach(p=>{
-      html += `<tr>
-        <td>${p.PaidOn}</td>
-        <td>${p.Amount}</td>
-        <td>${p.Remaining}</td>
-      </tr>`;
-    });
-
+      <thead><tr><th>Date</th><th>Amount</th></tr></thead><tbody>`;
+    data.forEach(p => html += `<tr><td>${p.Date}</td><td>${p.Amount}</td></tr>`);
     html += "</tbody></table>";
-
-    loanHistoryContent.innerHTML = html;
-    loanHistoryModal.show();
+    loanHistoryModalBody.innerHTML = html;
+    new bootstrap.Modal(document.getElementById("loanHistoryModal")).show();
   });
 }
+
 </script>
   
 
@@ -529,8 +482,8 @@ function drawLoans(data = loans){
         <button class="btn btn-sm btn-success"
  onclick="payLoan('${l.LoanID}')">Pay</button>
 
-<button class="btn btn-sm btn-info ms-1"
- onclick="viewLoanHistory('${l.LoanID}')">History</button>
+<button class="btn btn-sm btn-info" onclick="showLoanHistory('${l.LoanID}')">History</button>
+
 
       </td>
     </tr>`;
