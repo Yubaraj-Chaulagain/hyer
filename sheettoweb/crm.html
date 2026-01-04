@@ -93,9 +93,62 @@ function confirmPayLoan(){
 
 
 </script>
+<!-- MEMBER HISTORY MODAL -->
+<div class="modal fade" id="memberHistoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Member Transaction History</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="memberHistoryBody"></div>
+    </div>
+  </div>
+</div>
 
   
+<script>
+  const memberHistoryModal =
+  new bootstrap.Modal(document.getElementById("memberHistoryModal"));
 
+function showMemberHistory(memberID){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"getMemberTransactions",
+      MemberID: memberID
+    })
+  })
+  .then(r=>r.json())
+  .then(txns=>{
+    if(!txns.length){
+      memberHistoryBody.innerHTML = "<p>No transactions found</p>";
+    } else {
+      let html = `<table class="table table-bordered table-sm">
+        <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Details</th>
+        </tr>
+        </thead><tbody>`;
+      txns.forEach(t=>{
+        html += `<tr>
+          <td>${t.Date}</td>
+          <td>${t.Type}</td>
+          <td>${t.Amount}</td>
+          <td>${t.Details||""}</td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      memberHistoryBody.innerHTML = html;
+    }
+    memberHistoryModal.show();
+  });
+}
+
+</script>
 <!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
   <div class="modal-dialog modal-xl">
@@ -1095,7 +1148,12 @@ function drawMembers(data){
     h += "<tr>";
     Object.values(m).forEach(v => h += `<td>${v}</td>`);
     h += `<td>
-      <button class="btn btn-sm btn-warning" onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
+      <button class="btn btn-sm btn-warning"
+ onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
+
+<button class="btn btn-sm btn-info"
+ onclick="showMemberHistory('${m.MemberID}')">History</button>
+
     </td></tr>`;
   });
 
