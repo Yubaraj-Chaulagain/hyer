@@ -991,7 +991,10 @@ function deleteMember(){
     <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
     <button class="btn btn-secondary" onclick="openLoanModal()">+ Add Loan</button>
     <button class="btn btn-warning" onclick="testEmailReminder()">Test Email Reminder</button>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal"> 📧 Send Email to Members</button>
+    <button class="btn btn-success" onclick="sendEmail()">
+  Send
+</button>
+
     <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
   </div>
   <script>
@@ -1246,8 +1249,11 @@ function printInvoice(txn){
   }
 }
   </script>
-  <script>
+  
+ <script>
 function sendEmail(){
+  console.log("sendEmail() called");
+
   const subject = document.getElementById("subject").value;
   const message = document.getElementById("message").value;
 
@@ -1267,21 +1273,28 @@ function sendEmail(){
   })
   .then(r => r.json())
   .then(res => {
+    console.log(res);
+
     if(res.status){
       alert("✅ Email sent to " + res.sent + " members");
+
       document.getElementById("subject").value = "";
       document.getElementById("message").value = "";
+
       bootstrap.Modal.getInstance(
         document.getElementById("emailModal")
       ).hide();
+
     } else {
       alert("❌ Failed: " + res.message);
     }
+  })
+  .catch(err=>{
+    alert("JS ERROR: " + err);
+    console.error(err);
   });
 }
 </script>
-
-
   
 <script>
 const loanSection = document.getElementById("loanSection");
