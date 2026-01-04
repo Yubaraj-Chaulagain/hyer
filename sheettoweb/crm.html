@@ -149,6 +149,22 @@ function showMemberHistory(memberID){
 }
 
 </script>
+  <!-- MURGE SMS -->
+  <div class="modal fade" id="emailModal">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+
+      <h5>Send Email to All Members</h5>
+
+      <input id="subject" class="form-control mb-2" placeholder="Subject">
+      <textarea id="message" class="form-control mb-2" rows="5"
+        placeholder="Message"></textarea>
+
+      <button class="btn btn-success" onclick="sendEmail()">Send</button>
+    </div>
+  </div>
+</div>
+
 <!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
   <div class="modal-dialog modal-xl">
@@ -1098,7 +1114,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbzyQtcbHhr5t8BxBv16_UNotauGfx4n77IuNqsMjS0Lmj_24ldIs3gI7LqubKkq8tKXDA/exec";
+const API="https://script.google.com/macros/s/AKfycbw0KE2NX_-iYpHeG5WVYIpCtwWk9dC0c3SnTcbG529DJqf0FNmi398s002Ho6PFuGdj5A/exec";
 let role="";
 
 function login(){
