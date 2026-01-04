@@ -122,7 +122,7 @@ function showMemberHistory(memberID){
   .then(r=>r.json())
   .then(txns=>{
     if(!txns.length){
-      memberHistoryBody.innerHTML = "<p>No transactions found</p>";
+       memberHistoryBody.innerHTML = "<p>No transactions found</p>";
     } else {
       let html = `<table class="table table-bordered table-sm">
         <thead class="table-dark">
@@ -991,6 +991,7 @@ function deleteMember(){
     <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
     <button class="btn btn-secondary" onclick="openLoanModal()">+ Add Loan</button>
     <button class="btn btn-warning" onclick="testEmailReminder()">Test Email Reminder</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal">📧 Send Email to Members</button>
     <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
   </div>
   <script>
@@ -1245,6 +1246,41 @@ function printInvoice(txn){
   }
 }
   </script>
+  <script>
+function sendEmail(){
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+
+  if(!subject || !message){
+    alert("Subject and message required");
+    return;
+  }
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action: "sendBulkEmail",
+      subject: subject,
+      message: message,
+      html: false
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.status){
+      alert("✅ Email sent to " + res.sent + " members");
+      document.getElementById("subject").value = "";
+      document.getElementById("message").value = "";
+      bootstrap.Modal.getInstance(
+        document.getElementById("emailModal")
+      ).hide();
+    } else {
+      alert("❌ Failed: " + res.message);
+    }
+  });
+}
+</script>
+
 
   
 <script>
