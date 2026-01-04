@@ -277,18 +277,42 @@ const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
 function showLoanHistory(loanID){
   fetch(API,{
     method: "POST",
-    body: JSON.stringify({ action: "getLoanPayments", LoanID: loanID })
+    body: JSON.stringify({
+      action: "getLoanPayments",
+      LoanID: loanID
+    })
   })
   .then(r => r.json())
-  .then(data => {
-    let html = `<table class="table table-bordered table-sm">
-      <thead><tr><th>Date</th><th>Amount</th></tr></thead><tbody>`;
-    data.forEach(p => html += `<tr><td>${p.Date}</td><td>${p.Amount}</td></tr>`);
-    html += "</tbody></table>";
-    loanHistoryModalBody.innerHTML = html;
-    new bootstrap.Modal(document.getElementById("loanHistoryModal")).show();
+  .then(res => {
+
+    if(!res.status){
+      alert(res.message || "No history found");
+      return;
+    }
+
+    const data = res.message;
+
+    if(!data.length){
+      loanHistoryModalBody.innerHTML = "<p>No payments yet</p>";
+    } else {
+      let html = `<table class="table table-bordered table-sm">
+        <thead class="table-dark">
+          <tr><th>Date</th><th>Amount</th></tr>
+        </thead><tbody>`;
+      data.forEach(p=>{
+        html += `<tr>
+          <td>${p.Date}</td>
+          <td>${p.Amount}</td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      loanHistoryModalBody.innerHTML = html;
+    }
+
+    loanHistoryModal.show();
   });
 }
+
 
 </script>
   
