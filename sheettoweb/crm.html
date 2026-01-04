@@ -225,7 +225,65 @@ function confirmPayLoan(){
   </div>
 </div></div>
 </div>
+  
+<!-- LOANS History MODAL -->
+<div class="modal fade" id="loanHistoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Loan Payment History</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="loanHistoryContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const loanHistoryModal =
+  new bootstrap.Modal(document.getElementById("loanHistoryModal"));
 
+function viewLoanHistory(loanId){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"getLoanPayments",
+      LoanID: loanId
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.status){
+      alert("No history found");
+      return;
+    }
+
+    let html = `<table class="table table-bordered table-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Remaining</th>
+        </tr>
+      </thead><tbody>`;
+
+    res.message.forEach(p=>{
+      html += `<tr>
+        <td>${p.PaidOn}</td>
+        <td>${p.Amount}</td>
+        <td>${p.Remaining}</td>
+      </tr>`;
+    });
+
+    html += "</tbody></table>";
+
+    loanHistoryContent.innerHTML = html;
+    loanHistoryModal.show();
+  });
+}
+</script>
+  
 
   <!-- LOANS MODAL -->
 <div class="modal fade" id="loanModal">
@@ -239,6 +297,9 @@ function confirmPayLoan(){
     <input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
     <input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
     <input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
+    <input id="LoanEMI" class="form-control mb-2"
+ placeholder="Monthly EMI" readonly>
+
   </div>
   <div class="modal-footer">
     <button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
@@ -417,6 +478,13 @@ const LoanID = document.getElementById("LoanID");
 const LoanMemberID = document.getElementById("LoanMemberID");
 const LoanAmount = document.getElementById("LoanAmount");
 const LoanMonths = document.getElementById("LoanMonths");
+  LoanAmount.oninput = LoanMonths.oninput = () => {
+  const amt = Number(LoanAmount.value);
+  const months = Number(LoanMonths.value);
+  LoanEMI.value =
+    (amt > 0 && months > 0) ? Math.round(amt / months) : "";
+};
+
 const loanModalTitle = document.getElementById("loanModalTitle");
   
 function openLoanModal(){
@@ -458,7 +526,12 @@ function drawLoans(data = loans){
       <td>${l.Remaining || l.Amount}</td>
       <td>${l.NextDueDate || ''}</td>
       <td>
-        <button class="btn btn-sm btn-success" onclick="payLoan('${l.LoanID}')">Pay</button>
+        <button class="btn btn-sm btn-success"
+ onclick="payLoan('${l.LoanID}')">Pay</button>
+
+<button class="btn btn-sm btn-info ms-1"
+ onclick="viewLoanHistory('${l.LoanID}')">History</button>
+
       </td>
     </tr>`;
   });
@@ -869,8 +942,22 @@ function deleteMember(){
     <button class="btn btn-warning" onclick="openItemModal()">+ Add Item</button>
     <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
     <button class="btn btn-secondary" onclick="openLoanModal()">+ Add Loan</button>
+    <button class="btn btn-warning" onclick="testEmailReminder()">Test Email Reminder</button>
     <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
   </div>
+  <script>
+    function testEmailReminder(){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({ action: "testEmailReminder" })
+  })
+  .then(r => r.json())
+  .then(res => {
+    alert(res.message || "Check console for result");
+    console.log(res);
+  });
+}
+  </script>
   
  <!-- MEMBERS SECTION -->
 <div id="MembersSection">
@@ -969,6 +1056,9 @@ document.getElementById("MembersSection").style.display = "none";
   <!-- LOANS TABLE -->
 <div id="loanSection" style="display:none;">
   <h5 class="mt-3">Loans</h5>
+  <!-- Test Loan Email Reminder -->
+<button class="btn btn-warning mb-2" onclick="testEmailReminder()">Test Email Reminder</button>
+
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
@@ -990,7 +1080,7 @@ document.getElementById("MembersSection").style.display = "none";
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbw-vJV3BSLd1RR8mgXhKClb9C4EiIV9ZbQFwvSnBGmxctx0DFe9BguB0mD3_bGjR8Qzdg/exec";
+const API="https://script.google.com/macros/s/AKfycbxzaIM_WRTKVcy4fSk8DuoXT5OiIa_hAWu-WC17J4JCvBTLM6G5KtdgeyH0s2PM1f8LHw/exec";
 let role="";
 
 function login(){
