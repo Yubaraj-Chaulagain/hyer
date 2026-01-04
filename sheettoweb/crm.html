@@ -39,47 +39,66 @@
 let selectedLoan = null;
 
 function payLoan(loanId){
-  loadLoans(); // refresh loans first
-  setTimeout(()=>{
-    selectedLoan = loans.find(l => l.LoanID === loanId);
-    if(!selectedLoan) return alert("Loan not found");
+  selectedLoan = loans.find(l => l.LoanID === loanId);
 
-    payLoanID.innerText = selectedLoan.LoanID;
-    payLoanRemaining.innerText = selectedLoan.Remaining ?? selectedLoan.Amount;
-    payLoanAmount.value = "";
-    payLoanModalInstance.show();
-  }, 300); // small delay to ensure fetch completes
+  if(!selectedLoan){
+    alert("Loan not found. Please refresh.");
+    return;
+  }
+
+  // Fill modal safely
+  document.getElementById("payLoanID").innerText = selectedLoan.LoanID;
+  document.getElementById("payLoanRemaining").innerText =
+    selectedLoan.Remaining ?? selectedLoan.Amount;
+
+  document.getElementById("payLoanAmount").value = "";
+
+  payLoanModalInstance.show();
 }
 
 
 function confirmPayLoan(){
-  const amt = Number(payLoanAmount.value);
-  if(!amt || amt <= 0) return alert("Enter valid amount");
-
-  if(!selectedLoan || !selectedLoan.LoanID || !selectedLoan.MemberID){
-    return alert("Loan info missing. Reload the loans and try again.");
+  if(!selectedLoan){
+    alert("Loan not selected");
+    return;
   }
 
-  const remaining = (selectedLoan.Remaining ?? selectedLoan.Amount) - amt;
-  const nextDue = calculateNextDueDate(selectedLoan) || null;
+  const amt = Number(payLoanAmount.value);
+  if(!amt || amt <= 0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  const currentRemaining = selectedLoan.Remaining ?? selectedLoan.Amount;
+  const newRemaining = currentRemaining - amt;
+
+  if(newRemaining < 0){
+    alert("Payment exceeds remaining amount");
+    return;
+  }
+
+  const payload = {
+    action: "payLoan",
+    LoanID: selectedLoan.LoanID,
+    MemberID: selectedLoan.MemberID,
+    Amount: amt,
+    Remaining: newRemaining,
+    NextDueDate: calculateNextDueDate(selectedLoan)
+  };
 
   fetch(API,{
     method:"POST",
-    body: JSON.stringify({
-      action: "payLoan",
-      LoanID: selectedLoan.LoanID,
-      MemberID: selectedLoan.MemberID,
-      Amount: amt,
-      Remaining: remaining,
-      NextDueDate: nextDue
-    })
+    body: JSON.stringify(payload)
   })
-  .then(r=>r.json())
-  .then(d=>{
-    if(!d.status) return alert(d.message || "Payment failed");
+  .then(r => r.json())
+  .then(res => {
+    if(!res.status){
+      alert(res.message || "Payment failed");
+      return;
+    }
 
     payLoanModalInstance.hide();
-    loadLoans(); // refresh loan table
+    loadLoans(); // ✅ reload ONLY AFTER success
     alert("Payment successful");
   });
 }
@@ -89,11 +108,12 @@ function confirmPayLoan(){
   
 
   function calculateNextDueDate(loan){
-  if(!loan.NextDueDate) return ""; 
-  const next = new Date(loan.NextDueDate);
-  next.setMonth(next.getMonth() + 1);
-  return next.toISOString().split("T")[0]; // YYYY-MM-DD
+  let baseDate = loan.NextDueDate || new Date().toISOString().split("T")[0];
+  const d = new Date(baseDate);
+  d.setMonth(d.getMonth() + 1);
+  return d.toISOString().split("T")[0];
 }
+
 
 
 </script>
