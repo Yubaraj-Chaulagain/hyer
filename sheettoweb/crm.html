@@ -978,17 +978,25 @@ function deleteMember(){
     <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
   </div>
   <script>
-    function testEmailReminder(){
+   function testEmailReminder(){
   fetch(API, {
     method: "POST",
     body: JSON.stringify({ action: "testEmailReminder" })
   })
   .then(r => r.json())
   .then(res => {
-    alert(res.message || "Check console for result");
-    console.log(res);
+    if(res.status){
+      alert(res.message);
+    }else{
+      alert("Failed: " + res.message);
+    }
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Server error");
   });
 }
+
   </script>
   
  <!-- MEMBERS SECTION -->
@@ -1090,7 +1098,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwJVAwlY7DZgpohIOI0LkN098Q2FFEoUF5LVS5JrWe4mJ_d_uzt9z3krd8z6BletjzsyQ/exec";
+const API="https://script.google.com/macros/s/AKfycbxbAxsyGoUzP1Gqc4vSJ0MXaok-P2tgUEGDHibTu1JwF3DyV_X1RR8FykFp1CYGVk-h2w/exec";
 let role="";
 
 function login(){
