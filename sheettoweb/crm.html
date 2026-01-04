@@ -153,21 +153,35 @@ function showMemberHistory(memberID){
     const subject = document.getElementById("subject").value.trim();
 const message = document.getElementById("message").value.trim();
   </script>
-  <!-- MURGE SMS -->
-  <div class="modal fade" id="emailModal">
+ <!-- MURGE SMS -->
+<div class="modal fade" id="emailModal">
   <div class="modal-dialog">
     <div class="modal-content p-3">
-
       <h5>Send Email to All Members</h5>
-
       <input id="subject" class="form-control mb-2" placeholder="Subject">
-      <textarea id="message" class="form-control mb-2" rows="5"
-        placeholder="Message"></textarea>
-
+      <textarea id="message" class="form-control mb-2" rows="5" placeholder="Message"></textarea>
       <button class="btn btn-success" onclick="sendEmail()">Send</button>
     </div>
   </div>
 </div>
+
+<!-- FAKE sendEmail SCRIPT -->
+<script>
+function sendEmail(){
+  const subject = document.getElementById("subject").value.trim();
+  const message = document.getElementById("message").value.trim();
+  if(!subject || !message){
+    alert("Subject and message required"); 
+    return; 
+  }
+
+  console.log("Would send email:", {subject, message});
+
+  // Fake success
+  alert("✅ Email would be sent to X members");
+}
+</script>
+
 
 <!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
@@ -1250,52 +1264,6 @@ function printInvoice(txn){
   }
 }
   </script>
-  
- <script>
-function sendEmail(){
-  console.log("sendEmail() called");
-
-  const subject = document.getElementById("subject").value;
-  const message = document.getElementById("message").value;
-
-  if(!subject || !message){
-    alert("Subject and message required");
-    return;
-  }
-
-  fetch(API,{
-    method:"POST",
-    body: JSON.stringify({
-      action: "sendBulkEmail",
-      subject: subject,
-      message: message,
-      html: false
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    console.log(res);
-
-    if(res.status){
-      alert("✅ Email sent to " + res.sent + " members");
-
-      document.getElementById("subject").value = "";
-      document.getElementById("message").value = "";
-
-      bootstrap.Modal.getInstance(
-        document.getElementById("emailModal")
-      ).hide();
-
-    } else {
-      alert("❌ Failed: " + res.message);
-    }
-  })
-  .catch(err=>{
-    alert("JS ERROR: " + err);
-    console.error(err);
-  });
-}
-</script>
   
 <script>
 const loanSection = document.getElementById("loanSection");
