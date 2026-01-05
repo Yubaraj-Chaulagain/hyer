@@ -1316,27 +1316,42 @@ function openTransferModal(){
   ).show();
 }
 
-function confirmTransfer(){
-  fetch(API,{
-    method:"POST",
+function confirmTransfer() {
+  const from = document.getElementById("fromMember").value;
+  const to = document.getElementById("toMember").value;
+  const amount = Number(document.getElementById("transferAmount").value);
+
+  fetch(scriptURL, {
+    method: "POST",
     body: JSON.stringify({
       action: "transfer",
-      From: fromMember.value,
-      To: toMember.value,
-      Amount: Number(transferAmount.value)
+      From: from,
+      To: to,
+      Amount: amount
     })
   })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.status){
-      alert("Transfer failed");
-      return;
+  .then(r => r.json())
+  .then(res => {
+    if(res.status){
+      alert("✅ Transfer Successful");
+
+      // 🔹 Close modal if using Bootstrap
+      const transferModal = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
+      if(transferModal) transferModal.hide();
+
+      // 🔹 Optional: refresh table
+      loadTransfers();
+      loadMembers();
+    } else {
+      alert("❌ Transfer failed: " + (res.message || "Unknown error"));
     }
-    alert("✅ Transfer Successful");
-    loadMembers();
-    loadTransfers();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Something went wrong");
   });
 }
+
 
   function openTransferHistory(memberID){
   fetch(API,{
