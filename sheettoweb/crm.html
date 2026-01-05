@@ -357,12 +357,15 @@ function sendEmail(){
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Member</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Ref Member</th>
-            </tr>
+      <th>TxnID</th>
+      <th>MemberID</th>
+      <th>Type</th>
+      <th>Amount</th>
+      <th>Details</th>
+      <th>Date</th>
+      <th>PaymentType</th>
+      <th>RefMemberID</th>
+    </tr>
           </thead>
           <tbody id="transferHistoryBody"></tbody>
         </table>
@@ -1216,7 +1219,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwjr1-HjtBy5BwIWLQss4imHXTfJnxo1kabOMvSPkNAwwDRxgSi2kMs8AJtV-Wu_sEkvg/exec";
+const API="https://script.google.com/macros/s/AKfycbxapePio0rzSvW8yH8fli3Y68MYvY89iyUrFxbsRGJIZZW7ta8n9QH8cLwy-Nkn6N_5-w/exec";
 let role="";
 
 function login(){
