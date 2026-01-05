@@ -1200,7 +1200,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyRKS6IIlqQjO_v27KKKAvOv33gYMeHwxm4IJGu4zcWNV4sPIEG-2bnHFYnrW9WycC5Vw/exec";
+const API="https://script.google.com/macros/s/AKfycbzC_PqNKnuGyntEsEXujaIvENx8X34mgs1eljBT1Po7hzqT-kIGg9jSmqMWtMRf45ukPA/exec";
 let role="";
 
 function login(){
@@ -1584,41 +1584,5 @@ function showLoanHistory(loanID){
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
 </script>
-  <script>
-    function saveMoney(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"saveAmount",
-      MemberID: selMember,
-      Amount: Number(saveAmt.value)
-    })
-  })
-  .then(r=>r.json())
-  .then(bal=>{
-    alert("New Balance: "+bal);
-    loadMembers();
-  });
-}
-
-    function doTransfer(){
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"transferBalance",
-      FromID: fromMember.value,
-      ToID: toMember.value,
-      Amount: Number(transferAmt.value)
-    })
-  })
-  .then(r=>r.json())
-  .then(()=>{
-    alert("Transfer Success");
-    loadTransfers();
-    loadMembers();
-  });
-}
-
-  </script>
 </body>
 </html>
