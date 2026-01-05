@@ -149,10 +149,7 @@ function showMemberHistory(memberID){
 }
 
 </script>
-  <script>
-    const subject = document.getElementById("subject").value.trim();
-const message = document.getElementById("message").value.trim();
-  </script>
+
  <!-- MURGE SMS -->
 <div class="modal fade" id="emailModal">
   <div class="modal-dialog">
@@ -165,23 +162,50 @@ const message = document.getElementById("message").value.trim();
   </div>
 </div>
 
-<!-- FAKE sendEmail SCRIPT -->
+<!-- NoFAKE allsendEmailRemainder SCRIPT -->
 <script>
 function sendEmail(){
   const subject = document.getElementById("subject").value.trim();
   const message = document.getElementById("message").value.trim();
+
   if(!subject || !message){
-    alert("Subject and message required"); 
-    return; 
+    alert("Subject and message required");
+    return;
   }
 
-  console.log("Would send email:", {subject, message});
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action: "sendBulkEmail",
+      subject: subject,
+      message: message,
+      html: false
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.status){
+      alert(res.message || "Email failed");
+      return;
+    }
 
-  // Fake success
-  alert("✅ Email would be sent to X members");
+    alert("✅ Email sent to " + res.sent + " members");
+
+    // ✅ close modal
+    bootstrap.Modal.getInstance(
+      document.getElementById("emailModal")
+    ).hide();
+
+    // optional clear fields
+    document.getElementById("subject").value = "";
+    document.getElementById("message").value = "";
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Server error");
+  });
 }
 </script>
-
 
 <!-- MEMBER MODAL -->
 <div class="modal fade" id="memberModal">
