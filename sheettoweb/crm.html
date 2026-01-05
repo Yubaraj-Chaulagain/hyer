@@ -1042,6 +1042,7 @@ function deleteMember(){
   <li class="nav-item"><a class="nav-link" onclick="showTab('itemSection')">Items</a></li>
   <li class="nav-item"><a class="nav-link" onclick="showTab('transactionSection')">Transactions</a></li>
   <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('transferSection')">Transfers</a></li>
   <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
 </ul>
 
@@ -1368,15 +1369,23 @@ function confirmTransfer(){
     const body = document.getElementById("transferHistoryBody");
     body.innerHTML = "";
 
+    if(!res.length){
+      body.innerHTML =
+        "<tr><td colspan='8'>No transfer history</td></tr>";
+    }
+
     res.forEach(t=>{
       body.innerHTML += `
-        <tr>
-          <td>${new Date(t.Date).toLocaleString()}</td>
-          <td>${t.MemberID}</td>
-          <td>${t.Type}</td>
-          <td>${t.Amount}</td>
-          <td>${t.RefMemberID || ""}</td>
-        </tr>`;
+      <tr>
+        <td>${t.TxnID}</td>
+        <td>${t.MemberID}</td>
+        <td>${t.Type}</td>
+        <td>${t.Amount}</td>
+        <td>${t.Details || ""}</td>
+        <td>${t.Date}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.RefMemberID || ""}</td>
+      </tr>`;
     });
 
     new bootstrap.Modal(
@@ -1384,9 +1393,6 @@ function confirmTransfer(){
     ).show();
   });
 }
-
-
-
 
   
 
@@ -1405,7 +1411,7 @@ function printInvoice(txn){
   document.getElementById("itemSection").style.display = "none";
   document.getElementById("transactionSection").style.display = "none";
   document.getElementById("loanSection").style.display = "none";
-
+  document.getElementById("transferSection").style.display = "none";
   // Remove 'active' class from all nav links
   document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
 
@@ -1430,6 +1436,10 @@ function printInvoice(txn){
     loadTransactions();
     document.querySelector('a.nav-link[onclick="showTab(\'transactionSection\')"]').classList.add("active");
   }
+    else if(tabName === "transferSection"){
+    transferSection.style.display = "block";
+    loadTransfers(); // ✅ IMPORTANT
+  }
   else if(tabName === "loanSection") {
     document.getElementById("loanSection").style.display = "block";
     loadLoans();
@@ -1447,6 +1457,42 @@ function closeEmailForm(){
 }
 
  </script>
+  <script>
+function loadTransfers(){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"getTransferHistory",
+      MemberID:"ALL"
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    const body = document.getElementById("transferTabBody");
+    body.innerHTML = "";
+
+    if(!data || !data.length){
+      body.innerHTML =
+        "<tr><td colspan='7'>No transfers found</td></tr>";
+      return;
+    }
+
+    data.forEach(t=>{
+      body.innerHTML += `
+      <tr>
+        <td>${t.TxnID}</td>
+        <td>${t.MemberID}</td>
+        <td>${t.Type}</td>
+        <td>${t.Amount}</td>
+        <td>${t.Details || ""}</td>
+        <td>${t.Date}</td>
+        <td>${t.RefMemberID || ""}</td>
+      </tr>`;
+    });
+  });
+}
+</script>
+
 <script>
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
