@@ -1126,6 +1126,33 @@ function deleteMember(){
     <tbody id="tbodyItems"></tbody>
   </table>
 </div>
+
+  <!-- TRANSFER SECTION -->
+<div id="transferSection" style="display:none;">
+
+  <div class="mb-2">
+    <button class="btn btn-success" onclick="openTransferModal()">
+      🔁 New Transfer
+    </button>
+  </div>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>TxnID</th>
+        <th>MemberID</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Details</th>
+        <th>Date</th>
+        <th>RefMemberID</th>
+      </tr>
+    </thead>
+    <tbody id="transferTabBody"></tbody>
+  </table>
+
+</div>
+
 <!-- TRANSACTIONS SECTION -->
 <div id="transactionSection" style="display:none;">
     <input id="searchTransactions"
@@ -1177,7 +1204,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbw5p9gU4AmLZ1l8UThYfXkuaotP20aMXT9tPJEpw3_nYytsaJ-aaLTPXsTYGQOLaxBW/exec";
+const API="https://script.google.com/macros/s/AKfycbwrtM8d8GbfvagdlHg9zjegma1A_Z4HsE4hChfLtcN7ci9v9tEGu6Q08CUIA4W9bxMoXw/exec";
 let role="";
 
 function login(){
