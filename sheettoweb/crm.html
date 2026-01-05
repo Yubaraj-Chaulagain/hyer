@@ -1397,40 +1397,43 @@ Finance System
 
 
   function openTransferHistory(memberID){
-  fetch(API,{
-    method:"POST",
+  fetch(API, {
+    method: "POST",
     body: JSON.stringify({
-      action:"getTransferHistory",
+      action: "getTransferHistory",
       MemberID: memberID
     })
   })
-  .then(r=>r.json())
-  .then(res=>{
+  .then(r => r.json())
+  .then(res => {
     const body = document.getElementById("transferHistoryBody");
     body.innerHTML = "";
 
     if(!res.length){
-      body.innerHTML =
-        "<tr><td colspan='8'>No transfer history</td></tr>";
+      body.innerHTML = "<tr><td colspan='8'>No transfer history</td></tr>";
     }
 
-    res.forEach(t=>{
+    res.forEach(t => {
       body.innerHTML += `
       <tr>
         <td>${t.TxnID}</td>
-        <td>${t.MemberID}</td>
-        <td>${t.Type}</td>
-        <td>${t.Amount}</td>
-        <td>${t.Details || ""}</td>
-        <td>${t.Date}</td>
-        <td>${t.PaymentType || ""}</td>
-        <td>${t.RefMemberID || ""}</td>
+        <td>${t.MemberID || ""}</td>       <!-- ✅ correct property -->
+        <td>${t.Type || ""}</td>           <!-- ✅ correct property -->
+        <td>${t.Amount || ""}</td>         <!-- ✅ correct property -->
+        <td>${t.Details || ""}</td>        <!-- ✅ correct property -->
+        <td>${t.Date || ""}</td>           <!-- ✅ correct property -->
+        <td>${t.PaymentType || ""}</td>    <!-- ✅ correct property -->
+        <td>${t.RefMemberID || ""}</td>    <!-- ✅ correct property -->
       </tr>`;
     });
 
     new bootstrap.Modal(
       document.getElementById("transferHistoryModal")
     ).show();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Transfer history load error");
   });
 }
 
