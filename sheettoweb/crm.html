@@ -1200,7 +1200,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxqMCubx2zaGQo7RWokj2Qe3ukYzgU7ipeo2NcU_Q0U3SY5WoAb1b6l8W6axMO1LEgOxQ/exec";
+const API="https://script.google.com/macros/s/AKfycby6q22QhMUg1_txEdthajrpsQunl831hjCp3UMzQSAzeauM7UnAIaZcMIOwJQ2ZsFMs8w/exec";
 let role="";
 
 function login(){
@@ -1317,38 +1317,24 @@ function openTransferModal(){
 }
 
 function confirmTransfer(){
-  const from = fromMember.value;
-  const to = toMember.value;
-  const amount = Number(transferAmount.value);
-
-  if(!from || !to || amount<=0){
-    alert("Invalid input");
-    return;
-  }
-
   fetch(API,{
     method:"POST",
     body: JSON.stringify({
-      action:"transferBalance",
-      fromMemberID: from,
-      toMemberID: to,
-      amount: amount
+      action: "transfer",
+      From: fromMember.value,
+      To: toMember.value,
+      Amount: Number(transferAmount.value)
     })
   })
   .then(r=>r.json())
   .then(res=>{
     if(!res.status){
-      alert(res.message);
+      alert("Transfer failed");
       return;
     }
-
     alert("✅ Transfer Successful");
-
-    bootstrap.Modal.getInstance(
-      document.getElementById("transferModal")
-    ).hide();
-
-    loadMembers(); // refresh balances
+    loadMembers();
+    loadTransfers();
   });
 }
 
