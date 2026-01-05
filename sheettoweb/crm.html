@@ -1448,7 +1448,7 @@ function printInvoice(txn){
 <script>
     function showTab(tabName) {
   // Hide all sections
-      const transferSection = document.getElementById("transferSection");
+  const transferSection = document.getElementById("transferSection");
   document.getElementById("MembersSection").style.display = "none";
   document.getElementById("userSection").style.display = "none";
   document.getElementById("itemSection").style.display = "none";
@@ -1456,6 +1456,7 @@ function printInvoice(txn){
   document.getElementById("loanSection").style.display = "none";
   document.getElementById("transferSection").style.display = "none";
   // Remove 'active' class from all nav links
+  document.querySelector('a.nav-link[onclick="showTab(\'transferSection\')"]').classList.add("active");
   document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
 
   // Show the selected tab
