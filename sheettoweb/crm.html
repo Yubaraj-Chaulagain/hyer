@@ -406,10 +406,12 @@ function showTransferHistory(memberID){
   .then(data => {
     const tbody = document.querySelector("#transferHistoryTable tbody");
     tbody.innerHTML = "";
-    if(data.length === 0){
+
+    if(!data || data.length === 0){
       tbody.innerHTML = "<tr><td colspan='8'>No transfers found</td></tr>";
       return;
     }
+
     data.forEach(row => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
