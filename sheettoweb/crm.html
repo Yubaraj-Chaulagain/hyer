@@ -1445,7 +1445,16 @@ function printInvoice(txn){
   }
 }
   </script>
-  
+ <script>
+   function openEmailForm(){
+  document.getElementById("emailForm").style.display = "block";
+}
+
+function closeEmailForm(){
+  document.getElementById("emailForm").style.display = "none";
+}
+
+ </script>
 <script>
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
