@@ -1324,7 +1324,8 @@ function confirmTransfer() {
   if(!amount || amount <= 0) return alert("Enter valid amount");
   if(from === to) return alert("Cannot transfer to the same member");
 
-  fetch(API, {  // ✅ Use API here
+  // 1️⃣ Send transfer request to backend
+  fetch(API, {
     method: "POST",
     body: JSON.stringify({
       action: "transfer",
@@ -1335,23 +1336,65 @@ function confirmTransfer() {
   })
   .then(r => r.json())
   .then(res => {
-    if(res.status){
-      alert("✅ Transfer Successful");
-      const transferModal = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
-      if(transferModal) transferModal.hide();
+    if(!res.status) return alert("❌ Transfer failed: " + (res.message || "Unknown error"));
 
-      // Refresh tables
-      loadTransfers();
-      loadMembers();
-    } else {
-      alert("❌ Transfer failed: " + (res.message || "Unknown error"));
-    }
+    alert("✅ Transfer Successful");
+
+    // 2️⃣ Prepare email details
+    const now = new Date();
+    const emailSubject = "💰 Transfer Received";
+    const emailMessage = `
+Hello,
+
+You have received a transfer:
+
+Sender: ${from}
+Amount: ${amount}
+Date: ${now.toLocaleString()}
+
+Thank you,
+Finance System
+`;
+
+    // 3️⃣ Send email to receiving member
+    fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendEmailToMember",
+        MemberID: to,
+        subject: emailSubject,
+        message: emailMessage
+      })
+    })
+    .then(r => r.json())
+    .then(emailRes => {
+      if(emailRes.status){
+        console.log("✅ Email sent to member");
+      } else {
+        console.warn("⚠️ Failed to send email:", emailRes.message);
+      }
+    });
+
+    // 4️⃣ Clear modal fields
+    document.getElementById("fromMember").value = "";
+    document.getElementById("toMember").value = "";
+    document.getElementById("transferAmount").value = "";
+
+    // 5️⃣ Close modal
+    const transferModal = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
+    if(transferModal) transferModal.hide();
+
+    // 6️⃣ Refresh tables
+    loadTransfers();
+    loadMembers();
+
   })
   .catch(err => {
     console.error(err);
     alert("❌ Something went wrong");
   });
 }
+
 
   function openTransferHistory(memberID){
   fetch(API,{
