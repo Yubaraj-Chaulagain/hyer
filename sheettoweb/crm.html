@@ -1448,6 +1448,7 @@ function printInvoice(txn){
 <script>
     function showTab(tabName) {
   // Hide all sections
+      const transferSection = document.getElementById("transferSection");
   document.getElementById("MembersSection").style.display = "none";
   document.getElementById("userSection").style.display = "none";
   document.getElementById("itemSection").style.display = "none";
@@ -1505,34 +1506,38 @@ function loadTransfers(){
     method:"POST",
     body: JSON.stringify({
       action:"getTransferHistory",
-      MemberID:"ALL"
+      MemberID:"ALL" // सबै history ल्याउन
     })
   })
-  .then(r=>r.json())
-  .then(data=>{
-    const body = document.getElementById("transferTabBody");
-    body.innerHTML = "";
+  .then(r => r.json())
+  .then(res => {
+    const tbody = document.getElementById("transferTabBody");
+    tbody.innerHTML = "";
 
-    if(!data || !data.length){
-      body.innerHTML =
-        "<tr><td colspan='7'>No transfers found</td></tr>";
+    if(!res.length){
+      tbody.innerHTML = "<tr><td colspan='8'>No transfers found</td></tr>";
       return;
     }
 
-    data.forEach(t=>{
-      body.innerHTML += `
-      <tr>
-        <td>${t.TxnID}</td>
-        <td>${t.MemberID}</td>
-        <td>${t.Type}</td>
-        <td>${t.Amount}</td>
-        <td>${t.Details || ""}</td>
-        <td>${t.Date}</td>
-        <td>${t.RefMemberID || ""}</td>
-      </tr>`;
+    res.forEach(t=>{
+      tbody.innerHTML += `
+        <tr>
+          <td>${t.TxnID}</td>
+          <td>${t.MemberID}</td>
+          <td>${t.Type}</td>
+          <td>${t.Amount}</td>
+          <td>${t.Details || ""}</td>
+          <td>${t.Date}</td>
+          <td>${t.PaymentType || ""}</td>
+          <td>${t.RefMemberID || ""}</td>
+        </tr>`;
     });
+  })
+  .catch(err=>{
+    console.error("Transfer load error:", err);
   });
 }
+
 </script>
   <script>
 function showLoanHistory(loanID){
