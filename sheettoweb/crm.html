@@ -1282,6 +1282,17 @@ function drawMembers(data){
 <button class="btn btn-sm btn-info"
  onclick="showMemberHistory('${m.MemberID}')">History</button>
 
+ <button class="btn btn-warning btn-sm"
+        onclick="openTransferModal()">
+  🔁 Transfer Balance
+</button>
+
+<button class="btn btn-info btn-sm"
+        onclick="openTransferHistory('M001')">
+  📜 Transfer History
+</button>
+
+
     </td></tr>`;
   });
 
