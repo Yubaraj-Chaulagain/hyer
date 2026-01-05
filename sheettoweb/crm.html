@@ -1392,8 +1392,9 @@ function confirmTransfer(){
 
 </script>  
 
-// ===== INVOICE PRINT =====
+
   <script>
+// ===== INVOICE PRINT =====
 function printInvoice(txn){
  let w=window.open("");
  w.document.write(`<h3>Invoice</h3><pre>${JSON.stringify(txn,null,2)}</pre>`);
