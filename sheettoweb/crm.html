@@ -355,8 +355,8 @@ function sendEmail(){
 
       <div class="modal-body">
         <table class="table table-bordered">
-          <thead>
-            <tr>
+  <thead class="table-dark">
+    <tr>
       <th>TxnID</th>
       <th>MemberID</th>
       <th>Type</th>
@@ -366,8 +366,10 @@ function sendEmail(){
       <th>PaymentType</th>
       <th>RefMemberID</th>
     </tr>
-          </thead>
-          <tbody id="transferHistoryBody"></tbody>
+  </thead>
+  <tbody id="transferTabBody">
+    <tr><td colspan="8">Loading...</td></tr>
+  </tbody>
         </table>
       </div>
 
@@ -1505,43 +1507,45 @@ function closeEmailForm(){
 
  </script>
   <script>
+
 function loadTransfers(){
   fetch(API,{
     method:"POST",
-    body: JSON.stringify({
-      action:"getTransferHistory",
-      MemberID:"ALL" // सबै history ल्याउन
-    })
+    body: JSON.stringify({action:"getTransfers"})
   })
-  .then(r => r.json())
-  .then(res => {
+  .then(r=>r.json())
+  .then(data=>{
     const tbody = document.getElementById("transferTabBody");
     tbody.innerHTML = "";
 
-    if(!res.length){
+    if(!data.length){
       tbody.innerHTML = "<tr><td colspan='8'>No transfers found</td></tr>";
       return;
     }
 
-    res.forEach(t=>{
+    data.forEach(t=>{
       tbody.innerHTML += `
-        <tr>
-          <td>${t.TxnID}</td>
-          <td>${t.MemberID}</td>
-          <td>${t.Type}</td>
-          <td>${t.Amount}</td>
-          <td>${t.Details || ""}</td>
-          <td>${t.Date}</td>
-          <td>${t.PaymentType || ""}</td>
-          <td>${t.RefMemberID || ""}</td>
-        </tr>`;
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || t.From || t.FromMemberID || ""}</td> <!-- ✅ MemberID fix -->
+        <td>${t.Type || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.Details || t.Detail || ""}</td> <!-- ✅ Details fix -->
+        <td>${t.Date || ""}</td>
+        <td>${t.PaymentType || t.payment || ""}</td> <!-- ✅ PaymentType fix -->
+        <td>${t.RefMemberID || t.To || ""}</td> <!-- ✅ RefMemberID fix -->
+      </tr>`;
     });
   })
   .catch(err=>{
-    console.error("Transfer load error:", err);
+    const tbody = document.getElementById("transferTabBody");
+    tbody.innerHTML = "<tr><td colspan='8'>Error loading transfers</td></tr>";
+    console.error("Transfer fetch error:", err);
   });
 }
 
+// Load transfers when page opens
+window.onload = loadTransfers;
 </script>
   <script>
 function showLoanHistory(loanID){
