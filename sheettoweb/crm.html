@@ -22,7 +22,7 @@
         <h5 id="payLoanModalTitle">Pay Loan</h5>
         <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class= "modal-body">
         <p>LoanID: <span id="payLoanID"></span></p>
         <p>Remaining: <span id="payLoanRemaining"></span></p>
         <input id="payLoanAmount" type="number" class="form-control" placeholder="Enter amount">
@@ -388,13 +388,6 @@ function sendEmail(){
     </div>
   </div>
 </div>
-
-<script>
-const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
-const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
-</script>
-  
-
   <!-- LOANS MODAL -->
 <div class="modal fade" id="loanModal">
 <div class="modal-dialog"><div class="modal-content">
@@ -486,6 +479,11 @@ function generateReport(){
     reportContent.innerHTML = html;
   });
 }
+
+    <script>
+const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
+const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
+</script>
 
 // Print report / invoice
 function printReport(){
@@ -1030,11 +1028,9 @@ function deleteMember(){
     } else alert("Error deleting member");
   });
 }
+  </script>
 
 // ===== DRAW TABLE =====
-</script>
-
-
 <div id="app" style="display:none;">
   <ul class="nav nav-tabs mb-3">
   <li class="nav-item"><a class="nav-link active" onclick="showTab('MembersSection')">Members</a></li>
@@ -1298,7 +1294,8 @@ function searchMembers(){
   );
   drawMembers(filtered);
 }
-<!-- Transfer SECTION -->
+
+  
 function openTransferModal(){
   const from = document.getElementById("fromMember");
   const to = document.getElementById("toMember");
@@ -1492,6 +1489,51 @@ function loadTransfers(){
   });
 }
 </script>
+  <script>
+function showLoanHistory(loanID){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"getLoanHistory",
+      LoanID: loanID
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    const body = document.getElementById("loanHistoryModalBody");
+    body.innerHTML = "";
+
+    if(!data || !data.length){
+      body.innerHTML = "<p>No loan payment history</p>";
+    }else{
+      let html = `<table class="table table-bordered table-sm">
+        <thead class="table-dark">
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>PaymentType</th>
+          </tr>
+        </thead><tbody>`;
+
+      data.forEach(r=>{
+        html += `<tr>
+          <td>${r.Date}</td>
+          <td>${r.Amount}</td>
+          <td>${r.PaymentType || ""}</td>
+        </tr>`;
+      });
+
+      html += "</tbody></table>";
+      body.innerHTML = html;
+    }
+
+    new bootstrap.Modal(
+      document.getElementById("loanHistoryModal")
+    ).show();
+  });
+}
+</script>
+
 
 <script>
 const loanSection = document.getElementById("loanSection");
