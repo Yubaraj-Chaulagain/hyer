@@ -392,43 +392,6 @@ function sendEmail(){
 <script>
 const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
 const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
-
-
-function showTransferHistory(memberID){
-  fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "showTransferHistory",
-      MemberID: memberID
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const tbody = document.querySelector("#transferHistoryTable tbody");
-    tbody.innerHTML = "";
-
-    if(!data || data.length === 0){
-      tbody.innerHTML = "<tr><td colspan='8'>No transfers found</td></tr>";
-      return;
-    }
-
-    data.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${row.TxnID}</td>
-        <td>${row.MemberID}</td>
-        <td>${row.Type}</td>
-        <td>${row.Amount}</td>
-        <td>${row.Details}</td>
-        <td>${row.Date}</td>
-        <td>${row.PaymentType}</td>
-        <td>${row.RefMemberID}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  });
-}
-
 </script>
   
 
