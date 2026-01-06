@@ -636,10 +636,12 @@ function drawLoans(data = loans){
       <td>
         <button class="btn btn-sm btn-success"
  onclick="payLoan('${l.LoanID}')">Pay</button>
-
-<button class="btn btn-sm btn-info" onclick="showLoanHistory('${l.LoanID}')">History</button>
-
-
+<button
+  onclick="showLoanHistory('<?= loan.LoanID ?>')"
+  data-bs-toggle="modal"
+  data-bs-target="#loanHistoryModal">
+History
+</button>
       </td>
     </tr>`;
   });
@@ -1201,7 +1203,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbz5ZLwNkIT5mNq-VtxD_RKKWoRwET-1BeHZr98aYiqwpjb0QkgBNe2bUXHnx1vxUkiNmA/exec";
+const API="https://script.google.com/macros/s/AKfycbzBo9sKhLA_Mmu68dEM7ixeHPDmdJc5FQbo4WLoTW4vIJhIqRH7TcuAB1ZBER4KhpAcuA/exec";
 let role="";
 
 function login(){
@@ -1547,47 +1549,35 @@ window.onload = loadTransfers;
 </script>
   <script>
 function showLoanHistory(loanID){
-  fetch(API,{
+  fetch(scriptURL,{
     method:"POST",
-    body: JSON.stringify({
-      action:"getLoanHistory",
-      LoanID: loanID
+    body:JSON.stringify({
+      action:"getLoanPayments",
+      LoanID: loanID   // ✅ EXACT
     })
   })
   .then(r=>r.json())
-  .then(data=>{
-    const body = document.getElementById("loanHistoryModalBody");
-    body.innerHTML = "";
+  .then(list=>{
+    const tbody = document.getElementById("loanHistoryBody");
+    tbody.innerHTML = "";
 
-    if(!data || !data.length){
-      body.innerHTML = "<p>No loan payment history</p>";
-    }else{
-      let html = `<table class="table table-bordered table-sm">
-        <thead class="table-dark">
-          <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>PaymentType</th>
-          </tr>
-        </thead><tbody>`;
-
-      data.forEach(r=>{
-        html += `<tr>
-          <td>${r.Date}</td>
-          <td>${r.Amount}</td>
-          <td>${r.PaymentType || ""}</td>
-        </tr>`;
-      });
-
-      html += "</tbody></table>";
-      body.innerHTML = html;
+    if(list.length === 0){
+      tbody.innerHTML =
+        `<tr><td colspan="4" class="text-center">No history</td></tr>`;
+      return;
     }
 
-    new bootstrap.Modal(
-      document.getElementById("loanHistoryModal")
-    ).show();
+    list.forEach(p=>{
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.LoanID}</td>
+          <td>${p.Amount}</td>
+          <td>${p.Date}</td>
+        </tr>`;
+    });
   });
 }
+
 </script>
 
 
