@@ -379,16 +379,27 @@ function sendEmail(){
 <!-- LOANS History MODAL -->
   
 <div class="modal fade" id="loanHistoryModal">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5>Loan Payment History</h5>
-        <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body" id="loanHistoryModalBody"></div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>LoanID</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="loanHistoryBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
+
   <!-- LOANS MODAL -->
 <div class="modal fade" id="loanModal">
 <div class="modal-dialog"><div class="modal-content">
@@ -640,8 +651,9 @@ function drawLoans(data = loans){
   onclick="showLoanHistory('<?= loan.LoanID ?>')"
   data-bs-toggle="modal"
   data-bs-target="#loanHistoryModal">
-History
+  History
 </button>
+
       </td>
     </tr>`;
   });
@@ -1203,7 +1215,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbzBo9sKhLA_Mmu68dEM7ixeHPDmdJc5FQbo4WLoTW4vIJhIqRH7TcuAB1ZBER4KhpAcuA/exec";
+const API="https://script.google.com/macros/s/AKfycbyy08CFa_VLcQX2dIAJWmyAZUbpXT_dU7tIA0sJl0vmFv0Wt9JaiBfud3IhlihDCIPeHQ/exec";
 let role="";
 
 function login(){
@@ -1553,7 +1565,7 @@ function showLoanHistory(loanID){
     method:"POST",
     body:JSON.stringify({
       action:"getLoanPayments",
-      LoanID: loanID   // ✅ EXACT
+      LoanID: loanID
     })
   })
   .then(r=>r.json())
@@ -1561,9 +1573,9 @@ function showLoanHistory(loanID){
     const tbody = document.getElementById("loanHistoryBody");
     tbody.innerHTML = "";
 
-    if(list.length === 0){
+    if(!list || list.length === 0){
       tbody.innerHTML =
-        `<tr><td colspan="4" class="text-center">No history</td></tr>`;
+        `<tr><td colspan="3" class="text-center">No history found</td></tr>`;
       return;
     }
 
@@ -1577,9 +1589,7 @@ function showLoanHistory(loanID){
     });
   });
 }
-
-</script>
-
+  </script>
 
 <script>
 const loanSection = document.getElementById("loanSection");
