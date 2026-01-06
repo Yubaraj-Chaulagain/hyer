@@ -367,10 +367,9 @@ function sendEmail(){
       <th>RefMemberID</th>
     </tr>
   </thead>
-  <tbody id="transferTabBody">
-    <tr><td colspan="8">Loading...</td></tr>
-  </tbody>
-        </table>
+  <tbody id="transferHistoryBody"></tbody>
+</table>
+
       </div>
 
     </div>
@@ -1461,7 +1460,6 @@ function printInvoice(txn){
   document.getElementById("loanSection").style.display = "none";
   document.getElementById("transferSection").style.display = "none";
   // Remove 'active' class from all nav links
-  document.querySelector('a.nav-link[onclick="showTab(\'transferSection\')"]').classList.add("active");
   document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
 
   // Show the selected tab
