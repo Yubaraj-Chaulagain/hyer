@@ -286,14 +286,6 @@ function sendEmail(){
 </div></div>
 </div>
   <!-- TRANSACTIONS MODAL -->
-  <script>
-  const TxnType = document.getElementById("TxnType");
-const TxnAmount = document.getElementById("TxnAmount");
-const TxnDetails = document.getElementById("TxnDetails");
-const PaymentType = document.getElementById("PaymentType");
-const txnModalTitle = document.getElementById("txnModalTitle");
-const tbodyTransactions = document.getElementById("tbodyTransactions");
-  </script>
   <div class="modal fade" id="transactionModal">
 <div class="modal-dialog"><div class="modal-content">
   <div class="modal-header">
@@ -501,6 +493,8 @@ function generateReport(){
 }
   </script>
     <script>
+const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
+const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
 
 // Print report / invoice
 function printReport(){
@@ -654,10 +648,11 @@ function drawLoans(data = loans){
         <button class="btn btn-sm btn-success"
  onclick="payLoan('${l.LoanID}')">Pay</button>
 <button class="btn btn-info btn-sm"
-  onclick="showLoanHistory('${l.LoanID}')">
+  onclick="showLoanHistory('${l.LoanID}')"
+  data-bs-toggle="modal"
+  data-bs-target="#loanHistoryModal">
   History
 </button>
-
 
 
       </td>
@@ -734,7 +729,7 @@ function saveTransaction(){
   const payload = {
     action: editTxnMode ? "updateTransaction" : "addTransaction",
     TxnID: editTxnMode ? currentTxnID : "",
-    MemberID: currentMemberID,
+    MemberID: prompt("Enter MemberID"),
     Type: TxnType.value,
     Amount: TxnAmount.value,
     Details: TxnDetails.value,
@@ -827,7 +822,7 @@ searchItems.onkeyup = () => {
 }
 
 // Save item (add/update)
-funct ion saveItem(){
+function saveItem(){
   const payload = {
     action: editItemMode ? "updateItem" : "addItem",
     ItemID: ItemID.value,
@@ -1221,7 +1216,7 @@ function deleteMember(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwtehP98XyAwnpnFkTzVDeyC1ddp3cvhc84R_eiffrlq_eQxJ_Bwwv7zZ_0fromKQ8/exec";
+const API="https://script.google.com/macros/s/AKfycbzaUcaIkfXYjWO9PW_0F1RohbD_qsg8Zniv0NGO82Wg-o61V7w8tswvBy_AzLfHxjDzfw/exec";
 let role="";
 
 function login(){
@@ -1562,50 +1557,38 @@ function loadTransfers(){
     console.error(err);
   });
 }
-
-    
 <script>
-const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
-const loanHistoryModalBody = document.getElementById("loanHistoryBody");
-
+  <script>
 function showLoanHistory(loanID){
-  fetch(API, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "getLoanPayments",
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"getLoanPayments",
       LoanID: loanID
     })
   })
-  .then(r => r.json())
-  .then(data => {
-    // clear modal body
-    loanHistoryModalBody.innerHTML = "";
+  .then(r=>r.json())
+  .then(list=>{
+    const tbody = document.getElementById("loanHistoryBody");
+    tbody.innerHTML = "";
 
-    if(!data || !data.length){
-      loanHistoryModalBody.innerHTML = "<tr><td colspan='3'>No payments found</td></tr>";
-      loanHistoryModal.show();
+    if(!list || list.length === 0){
+      tbody.innerHTML =
+        `<tr><td colspan="3" class="text-center">No history found</td></tr>`;
       return;
     }
 
-    // build table rows
-    let html = "";
-    data.forEach(p => {
-      html += `<tr>
-        <td>${p.LoanID || ""}</td>
-        <td>${p.Amount || ""}</td>
-        <td>${p.Date || ""}</td>
-      </tr>`;
+    list.forEach(p=>{
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.LoanID}</td>
+          <td>${p.Amount}</td>
+          <td>${p.Date}</td>
+        </tr>`;
     });
-
-    loanHistoryModalBody.innerHTML = html;
-    loanHistoryModal.show();
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Loan history load error");
   });
 }
-</script>
+  </script>
 
 <script>
 const loanSection = document.getElementById("loanSection");
