@@ -647,12 +647,13 @@ function drawLoans(data = loans){
       <td>
         <button class="btn btn-sm btn-success"
  onclick="payLoan('${l.LoanID}')">Pay</button>
-<button
-  onclick="showLoanHistory('<?= loan.LoanID ?>')"
+<button class="btn btn-info btn-sm"
+  onclick="showLoanHistory('${l.LoanID}')"
   data-bs-toggle="modal"
   data-bs-target="#loanHistoryModal">
   History
 </button>
+
 
       </td>
     </tr>`;
