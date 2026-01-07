@@ -1344,6 +1344,7 @@ function confirmTransfer() {
     method: "POST",
     body: JSON.stringify({
       action: "transfer",
+      Type: "Transfer",
       From: from,
       To: to,
       Amount: amount
@@ -1523,15 +1524,18 @@ function closeEmailForm(){
 function loadTransfers(){
   fetch(API,{
     method:"POST",
-    body: JSON.stringify({action:"getTransfers"})
+    body: JSON.stringify({
+      action:"getTransferHistory"
+    })
   })
   .then(r=>r.json())
   .then(data=>{
     const tbody = document.getElementById("transferTabBody");
     tbody.innerHTML = "";
 
-    if(!data.length){
-      tbody.innerHTML = "<tr><td colspan='8'>No transfers found</td></tr>";
+    if(!data || data.length === 0){
+      tbody.innerHTML =
+        "<tr><td colspan='7'>No transfers found</td></tr>";
       return;
     }
 
@@ -1539,26 +1543,20 @@ function loadTransfers(){
       tbody.innerHTML += `
       <tr>
         <td>${t.TxnID || ""}</td>
-        <td>${t.MemberID || t.From || t.FromMemberID || ""}</td> <!-- ✅ MemberID fix -->
+        <td>${t.MemberID || ""}</td>
         <td>${t.Type || ""}</td>
         <td>${t.Amount || ""}</td>
-        <td>${t.Details || t.Detail || ""}</td> <!-- ✅ Details fix -->
+        <td>${t.Details || ""}</td>
         <td>${t.Date || ""}</td>
-        <td>${t.PaymentType || t.payment || ""}</td> <!-- ✅ PaymentType fix -->
-        <td>${t.RefMemberID || t.To || ""}</td> <!-- ✅ RefMemberID fix -->
+        <td>${t.RefMemberID || ""}</td>
       </tr>`;
     });
   })
   .catch(err=>{
-    const tbody = document.getElementById("transferTabBody");
-    tbody.innerHTML = "<tr><td colspan='8'>Error loading transfers</td></tr>";
-    console.error("Transfer fetch error:", err);
+    console.error(err);
   });
 }
-
-// Load transfers when page opens
-window.onload = loadTransfers;
-</script>
+<script>
   <script>
 function showLoanHistory(loanID){
   fetch(scriptURL,{
