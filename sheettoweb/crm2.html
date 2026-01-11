@@ -271,7 +271,7 @@ async function uploadPhoto(type){
   form.append("image", file);
   form.append("name", name); // filename on imgbb
 
-  const apiKey = "YOUR_IMGBB_API_KEY"; // 🔑 Replace with your IMGBB API key
+  const apiKey = "f5d95811959fdcd59c8ea459aadb650b"; // 🔑 Replace with your IMGBB API key
 
   try{
     const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
