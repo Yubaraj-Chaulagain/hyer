@@ -64,4 +64,186 @@ function submitTransaction(){
   });
 }
 </script>
+<div id="buyFormContainer" class="p-3 border rounded">
+  <h5>सामान किन्ने (Buy)</h5>
+
+  <div class="mb-2">
+    <label>सामानको नाम</label>
+    <input type="text" id="itemName" class="form-control" placeholder="Type to search..." oninput="searchItem()" list="itemList">
+    <datalist id="itemList"></datalist>
+  </div>
+
+  <div class="mb-2"><label>Buying Rate</label><input type="number" id="buyingRate" class="form-control"></div>
+  <div class="mb-2"><label>Selling Rate</label><input type="number" id="sellingRate" class="form-control"></div>
+  <div class="mb-2"><label>Quantity</label><input type="number" id="quantity" class="form-control"></div>
+  <div class="mb-2">
+    <label>Payment Type</label>
+    <select id="paymentType" class="form-control">
+      <option value="cash">Cash</option>
+      <option value="loan">Loan</option>
+      <option value="bank">Bank</option>
+    </select>
+  </div>
+  <div class="mb-2"><label>Member ID</label><input type="text" id="memberID" class="form-control"></div>
+
+  <button class="btn btn-primary" onclick="buyItem()">Buy</button>
+  <div id="buyMessage" class="mt-2 text-success"></div>
+</div>
+
+
+
+
+
+<div id="sellFormContainer" class="p-3 border rounded">
+  <h5>सामान बेच्ने (Sell)</h5>
+
+  <div class="mb-2">
+    <label>सामानको नाम</label>
+    <input type="text" id="sellItemName" class="form-control" placeholder="Type to search..." oninput="searchSellItem()" list="sellItemList">
+    <datalist id="sellItemList"></datalist>
+  </div>
+
+  <div class="mb-2"><label>Quantity</label><input type="number" id="sellQuantity" class="form-control"></div>
+  <div class="mb-2"><label>Selling Rate</label><input type="number" id="sellRate" class="form-control"></div>
+  <div class="mb-2">
+    <label>Payment Type</label>
+    <select id="sellPaymentType" class="form-control">
+      <option value="cash">Cash</option>
+      <option value="loan">Loan</option>
+      <option value="bank">Bank</option>
+    </select>
+  </div>
+  <div class="mb-2"><label>Member ID</label><input type="text" id="sellMemberID" class="form-control"></div>
+
+  <button class="btn btn-primary" onclick="sellItem()">Sell</button>
+  <div id="sellMessage" class="mt-2 text-success"></div>
+</div>
+<script>
+  // Buy Item
+function buyItem(){
+  const data = {
+    action: "smartBuy",
+    ItemName: document.getElementById("itemName").value,
+    BuyingRate: Number(document.getElementById("buyingRate").value),
+    SellingRate: Number(document.getElementById("sellingRate").value),
+    Qty: Number(document.getElementById("quantity").value),
+    PaymentType: document.getElementById("paymentType").value,
+    MemberID: document.getElementById("memberID").value
+  };
+
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    const msg = document.getElementById("buyMessage");
+    if(res.status){
+      msg.classList.remove("text-danger");
+      msg.classList.add("text-success");
+      msg.innerText = res.message;
+      loadStockReport(); // auto refresh stock
+    } else {
+      msg.classList.remove("text-success");
+      msg.classList.add("text-danger");
+      msg.innerText = res.message;
+    }
+  });
+}
+
+// Sell Item
+function sellItem(){
+  const data = {
+    action: "smartSell",
+    ItemName: document.getElementById("sellItemName").value,
+    Qty: Number(document.getElementById("sellQuantity").value),
+    SellingRate: Number(document.getElementById("sellRate").value),
+    PaymentType: document.getElementById("sellPaymentType").value,
+    MemberID: document.getElementById("sellMemberID").value
+  };
+
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    const msg = document.getElementById("sellMessage");
+    if(res.status){
+      msg.classList.remove("text-danger");
+      msg.classList.add("text-success");
+      msg.innerText = res.message;
+      loadStockReport(); // auto refresh stock
+    } else {
+      msg.classList.remove("text-success");
+      msg.classList.add("text-danger");
+      msg.innerText = res.message;
+    }
+  });
+}
+
+</script>
+<script>
+  // Buy search
+function searchItem(){
+  const q = document.getElementById("itemName").value;
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify({action:"searchItems", q})
+  })
+  .then(r=>r.json())
+  .then(items=>{
+    const dl = document.getElementById("itemList");
+    dl.innerHTML = "";
+    items.forEach(i=>{
+      const opt = document.createElement("option");
+      opt.value = i.ItemName;
+      dl.appendChild(opt);
+    });
+  });
+}
+
+// Sell search
+function searchSellItem(){
+  const q = document.getElementById("sellItemName").value;
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify({action:"searchItems", q})
+  })
+  .then(r=>r.json())
+  .then(items=>{
+    const dl = document.getElementById("sellItemList");
+    dl.innerHTML = "";
+    items.forEach(i=>{
+      const opt = document.createElement("option");
+      opt.value = i.ItemName;
+      dl.appendChild(opt);
+    });
+  });
+}
+</script>
+  <script>
+function loadStockReport(){
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify({action:"getSheet", sheet:"Items"})
+  })
+  .then(r=>r.json())
+  .then(items=>{
+    const tbody = document.querySelector("#stockTable tbody");
+    tbody.innerHTML = "";
+    items.forEach(i=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${i.ItemID}</td>
+                      <td>${i.ItemName}</td>
+                      <td>${i.BuyingRate}</td>
+                      <td>${i.SellingRate}</td>
+                      <td>${i.Stock}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+</script>
+
 
