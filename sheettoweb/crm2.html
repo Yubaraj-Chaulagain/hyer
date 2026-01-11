@@ -1632,6 +1632,7 @@ function printInvoice(txn){
   document.getElementById("transactionSection").style.display = "none";
   document.getElementById("loanSection").style.display = "none";
   document.getElementById("transferSection").style.display = "none";
+  document.getElementById("memberResultSection").style.display = "none";
   // Remove 'active' class from all nav links
   document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
 
@@ -1659,6 +1660,10 @@ function printInvoice(txn){
     else if(tabName === "transferSection"){
     transferSection.style.display = "block";
     loadTransfers(); // ✅ IMPORTANT
+  }
+      else if(tabName === "memberResultSection") {
+    document.getElementById("memberResultSection").style.display = "block";
+    document.querySelector('a.nav-link[onclick="showTab(\'memberResultSection\')"]').classList.add("active");
   }
   else if(tabName === "loanSection") {
     document.getElementById("loanSection").style.display = "block";
