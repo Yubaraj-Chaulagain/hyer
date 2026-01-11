@@ -317,57 +317,7 @@ async function uploadPhotosAndSave() {
 </div></div>
 </div>
 
-  <!--member tranjection result result-->
-  <div id="memberResultSection" style="display:none;">
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>MemberID</th>
-        <th>Result Balance</th>
-        <th>Deposit</th>
-        <th>Withdraw</th>
-        <th>LoanPay</th>
-        <th>Transfer Sent</th>
-        <th>Transfer Received</th>
-        <th>Buying</th>
-        <th>Selling</th>
-        <th>Loans</th>
-      </tr>
-    </thead>
-    <tbody id="memberResultBody"></tbody>
-  </table>
-</div>
-<script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=467702364&single=true&output=csv"; // Published Google Sheet CSV URL
-
-fetch(sheetURL)
-  .then(res => res.text())
-  .then(csv => {
-    const rows = csv.trim().split("\n").slice(1); // Skip header row
-    let html = "";
-
-    rows.forEach(row => {
-      const cols = row.split(","); // Split CSV columns
-      html += `
-        <tr>
-          <td>${cols[0]}</td> <!-- MemberID -->
-          <td>${cols[1]}</td> <!-- Result Balance -->
-          <td>${cols[2]}</td> <!-- Deposit -->
-          <td>${cols[3]}</td> <!-- Withdraw -->
-          <td>${cols[4]}</td> <!-- LoanPay -->
-          <td>${cols[5]}</td> <!-- Transfer Sent -->
-          <td>${cols[6]}</td> <!-- Transfer Received -->
-          <td>${cols[7]}</td> <!-- Buying -->
-          <td>${cols[8]}</td> <!-- Selling -->
-          <td>${cols[9]}</td> <!-- Loans -->
-        </tr>`;
-    });
-
-    document.getElementById("memberResultBody").innerHTML = html;
-  })
-  .catch(err => console.error("Error loading sheet:", err));
-</script>
-
+ 
   <!-- ITEMS MODAL -->
 <div class="modal fade" id="itemModal">
 <div class="modal-dialog"><div class="modal-content">
@@ -1315,6 +1265,57 @@ function deleteMember(){
     <tbody id="tbodyLoans"></tbody>
   </table>
 </div>
+   <!--member tranjection result result-->
+  <div id="memberResultSection" style="display:none;">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>MemberID</th>
+        <th>Result Balance</th>
+        <th>Deposit</th>
+        <th>Withdraw</th>
+        <th>LoanPay</th>
+        <th>Transfer Sent</th>
+        <th>Transfer Received</th>
+        <th>Buying</th>
+        <th>Selling</th>
+        <th>Loans</th>
+      </tr>
+    </thead>
+    <tbody id="memberResultBody"></tbody>
+  </table>
+</div>
+<script>
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=467702364&single=true&output=csv"; // Published Google Sheet CSV URL
+
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(csv => {
+    const rows = csv.trim().split("\n").slice(1); // Skip header row
+    let html = "";
+
+    rows.forEach(row => {
+      const cols = row.split(","); // Split CSV columns
+      html += `
+        <tr>
+          <td>${cols[0]}</td> <!-- MemberID -->
+          <td>${cols[1]}</td> <!-- Result Balance -->
+          <td>${cols[2]}</td> <!-- Deposit -->
+          <td>${cols[3]}</td> <!-- Withdraw -->
+          <td>${cols[4]}</td> <!-- LoanPay -->
+          <td>${cols[5]}</td> <!-- Transfer Sent -->
+          <td>${cols[6]}</td> <!-- Transfer Received -->
+          <td>${cols[7]}</td> <!-- Buying -->
+          <td>${cols[8]}</td> <!-- Selling -->
+          <td>${cols[9]}</td> <!-- Loans -->
+        </tr>`;
+    });
+
+    document.getElementById("memberResultBody").innerHTML = html;
+  })
+  .catch(err => console.error("Error loading sheet:", err));
+</script>
+
 
 </div>
 
