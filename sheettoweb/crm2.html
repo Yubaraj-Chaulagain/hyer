@@ -227,14 +227,13 @@ function sendEmail(){
         <input id="mPhone" class="form-control col-6" placeholder="Phone">
         <input id="mEmail" class="form-control col-6" placeholder="Email">
 
-        <!-- Photo Upload Fields -->
-        <input type="file" id="mIDFile" class="form-control col-6">
-        <input id="mIDPhoto" class="form-control col-6" placeholder="Identy PhotoURL">
-        <button class="btn btn-primary col-12" onclick="uploadPhoto('ID')">Upload ID Photo</button>
+        <!-- File inputs for photos -->
+        <input id="mIDPhotoFile" type="file" class="form-control col-6">
+        <input id="mPhotoFile" type="file" class="form-control col-6">
 
-        <input type="file" id="mFile" class="form-control col-6">
+        <!-- URL fields to store uploaded images -->
+        <input id="mIDPhoto" class="form-control col-6" placeholder="Identy PhotoURL">
         <input id="mPhoto" class="form-control col-6" placeholder="Member PhotoURL">
-        <button class="btn btn-primary col-12" onclick="uploadPhoto('Member')">Upload Member Photo</button>
 
         <input id="mStatus" class="form-control col-6" placeholder="Status">
         <input id="mOTP" class="form-control col-6" placeholder="OTP">
@@ -242,7 +241,7 @@ function sendEmail(){
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-success" onclick="saveMember()">Save</button>
+        <button class="btn btn-primary" onclick="uploadPhotosAndSave()">Upload & Save</button>
         <button class="btn btn-danger" onclick="deleteMember()">Delete</button>
       </div>
 
@@ -251,44 +250,45 @@ function sendEmail(){
 </div>
 
 <script>
-async function uploadPhoto(type){
-  const name = document.getElementById("mName").value.trim();
-  if(!name){ alert("Enter Member Name first"); return; }
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // <-- Put your imgbb key here
 
-  let fileInput, urlInput;
-  if(type === 'ID'){
-    fileInput = document.getElementById("mIDFile");
-    urlInput  = document.getElementById("mIDPhoto");
-  } else {
-    fileInput = document.getElementById("mFile");
-    urlInput  = document.getElementById("mPhoto");
-  }
+async function uploadToImgbb(file, renameTo) {
+  const formData = new FormData();
+  const renamedFile = new File([file], renameTo + "." + file.name.split(".").pop(), { type: file.type });
+  formData.append("image", renamedFile);
+  
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: "POST",
+    body: formData
+  });
+  const data = await res.json();
+  if(data.success) return data.data.url;
+  throw new Error("Upload failed: " + (data.error?.message || "Unknown error"));
+}
 
-  if(!fileInput.files.length){ alert("Select file first"); return; }
-  const file = fileInput.files[0];
+async function uploadPhotosAndSave() {
+  try {
+    const name = document.getElementById("mName").value.trim();
+    if(!name) return alert("Enter member name first!");
 
-  const form = new FormData();
-  form.append("image", file);
-  form.append("name", name); // filename on imgbb
+    // Get files
+    const idFile = document.getElementById("mIDPhotoFile").files[0];
+    const memberFile = document.getElementById("mPhotoFile").files[0];
 
-  const apiKey = "f5d95811959fdcd59c8ea459aadb650b"; // 🔑 Replace with your IMGBB API key
-
-  try{
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-      method: "POST",
-      body: form
-    });
-    const data = await res.json();
-    if(data.success){
-      urlInput.value = data.data.url;
-      alert(type + " Photo uploaded successfully!");
-    } else {
-      console.log(data);
-      alert("Upload failed");
+    if(idFile) {
+      const idUrl = await uploadToImgbb(idFile, name + "_ID");
+      document.getElementById("mIDPhoto").value = idUrl;
     }
-  }catch(err){
-    console.error(err);
-    alert("Upload error");
+    if(memberFile) {
+      const photoUrl = await uploadToImgbb(memberFile, name);
+      document.getElementById("mPhoto").value = photoUrl;
+    }
+
+    // Now call your existing saveMember() function
+    saveMember();
+
+  } catch(err) {
+    alert("Photo upload failed: " + err.message);
   }
 }
 </script>
