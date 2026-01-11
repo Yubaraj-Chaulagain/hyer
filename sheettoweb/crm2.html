@@ -1397,7 +1397,7 @@ function openTransferModal(){
   ).show();
 }
 
-function confirmTransfer() {
+async function confirmTransfer() {
   const from = document.getElementById("fromMember").value;
   const to = document.getElementById("toMember").value;
   const amount = Number(document.getElementById("transferAmount").value);
@@ -1405,78 +1405,88 @@ function confirmTransfer() {
   if(!amount || amount <= 0) return alert("Enter valid amount");
   if(from === to) return alert("Cannot transfer to the same member");
 
-  // 1️⃣ Send transfer request to backend
-  fetch(API, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "transfer",
-      Type: "Transfer",
-      From: from,
-      To: to,
-      Amount: amount
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if(!res.status) return alert("❌ Transfer failed: " + (res.message || "Unknown error"));
-
-    alert("✅ Transfer Successful");
-
-    // 2️⃣ Prepare email details
-    const now = new Date();
-    const emailSubject = "💰 Transfer Received";
-    const emailMessage = `
-Hello,
-
-You have received a transfer:
-
-Sender: ${from}
-Amount: ${amount}
-Date: ${now.toLocaleString()}
-
-Thank you,
-Finance System
-`;
-
-    // 3️⃣ Send email to receiving member
-    fetch(API, {
+  try {
+    // 1️⃣ Transfer request
+    const transferRes = await fetch(API, {
       method: "POST",
       body: JSON.stringify({
-        action: "sendEmailToMember",
-        MemberID: to,
-        subject: emailSubject,
-        message: emailMessage
+        action: "transfer",
+        Type: "Transfer",
+        From: from,
+        To: to,
+        Amount: amount
       })
-    })
-    .then(r => r.json())
-    .then(emailRes => {
-      if(emailRes.status){
-        console.log("✅ Email sent to member");
-      } else {
-        console.warn("⚠️ Failed to send email:", emailRes.message);
-      }
+    });
+    const resData = await transferRes.json();
+
+    if(!resData.status) return alert("❌ Transfer failed: " + (resData.message || "Unknown error"));
+
+    // ✅ Transfer सफल भयो
+    alert("✅ Transfer Successful");
+
+    const now = new Date().toISOString().slice(0,19).replace("T"," ");
+
+    // 2️⃣ Transactions record थप्ने (Pathaune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addTransaction",
+        MemberID: from,
+        Type: "Transfer Sent",
+        Amount: amount,
+        Details: "To " + to,
+        PaymentType: "Transfer",
+        Date: now,
+        RefMemberID: to
+      })
     });
 
-    // 4️⃣ Clear modal fields
-    document.getElementById("fromMember").value = "";
-    document.getElementById("toMember").value = "";
-    document.getElementById("transferAmount").value = "";
+    // 3️⃣ Transactions record थप्ने (Paune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addTransaction",
+        MemberID: to,
+        Type: "Transfer Received",
+        Amount: amount,
+        Details: "From " + from,
+        PaymentType: "Transfer",
+        Date: now,
+        RefMemberID: from
+      })
+    });
 
-    // 5️⃣ Close modal
-    const transferModal = bootstrap.Modal.getInstance(document.getElementById('transferModal'));
-    if(transferModal) transferModal.hide();
+    // 4️⃣ Email notifications (pathaune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendEmail",
+        To: from,
+        Subject: "💸 Transfer Sent",
+        Message: `You have sent ${amount} to ${to} on ${now}`
+      })
+    });
 
-    // 6️⃣ Refresh tables
-    loadTransfers();
+    // 5️⃣ Email notifications (paune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendEmail",
+        To: to,
+        Subject: "💰 Transfer Received",
+        Message: `You have received ${amount} from ${from} on ${now}`
+      })
+    });
+
+    // 6️⃣ Table refresh
     loadMembers();
+    loadTransactions();
 
-  })
-  .catch(err => {
+  } catch(err){
     console.error(err);
-    alert("❌ Something went wrong");
-  });
+    alert("❌ Something went wrong, check console");
+  }
 }
-
 
   function openTransferHistory(memberID){
   fetch(API, {
