@@ -227,18 +227,14 @@ function sendEmail(){
         <input id="mPhone" class="form-control col-6" placeholder="Phone">
         <input id="mEmail" class="form-control col-6" placeholder="Email">
 
-        <!-- IMGBB Upload -->
-        <div class="col-6">
-          <label>ID Photo</label>
-          <input type="file" id="mIDPhotoFile" class="form-control">
-          <input id="mIDPhoto" class="form-control mt-1" placeholder="Identy PhotoURL" readonly>
-        </div>
+        <!-- Photo Upload Fields -->
+        <input type="file" id="mIDFile" class="form-control col-6">
+        <input id="mIDPhoto" class="form-control col-6" placeholder="Identy PhotoURL">
+        <button class="btn btn-primary col-12" onclick="uploadPhoto('ID')">Upload ID Photo</button>
 
-        <div class="col-6">
-          <label>Member Photo</label>
-          <input type="file" id="mPhotoFile" class="form-control">
-          <input id="mPhoto" class="form-control mt-1" placeholder="Member PhotoURL" readonly>
-        </div>
+        <input type="file" id="mFile" class="form-control col-6">
+        <input id="mPhoto" class="form-control col-6" placeholder="Member PhotoURL">
+        <button class="btn btn-primary col-12" onclick="uploadPhoto('Member')">Upload Member Photo</button>
 
         <input id="mStatus" class="form-control col-6" placeholder="Status">
         <input id="mOTP" class="form-control col-6" placeholder="OTP">
@@ -255,50 +251,46 @@ function sendEmail(){
 </div>
 
 <script>
-const IMGBB_API_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // <-- यहाँ राख्नुहोस्
+async function uploadPhoto(type){
+  const name = document.getElementById("mName").value.trim();
+  if(!name){ alert("Enter Member Name first"); return; }
 
-async function uploadToIMGBB(file, customName){
+  let fileInput, urlInput;
+  if(type === 'ID'){
+    fileInput = document.getElementById("mIDFile");
+    urlInput  = document.getElementById("mIDPhoto");
+  } else {
+    fileInput = document.getElementById("mFile");
+    urlInput  = document.getElementById("mPhoto");
+  }
+
+  if(!fileInput.files.length){ alert("Select file first"); return; }
+  const file = fileInput.files[0];
+
   const form = new FormData();
   form.append("image", file);
-  if(customName) form.append("name", customName);
+  form.append("name", name); // filename on imgbb
 
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-    method: "POST",
-    body: form
-  });
-  const data = await res.json();
-  if(data.success){
-    return data.data.url;
-  } else {
-    throw new Error(data.error.message || "Upload failed");
+  const apiKey = "YOUR_IMGBB_API_KEY"; // 🔑 Replace with your IMGBB API key
+
+  try{
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: "POST",
+      body: form
+    });
+    const data = await res.json();
+    if(data.success){
+      urlInput.value = data.data.url;
+      alert(type + " Photo uploaded successfully!");
+    } else {
+      console.log(data);
+      alert("Upload failed");
+    }
+  }catch(err){
+    console.error(err);
+    alert("Upload error");
   }
 }
-
-// ID Photo Upload
-document.getElementById("mIDPhotoFile").addEventListener("change", async function(){
-  const file = this.files[0];
-  if(!file) return;
-  const memberName = document.getElementById("mName").value || "IDPhoto";
-  try{
-    const url = await uploadToIMGBB(file, memberName + "_ID");
-    document.getElementById("mIDPhoto").value = url;
-  }catch(err){
-    alert("ID Photo Upload Failed: " + err.message);
-  }
-});
-
-// Member Photo Upload
-document.getElementById("mPhotoFile").addEventListener("change", async function(){
-  const file = this.files[0];
-  if(!file) return;
-  const memberName = document.getElementById("mName").value || "MemberPhoto";
-  try{
-    const url = await uploadToIMGBB(file, memberName + "_Member");
-    document.getElementById("mPhoto").value = url;
-  }catch(err){
-    alert("Member Photo Upload Failed: " + err.message);
-  }
-});
 </script>
 
   <!-- USERS MODAL -->
