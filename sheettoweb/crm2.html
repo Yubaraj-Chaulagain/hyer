@@ -318,7 +318,7 @@ async function uploadPhotosAndSave() {
 </div>
 
   <!--member tranjection result result-->
-<div id="memberResultTab">
+  <div id="memberResultSection" style="display:none;">
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -1157,6 +1157,8 @@ function deleteMember(){
   <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
   <li class="nav-item"><a class="nav-link" onclick="showTab('transferSection')">Transfers</a></li>
   <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="load('getMemberResult')">Member Result</a></li>
+
 </ul>
 
 
@@ -1341,13 +1343,41 @@ function load(a){
   userSection.style.display = "none";
   itemSection.style.display = "none";
   transactionSection.style.display = "none";
-
+memberResultSection.style.display = "none";  // नयाँ line
+  
   if(a === "getUsers"){ userSection.style.display="block"; loadUsers(); return; }
   if(a === "getItems"){ itemSection.style.display="block"; loadItems(); return; }
   if(a === "getTransactions"){ transactionSection.style.display="block"; loadTransactions(); return; }
-
+if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMemberResults();return; }
   MembersSection.style.display = "block";
   loadMembers();
+}
+  
+function loadMemberResults(){
+  const sheetURL = "YOUR_GOOGLE_SHEET_CSV_URL"; // output=csv भएको link
+
+  Papa.parse(sheetURL, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      let html = "";
+      results.data.forEach(row => {
+        html += `<tr>
+          <td>${row.MemberID || ""}</td>
+          <td>${row["Result Balance"] || ""}</td>
+          <td>${row.Deposit || ""}</td>
+          <td>${row.Withdraw || ""}</td>
+          <td>${row.LoanPay || ""}</td>
+          <td>${row["Transfer Sent"] || ""}</td>
+          <td>${row["Transfer Received"] || ""}</td>
+          <td>${row.Buying || ""}</td>
+          <td>${row.Selling || ""}</td>
+          <td>${row.Loans || ""}</td>
+        </tr>`;
+      });
+      document.getElementById("memberResultBody").innerHTML = html;
+    }
+  });
 }
 
   
