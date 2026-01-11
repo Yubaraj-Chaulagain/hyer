@@ -1319,37 +1319,47 @@ function drawMembers(data){
     return;
   }
 
+  // Build table header
   let h = "<tr>";
-  Object.keys(data[0]).forEach(k => h += `<th>${k}</th>`);
+  Object.keys(data[0]).forEach(k => {
+    if(k === "Member PhotoURL") h += `<th>Photo</th>`;
+    else h += `<th>${k}</th>`;
+  });
   h += "<th>Action</th></tr>";
 
+  // Build table rows
   data.forEach(m => {
     h += "<tr>";
-    Object.values(m).forEach(v => h += `<td>${v}</td>`);
+    Object.entries(m).forEach(([k,v])=>{
+      if(k === "Member PhotoURL"){
+        // show photo with max width/height
+        h += `<td><img src="${v}" alt="Photo" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"></td>`;
+      } else {
+        h += `<td>${v}</td>`;
+      }
+    });
+    
     h += `<td>
       <button class="btn btn-sm btn-warning"
  onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
 
-<button class="btn btn-sm btn-info"
+      <button class="btn btn-sm btn-info"
  onclick="showMemberHistory('${m.MemberID}')">History</button>
 
- <button class="btn btn-warning btn-sm"
+      <button class="btn btn-warning btn-sm"
         onclick="openTransferModal()">
-  🔁 Transfer Balance
-</button>
+        🔁 Transfer Balance
+      </button>
 
-<button class="btn btn-info btn-sm"
+      <button class="btn btn-info btn-sm"
        onclick="openTransferHistory('${m.MemberID}')">
-  📜 Transfer History
-</button>
-
-
+        📜 Transfer History
+      </button>
     </td></tr>`;
   });
 
   tbl.innerHTML = h;
 }
-
 
 function searchMembers(){
   const q = memberSearch.value.toLowerCase();
