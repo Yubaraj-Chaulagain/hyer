@@ -1322,8 +1322,8 @@ function drawMembers(data){
   // Build table header
   let h = "<tr>";
   Object.keys(data[0]).forEach(k => {
-    if(k === "Member PhotoURL") h += `<th>Photo</th>`;
-    else h += `<th>${k}</th>`;
+    if(k === "Member PhotoURL") h += `<th>Photos</th>`; // one column for both photos
+    else if(k !== "Identy PhotoURL") h += `<th>${k}</th>`; // skip Identy PhotoURL column, handled together
   });
   h += "<th>Action</th></tr>";
 
@@ -1332,13 +1332,16 @@ function drawMembers(data){
     h += "<tr>";
     Object.entries(m).forEach(([k,v])=>{
       if(k === "Member PhotoURL"){
-        // show photo with max width/height
-        h += `<td><img src="${v}" alt="Photo" style="width:50px;height:50px;border-radius:50%;object-fit:cover;"></td>`;
-      } else {
+        // Show both photos side by side
+        h += `<td>
+          <img src="${m["Identy PhotoURL"]}" alt="ID Photo" style="width:40px;height:40px;border-radius:5px;object-fit:cover;margin-right:5px;">
+          <img src="${v}" alt="Member Photo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+        </td>`;
+      } else if(k !== "Identy PhotoURL"){ // skip Identy column
         h += `<td>${v}</td>`;
       }
     });
-    
+
     h += `<td>
       <button class="btn btn-sm btn-warning"
  onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
@@ -1360,6 +1363,7 @@ function drawMembers(data){
 
   tbl.innerHTML = h;
 }
+
 
 function searchMembers(){
   const q = memberSearch.value.toLowerCase();
