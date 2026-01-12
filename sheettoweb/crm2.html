@@ -1267,7 +1267,8 @@ function deleteMember(){
 </div>
    <!--member tranjection result result-->
   <div id="memberResultSection" style="display:none;">
-  <table class="table table-bordered">
+    <input class="form-control mb-2" placeholder="Search Member Result" onkeyup="searchMemberResult(this.value)">
+<table class="table table-bordered">
     <thead>
       <tr>
         <th>MemberID</th>
@@ -1315,6 +1316,15 @@ fetch(sheetURL)
   })
   .catch(err => console.error("Error loading sheet:", err));
 </script>
+  <script>
+  function searchMemberResult(q){
+  q = q.toLowerCase();
+  document.querySelectorAll("#memberResultBody tr").forEach(tr=>{
+    tr.style.display =
+      tr.innerText.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+  </script>
 
 
 </div>
