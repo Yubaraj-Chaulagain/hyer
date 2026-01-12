@@ -1281,6 +1281,7 @@ function deleteMember(){
         <th>Buying</th>
         <th>Selling</th>
         <th>Loans</th>
+        <th>Office To Transfar</th>
       </tr>
     </thead>
     <tbody id="memberResultBody"></tbody>
@@ -1309,6 +1310,7 @@ fetch(sheetURL)
           <td>${cols[7]}</td> <!-- Buying -->
           <td>${cols[8]}</td> <!-- Selling -->
           <td>${cols[9]}</td> <!-- Loans -->
+          <td>${cols[10]}</td> <!-- Office To Transfar -->
         </tr>`;
     });
 
@@ -1384,6 +1386,7 @@ function loadMemberResults(){
           <td>${row.Buying || ""}</td>
           <td>${row.Selling || ""}</td>
           <td>${row.Loans || ""}</td>
+          <td>${row.["Office To Transfar"] || ""}</td>
         </tr>`;
       });
       document.getElementById("memberResultBody").innerHTML = html;
