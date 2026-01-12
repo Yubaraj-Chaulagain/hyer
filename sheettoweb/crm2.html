@@ -1635,6 +1635,10 @@ function printInvoice(txn){
 <script>
     function showTab(tabName) {
   // Hide all sections
+      if(memberResultTimer){
+  clearInterval(memberResultTimer);
+  memberResultTimer = null;
+}
   const transferSection = document.getElementById("transferSection");
   document.getElementById("MembersSection").style.display = "none";
   document.getElementById("userSection").style.display = "none";
@@ -1671,10 +1675,12 @@ function printInvoice(txn){
     transferSection.style.display = "block";
     loadTransfers(); // ✅ IMPORTANT
   }
-      else if(tabName === "memberResultSection") {
-    document.getElementById("memberResultSection").style.display = "block";
-    document.querySelector('a.nav-link[onclick="showTab(\'memberResultSection\')"]').classList.add("active");
-  }
+     else if(tabName === "memberResultSection"){
+  document.getElementById("memberResultSection").style.display = "block";
+  loadMemberResults();          // first load
+  startMemberResultAutoRefresh(); // auto refresh start
+}
+
   else if(tabName === "loanSection") {
     document.getElementById("loanSection").style.display = "block";
     loadLoans();
@@ -1765,6 +1771,18 @@ function showLoanHistory(loanID){
 <script>
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
+</script>
+  <script>
+  let memberResultTimer = null;
+
+function startMemberResultAutoRefresh(){
+  if(memberResultTimer) return; // already running
+
+  memberResultTimer = setInterval(() => {
+    loadMemberResults();
+    console.log("Member Result auto refreshed");
+  }, 60000); // 60000 ms = 1 minute
+}
 </script>
 </body>
 </html>
