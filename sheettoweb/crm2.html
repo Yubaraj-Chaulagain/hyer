@@ -4,6 +4,8 @@
 <title>Finance System</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 </head>
 <body class="p-3">
 
@@ -1107,7 +1109,7 @@ function deleteMember(){
   <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
   <li class="nav-item"><a class="nav-link" onclick="showTab('transferSection')">Transfers</a></li>
   <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
-  <li class="nav-item"><a class="nav-link" onclick="load('getMemberResult')">Member Result</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('memberResultSection')">Member Result</a></li>
 
 </ul>
 
@@ -1287,37 +1289,7 @@ function deleteMember(){
     <tbody id="memberResultBody"></tbody>
   </table>
 </div>
-<script>
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=467702364&single=true&output=csv"; // Published Google Sheet CSV URL
-
-fetch(sheetURL)
-  .then(res => res.text())
-  .then(csv => {
-    const rows = csv.trim().split("\n").slice(1); // Skip header row
-    let html = "";
-
-    rows.forEach(row => {
-      const cols = row.split(","); // Split CSV columns
-      html += `
-        <tr>
-          <td>${cols[0]}</td> <!-- MemberID -->
-          <td>${cols[1]}</td> <!-- Result Balance -->
-          <td>${cols[2]}</td> <!-- Deposit -->
-          <td>${cols[3]}</td> <!-- Withdraw -->
-          <td>${cols[4]}</td> <!-- LoanPay -->
-          <td>${cols[5]}</td> <!-- Transfer Sent -->
-          <td>${cols[6]}</td> <!-- Transfer Received -->
-          <td>${cols[7]}</td> <!-- Buying -->
-          <td>${cols[8]}</td> <!-- Selling -->
-          <td>${cols[9]}</td> <!-- Loans -->
-          <td>${cols[10]}</td> <!-- Office To Transfar -->
-        </tr>`;
-    });
-
-    document.getElementById("memberResultBody").innerHTML = html;
-  })
-  .catch(err => console.error("Error loading sheet:", err));
-</script>
+  
   <script>
   function searchMemberResult(q){
   q = q.toLowerCase();
@@ -1366,18 +1338,22 @@ if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMembe
   loadMembers();
 }
   
-function loadMemberResults(){
-  const sheetURL = "YOUR_GOOGLE_SHEET_CSV_URL"; // output=csv भएको link
+<script>
+const MEMBER_RESULT_SHEET =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?output=csv";
 
-  Papa.parse(sheetURL, {
+function loadMemberResults(){
+  Papa.parse(MEMBER_RESULT_SHEET + "&t=" + Date.now(), {
     download: true,
     header: true,
-    complete: function(results) {
+    skipEmptyLines: true,
+    complete: function(results){
       let html = "";
-      results.data.forEach(row => {
+
+      results.data.forEach(row=>{
         html += `<tr>
           <td>${row.MemberID || ""}</td>
-          <td>${row["Result Balance"] || ""}</td>
+          <td>${row["Result ballance"] || ""}</td>
           <td>${row.Deposit || ""}</td>
           <td>${row.Withdraw || ""}</td>
           <td>${row.LoanPay || ""}</td>
@@ -1386,15 +1362,18 @@ function loadMemberResults(){
           <td>${row.Buying || ""}</td>
           <td>${row.Selling || ""}</td>
           <td>${row.Loans || ""}</td>
-          <td>${row.["Office To Transfar"] || ""}</td>
+          <td>${row["Office To Transfar"] || ""}</td>
         </tr>`;
       });
+
       document.getElementById("memberResultBody").innerHTML = html;
     }
   });
 }
+</script>
 
-  
+
+<script>  
 function loadMembers(){
   fetch(API,{
     method:"POST",
@@ -1674,15 +1653,24 @@ function printInvoice(txn){
     loadTransactions();
     document.querySelector('a.nav-link[onclick="showTab(\'transactionSection\')"]').classList.add("active");
   }
-    else if(tabName === "transferSection"){
-    transferSection.style.display = "block";
-    loadTransfers(); // ✅ IMPORTANT
-  }
-     else if(tabName === "memberResultSection"){
-  document.getElementById("memberResultSection").style.display = "block";
-  loadMemberResults();          // first load
-  startMemberResultAutoRefresh(); // auto refresh start
+  else if(tabName === "transferSection"){
+  transferSection.style.display = "block";
+  loadTransfers();
+  document
+    .querySelector('a.nav-link[onclick="showTab(\'transferSection\')"]')
+    .classList.add("active");
 }
+
+ else if(tabName === "memberResultSection"){
+  document.getElementById("memberResultSection").style.display = "block";
+  loadMemberResults();                
+  startMemberResultAutoRefresh();     
+
+  document
+    .querySelector('a.nav-link[onclick="showTab(\'memberResultSection\')"]')
+    .classList.add("active");
+}
+
 
   else if(tabName === "loanSection") {
     document.getElementById("loanSection").style.display = "block";
