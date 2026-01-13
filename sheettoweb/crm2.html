@@ -1338,7 +1338,6 @@ if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMembe
   loadMembers();
 }
   
-<script>
 const MEMBER_RESULT_SHEET =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?output=csv";
 
@@ -1370,10 +1369,9 @@ function loadMemberResults(){
     }
   });
 }
-</script>
 
 
-<script>  
+
 function loadMembers(){
   fetch(API,{
     method:"POST",
@@ -1602,20 +1600,25 @@ async function confirmTransfer() {
     alert("Transfer history load error");
   });
 }
+ 
 
-</script>  
 
-
-  <script>
 // ===== INVOICE PRINT =====
 function printInvoice(txn){
  let w=window.open("");
  w.document.write(`<h3>Invoice</h3><pre>${JSON.stringify(txn,null,2)}</pre>`);
  w.print();
 }
-</script>
-<script>
-    function showTab(tabName) {
+
+    
+    
+let memberResultTimer = null;
+
+function startMemberResultAutoRefresh(){
+  memberResultTimer = setInterval(loadMemberResults, 60000); // 1 minute
+}
+
+function showTab(tabName) {
   // Hide all sections
       if(memberResultTimer){
   clearInterval(memberResultTimer);
@@ -1678,8 +1681,7 @@ function printInvoice(txn){
     document.querySelector('a.nav-link[onclick="showTab(\'loanSection\')"]').classList.add("active");
   }
 }
-  </script>
- <script>
+  
    function openEmailForm(){
   document.getElementById("emailForm").style.display = "block";
 }
@@ -1688,8 +1690,7 @@ function closeEmailForm(){
   document.getElementById("emailForm").style.display = "none";
 }
 
- </script>
-  <script>
+ 
 
 function loadTransfers(){
   fetch(API,{
@@ -1726,8 +1727,7 @@ function loadTransfers(){
     console.error(err);
   });
 }
-<script>
-  <script>
+
 function showLoanHistory(loanID){
   fetch(scriptURL,{
     method:"POST",
@@ -1757,13 +1757,10 @@ function showLoanHistory(loanID){
     });
   });
 }
-  </script>
-
-<script>
+  
 const loanSection = document.getElementById("loanSection");
 const tbodyLoans = document.getElementById("tbodyLoans");
-</script>
-  <script>
+
   let memberResultTimer = null;
 
 function startMemberResultAutoRefresh(){
