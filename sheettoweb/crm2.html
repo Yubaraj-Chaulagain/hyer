@@ -568,15 +568,6 @@ function printReport(){
 let transactions = [];
 let editTxnMode = false;
 let currentTxnID = "";
-searchTransactions.onkeyup = () => {
-  const v = searchTransactions.value.toLowerCase();
-  drawTransactions(
-    transactions.filter(t =>
-      Object.values(t).join(" ").toLowerCase().includes(v)
-    )
-  );
-};
-
 function openTransactionModal(){
   editTxnMode = false;
   currentTxnID = "";
@@ -645,16 +636,6 @@ function deleteTransaction(id){
 <script>
 // Load loans
 let loans = [];
-const searchLoans = document.getElementById("searchLoans");
-
-searchLoans.addEventListener("keyup", () => {
-  const v = searchLoans.value.toLowerCase();
-  drawLoans(
-    loans.filter(l =>
-      Object.values(l).join(" ").toLowerCase().includes(v)
-    )
-  );
-});
 const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
 const LoanID = document.getElementById("LoanID");
 const LoanMemberID = document.getElementById("LoanMemberID");
@@ -876,18 +857,6 @@ function drawItems(data=items){
   });
 }
 
-// Search items
-const searchItems = document.getElementById("searchItems");
-
-searchItems.addEventListener("keyup", () => {
-  const v = searchItems.value.toLowerCase();
-  drawItems(
-    items.filter(i =>
-      Object.values(i).join(" ").toLowerCase().includes(v)
-    )
-  );
-});
-
 // Save item (add/update)
 function saveItem(){
   const payload = {
@@ -982,17 +951,6 @@ function drawUsers(data=users){
   });
 }
 
-// Search users
-  const searchUsers = document.getElementById("searchUsers");
-
-searchUsers.addEventListener("keyup", () => {
-  const v = searchUsers.value.toLowerCase();
-  drawUsers(
-    users.filter(u =>
-      Object.values(u).join(" ").toLowerCase().includes(v)
-    )
-  );
-});
 // Save user (add/update)
 function saveUser(){
   const payload = {
@@ -1735,7 +1693,7 @@ function loadTransfers(){
 }
 
 function showLoanHistory(loanID){
-  fetch(scriptURL,{
+ fetch(API,{
     method:"POST",
     body:JSON.stringify({
       action:"getLoanPayments",
