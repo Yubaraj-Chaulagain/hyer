@@ -1787,5 +1787,17 @@ searchItems.addEventListener("keyup", () => {
   );
 });
 </script>
+<script>
+const searchLoans = document.getElementById("searchLoans");
+
+searchLoans.addEventListener("keyup", () => {
+  const v = searchLoans.value.toLowerCase();
+  drawLoans(
+    loans.filter(l =>
+      Object.values(l).join(" ").toLowerCase().includes(v)
+    )
+  );
+});
+</script>
 </body>
 </html>
