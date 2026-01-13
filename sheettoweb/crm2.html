@@ -1250,7 +1250,7 @@ function deleteMember(){
   <h5 class="mt-3">Loans</h5>
   <!-- Test Loan Email Reminder -->
 <button class="btn btn-warning mb-2" onclick="testEmailReminder()">Test Email Reminder</button>
-
+<input id="searchLoans" class="form-control mb-2" placeholder="Search loans">
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
@@ -1771,6 +1771,18 @@ searchUsers.addEventListener("keyup", () => {
   drawUsers(
     users.filter(u =>
       Object.values(u).join(" ").toLowerCase().includes(v)
+    )
+  );
+});
+</script>
+<script>
+const searchItems = document.getElementById("searchItems");
+
+searchItems.addEventListener("keyup", () => {
+  const v = searchItems.value.toLowerCase();
+  drawItems(
+    items.filter(i =>
+      Object.values(i).join(" ").toLowerCase().includes(v)
     )
   );
 });
