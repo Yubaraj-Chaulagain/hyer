@@ -1617,13 +1617,13 @@ let memberResultTimer = null;
 function startMemberResultAutoRefresh(){
   memberResultTimer = setInterval(loadMemberResults, 60000); // 1 minute
 }
-
-function showTab(tabName) {
-  // Hide all sections
-      if(memberResultTimer){
+ if(memberResultTimer){
   clearInterval(memberResultTimer);
   memberResultTimer = null;
 }
+function showTab(tabName) {
+  // Hide all sections
+     
   const transferSection = document.getElementById("transferSection");
   document.getElementById("MembersSection").style.display = "none";
   document.getElementById("userSection").style.display = "none";
