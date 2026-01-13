@@ -1317,6 +1317,7 @@ function login(){
   document.getElementById("login").style.display="none";
   document.getElementById("app").style.display="block";
   if(role!=="admin") document.querySelectorAll(".admin").forEach(x=>x.remove());
+
   showTab("MembersSection");
 
  });
@@ -1610,17 +1611,7 @@ function printInvoice(txn){
  w.print();
 }
 
-    
-    
-let memberResultTimer = null;
-
-function startMemberResultAutoRefresh(){
-  memberResultTimer = setInterval(loadMemberResults, 60000); // 1 minute
-}
- if(memberResultTimer){
-  clearInterval(memberResultTimer);
-  memberResultTimer = null;
-}
+  
 function showTab(tabName) {
   // Hide all sections
      
