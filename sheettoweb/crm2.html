@@ -1763,5 +1763,17 @@ function startMemberResultAutoRefresh(){
   }, 60000); // 60000 ms = 1 minute
 }
 </script>
+<script>
+const searchUsers = document.getElementById("searchUsers");
+
+searchUsers.addEventListener("keyup", () => {
+  const v = searchUsers.value.toLowerCase();
+  drawUsers(
+    users.filter(u =>
+      Object.values(u).join(" ").toLowerCase().includes(v)
+    )
+  );
+});
+</script>
 </body>
 </html>
