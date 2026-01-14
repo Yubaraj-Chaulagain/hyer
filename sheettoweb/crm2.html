@@ -594,26 +594,42 @@ function openTxnEdit(t){
 }
 
 // Draw
-function drawTransactions(data = transactions){
-  tbodyTransactions.innerHTML = "";
-  data.forEach(t=>{
-    tbodyTransactions.innerHTML += `<tr>
-      <td>${t.TxnID}</td>
-      <td>${t.MemberID}</td>
-      <td>${t.type || t.Type}</td>
-      <td>${t.amount || t.Amount}</td>
-      <td>${t.details || t.Details || ""}</td>
-      <td>${t.payment || t.PaymentType}</td>
-      <td>${t.date || t.Date}</td>
-      <td>
-        <button class="btn btn-sm btn-warning"
-          onclick='openTxnEdit(${JSON.stringify(t)})'>Edit</button>
-        <button class="btn btn-sm btn-danger"
-          onclick='deleteTransaction("${t.TxnID}")'>Del</button>
-      </td>
-    </tr>`;
+function loadTransactions(data){
+  transactions = data;
+
+  // Transfer मात्र छान्ने
+  transfers = transactions.filter(t =>
+    (t.Type || "").includes("Transfer")
+  );
+
+  drawTransactions(transactions);
+  drawTransfers(transfers);
+}
+    function drawTransfers(data = transfers){
+  const tbody = document.getElementById("transferTableBody");
+  tbody.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML =
+      "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.RefMemberID || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>${t.Type || ""}</td>
+      </tr>
+    `;
   });
 }
+
 
 // Delete
 function deleteTransaction(id){
