@@ -1121,6 +1121,7 @@ function deleteMember(){
   
  <!-- MEMBERS SECTION -->
 <div id="MembersSection">
+  <button class="btn btn-success" onclick="openAdd()">+ Add Member</button>
   <input id="memberSearch" class="form-control mb-2"
          placeholder="Search members"
          onkeyup="searchMembers()">
@@ -1310,6 +1311,7 @@ memberResultSection.style.display = "none";  // नयाँ line
 if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMemberResults();return; }
   MembersSection.style.display = "block";
   loadMembers();
+  loadMemberResults();
 }
 </script>
 <script>
