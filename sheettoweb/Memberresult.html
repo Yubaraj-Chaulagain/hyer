@@ -21,6 +21,7 @@
     <tbody id="memberResultBody"></tbody>
   </table>
 </div>
+
  <script>
   function searchMemberResult(q){
   q = q.toLowerCase();
@@ -61,6 +62,8 @@ function loadMemberResult(){
       });
 
       document.getElementById("memberResultBody").innerHTML = html;
+document.getElementById("memberResultSection").style.display = "block";
+
     }
   });
 }
