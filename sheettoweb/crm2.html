@@ -1173,9 +1173,28 @@ function searchUsersTable(){
 
 <!-- ITEMS SECTION -->
 <div id="itemSection" style="display:none;">
-  <input id="searchItems" class="form-control mb-2" placeholder="Search items">
+ <input id="searchItems"
+       class="form-control mb-2"
+       placeholder="Search items"
+       onkeyup="searchItemsTable()">
+  <script>
+function searchItemsTable(){
+  const q = document
+    .getElementById("searchItems")
+    .value
+    .toLowerCase();
 
-  <table class="table table-bordered table-sm">
+  const filtered = items.filter(i =>
+    Object.values(i).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawItems(filtered);
+}
+</script>
+
+ <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
         <th>ItemID</th>
@@ -1218,8 +1237,26 @@ function searchUsersTable(){
 <!-- TRANSACTIONS SECTION -->
 <div id="transactionSection" style="display:none;">
     <input id="searchTransactions"
- class="form-control mb-2"
- placeholder="Search transactions">
+       class="form-control mb-2"
+       placeholder="Search transactions"
+       onkeyup="searchTransactionsTable()">
+<script>
+function searchTransactionsTable(){
+  const q = document
+    .getElementById("searchTransactions")
+    .value
+    .toLowerCase();
+
+  const filtered = transactions.filter(t =>
+    Object.values(t).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawTransactions(filtered);
+}
+</script>
+
 
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
@@ -1244,7 +1281,27 @@ function searchUsersTable(){
   <h5 class="mt-3">Loans</h5>
   <!-- Test Loan Email Reminder -->
 <button class="btn btn-warning mb-2" onclick="testEmailReminder()">Test Email Reminder</button>
-<input id="searchLoans" class="form-control mb-2" placeholder="Search loans">
+<input id="searchLoans"
+       class="form-control mb-2"
+       placeholder="Search loans"
+       onkeyup="searchLoansTable()">
+<script>
+function searchLoansTable(){
+  const q = document
+    .getElementById("searchLoans")
+    .value
+    .toLowerCase();
+
+  const filtered = loans.filter(l =>
+    Object.values(l).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawLoans(filtered);
+}
+</script>
+
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
