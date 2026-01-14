@@ -1136,7 +1136,27 @@ function deleteMember(){
 </script>
   <!-- USERS SECTION -->
 <div id="userSection" style="display:none;">
-  <input id="searchUsers" class="form-control mb-2" placeholder="Search users">
+ <input id="searchUsers"
+       class="form-control mb-2"
+       placeholder="Search users"
+       onkeyup="searchUsersTable()">
+<script>
+function searchUsersTable(){
+  const q = document
+    .getElementById("searchUsers")
+    .value
+    .toLowerCase();
+
+  const filtered = users.filter(u =>
+    Object.values(u).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawUsers(filtered);
+}
+</script>
+
   <table class="table table-bordered table-sm">
     <thead class="table-dark">
       <tr>
