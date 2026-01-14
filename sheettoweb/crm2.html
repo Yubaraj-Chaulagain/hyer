@@ -1314,10 +1314,7 @@ if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMembe
 </script>
   <script>
 const MEMBER_RESULT_SHEET =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?output=csv";
-
-function loadMemberResults(){
-  Papa.parse(MEMBER_RESULT_SHEET + "&t=" + Date.now(), {
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=467702364&single=true&output=csv";
     download: true,
     header: true,
     skipEmptyLines: true,
@@ -1325,18 +1322,20 @@ function loadMemberResults(){
       let html = "";
 
       results.data.forEach(row=>{
+        if(!row.MemberID) return;
+
         html += `<tr>
-          <td>${row.MemberID || ""}</td>
-          <td>${row["Result ballance"] || ""}</td>
-          <td>${row.Deposit || ""}</td>
-          <td>${row.Withdraw || ""}</td>
-          <td>${row.LoanPay || ""}</td>
-          <td>${row["Transfer Sent"] || ""}</td>
-          <td>${row["Transfer Received"] || ""}</td>
-          <td>${row.Buying || ""}</td>
-          <td>${row.Selling || ""}</td>
-          <td>${row.Loans || ""}</td>
-          <td>${row["Office To Transfar"] || ""}</td>
+          <td>${row.MemberID}</td>
+          <td>${row["Result ballance"]}</td>
+          <td>${row.Deposit}</td>
+          <td>${row.Withdraw}</td>
+          <td>${row.LoanPay}</td>
+          <td>${row["Transfer Sent"]}</td>
+          <td>${row["Transfer Received"]}</td>
+          <td>${row.Buying}</td>
+          <td>${row.Selling}</td>
+          <td>${row.Loans}</td>
+          <td>${row["Office To Transfar"]}</td>
         </tr>`;
       });
 
@@ -1344,7 +1343,8 @@ function loadMemberResults(){
     }
   });
 }
-  </script>
+</script>
+
   <script>
 
 
