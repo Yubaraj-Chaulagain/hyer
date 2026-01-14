@@ -20,3 +20,12 @@
     <tbody id="memberResultBody"></tbody>
   </table>
 </div>
+ <script>
+  function searchMemberResult(q){
+  q = q.toLowerCase();
+  document.querySelectorAll("#memberResultBody tr").forEach(tr=>{
+    tr.style.display =
+      tr.innerText.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+  </script>
