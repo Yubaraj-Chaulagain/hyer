@@ -1263,10 +1263,38 @@ function searchItemsTable(){
         <th>RefMemberID</th>
       </tr>
     </thead>
-    <tbody id="transferTabBody"></tbody>
+    <tbody id="tbodyTransfers"></tbody>
   </table>
 
 </div>
+<script>
+  let transfers = [];
+
+function drawTransfers(data = transfers){
+  const tbody = document.getElementById("tbodyTransfers");
+  tbody.innerHTML = "";
+
+  if(!data || data.length === 0){
+    tbody.innerHTML =
+      "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.FromMemberID || ""}</td>
+        <td>${t.ToMemberID || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>${t.Details || ""}</td>
+      </tr>
+    `;
+  });
+}
+</script>
 
 <!-- TRANSACTIONS SECTION -->
 <div id="transactionSection" style="display:none;">
@@ -1783,36 +1811,17 @@ function closeEmailForm(){
 function loadTransfers(){
   fetch(API,{
     method:"POST",
-    body: JSON.stringify({
-      action:"getTransferHistory"
-    })
+    body: JSON.stringify({ action:"getTransfers" })
   })
   .then(r=>r.json())
-  .then(data=>{
-    const tbody = document.getElementById("transferTabBody");
-    tbody.innerHTML = "";
+  .then(d=>{
+    console.log("TRANSFERS:", d); // 🔥 DEBUG
 
-    if(!data || data.length === 0){
-      tbody.innerHTML =
-        "<tr><td colspan='7'>No transfers found</td></tr>";
-      return;
-    }
-
-    data.forEach(t=>{
-      tbody.innerHTML += `
-      <tr>
-        <td>${t.TxnID || ""}</td>
-        <td>${t.MemberID || ""}</td>
-        <td>${t.Type || ""}</td>
-        <td>${t.Amount || ""}</td>
-        <td>${t.Details || ""}</td>
-        <td>${t.Date || ""}</td>
-        <td>${t.RefMemberID || ""}</td>
-      </tr>`;
-    });
+    transfers = d;
+    drawTransfers();
   })
-  .catch(err=>{
-    console.error(err);
+  .catch(e=>{
+    console.error("Transfer load error", e);
   });
 }
 
