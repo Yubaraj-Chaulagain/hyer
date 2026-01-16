@@ -592,19 +592,7 @@ function openTxnEdit(t){
 
   txnModalInstance.show();
 }
-
 // Draw
-function loadTransactions(data){
-  transactions = data;
-
-  // Transfer मात्र छान्ने
-  transfers = transactions.filter(t =>
-    (t.Type || "").includes("Transfer")
-  );
-
-  drawTransactions(transactions);
-  drawTransfers(transfers);
-}
     function drawTransfers(data = transfers){
   const tbody = document.getElementById("transferTableBody");
   tbody.innerHTML = "";
@@ -648,6 +636,39 @@ function deleteTransaction(id){
 }
 
   </script>
+  <script>
+function drawTransactions(data = transactions){
+  const tbody = document.getElementById("tbodyTransactions");
+  tbody.innerHTML = "";
+
+  if(!data || data.length === 0){
+    tbody.innerHTML =
+      "<tr><td colspan='8' class='text-center'>No transactions found</td></tr>";
+    return;
+  }
+
+  data.forEach(t=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.Type || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.Details || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>
+          <button class="btn btn-sm btn-warning"
+            onclick='openTxnEdit(${JSON.stringify(t)})'>Edit</button>
+          <button class="btn btn-sm btn-danger"
+            onclick='deleteTransaction("${t.TxnID}")'>Del</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+</script>
+
 
 <script>
 // Load loans
@@ -1718,11 +1739,11 @@ function showTab(tabName) {
     loadItems();
     document.querySelector('a.nav-link[onclick="showTab(\'itemSection\')"]').classList.add("active");
   }
-  else if(tabName === "transactionSection") {
-    document.getElementById("transactionSection").style.display = "block";
-    loadTransactions();
-    document.querySelector('a.nav-link[onclick="showTab(\'transactionSection\')"]').classList.add("active");
-  }
+ else if(tabName === "transactionSection") {
+  document.getElementById("transactionSection").style.display = "block";
+  loadTransactions(); // 🔥 REQUIRED
+}
+
   else if(tabName === "transferSection"){
   transferSection.style.display = "block";
   loadTransfers();
