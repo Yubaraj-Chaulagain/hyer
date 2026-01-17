@@ -1284,16 +1284,17 @@ function drawTransfers(data = transfers){
     tbody.innerHTML += `
       <tr>
         <td>${t.TxnID || ""}</td>
-        <td>${t.FromMemberID || ""}</td>
-        <td>${t.ToMemberID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.Type || ""}</td>
         <td>${t.Amount || ""}</td>
         <td>${t.PaymentType || ""}</td>
         <td>${t.Date || ""}</td>
-        <td>${t.Details || ""}</td>
+        <td>${t.RefMemberID || ""}</td>
       </tr>
     `;
   });
 }
+
 </script>
 
 <!-- TRANSACTIONS SECTION -->
@@ -1419,7 +1420,7 @@ function searchLoansTable(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwePNvVXB8oQ7oCbHT9Ns2hcILUrQcZLA1UB3Q8mCVSCz9u3oR4Vh-247G0RlKRMXcR/exec";
+const API="https://script.google.com/macros/s/AKfycbyqG6p1A9yKJE3UKgAcTUtRtfM9YT2md-h4-zNJKweE-9yz9r9T6rvyaJDaWe7o_rMl/exec";
 let role="";
 
 function login(){
