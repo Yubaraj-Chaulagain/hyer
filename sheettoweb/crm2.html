@@ -1258,7 +1258,7 @@ function searchItemsTable(){
         <th>MemberID</th>
         <th>Type</th>
         <th>Amount</th>
-        <th>Details</th>
+        <th>PaymentType</th>
         <th>Date</th>
         <th>RefMemberID</th>
       </tr>
@@ -1267,16 +1267,42 @@ function searchItemsTable(){
   </table>
 
 </div>
-<script>
-  let transfers = [];
+  <script>
+  // Logged-in member ID, login पछि set गर्नुहोस्
 
-function drawTransfers(data = transfers){
+// Tab open + auto load
+function openTransfersTab() {
+  // सबै tab hide गर्नुहोस्
+  document.querySelectorAll('.tabcontent').forEach(tab => tab.style.display = 'none');
+
+  // Transfer tab देखाउनुहोस् (id सही गर्नुभयो)
+  document.getElementById("transferSection").style.display = "block";
+
+  // Transfer table load
+  loadTransfers(currentMemberID);
+}
+
+// Fetch transfer history from Apps Script
+function loadTransfers(memberID){
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "getTransferHistory",
+      MemberID: memberID
+    })
+  })
+  .then(response => response.json())
+  .then(data => drawTransfers(data))
+  .catch(err => console.error("Transfer fetch failed:", err));
+}
+
+// Draw table
+function drawTransfers(data){
   const tbody = document.getElementById("tbodyTransfers");
   tbody.innerHTML = "";
 
   if(!data || data.length === 0){
-    tbody.innerHTML =
-      "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
     return;
   }
 
@@ -1294,7 +1320,6 @@ function drawTransfers(data = transfers){
     `;
   });
 }
-
 </script>
 
 <!-- TRANSACTIONS SECTION -->
@@ -1420,7 +1445,7 @@ function searchLoansTable(){
 
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbys3HoZOgymihU_7OmQ9Cmc8kZs-hLzIuf28uav8XLCJAk_u_RO2vabm8HNsvArCC6V/exec";
+const API="https://script.google.com/macros/s/AKfycbwPrm6vDh_wE8bv2Tj7CHCWfis6j9Sq-Tn03vG0TXH8c6q-C6aDhgaoFyb0Y6pv-e0T/exec";
 let role="";
 
 function login(){
