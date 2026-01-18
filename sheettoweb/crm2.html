@@ -1298,7 +1298,7 @@ function loadTransfers(memberID){
   .catch(err => console.error("Transfer fetch failed:", err));
 }
 
-// Draw table
+// Draw
 function drawTransfers(data){
   const tbody = document.getElementById("tbodyTransfers");
   tbody.innerHTML = "";
@@ -1413,7 +1413,7 @@ function searchLoansTable(){
   <div id="memberResultSection" style="display:none;">
     <input class="form-control mb-2" placeholder="Search Member Result" onkeyup="searchMemberResult(this.value)">
 <table class="table table-bordered">
-    <thead>
+    <thead class="table-dark">
       <tr>
         <th>MemberID</th>
         <th>Result Balance</th>
