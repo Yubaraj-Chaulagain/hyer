@@ -1243,11 +1243,10 @@ function searchItemsTable(){
 </div>
 
   <!-- TRANSFER SECTION -->
-  <div id="transferSection" style="display:none;">
-<div class="mb-2">
-    <button class="btn btn-success" onclick="openTransferModal()">
-      🔁 New Transfer
-    </button>
+ <!-- TRANSFER SECTION -->
+<div id="transferSection" style="display:none;">
+  <div class="mb-2">
+    <button class="btn btn-success" onclick="openTransferModal()">🔁 New Transfer</button>
   </div>
 
   <table class="table table-bordered table-sm">
@@ -1264,8 +1263,8 @@ function searchItemsTable(){
     </thead>
     <tbody id="tbodyTransfers"></tbody>
   </table>
-
 </div>
+
   <script>
   // Logged-in member ID, login पछि set गर्नुहोस्
 
@@ -1320,7 +1319,54 @@ function drawTransfers(data){
   });
 }
 </script>
+  <script>
+function loadTransfersTable(){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({ action: "getTransactions" })
+  })
+  .then(r => r.json())
+  .then(data => {
+    // Only transfers
+    const transfers = data.filter(t => t.Type === "Transfer");
 
+    // Prepare Transfer Out / In columns
+    const tableData = transfers.map(t => ({
+      TxnID: t.TxnID,
+      Date: t.Date,
+      PaymentType: t.PaymentType,
+      TransferOut: t.MemberID ? t.Amount : "",
+      TransferIn: t.RefMemberID ? t.Amount : "",
+      Type: t.Type
+    }));
+
+    drawTransfersTable(tableData);
+  });
+}
+
+function drawTransfersTable(data){
+  const tbody = document.getElementById("tbodyTransfers");
+  tbody.innerHTML = "";
+
+  if(!data.length){
+    tbody.innerHTML = "<tr><td colspan='6' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID}</td>
+        <td>${t.Date}</td>
+        <td>${t.PaymentType}</td>
+        <td>${t.TransferOut || "-"}</td>
+        <td>${t.TransferIn || "-"}</td>
+        <td>${t.Type}</td>
+      </tr>
+    `;
+  });
+}
+</script>
 <!-- TRANSACTIONS SECTION -->
 <div id="transactionSection" style="display:none;">
  <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
