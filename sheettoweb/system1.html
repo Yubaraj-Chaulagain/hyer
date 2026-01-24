@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<title>सहकारी व्यवस्थापन प्रणाली</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:'Noto Sans Devanagari',Arial;background:#f4f6f8}
+header{background:#0d6efd;color:#fff;padding:12px;text-align:center;font-size:18px}
+.container{padding:12px}
+.card{background:#fff;border-radius:8px;padding:12px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+input,select,button{width:100%;padding:8px;margin:5px 0}
+button{background:#0d6efd;color:white;border:none;border-radius:5px}
+button.danger{background:#dc3545}
+button.secondary{background:#6c757d}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav button{flex:1}
+.hidden{display:none}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:6px;text-align:center}
+th{background:#eee}
+img{border-radius:50%}
+.small{font-size:12px;color:#666}
+</style>
+</head>
+
+<body>
+<header>सहकारी व्यवस्थापन प्रणाली</header>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <div class="card">
+    <h3>Login</h3>
+    <input id="lu" placeholder="Username">
+    <input id="lp" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container hidden" id="dash">
+
+  <!-- PROFILE -->
+  <div class="card">
+    <img id="pp" width="70">
+    <div id="pinfo"></div>
+    <button class="secondary" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- NAV -->
+  <div class="card nav">
+    <button onclick="show('memberBox')" class="admin staff">Member</button>
+    <button onclick="show('txnBox')" class="admin staff">Savings / Withdraw</button>
+    <button onclick="show('transferBox')" class="admin staff member">Transfer</button>
+    <button onclick="show('stockBox')" class="admin staff">Stock</button>
+    <button onclick="show('reportBox')" class="admin">All Transactions</button>
+    <button onclick="show('myBox')" class="member">My Account</button>
+  </div>
+
+  <!-- ADD MEMBER -->
+  <div class="card hidden" id="memberBox">
+    <h3>नयाँ सदस्य</h3>
+    <input id="mname" placeholder="नाम">
+    <input id="mphone" placeholder="फोन">
+    <input id="memail" placeholder="Email">
+    <button onclick="addMember()">Save</button>
+  </div>
+
+  <!-- SAVINGS / WITHDRAW -->
+  <div class="card hidden" id="txnBox">
+    <h3>Savings / Withdraw</h3>
+    <input id="tmember" placeholder="Member ID">
+    <input id="tamt" type="number" placeholder="Amount">
+    <button onclick="savings()">Savings</button>
+    <button class="danger" onclick="withdraw()">Withdraw</button>
+  </div>
+
+  <!-- TRANSFER -->
+  <div class="card hidden" id="transferBox">
+    <h3>Member Transfer</h3>
+    <input id="from" placeholder="From Member ID">
+    <input id="to" placeholder="To Member ID">
+    <input id="tamt2" type="number" placeholder="Amount">
+    <button onclick="transfer()">Transfer</button>
+  </div>
+
+  <!-- STOCK -->
+  <div class="card hidden" id="stockBox">
+    <h3>Stock Sell</h3>
+    <input id="sid" placeholder="Item ID">
+    <input id="smember" placeholder="Member ID">
+    <input id="sqty" type="number" placeholder="Qty">
+    <button onclick="sellStock()">Sell</button>
+  </div>
+
+  <!-- MEMBER SELF -->
+  <div class="card hidden" id="myBox">
+    <h3>मेरो विवरण</h3>
+    <div id="myData"></div>
+    <table id="myTx"></table>
+  </div>
+
+  <!-- ADMIN REPORT -->
+  <div class="card hidden" id="reportBox">
+    <h3>All Transactions</h3>
+    <table id="allTx"></table>
+  </div>
+
+</div>
+  <div class="card" id="chartBox">
+  <h3>Dashboard Summary</h3>
+  <canvas id="txChart"></canvas>
+  <canvas id="loanChart"></canvas>
+</div>
+
+
+<script>
+/******** CONFIG ********/
+const API = "https://script.google.com/macros/s/AKfycbxeNjXp4OUWPD5AZGb9k9eY53aqf2L3t21uf5bD8Y4NDoG9rMQWj9L0kJP1TJ7Km3etvA/exec";
+const KEY = "sarojkumar643";
+
+/******** LOGIN ********/
+function login(){
+ fetch(API,{method:"POST",body:JSON.stringify({
+  apiKey:KEY,action:"login",
+  username:lu.value,password:lp.value,
+  agent:navigator.userAgent
+ })}).then(r=>r.json()).then(j=>{
+  if(!j.success) return alert(j.error);
+
+  sessionStorage.setItem("user",j.username);
+  sessionStorage.setItem("role",j.role);
+  sessionStorage.setItem("mid",j.member_id||"");
+  sessionStorage.setItem("photo",j.photo||"");
+
+  loginBox.classList.add("hidden");
+  dash.classList.remove("hidden");
+
+  pp.src=j.photo||"https://via.placeholder.com/70";
+  pinfo.innerHTML=`<b>${j.username}</b><br><span class="small">${j.role}</span>`;
+
+  roleUI(j.role);
+ });
+}
+
+/******** ROLE UI ********/
+function roleUI(r){
+ document.querySelectorAll(".admin,.staff,.member")
+   .forEach(e=>e.classList.add("hidden"));
+ document.querySelectorAll("."+r)
+   .forEach(e=>e.classList.remove("hidden"));
+}
+
+/******** NAV ********/
+function show(id){
+ document.querySelectorAll("#dash .card").forEach(c=>{
+  if(c.id && c.id!=="") c.classList.add("hidden");
+ });
+ document.getElementById(id).classList.remove("hidden");
+
+ if(id=="myBox") loadMy();
+ if(id=="reportBox") loadAllTx();
+}
+
+/******** API HELPERS ********/
+function post(o){
+ return fetch(API,{method:"POST",body:JSON.stringify(o)})
+  .then(r=>r.json());
+}
+
+/******** ACTIONS ********/
+function addMember(){
+ post({apiKey:KEY,action:"addMember",
+  name:mname.value,phone:mphone.value,email:memail.value
+ }).then(()=>alert("Saved"));
+}
+
+function savings(){
+ post({apiKey:KEY,action:"savings",
+  member:tmember.value,amount:+tamt.value,
+  by:sessionStorage.getItem("user")
+ }).then(r=>alert(r.success?"Done":r.error));
+}
+
+function withdraw(){
+ post({apiKey:KEY,action:"withdraw",
+  member:tmember.value,amount:+tamt.value,
+  by:sessionStorage.getItem("user")
+ }).then(r=>alert(r.success?"Done":r.error));
+}
+
+function transfer(){
+ post({apiKey:KEY,action:"transfer",
+  from:from.value,to:to.value,
+  amount:+tamt2.value,
+  by:sessionStorage.getItem("user")
+ }).then(r=>alert(r.success?"Done":r.error));
+}
+
+function sellStock(){
+ post({apiKey:KEY,action:"sellStock",
+  item:sid.value,member:smember.value,
+  qty:+sqty.value,by:sessionStorage.getItem("user")
+ }).then(r=>alert(r.success?"Sold":r.error));
+}
+
+/******** MEMBER VIEW ********/
+function loadMy(){
+ post({apiKey:KEY,action:"memberTx",
+  member:sessionStorage.getItem("mid")
+ }).then(d=>{
+  let h="<tr><th>Date</th><th>Type</th><th>Amt</th></tr>";
+  d.slice(1).forEach(r=>{
+    h+=`<tr><td>${new Date(r[1]).toLocaleDateString()}</td><td>${r[2]}</td><td>${r[5]}</td></tr>`;
+  });
+  myTx.innerHTML=h;
+ });
+}
+
+/******** ADMIN REPORT ********/
+function loadAllTx(){
+ post({apiKey:KEY,action:"allTx"})
+ .then(d=>{
+  let h="<tr><th>Date</th><th>Type</th><th>From</th><th>To</th><th>Amt</th></tr>";
+  d.slice(1).forEach(r=>{
+    h+=`<tr><td>${new Date(r[1]).toLocaleDateString()}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
+  });
+  allTx.innerHTML=h;
+ });
+}
+
+/******** LOGOUT ********/
+function logout(){
+ post({apiKey:KEY,action:"logout",
+  username:sessionStorage.getItem("user")
+ }).then(()=>{
+  sessionStorage.clear();
+  location.reload();
+ });
+}
+
+  function loadCharts(){
+ post({apiKey:KEY,action:"allTx"}).then(d=>{
+  let sav=0,wit=0,trs=0;
+  d.slice(1).forEach(r=>{
+    if(r[2]=="SAVINGS") sav+=+r[5];
+    if(r[2]=="WITHDRAW") wit+=+r[5];
+    if(r[2]=="TRANSFER") trs+=+r[5];
+  });
+
+  new Chart(txChart,{
+    type:"pie",
+    data:{
+      labels:["Savings","Withdraw","Transfer"],
+      datasets:[{data:[sav,wit,trs]}]
+    }
+  });
+ });
+
+ fetch(API,{method:"POST",body:JSON.stringify({
+  apiKey:KEY,action:"memberLoan",
+  member:sessionStorage.getItem("mid")
+ })}).then(r=>r.json()).then(d=>{
+  let labels=[],bal=[];
+  d.schedule.slice(1).forEach(r=>{
+    labels.push("M"+r[1]);
+    bal.push(r[6]);
+  });
+
+  new Chart(loanChart,{
+    type:"line",
+    data:{
+      labels:labels,
+      datasets:[{label:"Loan Balance",data:bal,fill:false}]
+    }
+  });
+ });
+}
+
+</script>
+</body>
+</html>
