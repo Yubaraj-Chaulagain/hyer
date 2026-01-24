@@ -8,6 +8,21 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
 <style>
+.admin,
+.staff,
+.member{
+  display:none;
+}
+
+/* जब body मा role set हुन्छ */
+body.admin-role .admin{display:block;}
+body.admin-role .staff{display:block;} /* admin can see staff */
+body.admin-role .member{display:block;} /* admin can see member */
+
+body.staff-role .staff{display:block;}
+body.staff-role .member{display:block;} /* staff can see member */
+
+body.member-role .member{display:block;}
 *{box-sizing:border-box}
 body{margin:0;font-family:'Noto Sans Devanagari',Arial;background:#f4f6f8}
 header{background:#0d6efd;color:#fff;padding:12px;text-align:center;font-size:18px}
@@ -105,17 +120,18 @@ img{border-radius:50%}
   </div>
 
   <!-- ADMIN REPORT -->
+   <div class="card" id="chartBox">
+  <h3>Dashboard Summary</h3>
+  <canvas id="txChart"></canvas>
+  <canvas id="loanChart"></canvas>
+</div>
   <div class="card hidden" id="reportBox">
     <h3>All Transactions</h3>
     <table id="allTx"></table>
   </div>
 
 </div>
-  <div class="card" id="chartBox">
-  <h3>Dashboard Summary</h3>
-  <canvas id="txChart"></canvas>
-  <canvas id="loanChart"></canvas>
-</div>
+ 
 
 
 <script>
@@ -145,16 +161,20 @@ ip:"WEB"
   pinfo.innerHTML=`<b>${j.username}</b><br><span class="small">${j.role}</span>`;
 
   roleUI(j.role);
+loadCharts();
+
  });
 }
 
 /******** ROLE UI ********/
-function roleUI(r){
- document.querySelectorAll(".admin,.staff,.member")
-   .forEach(e=>e.classList.add("hidden"));
- document.querySelectorAll("."+r)
-   .forEach(e=>e.classList.remove("hidden"));
+function roleUI(role){
+  document.body.classList.remove("admin-role","staff-role","member-role");
+
+  if(role === "admin") document.body.classList.add("admin-role");
+  if(role === "staff") document.body.classList.add("staff-role");
+  if(role === "member") document.body.classList.add("member-role");
 }
+
 
 /******** NAV ********/
 function show(id){
