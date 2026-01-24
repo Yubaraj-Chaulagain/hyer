@@ -60,7 +60,12 @@ img{border-radius:50%}
 <div class="container hidden" id="dash">
 
   <!-- PROFILE -->
-  <div class="card">
+    <div class="card">
+  <h3>Password Change</h3>
+  <input type="password" id="oldpw" placeholder="Old Password">
+  <input type="password" id="newpw" placeholder="New Password">
+  <button onclick="changePw()">Change Password</button>
+</div>
     <img id="pp" width="70">
     <div id="pinfo"></div>
     <button class="secondary" onclick="logout()">Logout</button>
@@ -136,7 +141,7 @@ img{border-radius:50%}
 
 <script>
 /******** CONFIG ********/
-const API = "https://script.google.com/macros/s/AKfycbzzDe15JM9SrkVg9WXFzDzgjonIpZng0d7tyZSAb9wgMHfYT7WW_ndVpZVyy6UJ9lqYDg/exec";
+const API = "https://script.google.com/macros/s/AKfycbyBCm1NGeOOc7nP3Ei5dgmJe5AwLrEEeEAmr3_RFS4Ueftw4W9lUYN0LtUK_X83Za5dqQ/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -301,6 +306,24 @@ function logout(){
   });
  });
 }
+  function changePw(){
+  post({
+    apiKey:KEY,
+    action:"changePassword",
+    username:sessionStorage.getItem("user"),
+    oldPassword:oldpw.value,
+    newPassword:newpw.value
+  }).then(r=>{
+    if(r.success){
+      alert("Password changed successfully");
+      oldpw.value="";
+      newpw.value="";
+    }else{
+      alert(r.error);
+    }
+  });
+}
+
 
 </script>
 </body>
