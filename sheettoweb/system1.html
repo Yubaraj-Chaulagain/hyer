@@ -416,63 +416,98 @@ function upload(input, target) {
 
 // Submit
 function submitForm() {
+  if (window.__loadedMember) {
+    alert("Already exists. Use UPDATE button.");
+    return;
+  }
+
   fetch(API_URL, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       action: "save",
       data: collectData()
     })
   })
-  .then(r=>r.json())
-  .then(()=>alert("Member Saved"));
+  .then(r => r.json())
+  .then(res => {
+    alert("Member Added");
+    clearForm();
+  });
 }
 
 function loadMember() {
-  const id = MemberID.value;
-  if (!id) return;
+  if (!MemberID.value) return;
 
   fetch(API_URL, {
-    method:"POST",
-    body:JSON.stringify({ action:"get", memberId:id })
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "get",
+      memberId: MemberID.value
+    })
   })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.found) return alert("Not found");
+  .then(r => r.json())
+  .then(res => {
+    if (!res.found) return alert("Not found");
     Object.entries(res.data).forEach(([k,v])=>{
-      if(document.getElementById(k)) document.getElementById(k).value=v;
+      if (document.getElementById(k)) document.getElementById(k).value = v;
     });
   });
 }
 
 
 function fillForm(data) {
-  if (!data) {
-    alert("Member not found");
-    return;
-  }
   Object.keys(data).forEach(k => {
-    if (document.getElementById(k))
-      document.getElementById(k).value = data[k];
+    const el = document.getElementById(k);
+    if (el) el.value = data[k];
   });
 }
 
-  function updateForm() {
-  const data = collectData();
-  google.script.run
-    .withSuccessHandler(() => alert("Member Updated"))
-    .saveMember(data);
+function clearForm() {
+  document.querySelectorAll("input,select,textarea")
+    .forEach(e => e.value = "");
+  window.__loadedMember = null;
 }
+
+
+ function updateForm() {
+  if (!window.__loadedMember) {
+    alert("Search member first");
+    return;
+  }
+
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "update",
+      data: collectData()
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    alert("Member Updated");
+  });
+}
+
+
   
 function deleteForm() {
-  if(!confirm("Delete member?")) return;
+  if (!confirm("Delete member?")) return;
 
-  fetch(API_URL,{
-    method:"POST",
-    body:JSON.stringify({ action:"delete", memberId: MemberID.value })
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "delete",
+      memberId: MemberID.value
+    })
   })
-  .then(r=>r.json())
-  .then(()=>alert("Deleted"));
+  .then(r => r.json())
+  .then(() => alert("Deleted"));
 }
+
 
   function collectData() {
   const data = {};
@@ -480,10 +515,35 @@ function deleteForm() {
     .forEach(e => data[e.id] = e.value);
   return data;
 }
-  function clearForm() {
-  document.querySelectorAll("input,select,textarea")
-    .forEach(e => e.value = "");
+  
+  function searchMember() {
+  const id = document.getElementById("MemberID").value.trim();
+  if (!id) {
+    alert("Enter Member ID");
+    return;
+  }
+
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "get",
+      memberId: id
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if (!res.found) {
+      alert("Member not found");
+      clearForm();
+      document.getElementById("MemberID").value = id;
+      return;
+    }
+    fillForm(res.data);
+    window.__loadedMember = id; // 🔑 update permission
+  });
 }
+
 
 </script>
 
