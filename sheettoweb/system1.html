@@ -3,12 +3,17 @@
 <header class="topbar hidden" id="topbar">
 <div class="title">सहकारी व्यवस्थापन प्रणाली</div>
  <div class="profile" onclick="toggleProfile()">
+  <div class="card hidden" id="profileBox">
+  <h3>My Profile</h3>
+  <img id="bigPhoto" width="100"><br>
+ <input type="file" id="photoFile" accept="image/*">
+  <button onclick="uploadPhoto()">📷 Upload Photo</button>
+
+  <div id="profileInfo"></div>
+</div>
     <img id="ppTop" src="https://via.placeholder.com/40">
     <div class="dropdown" id="profileMenu">
-      <div onclick="show('profileBox')">👤 Profile
-      <input type="file" id="photoFile" accept="image/*">
-<button onclick="uploadPhoto()">📷 Upload Photo</button>
-</div>
+      <div onclick="show('profileBox')">👤 Profile</div>
       <div onclick="show('pwBox')">🔑 Change Password</div>
       <div onclick="logout()">🚪 Logout</div>
     </div>
@@ -78,13 +83,7 @@
 <div class="container hidden" id="dash">
 
   <!-- PROFILE -->
-    <div class="card">
-  <h3>Password Change</h3>
-  <input type="password" id="oldpw" placeholder="Old Password">
-  <input type="password" id="newpw" placeholder="New Password">
-  <button onclick="changePw()">Change Password</button>
-</div>
-    <img id="ppTop" width="70">
+    <img id="ppDash" width="70">
     <div id="pinfo"></div>
     <button class="secondary" onclick="logout()">Logout</button>
   </div>
@@ -200,8 +199,7 @@ ip:"WEB"
   dash.classList.remove("hidden");
   topbar.classList.remove("hidden");
 
-  pp.src=j.photo||"https://via.placeholder.com/70";
-   ppTop.src = url;
+  ppDash.src = j.photo || "https://via.placeholder.com/70";
   pinfo.innerHTML=`<b>${j.username}</b><br><span class="small">${j.role}</span>`;
 
   roleUI(j.role);
@@ -389,20 +387,35 @@ document.addEventListener("click",e=>{
   `;
 }
 function updatePhoto(){
+  const url = newPhoto.value;
+
   post({
     apiKey:KEY,
     action:"updatePhoto",
     username:sessionStorage.getItem("user"),
-    photo:newPhoto.value
+    photo:url
   }).then(r=>{
     if(r.success){
       alert("Photo updated");
-      sessionStorage.setItem("photo",newPhoto.value);
-      pp.src = newPhoto.value;
-      bigPhoto.src = newPhoto.value;
-    }else alert(r.error);
+
+      // ✅ session update
+      sessionStorage.setItem("photo", url);
+
+      // ✅ top bar photo
+      document.getElementById("ppTop").src = url;
+
+      // ✅ dashboard photo
+      document.getElementById("ppDash").src = url;
+
+      // ✅ profile big photo
+      document.getElementById("bigPhoto").src = url;
+
+    }else{
+      alert(r.error);
+    }
   });
 }
+
 function uploadPhoto(){
   const file = document.getElementById("photoFile").files[0];
   if(!file) return alert("फोटो छान्नुहोस्");
@@ -430,9 +443,18 @@ function updatePhotoToSystem(url){
     photo:url
   }).then(r=>{
     if(r.success){
-      sessionStorage.setItem("photo",url);
-      ppTop.src = url;
-      bigPhoto.src = url;
+
+      sessionStorage.setItem("photo", url);
+
+      // 🔝 Top bar
+      document.getElementById("ppTop").src = url;
+
+      // 🧾 Dashboard
+      document.getElementById("ppDash").src = url;
+
+      // 👤 Profile page
+      document.getElementById("bigPhoto").src = url;
+
       alert("Photo सफलतापूर्वक update भयो");
     }else{
       alert(r.error);
