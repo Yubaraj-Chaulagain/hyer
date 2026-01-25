@@ -49,7 +49,10 @@
 <input id="CitizenshipNo">
 
 <label>Citizenship District</label>
-<select id="CitizenshipDistrict"></select>
+<select id="CitizenshipDistrict">
+  <option value="">Select District</option>
+</select>
+
 
 <label>Citizenship Issue Date</label>
 <input type="date" id="CitizenshipIssueDate">
@@ -174,31 +177,39 @@
 <script>
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // replace
-
 let adminData = {};
 
-fetch(ADMIN_URL).then(r=>r.json()).then(d=>{
-  adminData=d;
-  Province.innerHTML='<option>Select</option>';
-  Object.keys(d).forEach(p=>Province.innerHTML+=`<option>${p}</option>`);
-});
+fetch(ADMIN_URL)
+  .then(res => res.json())
+  .then(data => {
+    adminData = data;
+    Province.innerHTML = `<option value="">Select Province</option>`;
+    Object.keys(adminData).forEach(p =>
+      Province.innerHTML += `<option value="${p}">${p}</option>`
+    );
+  });
 
-Province.onchange=()=>{
-  District.innerHTML='<option>Select</option>';
-  Object.keys(adminData[Province.value]).forEach(d=>{
-    District.innerHTML+=`<option>${d}</option>`;
-    CitizenshipDistrict.innerHTML+=`<option>${d}</option>`;
+Province.onchange = () => {
+  District.innerHTML = `<option value="">Select District</option>`;
+  CitizenshipDistrict.innerHTML = `<option value="">Select District</option>`;
+  Municipality.innerHTML = `<option value="">Select Municipality</option>`;
+
+  Object.keys(adminData[Province.value]).forEach(d => {
+    District.innerHTML += `<option value="${d}">${d}</option>`;
+    CitizenshipDistrict.innerHTML += `<option value="${d}">${d}</option>`;
   });
 };
 
-District.onchange=()=>{
-  Municipality.innerHTML='<option>Select</option>';
-  adminData[Province.value][District.value].forEach(m=>{
-    Municipality.innerHTML+=`<option>${m}</option>`;
-  });
+District.onchange = () => {
+  Municipality.innerHTML = `<option value="">Select Municipality</option>`;
+  adminData[Province.value][District.value].forEach(m =>
+    Municipality.innerHTML += `<option value="${m}">${m}</option>`
+  );
 };
 
-for(let i=1;i<=35;i++) WardNo.innerHTML+=`<option>${i}</option>`;
+// Ward
+for (let i = 1; i <= 35; i++) {
+  WardNo.innerHTML += `<option value="${i}">${i}</option>`;
 
 function upload(input,target){
   const r=new FileReader();
