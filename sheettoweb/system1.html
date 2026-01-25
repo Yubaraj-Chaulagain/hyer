@@ -7,7 +7,7 @@
     <img id="ppTop" src="https://via.placeholder.com/40">
 
     <div class="dropdown" id="profileMenu">
-      <div onclick="show('profileBox')">👤 Profile</div>
+      <div onclick="openProfile()">👤 Profile</div>
       <div onclick="show('pwBox')">🔑 Change Password</div>
       <div onclick="logout()">🚪 Logout</div>
     </div>
@@ -84,9 +84,6 @@
 <div class="container hidden" id="dash">
 
   <!-- PROFILE -->
-    <img id="ppDash" width="70">
-    <div id="pinfo"></div>
-    <button class="secondary" onclick="logout()">Logout</button>
   <div class="card hidden" id="profileBox">
   <h3>My Profile</h3>
 
@@ -207,12 +204,10 @@ function login(){
 
   // 🖼️ Photo sync
   document.getElementById("ppTop").src  = j.photo || "https://via.placeholder.com/40";
-  document.getElementById("ppDash").src = j.photo || "https://via.placeholder.com/70";
   document.getElementById("bigPhoto").src = j.photo || "";
+  document.querySelector(".nav").classList.remove("hidden");
 
-  pinfo.innerHTML = `<b>${j.username}</b><br>${j.role}`;
-
-  roleUI(j.role);
+roleUI(j.role);
   loadCharts();
  });
 }
@@ -414,9 +409,6 @@ function updatePhoto(){
       // ✅ top bar photo
       document.getElementById("ppTop").src = url;
 
-      // ✅ dashboard photo
-      document.getElementById("ppDash").src = url;
-
       // ✅ profile big photo
       document.getElementById("bigPhoto").src = url;
 
@@ -459,8 +451,6 @@ function updatePhotoToSystem(url){
       // 🔝 Top bar
       document.getElementById("ppTop").src = url;
 
-      // 🧾 Dashboard
-      document.getElementById("ppDash").src = url;
 
       // 👤 Profile page
       document.getElementById("bigPhoto").src = url;
@@ -471,6 +461,18 @@ function updatePhotoToSystem(url){
     }
   });
 }
+
+  function openProfile(){
+  // सबै dashboard card hide
+  document.querySelectorAll("#dash .card").forEach(c=>{
+    c.classList.add("hidden");
+  });
+
+  // profile मात्र show
+  document.getElementById("profileBox").classList.remove("hidden");
+  loadProfile();
+}
+
 
 
   if(!sessionStorage.getItem("user")){
