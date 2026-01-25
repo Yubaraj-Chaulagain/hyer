@@ -786,11 +786,26 @@ function uploadCitizenship(){
 }
 
 function searchMembers(){
+
+  if(!searchKey.value.trim()){
+    alert("नाम / मोबाइल / Member ID लेख्नुहोस्");
+    return;
+  }
+
+  show("memberListBox");
+
   post({
     apiKey:KEY,
     action:"searchMembers",
-    key:searchKey.value
+    key:searchKey.value.trim()
   }).then(d=>{
+
+    if(!d || !d.length){
+      memberTable.innerHTML =
+        "<tr><td colspan='4'>❌ Member फेला परेन</td></tr>";
+      return;
+    }
+
     let h = `
     <tr>
       <th>ID</th><th>नाम</th><th>फोन</th><th>Action</th>
