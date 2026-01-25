@@ -265,7 +265,7 @@ let CTZ_PHOTO_URL = "";
 <script>
 /******** CONFIG ********/
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-const API = "https://script.google.com/macros/s/AKfycbyTQk8JY3aBGrTSnYhAK7tuAFVnkSSrSjtb9cbgjfX5WigTrQf-wQkHHPAa2npY0Vq22A/exec";
+const API = "https://script.google.com/macros/s/AKfycbwWu8Y3TveduJ9_So6bYLjA1yPVoOru6x3O2XORRO7a3X3yZkzTMgMOTp81GCUwMIf20A/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -338,15 +338,10 @@ function post(o){
 
 /******** ACTIONS ********/
 function addMember(){
-
-  // 🔐 photo compulsory
-  if(!MEMBER_PHOTO_URL || !CTZ_PHOTO_URL){
-    return alert("पहिला सदस्य फोटो र नागरिकता फोटो upload गर्नुहोस्");
-  }
-
   post({
     apiKey:KEY,
-    action:"addMember",
+    action: EDIT_MEMBER_ID ? "updateMember" : "addMember",
+    member: EDIT_MEMBER_ID || "",
 
     name:m_name.value,
     dob:m_dob.value,
@@ -368,10 +363,8 @@ function addMember(){
     ctz_no:m_ctz_no.value,
     ctz_dist:m_ctz_dist.value,
     ctz_date:m_ctz_date.value,
-
-    // ✅ REAL URL from imgbb
-    ctz_img: CTZ_PHOTO_URL,
-    photo: MEMBER_PHOTO_URL,
+    ctz_img:CTZ_PHOTO_URL,
+    photo:MEMBER_PHOTO_URL,
 
     share_qty:m_share_qty.value,
     share_amount:m_share_amt.value,
@@ -382,29 +375,68 @@ function addMember(){
     nominee_relation:n_relation.value,
     nominee_phone:n_phone.value,
     nominee_citizenship:n_ctz.value
-
   }).then(r=>{
-  alert("Member ID: " + r.member_id);
-
-  // 🔄 clear inputs
-  document.querySelectorAll("input").forEach(i=>{
-    if(i.type !== "button" && i.type !== "submit" && i.type !== "file"){
-      i.value = "";
-    }
+    alert("Saved");
+    EDIT_MEMBER_ID = "";   // 🔥 important
   });
+}
 
-  document.querySelectorAll("select").forEach(s=>{
-    s.selectedIndex = 0;
+function deleteMember(mid){
+  if(!confirm("Delete this member?")) return;
+
+  post({
+    apiKey:KEY,
+    action:"deleteMember",
+    member:mid
+  }).then(r=>{
+    alert("Deleted");
+    searchMembers();
   });
+}
+function editMember(mid){
+  post({
+    apiKey:KEY,
+    action:"getMember",
+    member:mid
+  }).then(m=>{
+    show("memberBox");
 
-  // file inputs
-  m_photo.value = "";
-  m_ctz_img.value = "";
+    m_name.value = m.name;
+    m_dob.value = m.dob;
+    m_gender.value = m.gender;
 
-  // reset uploaded urls
-  MEMBER_PHOTO_URL = "";
-  CTZ_PHOTO_URL = "";
-});
+    m_father.value = m.father;
+    m_mother.value = m.mother;
+    m_spouse.value = m.spouse;
+    m_profession.value = m.profession;
+
+    m_province.value = m.province;
+    m_district.value = m.district;
+    m_palika.value = m.palika;
+    m_ward.value = m.ward;
+
+    m_phone.value = m.phone;
+    m_email.value = m.email;
+
+    m_ctz_no.value = m.citizenship_no;
+    m_ctz_dist.value = m.citizenship_dist;
+    m_ctz_date.value = m.citizenship_date;
+
+    m_share_qty.value = m.share_qty;
+    m_share_amt.value = m.share_amount;
+    m_join_date.value = m.join_date;
+    m_type.value = m.member_type;
+
+    n_name.value = m.nominee_name;
+    n_relation.value = m.nominee_relation;
+    n_phone.value = m.nominee_phone;
+    n_ctz.value = m.nominee_citizenship;
+
+    MEMBER_PHOTO_URL = m.photo;
+    CTZ_PHOTO_URL = m.citizenship_img;
+
+    EDIT_MEMBER_ID = mid;   // 🔥 THIS LINE
+  });
 }
 
 
@@ -663,14 +695,6 @@ function updatePhotoToSystem(url){
   document.getElementById("profileBox").classList.remove("hidden");
   loadProfile();
 }
-
-
-
-  if(!sessionStorage.getItem("user")){
-  topbar.classList.add("hidden");
-  dash.classList.add("hidden");
-  loginBox.classList.remove("hidden");
-}
   
 function uploadCitizenship(){
   const file = m_ctz_img.files[0];
@@ -712,7 +736,11 @@ function uploadCitizenship(){
   });
 }
 
-
+ if(!sessionStorage.getItem("user")){
+  topbar.classList.add("hidden");
+  dash.classList.add("hidden");
+  loginBox.classList.remove("hidden");
+}
 </script>
   <script>
 /******** INITIAL UI STATE ********/
