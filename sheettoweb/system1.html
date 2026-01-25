@@ -3,16 +3,86 @@
 <head>
   <base target="_top">
   <style>
-    body { font-family: Arial; max-width: 900px; margin: auto; }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input, select, textarea { width: 100%; padding: 6px; }
-    h3 { background:#eee; padding:6px; }
-  </style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f2f4f7;
+    margin: 0;
+    padding: 10px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    padding: 14px 18px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+  }
+
+  h3 {
+    margin: 16px 0 8px;
+    padding: 6px 10px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px 12px;
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: block;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 5px 7px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  textarea {
+    resize: none;
+    height: 40px;
+  }
+
+  .span2 { grid-column: span 2; }
+  .span3 { grid-column: span 3; }
+  .span4 { grid-column: span 4; }
+
+  button {
+    margin-top: 12px;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #1e40af;
+  }
+
+  @media (max-width: 1024px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .span2,.span3,.span4 { grid-column: span 2; }
+  }
+</style>
+
 </head>
 <body>
-
-<h3>Member Registration Form</h3>
-
+<h3>welcome my dashboard</h3>
 <label>Member ID</label>
 <input id="MemberID" placeholder="M001" required>
 
