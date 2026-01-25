@@ -482,5 +482,29 @@ function updatePhotoToSystem(url){
 
 
 </script>
+  <script>
+/******** INITIAL UI STATE ********/
+window.onload = function(){
+
+  // login छैन भने
+  if(!sessionStorage.getItem("user")){
+
+    // topbar hide
+    document.getElementById("topbar").classList.add("hidden");
+
+    // dashboard hide
+    document.getElementById("dash").classList.add("hidden");
+
+    // login box show
+    document.getElementById("loginBox").classList.remove("hidden");
+
+    // dashboard भित्रका सबै card hide
+    document.querySelectorAll("#dash .card").forEach(c=>{
+      c.classList.add("hidden");
+    });
+  }
+}
+</script>
+
 </body>
 </html>
