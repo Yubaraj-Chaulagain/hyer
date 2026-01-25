@@ -381,13 +381,28 @@ function addMember(){
     nominee_citizenship:n_ctz.value
 
   }).then(r=>{
-    alert("Member ID: " + r.member_id);
+  alert("Member ID: " + r.member_id);
 
-    // optional reset
-    MEMBER_PHOTO_URL = "";
-    CTZ_PHOTO_URL = "";
+  // 🔄 clear inputs
+  document.querySelectorAll("input").forEach(i=>{
+    if(i.type !== "button" && i.type !== "submit" && i.type !== "file"){
+      i.value = "";
+    }
   });
-}
+
+  document.querySelectorAll("select").forEach(s=>{
+    s.selectedIndex = 0;
+  });
+
+  // file inputs
+  m_photo.value = "";
+  m_ctz_img.value = "";
+
+  // reset uploaded urls
+  MEMBER_PHOTO_URL = "";
+  CTZ_PHOTO_URL = "";
+});
+
 
 
 function savings(){
