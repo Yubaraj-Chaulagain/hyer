@@ -336,6 +336,7 @@
 
 
 <script>
+  const API_URL = "PASTE_YOUR_WEB_APP_URL_HERE";
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
@@ -415,20 +416,34 @@ function upload(input, target) {
 
 // Submit
 function submitForm() {
-  const data = collectData();
-  google.script.run
-    .withSuccessHandler(() => alert("Member Added"))
-    .saveMember(data);
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "save",
+      data: collectData()
+    })
+  })
+  .then(r=>r.json())
+  .then(()=>alert("Member Saved"));
 }
 
 function loadMember() {
-  const memberId = document.getElementById("MemberID").value;
-  if (!memberId) return;
+  const id = MemberID.value;
+  if (!id) return;
 
-  google.script.run
-    .withSuccessHandler(fillForm)
-    .getMember(memberId);
+  fetch(API_URL, {
+    method:"POST",
+    body:JSON.stringify({ action:"get", memberId:id })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.found) return alert("Not found");
+    Object.entries(res.data).forEach(([k,v])=>{
+      if(document.getElementById(k)) document.getElementById(k).value=v;
+    });
+  });
 }
+
 
 function fillForm(data) {
   if (!data) {
@@ -449,18 +464,16 @@ function fillForm(data) {
 }
   
 function deleteForm() {
-  const memberId = document.getElementById("MemberID").value;
-  if (!memberId) return alert("Enter MemberID");
+  if(!confirm("Delete member?")) return;
 
-  if (!confirm("Delete this member permanently?")) return;
-
-  google.script.run
-    .withSuccessHandler(() => {
-      alert("Member Deleted");
-      clearForm();
-    })
-    .deleteMember(memberId);
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({ action:"delete", memberId: MemberID.value })
+  })
+  .then(r=>r.json())
+  .then(()=>alert("Deleted"));
 }
+
   function collectData() {
   const data = {};
   document.querySelectorAll("input,select,textarea")
