@@ -200,7 +200,9 @@
 </label>
 
 <br><br>
-<button onclick="addMember()">✅ सदस्य दर्ता गर्नुहोस्</button>
+<button id="btnSave" onclick="addMember()">✅ सदस्य दर्ता गर्नुहोस्</button>
+<button id="btnUpdate" onclick="addMember()" style="display:none">💾 Update Member</button>
+
 </div>
 
 
@@ -269,8 +271,11 @@
  
 
 <script>
+// ===== GLOBAL STATE =====
+let EDIT_MEMBER_ID = "";
 let MEMBER_PHOTO_URL = "";
 let CTZ_PHOTO_URL = "";
+
 </script>
 <script>
 /******** CONFIG ********/
@@ -348,10 +353,11 @@ function post(o){
 
 /******** ACTIONS ********/
 function addMember(){
+
   post({
     apiKey:KEY,
     action: EDIT_MEMBER_ID ? "updateMember" : "addMember",
-    member: EDIT_MEMBER_ID || "",
+    member: EDIT_MEMBER_ID,
 
     name:m_name.value,
     dob:m_dob.value,
@@ -370,10 +376,10 @@ function addMember(){
     phone:m_phone.value,
     email:m_email.value,
 
-    ctz_no:m_ctz_no.value,
-    ctz_dist:m_ctz_dist.value,
-    ctz_date:m_ctz_date.value,
-    ctz_img:CTZ_PHOTO_URL,
+    citizenship_no:m_ctz_no.value,
+    citizenship_dist:m_ctz_dist.value,
+    citizenship_date:m_ctz_date.value,
+    citizenship_img:CTZ_PHOTO_URL,
     photo:MEMBER_PHOTO_URL,
 
     share_qty:m_share_qty.value,
@@ -385,9 +391,17 @@ function addMember(){
     nominee_relation:n_relation.value,
     nominee_phone:n_phone.value,
     nominee_citizenship:n_ctz.value
-  }).then(r=>{
-    alert("Saved");
-    EDIT_MEMBER_ID = "";   // 🔥 important
+  })
+  .then(r=>{
+    alert(EDIT_MEMBER_ID ? "Member Updated ✅" : "Member Added ✅");
+
+    EDIT_MEMBER_ID = "";
+    document.getElementById("btnSave").style.display = "inline-block";
+    document.getElementById("btnUpdate").style.display = "none";
+
+    document.querySelectorAll("#memberBox input").forEach(i=>{
+      if(i.type!=="file" && i.type!=="checkbox") i.value="";
+    });
   });
 }
 
@@ -398,86 +412,82 @@ function deleteMember(mid){
     apiKey:KEY,
     action:"deleteMember",
     member:mid
-  }).then(r=>{
-    alert("Deleted");
+  }).then(()=>{
+    alert("Deleted & Archived ✅");
     searchMembers();
   });
 }
+
 function editMember(mid){
 
-  fetch(API_URL,{
+  fetch(API,{
     method:"POST",
     body:JSON.stringify({
+      apiKey: KEY,
       action:"searchMembers",
-      key:mid
+      key: mid
     })
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.length){
+
+    if(!res || !res.length){
       alert("Member not found");
       return;
     }
 
-    const m = res[0]; // exact member
+    const m = res[0];
+    EDIT_MEMBER_ID = m.member_id; // 🔥 IMPORTANT
 
-    // 🔹 BASIC INFO
-    m_member_id.value   = m.member_id;   // hidden / readonly
-    m_name.value        = m.name;
-    m_dob.value         = m.dob;
-    m_gender.value      = m.gender;
+    // 🔹 BASIC
+    m_name.value       = m.name || "";
+    m_dob.value        = m.dob || "";
+    m_gender.value     = m.gender || "";
 
     // 🔹 FAMILY
-    m_father.value      = m.father;
-    m_mother.value      = m.mother;
-    m_spouse.value      = m.spouse;
-    m_profession.value  = m.profession;
+    m_father.value     = m.father || "";
+    m_mother.value     = m.mother || "";
+    m_spouse.value     = m.spouse || "";
+    m_profession.value = m.profession || "";
 
     // 🔹 ADDRESS
-    m_province.value    = m.province;
-    m_district.value    = m.district;
-    m_palika.value      = m.palika;
-    m_ward.value        = m.ward;
+    m_province.value   = m.province || "";
+    m_district.value   = m.district || "";
+    m_palika.value     = m.palika || "";
+    m_ward.value       = m.ward || "";
 
     // 🔹 CONTACT
-    m_phone.value       = m.phone;
-    m_email.value       = m.email;
+    m_phone.value      = m.phone || "";
+    m_email.value      = m.email || "";
 
     // 🔹 CITIZENSHIP
-    m_ctz_no.value      = m.citizenship_no;
-    m_ctz_dist.value    = m.citizenship_dist;
-    m_ctz_date.value    = m.citizenship_date;
+    m_ctz_no.value     = m.citizenship_no || "";
+    m_ctz_dist.value   = m.citizenship_dist || "";
+    m_ctz_date.value   = m.citizenship_date || "";
 
-    // image preview (optional)
-    if(m.citizenship_img){
-      document.getElementById("ctz_preview").src = m.citizenship_img;
-      CTZ_PHOTO_URL = m.citizenship_img;
-    }
+    CTZ_PHOTO_URL      = m.citizenship_img || "";
+    MEMBER_PHOTO_URL   = m.photo || "";
 
-    if(m.photo){
-      document.getElementById("photo_preview").src = m.photo;
-      MEMBER_PHOTO_URL = m.photo;
-    }
-
-    // 🔹 SHARE / MEMBERSHIP
-    m_share_qty.value    = m.share_qty;
-    m_share_amt.value    = m.share_amount;
-    m_join_date.value    = m.join_date;
-    m_type.value         = m.member_type;
+    // 🔹 SHARE
+    m_share_qty.value  = m.share_qty || "";
+    m_share_amt.value  = m.share_amount || "";
+    m_join_date.value  = m.join_date || "";
+    m_type.value       = m.member_type || "";
 
     // 🔹 NOMINEE
-    n_name.value         = m.nominee_name;
-    n_relation.value     = m.nominee_relation;
-    n_phone.value        = m.nominee_phone;
-    n_ctz.value          = m.nominee_citizenship;
+    n_name.value       = m.nominee_name || "";
+    n_relation.value   = m.nominee_relation || "";
+    n_phone.value      = m.nominee_phone || "";
+    n_ctz.value        = m.nominee_citizenship || "";
 
-    // 🔥 UI MODE CHANGE
+    // 🔥 BUTTON SWITCH
     document.getElementById("btnSave").style.display = "none";
     document.getElementById("btnUpdate").style.display = "inline-block";
 
-    alert("Edit mode enabled for " + m.member_id);
+    show("memberBox"); // auto open form
   });
 }
+
 
 function savings(){
  post({apiKey:KEY,action:"savings",
@@ -775,32 +785,34 @@ function uploadCitizenship(){
   });
 }
 
-  function searchMembers(){
+function searchMembers(){
   post({
     apiKey:KEY,
     action:"searchMembers",
     key:searchKey.value
   }).then(d=>{
     let h = `
-      <tr>
-        <th>ID</th><th>नाम</th><th>फोन</th>
-        <th>Action</th>
-      </tr>`;
+    <tr>
+      <th>ID</th><th>नाम</th><th>फोन</th><th>Action</th>
+    </tr>`;
+
     d.forEach(m=>{
-      h += `
+      h+=`
       <tr>
-        <td>${m.id}</td>
+        <td>${m.member_id}</td>
         <td>${m.name}</td>
         <td>${m.phone}</td>
         <td>
-          <button onclick="editMember('${m.id}')">✏️ Edit</button>
-          <button onclick="deleteMember('${m.id}')">🗑 Delete</button>
+          <button onclick="editMember('${m.member_id}')">✏️</button>
+          <button onclick="deleteMember('${m.member_id}')">🗑</button>
         </td>
       </tr>`;
     });
+
     memberTable.innerHTML = h;
   });
 }
+
   function showResult(list){
   let html = "";
   list.forEach(m=>{
