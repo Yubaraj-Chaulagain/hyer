@@ -535,14 +535,17 @@ function deleteForm() {
   })
   .then(r => r.json())
   .then(res => {
+    console.log(res); // 🔍 DEBUG
     if (!res.found) {
       alert("Member not found");
-      clearForm();
-      document.getElementById("MemberID").value = id;
       return;
     }
     fillForm(res.data);
-    window.__loadedMember = id; // 🔑 update permission
+    window.__loadedMember = id;
+  })
+  .catch(err => {
+    alert("API Error");
+    console.error(err);
   });
 }
 
