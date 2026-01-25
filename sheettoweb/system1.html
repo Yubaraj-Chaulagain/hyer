@@ -788,7 +788,8 @@ function uploadCitizenship(){
 
 function searchMembers(){
 
-  if(!searchKey.value.trim()){
+  const key = searchKey.value.trim();
+  if(!key){
     alert("नाम / मोबाइल / Member ID लेख्नुहोस्");
     return;
   }
@@ -796,38 +797,50 @@ function searchMembers(){
   show("memberListBox");
 
   post({
-    apiKey:KEY,
-    action:"searchMembers",
-    key:searchKey.value.trim()
-  }).then(d=>{
+    apiKey: KEY,
+    action: "searchMembers",
+    key: key
+  })
+  .then(res => {
 
-    if(!d || !d.length){
+    // ✅ GAS response handle
+    const list = res.data || res;  
+
+    if(!list || !list.length){
       memberTable.innerHTML =
         "<tr><td colspan='4'>❌ Member फेला परेन</td></tr>";
       return;
     }
 
     let h = `
-    <tr>
-      <th>ID</th><th>नाम</th><th>फोन</th><th>Action</th>
-    </tr>`;
-
-    d.forEach(m=>{
-      h+=`
       <tr>
-        <td>${m.member_id}</td>
-        <td>${m.name}</td>
-        <td>${m.phone}</td>
+        <th>ID</th>
+        <th>नाम</th>
+        <th>फोन</th>
+        <th>Action</th>
+      </tr>`;
+
+    list.forEach(m=>{
+      h += `
+      <tr>
+        <td>${m.member_id || ""}</td>
+        <td>${m.name || ""}</td>
+        <td>${m.phone || ""}</td>
         <td>
-          <button onclick="editMember('${m.member_id}')">✏️</button>
-          <button onclick="deleteMember('${m.member_id}')">🗑</button>
+          <button type="button" onclick="editMember('${m.member_id}')">✏️</button>
+          <button type="button" onclick="deleteMember('${m.member_id}')">🗑</button>
         </td>
       </tr>`;
     });
 
     memberTable.innerHTML = h;
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Search error (console हेर्नुहोस्)");
   });
 }
+
 
   function showResult(list){
   let html = "";
