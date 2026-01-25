@@ -176,17 +176,18 @@
 
 <script>
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
-const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // replace
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
 
 fetch(ADMIN_URL)
   .then(res => res.json())
   .then(data => {
     adminData = data;
+
     Province.innerHTML = `<option value="">Select Province</option>`;
-    Object.keys(adminData).forEach(p =>
-      Province.innerHTML += `<option value="${p}">${p}</option>`
-    );
+    Object.keys(adminData).forEach(p => {
+      Province.innerHTML += `<option value="${p}">${p}</option>`;
+    });
   });
 
 Province.onchange = () => {
@@ -202,34 +203,46 @@ Province.onchange = () => {
 
 District.onchange = () => {
   Municipality.innerHTML = `<option value="">Select Municipality</option>`;
-  adminData[Province.value][District.value].forEach(m =>
-    Municipality.innerHTML += `<option value="${m}">${m}</option>`
-  );
+  adminData[Province.value][District.value].forEach(m => {
+    Municipality.innerHTML += `<option value="${m}">${m}</option>`;
+  });
 };
 
-// Ward
+// ✅ Ward loop properly closed
+WardNo.innerHTML = `<option value="">Select Ward</option>`;
 for (let i = 1; i <= 35; i++) {
   WardNo.innerHTML += `<option value="${i}">${i}</option>`;
+}
 
-function upload(input,target){
-  const r=new FileReader();
-  r.onloadend=()=>{
-    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
-      method:'POST',
-      body:new URLSearchParams({image:r.result.split(',')[1]})
-    }).then(r=>r.json()).then(d=>document.getElementById(target).value=d.data.url);
+// ✅ IMGBB upload
+function upload(input, target) {
+  const r = new FileReader();
+  r.onloadend = () => {
+    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+      method: 'POST',
+      body: new URLSearchParams({
+        image: r.result.split(',')[1]
+      })
+    })
+    .then(res => res.json())
+    .then(d => document.getElementById(target).value = d.data.url);
   };
   r.readAsDataURL(input.files[0]);
 }
 
-function submitForm(){
-  const data={};
-  document.querySelectorAll("input,select,textarea").forEach(e=>data[e.id]=e.value);
-  data.Username=data.MemberID;
-  data.Password=data.Mobile;
+// ✅ Submit
+function submitForm() {
+  const data = {};
+  document.querySelectorAll("input,select,textarea")
+    .forEach(e => data[e.id] = e.value);
+
+  data.Username = data.MemberID;
+  data.Password = data.Mobile;
+
   google.script.run.saveMember(data);
 }
 </script>
+
 
 </body>
 </html>
