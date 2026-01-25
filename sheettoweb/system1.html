@@ -275,31 +275,34 @@ function login(){
   body:JSON.stringify({
     apiKey:KEY,
     action:"login",
-    username:lu.value,
-    password:lp.value,
+    username:lu.value.trim(),
+    password:lp.value.trim(),
     agent:navigator.userAgent,
     ip:"WEB"
   })
- }).then(r=>r.json()).then(j=>{
-  if(!j.success) return alert(j.error);
+ })
+ .then(r=>r.json())
+ .then(j=>{
+  if(!j.success) return alert(j.msg); // 🔥 FIX HERE
 
   sessionStorage.setItem("user", j.username);
   sessionStorage.setItem("role", j.role);
   sessionStorage.setItem("mid", j.member_id || "");
   sessionStorage.setItem("photo", j.photo || "");
 
-  // 🔑 UI show
   loginBox.classList.add("hidden");
   dash.classList.remove("hidden");
   topbar.classList.remove("hidden");
 
-  // 🖼️ Photo sync
   document.getElementById("ppTop").src  = j.photo || "https://via.placeholder.com/40";
   document.getElementById("bigPhoto").src = j.photo || "";
-  document.querySelector(".nav").classList.remove("hidden");
 
-roleUI(j.role);
+  roleUI(j.role);
   loadCharts();
+ })
+ .catch(err=>{
+  alert("Server error");
+  console.error(err);
  });
 }
 
