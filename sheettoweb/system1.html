@@ -21,6 +21,13 @@
 }
 </style>
   <style>
+  /* MEMBER LOGIN हुँदा hide */
+.member-role .admin,
+.member-role .staff{
+  display:none !important;
+}
+</style>
+  <style>
   .topbar{
   display:flex;
   justify-content:space-between;
@@ -151,10 +158,25 @@
 
   <!-- MEMBER SELF -->
   <div class="card hidden" id="myBox">
-    <h3>मेरो विवरण</h3>
-    <div id="myData"></div>
-    <table id="myTx"></table>
-  </div>
+  <h3>मेरो विवरण</h3>
+
+  <label>नाम</label>
+  <input id="myName">
+
+  <label>फोन</label>
+  <input id="myPhone">
+
+  <label>Email</label>
+  <input id="myEmail">
+
+  <button onclick="updateMyProfile()">💾 Save</button>
+
+  <hr>
+
+  <h4>मेरो कारोबार</h4>
+  <table id="myTx"></table>
+</div>
+
 
   <!-- ADMIN REPORT -->
    <div class="card" id="chartBox">
@@ -174,7 +196,7 @@
 <script>
 /******** CONFIG ********/
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-const API = "https://script.google.com/macros/s/AKfycbxqhodOxJDQb2ad1RDq2CaqS7Da8Mfb68smll09ZIzz6_-RBSElRjvi2zTzbG_uDWMf1w/exec";
+const API = "https://script.google.com/macros/s/AKfycbxXjrQcspb17EQHrHOKM5GOQx1XtpVxHNLbQnQ4KbVcphJZop7EAJrLP5djIjQBfO54ww/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -280,15 +302,47 @@ function sellStock(){
 
 /******** MEMBER VIEW ********/
 function loadMy(){
- post({apiKey:KEY,action:"memberTx",
-  member:sessionStorage.getItem("mid")
- }).then(d=>{
-  let h="<tr><th>Date</th><th>Type</th><th>Amt</th></tr>";
-  d.slice(1).forEach(r=>{
-    h+=`<tr><td>${new Date(r[1]).toLocaleDateString()}</td><td>${r[2]}</td><td>${r[5]}</td></tr>`;
+
+  // 🔹 bio load
+  post({
+    apiKey:KEY,
+    action:"getMember",
+    member:sessionStorage.getItem("mid")
+  }).then(m=>{
+    myName.value  = m.name;
+    myPhone.value = m.phone;
+    myEmail.value = m.email;
   });
-  myTx.innerHTML=h;
- });
+
+  // 🔹 transaction load
+  post({
+    apiKey:KEY,
+    action:"memberTx",
+    member:sessionStorage.getItem("mid")
+  }).then(d=>{
+    let h="<tr><th>Date</th><th>Type</th><th>Amt</th></tr>";
+    d.slice(1).forEach(r=>{
+      h+=`<tr>
+        <td>${new Date(r[1]).toLocaleDateString()}</td>
+        <td>${r[2]}</td>
+        <td>${r[5]}</td>
+      </tr>`;
+    });
+    myTx.innerHTML=h;
+  });
+}
+
+  function updateMyProfile(){
+  post({
+    apiKey:KEY,
+    action:"updateMember",
+    member:sessionStorage.getItem("mid"),
+    name:myName.value,
+    phone:myPhone.value,
+    email:myEmail.value
+  }).then(r=>{
+    alert(r.success ? "Profile Update भयो" : r.error);
+  });
 }
 
 /******** ADMIN REPORT ********/
