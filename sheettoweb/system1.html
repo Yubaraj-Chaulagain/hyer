@@ -136,11 +136,15 @@
 <h3>🧾 सदस्य दर्ता फारम (सहकारी ऐन अनुसार)</h3>
 
 <h4>१️⃣ व्यक्तिगत विवरण</h4>
-<input id="m_name" placeholder="पूरा नाम (नेपालीमा)" required>
+<label for="m_name">पूरा नाम</label>
+<input id="m_name" name="name" placeholder="पूरा नाम (नेपालीमा)" required>
 
-<input id="m_dob" type="date">
-<select id="m_gender">
-  <option value="">लिङ्ग छान्नुहोस्</option>
+<label for="m_dob">जन्म मिति</label>
+<input id="m_dob" name="dob" type="date">
+
+<label for="m_gender">लिङ्ग</label>
+<select id="m_gender" name="gender">
+  <option value="">छान्नुहोस्</option>
   <option>पुरुष</option>
   <option>महिला</option>
   <option>अन्य</option>
@@ -159,16 +163,21 @@
 <input id="m_ward" placeholder="वडा नं">
 
 <h4>३️⃣ सम्पर्क विवरण</h4>
-<input id="m_phone" placeholder="मोबाइल नं" required>
-<input id="m_email" placeholder="Email (यदि छ भने)">
+<label for="m_phone">मोबाइल नं</label>
+<input id="m_phone" name="phone" placeholder="मोबाइल नं" required>
+
+<label for="m_email">Email</label>
+<input id="m_email" name="email" placeholder="Email">
+
 
 <h4>४️⃣ नागरिकता विवरण</h4>
-<input id="m_ctz_no" placeholder="नागरिकता नं" required>
+<label for="m_ctz_no">नागरिकता नं</label>
+<input id="m_ctz_no" name="citizenship_no">
 <input id="m_ctz_dist" placeholder="जारी जिल्ला">
 <input id="m_ctz_date" type="date">
 
 <label>📷 नागरिकता फोटो (अगाडि/पछाडि)</label>
-<input type="file" id="m_ctz_img" accept="image/*" required>
+<input type="file" id="m_ctz_img" name="citizenship_img" accept="image/*" required>
 <button onclick="uploadCitizenship()">📷 नागरिकता Upload</button>
 
 
