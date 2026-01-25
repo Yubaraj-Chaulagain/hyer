@@ -275,7 +275,7 @@ let CTZ_PHOTO_URL = "";
 <script>
 /******** CONFIG ********/
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-const API = "https://script.google.com/macros/s/AKfycbxD4rmUMX6V1jjv158A8LjjTb33YMvE0Z3T_ExCimgGUX5CmndlKW2VlyHlyIr8Gn3F7A/exec";
+const API = "https://script.google.com/macros/s/AKfycbwzKdHJZmmouF2Ro0AJrcFS_GSB5zI1Fucb3eYCohyFFA0WoCLytPbzC84dY4Ky-PyK_A/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -404,51 +404,80 @@ function deleteMember(mid){
   });
 }
 function editMember(mid){
-  post({
-    apiKey:KEY,
-    action:"getMember",
-    member:mid
-  }).then(m=>{
-    show("memberBox");
 
-    m_name.value = m.name;
-    m_dob.value = m.dob;
-    m_gender.value = m.gender;
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"searchMembers",
+      key:mid
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.length){
+      alert("Member not found");
+      return;
+    }
 
-    m_father.value = m.father;
-    m_mother.value = m.mother;
-    m_spouse.value = m.spouse;
-    m_profession.value = m.profession;
+    const m = res[0]; // exact member
 
-    m_province.value = m.province;
-    m_district.value = m.district;
-    m_palika.value = m.palika;
-    m_ward.value = m.ward;
+    // 🔹 BASIC INFO
+    m_member_id.value   = m.member_id;   // hidden / readonly
+    m_name.value        = m.name;
+    m_dob.value         = m.dob;
+    m_gender.value      = m.gender;
 
-    m_phone.value = m.phone;
-    m_email.value = m.email;
+    // 🔹 FAMILY
+    m_father.value      = m.father;
+    m_mother.value      = m.mother;
+    m_spouse.value      = m.spouse;
+    m_profession.value  = m.profession;
 
-    m_ctz_no.value = m.citizenship_no;
-    m_ctz_dist.value = m.citizenship_dist;
-    m_ctz_date.value = m.citizenship_date;
+    // 🔹 ADDRESS
+    m_province.value    = m.province;
+    m_district.value    = m.district;
+    m_palika.value      = m.palika;
+    m_ward.value        = m.ward;
 
-    m_share_qty.value = m.share_qty;
-    m_share_amt.value = m.share_amount;
-    m_join_date.value = m.join_date;
-    m_type.value = m.member_type;
+    // 🔹 CONTACT
+    m_phone.value       = m.phone;
+    m_email.value       = m.email;
 
-    n_name.value = m.nominee_name;
-    n_relation.value = m.nominee_relation;
-    n_phone.value = m.nominee_phone;
-    n_ctz.value = m.nominee_citizenship;
+    // 🔹 CITIZENSHIP
+    m_ctz_no.value      = m.citizenship_no;
+    m_ctz_dist.value    = m.citizenship_dist;
+    m_ctz_date.value    = m.citizenship_date;
 
-    MEMBER_PHOTO_URL = m.photo;
-    CTZ_PHOTO_URL = m.citizenship_img;
+    // image preview (optional)
+    if(m.citizenship_img){
+      document.getElementById("ctz_preview").src = m.citizenship_img;
+      CTZ_PHOTO_URL = m.citizenship_img;
+    }
 
-    EDIT_MEMBER_ID = mid;   // 🔥 THIS LINE
+    if(m.photo){
+      document.getElementById("photo_preview").src = m.photo;
+      MEMBER_PHOTO_URL = m.photo;
+    }
+
+    // 🔹 SHARE / MEMBERSHIP
+    m_share_qty.value    = m.share_qty;
+    m_share_amt.value    = m.share_amount;
+    m_join_date.value    = m.join_date;
+    m_type.value         = m.member_type;
+
+    // 🔹 NOMINEE
+    n_name.value         = m.nominee_name;
+    n_relation.value     = m.nominee_relation;
+    n_phone.value        = m.nominee_phone;
+    n_ctz.value          = m.nominee_citizenship;
+
+    // 🔥 UI MODE CHANGE
+    document.getElementById("btnSave").style.display = "none";
+    document.getElementById("btnUpdate").style.display = "inline-block";
+
+    alert("Edit mode enabled for " + m.member_id);
   });
 }
-
 
 function savings(){
  post({apiKey:KEY,action:"savings",
@@ -772,6 +801,39 @@ function uploadCitizenship(){
     memberTable.innerHTML = h;
   });
 }
+  function showResult(list){
+  let html = "";
+  list.forEach(m=>{
+    html += `
+    <tr>
+      <td>${m.member_id}</td>
+      <td>${m.name}</td>
+      <td>${m.dob}</td>
+      <td>${m.gender}</td>
+      <td>${m.father}</td>
+      <td>${m.mother}</td>
+      <td>${m.spouse}</td>
+      <td>${m.profession}</td>
+      <td>${m.province}</td>
+      <td>${m.district}</td>
+      <td>${m.palika}</td>
+      <td>${m.ward}</td>
+      <td>${m.phone}</td>
+      <td>${m.email}</td>
+      <td>${m.citizenship_no}</td>
+      <td>${m.citizenship_dist}</td>
+      <td>${m.citizenship_date}</td>
+      <td><img src="${m.photo}" height="40"></td>
+      <td>
+        <button onclick="editMember('${m.member_id}')">Edit</button>
+        <button onclick="deleteMember('${m.member_id}')">Delete</button>
+      </td>
+    </tr>`;
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+
 
 
  if(!sessionStorage.getItem("user")){
