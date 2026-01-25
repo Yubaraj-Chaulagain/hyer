@@ -1,149 +1,222 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Sahakari Member Form</title>
+  <base target="_top">
+  <style>
+    body { font-family: Arial; max-width: 900px; margin: auto; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+    input, select, textarea { width: 100%; padding: 6px; }
+    h3 { background:#eee; padding:6px; }
+  </style>
 </head>
 <body>
 
-<h2>Member Registration Form</h2>
+<h3>Member Registration Form</h3>
 
-<!-- BASIC INFO -->
-<input id="MemberID" placeholder="MemberID (m001)">
-<input id="FullName" placeholder="Full Name">
-<input id="FatherName" placeholder="Father Name">
-<input id="HusbandName" placeholder="Husband Name">
-<input id="GrandfatherName" placeholder="Grandfather Name">
-<input id="DOB" type="date">
-<input id="Gender" placeholder="Gender">
-<input id="MaritalStatus" placeholder="Marital Status">
+<label>Member ID</label>
+<input id="MemberID" placeholder="M001" required>
 
-<!-- CITIZENSHIP -->
-<input id="CitizenshipNo" placeholder="Citizenship No">
-<input id="CitizenshipDistrict" placeholder="Citizenship District">
-<input id="CitizenshipIssueDate" type="date">
+<label>Full Name</label>
+<input id="FullName">
+
+<label>Father Name</label>
+<input id="FatherName">
+
+<label>Husband / Wife Name</label>
+<input id="HusbandWifeName">
+
+<label>Grandfather Name</label>
+<input id="GrandfatherName">
+
+<label>Date of Birth</label>
+<input type="date" id="DOB">
+
+<label>Gender</label>
+<select id="Gender">
+  <option>Male</option>
+  <option>Female</option>
+  <option>Other</option>
+</select>
+
+<label>Marital Status</label>
+<select id="MaritalStatus">
+  <option>Single</option>
+  <option>Married</option>
+  <option>Widowed</option>
+</select>
+
+<label>Citizenship No</label>
+<input id="CitizenshipNo">
+
+<label>Citizenship District</label>
+<select id="CitizenshipDistrict"></select>
+
+<label>Citizenship Issue Date</label>
+<input type="date" id="CitizenshipIssueDate">
+
+<label>Nationality</label>
 <input id="Nationality" value="Nepali">
 
-<!-- ADDRESS -->
-<input id="PermanentAddress" placeholder="Permanent Address">
-<input id="TemporaryAddress" placeholder="Temporary Address">
-<input id="WardNo" placeholder="Ward No">
-<input id="Municipality" placeholder="Municipality">
-<input id="District" placeholder="District">
-<input id="Province" placeholder="Province">
+<h3>Address</h3>
 
-<!-- CONTACT -->
-<input id="Mobile" placeholder="Mobile">
-<input id="Email" placeholder="Email">
+<label>Province</label>
+<select id="Province"></select>
 
-<!-- MEMBERSHIP -->
-<input id="MembershipType" placeholder="Membership Type">
-<input id="JoinDate" type="date">
-<input id="ShareQty" placeholder="Share Qty">
-<input id="ShareAmount" placeholder="Share Amount">
-<input id="MembershipFee" placeholder="Membership Fee">
-<input id="MemberStatus" value="ACTIVE">
-<input id="MemberCategory" placeholder="Member Category">
+<label>District</label>
+<select id="District"></select>
 
-<!-- NOMINEE -->
-<input id="NomineeName" placeholder="Nominee Name">
-<input id="NomineeRelation" placeholder="Relation">
-<input id="NomineeCitizenship" placeholder="Nominee Citizenship">
-<input id="NomineePhone" placeholder="Nominee Phone">
-<input id="NomineeAddress" placeholder="Nominee Address">
-<input id="NomineeSharePercent" placeholder="Nominee Share %">
+<label>Municipality</label>
+<select id="Municipality"></select>
 
-<!-- FILE URLS -->
-<input id="PhotoURL" placeholder="Photo URL">
-<input type="file" onchange="uploadImg(this)">
-<input id="CitizenshipFileURL" placeholder="Citizenship File URL">
-<input id="SignatureURL" placeholder="Signature URL">
-<input id="ThumbPrint" placeholder="Thumb Print">
+<label>Ward No</label>
+<select id="WardNo"></select>
 
-<!-- OTHER -->
-<input id="Occupation" placeholder="Occupation">
-<input id="IncomeSource" placeholder="Income Source">
-<input id="AccountNo" placeholder="Account No">
-<input id="SavingScheme" placeholder="Saving Scheme">
-<input id="LoanStatus" placeholder="Loan Status">
-<input id="OutstandingLoan" placeholder="Outstanding Loan">
-<input id="InterestRate" placeholder="Interest Rate">
+<label>Permanent Address</label>
+<input id="PermanentAddress">
 
-<!-- SYSTEM -->
-<input id="Username" placeholder="Username">
-<input id="Password" placeholder="Password">
-<input id="Role" value="MEMBER">
-<input id="Remarks" placeholder="Remarks">
+<h3>Contact</h3>
 
-<br><br>
+<label>Mobile</label>
+<input id="Mobile">
 
-<button onclick="add()">ADD</button>
-<button onclick="search()">SEARCH</button>
-<button onclick="update()">UPDATE</button>
+<label>Email</label>
+<input id="Email">
+
+<h3>Membership</h3>
+
+<label>Membership Type</label>
+<select id="MembershipType">
+  <option>General</option>
+  <option>Saving</option>
+  <option>Loan</option>
+</select>
+
+<label>Join Date</label>
+<input type="date" id="JoinDate">
+
+<label>Share Qty</label>
+<input type="number" id="ShareQty">
+
+<label>Share Amount</label>
+<input type="number" id="ShareAmount">
+
+<label>Membership Fee</label>
+<input type="number" id="MembershipFee">
+
+<label>Member Status</label>
+<select id="MemberStatus">
+  <option>Active</option>
+  <option>Inactive</option>
+</select>
+
+<h3>Nominee</h3>
+
+<label>Nominee Name</label>
+<input id="NomineeName">
+
+<label>Nominee Relation</label>
+<select id="NomineeRelation">
+  <option>Father</option>
+  <option>Mother</option>
+  <option>Spouse</option>
+  <option>Son</option>
+  <option>Daughter</option>
+</select>
+
+<label>Nominee Citizenship</label>
+<input id="NomineeCitizenship">
+
+<label>Nominee Phone</label>
+<input id="NomineePhone">
+
+<label>Nominee Address</label>
+<input id="NomineeAddress">
+
+<h3>Uploads (IMGBB)</h3>
+
+<label>Photo</label>
+<input type="file" onchange="upload(this,'PhotoURL')">
+<input id="PhotoURL">
+
+<label>Citizenship File</label>
+<input type="file" onchange="upload(this,'CitizenshipFileURL')">
+<input id="CitizenshipFileURL">
+
+<label>Signature</label>
+<input type="file" onchange="upload(this,'SignatureURL')">
+<input id="SignatureURL">
+
+<h3>Other</h3>
+
+<label>Occupation</label>
+<select id="Occupation">
+  <option>Business</option>
+  <option>Service</option>
+  <option>Agriculture</option>
+  <option>Foreign Employment</option>
+</select>
+
+<label>Income Source</label>
+<input id="IncomeSource">
+
+<label>Role</label>
+<select id="Role">
+  <option>Member</option>
+  <option>Staff</option>
+  <option>Admin</option>
+</select>
+
+<label>Remarks</label>
+<textarea id="Remarks"></textarea>
+
+<button onclick="submitForm()">Submit</button>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwSerY99FxqEzEh8UEQfjfnp7yW1Vj91Iet1etuv_dW5M3apPjpV_3SCM2Q7Qus4rOswg/exec";
-const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
+const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // replace
 
-const HEADERS = [
-"MemberID","FullName","FatherName","HusbandName","GrandfatherName","DOB","Gender",
-"MaritalStatus","CitizenshipNo","CitizenshipDistrict","CitizenshipIssueDate",
-"Nationality","PermanentAddress","TemporaryAddress","WardNo","Municipality",
-"District","Province","Mobile","Email","MembershipType","JoinDate","ShareQty",
-"ShareAmount","MembershipFee","MemberStatus","MemberCategory","NomineeName",
-"NomineeRelation","NomineeCitizenship","NomineePhone","NomineeAddress",
-"NomineeSharePercent","PhotoURL","CitizenshipFileURL","SignatureURL","ThumbPrint",
-"Occupation","IncomeSource","AccountNo","SavingScheme","LoanStatus",
-"OutstandingLoan","InterestRate","Username","Password","Role","Remarks"
-];
+let adminData = {};
 
-function collectData(action){
- let d={action:action};
- HEADERS.forEach(h=>{
-   let el=document.getElementById(h);
-   d[h]=el?el.value:"";
- });
- d.Username=d.MemberID;
- d.Password=d.Mobile;
- d.Role="MEMBER";
- return d;
+fetch(ADMIN_URL).then(r=>r.json()).then(d=>{
+  adminData=d;
+  Province.innerHTML='<option>Select</option>';
+  Object.keys(d).forEach(p=>Province.innerHTML+=`<option>${p}</option>`);
+});
+
+Province.onchange=()=>{
+  District.innerHTML='<option>Select</option>';
+  Object.keys(adminData[Province.value]).forEach(d=>{
+    District.innerHTML+=`<option>${d}</option>`;
+    CitizenshipDistrict.innerHTML+=`<option>${d}</option>`;
+  });
+};
+
+District.onchange=()=>{
+  Municipality.innerHTML='<option>Select</option>';
+  adminData[Province.value][District.value].forEach(m=>{
+    Municipality.innerHTML+=`<option>${m}</option>`;
+  });
+};
+
+for(let i=1;i<=35;i++) WardNo.innerHTML+=`<option>${i}</option>`;
+
+function upload(input,target){
+  const r=new FileReader();
+  r.onloadend=()=>{
+    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
+      method:'POST',
+      body:new URLSearchParams({image:r.result.split(',')[1]})
+    }).then(r=>r.json()).then(d=>document.getElementById(target).value=d.data.url);
+  };
+  r.readAsDataURL(input.files[0]);
 }
 
-function add(){
- send(collectData("add"));
-}
-
-function update(){
- send(collectData("update"));
-}
-
-function search(){
- send({action:"search",MemberID:document.getElementById("MemberID").value},res=>{
-   if(res.status){
-     HEADERS.forEach(h=>{
-       let el=document.getElementById(h);
-       if(el) el.value=res.data[h] || "";
-     });
-   }else alert("Not found");
- });
-}
-
-function send(d,cb){
- fetch(API,{method:"POST",body:JSON.stringify(d)})
- .then(r=>r.json()).then(r=>{
-   alert(JSON.stringify(r));
-   if(cb) cb(r);
- });
-}
-
-function uploadImg(f){
- let fd=new FormData();
- fd.append("image",f.files[0]);
- fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
-   method:"POST", body:fd
- }).then(r=>r.json()).then(d=>{
-   document.getElementById("PhotoURL").value=d.data.url;
- });
+function submitForm(){
+  const data={};
+  document.querySelectorAll("input,select,textarea").forEach(e=>data[e.id]=e.value);
+  data.Username=data.MemberID;
+  data.Password=data.Mobile;
+  google.script.run.saveMember(data);
 }
 </script>
 
