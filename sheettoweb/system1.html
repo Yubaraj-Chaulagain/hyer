@@ -1,47 +1,62 @@
 <!DOCTYPE html>
 <html lang="ne">
-<head>
-<meta charset="UTF-8">
-<title>सहकारी व्यवस्थापन प्रणाली</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<header class="topbar">
+  <div class="title">सहकारी व्यवस्थापन प्रणाली</div>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&display=swap" rel="stylesheet">
+  <div class="profile" onclick="toggleProfile()">
+    <img id="pp" src="https://via.placeholder.com/40">
+    <div class="dropdown" id="profileMenu">
+      <div onclick="show('profileBox')">👤 Profile</div>
+      <div onclick="show('pwBox')">🔑 Change Password</div>
+      <div onclick="logout()">🚪 Logout</div>
+    </div>
+  </div>
+</header>
 <style>
-.admin,
-.staff,
-.member{
-  display:none;
+  .topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0d6efd;
+  color:#fff;
+  padding:10px 15px;
 }
 
-/* जब body मा role set हुन्छ */
-body.admin-role .admin{display:block;}
-body.admin-role .staff{display:block;} /* admin can see staff */
-body.admin-role .member{display:block;} /* admin can see member */
+.profile{
+  position:relative;
+  cursor:pointer;
+}
 
-body.staff-role .staff{display:block;}
-body.staff-role .member{display:block;} /* staff can see member */
+.profile img{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:2px solid #fff;
+}
 
-body.member-role .member{display:block;}
-*{box-sizing:border-box}
-body{margin:0;font-family:'Noto Sans Devanagari',Arial;background:#f4f6f8}
-header{background:#0d6efd;color:#fff;padding:12px;text-align:center;font-size:18px}
-.container{padding:12px}
-.card{background:#fff;border-radius:8px;padding:12px;margin-bottom:12px;box-shadow:0 2px 6px rgba(0,0,0,.1)}
-input,select,button{width:100%;padding:8px;margin:5px 0}
-button{background:#0d6efd;color:white;border:none;border-radius:5px}
-button.danger{background:#dc3545}
-button.secondary{background:#6c757d}
-.nav{display:flex;gap:6px;flex-wrap:wrap}
-.nav button{flex:1}
-.hidden{display:none}
-table{width:100%;border-collapse:collapse}
-th,td{border:1px solid #ddd;padding:6px;text-align:center}
-th{background:#eee}
-img{border-radius:50%}
-.small{font-size:12px;color:#666}
+.dropdown{
+  display:none;
+  position:absolute;
+  right:0;
+  top:50px;
+  background:#fff;
+  color:#000;
+  border-radius:6px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+  min-width:160px;
+  z-index:1000;
+}
+
+.dropdown div{
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+
+.dropdown div:hover{
+  background:#f1f1f1;
+}
+
 </style>
-</head>
 
 <body>
 <header>सहकारी व्यवस्थापन प्रणाली</header>
@@ -55,6 +70,7 @@ img{border-radius:50%}
     <button onclick="login()">Login</button>
   </div>
 </div>
+
 
 <!-- DASHBOARD -->
 <div class="container hidden" id="dash">
@@ -70,6 +86,20 @@ img{border-radius:50%}
     <div id="pinfo"></div>
     <button class="secondary" onclick="logout()">Logout</button>
   </div>
+  <div class="card hidden" id="profileBox">
+  <h3>My Profile</h3>
+  <img id="bigPhoto" width="100"><br>
+  <input id="newPhoto" placeholder="Paste Image URL">
+  <button onclick="updatePhoto()">Update Photo</button>
+  <div id="profileInfo"></div>
+</div>
+<div class="card hidden" id="pwBox">
+  <h3>Change Password</h3>
+  <input type="password" id="oldpw" placeholder="Old Password">
+  <input type="password" id="newpw" placeholder="New Password">
+  <button onclick="changePw()">Change</button>
+</div>
+
 
   <!-- NAV -->
   <div class="card nav">
@@ -141,7 +171,7 @@ img{border-radius:50%}
 
 <script>
 /******** CONFIG ********/
-const API = "https://script.google.com/macros/s/AKfycbyBCm1NGeOOc7nP3Ei5dgmJe5AwLrEEeEAmr3_RFS4Ueftw4W9lUYN0LtUK_X83Za5dqQ/exec";
+const API = "https://script.google.com/macros/s/AKfycbxqhodOxJDQb2ad1RDq2CaqS7Da8Mfb68smll09ZIzz6_-RBSElRjvi2zTzbG_uDWMf1w/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -190,6 +220,8 @@ function show(id){
 
  if(id=="myBox") loadMy();
  if(id=="reportBox") loadAllTx();
+ if(id==="profileBox") loadProfile();
+
 }
 
 /******** API HELPERS ********/
@@ -321,6 +353,41 @@ function logout(){
     }else{
       alert(r.error);
     }
+  });
+}
+
+  function toggleProfile(){
+  profileMenu.style.display =
+    profileMenu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click",e=>{
+  if(!e.target.closest(".profile")){
+    profileMenu.style.display="none";
+  }
+});
+
+  function loadProfile(){
+  bigPhoto.src = sessionStorage.getItem("photo") || "";
+  profileInfo.innerHTML = `
+    <b>${sessionStorage.getItem("user")}</b><br>
+    Role: ${sessionStorage.getItem("role")}<br>
+    Member ID: ${sessionStorage.getItem("mid")}
+  `;
+}
+function updatePhoto(){
+  post({
+    apiKey:KEY,
+    action:"updatePhoto",
+    username:sessionStorage.getItem("user"),
+    photo:newPhoto.value
+  }).then(r=>{
+    if(r.success){
+      alert("Photo updated");
+      sessionStorage.setItem("photo",newPhoto.value);
+      pp.src = newPhoto.value;
+      bigPhoto.src = newPhoto.value;
+    }else alert(r.error);
   });
 }
 
