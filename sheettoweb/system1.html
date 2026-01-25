@@ -112,6 +112,7 @@
 
   <!-- NAV -->
   <div class="card nav">
+    <button onclick="show('memberListBox')" class="admin staff">Members List</button>
     <button onclick="show('memberBox')" class="admin staff">Member</button>
     <button onclick="show('txnBox')" class="admin staff">Savings / Withdraw</button>
     <button onclick="show('transferBox')" class="admin staff member">Transfer</button>
@@ -121,6 +122,15 @@
   </div>
 
   <!-- ADD MEMBER -->
+  <div class="card hidden" id="memberListBox">
+  <h3>🔍 सदस्य खोज्नुहोस्</h3>
+
+  <input id="searchKey" placeholder="नाम / मोबाइल / Member ID">
+  <button onclick="searchMembers()">Search</button>
+
+  <table id="memberTable"></table>
+</div>
+
   <div class="card" id="memberBox">
 <h3>🧾 सदस्य दर्ता फारम (सहकारी ऐन अनुसार)</h3>
 
@@ -735,6 +745,34 @@ function uploadCitizenship(){
     }
   });
 }
+
+  function searchMembers(){
+  post({
+    apiKey:KEY,
+    action:"searchMembers",
+    key:searchKey.value
+  }).then(d=>{
+    let h = `
+      <tr>
+        <th>ID</th><th>नाम</th><th>फोन</th>
+        <th>Action</th>
+      </tr>`;
+    d.forEach(m=>{
+      h += `
+      <tr>
+        <td>${m.id}</td>
+        <td>${m.name}</td>
+        <td>${m.phone}</td>
+        <td>
+          <button onclick="editMember('${m.id}')">✏️ Edit</button>
+          <button onclick="deleteMember('${m.id}')">🗑 Delete</button>
+        </td>
+      </tr>`;
+    });
+    memberTable.innerHTML = h;
+  });
+}
+
 
  if(!sessionStorage.getItem("user")){
   topbar.classList.add("hidden");
