@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="ne">
 <header class="topbar hidden" id="topbar">
-<div class="title">सहकारी व्यवस्थापन प्रणाली</div>
- <div class="profile" onclick="toggleProfile()">
-  <div class="card hidden" id="profileBox">
-  <h3>My Profile</h3>
-  <img id="bigPhoto" width="100"><br>
- <input type="file" id="photoFile" accept="image/*">
-  <button onclick="uploadPhoto()">📷 Upload Photo</button>
+  <div class="title">सहकारी व्यवस्थापन प्रणाली</div>
 
-  <div id="profileInfo"></div>
-</div>
+  <div class="profile" onclick="toggleProfile()">
     <img id="ppTop" src="https://via.placeholder.com/40">
+
     <div class="dropdown" id="profileMenu">
       <div onclick="show('profileBox')">👤 Profile</div>
       <div onclick="show('pwBox')">🔑 Change Password</div>
@@ -19,6 +13,7 @@
     </div>
   </div>
 </header>
+
 <style>
   .topbar{
   display:flex;
@@ -89,12 +84,15 @@
   </div>
   <div class="card hidden" id="profileBox">
   <h3>My Profile</h3>
-  <img id="bigPhoto"
- width="100"><br>
-  <input id="newPhoto" placeholder="Paste Image URL">
-  <button onclick="updatePhoto()">Update Photo</button>
+
+  <img id="bigPhoto" width="100"><br><br>
+
+  <input type="file" id="photoFile" accept="image/*">
+  <button onclick="uploadPhoto()">📷 Upload Photo</button>
+
   <div id="profileInfo"></div>
 </div>
+
 <div class="card hidden" id="pwBox">
   <h3>Change Password</h3>
   <input type="password" id="oldpw" placeholder="Old Password">
@@ -179,34 +177,41 @@ const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
 function login(){
- fetch(API,{method:"POST",body:JSON.stringify({
-  apiKey:KEY,action:"login",
-  username:lu.value,password:lp.value,
-  agent:navigator.userAgent,
-ip:"WEB"
- })}).then(r=>r.json()).then(j=>{
+ fetch(API,{
+  method:"POST",
+  body:JSON.stringify({
+    apiKey:KEY,
+    action:"login",
+    username:lu.value,
+    password:lp.value,
+    agent:navigator.userAgent,
+    ip:"WEB"
+  })
+ }).then(r=>r.json()).then(j=>{
   if(!j.success) return alert(j.error);
 
-  sessionStorage.setItem("user",j.username);
-  sessionStorage.setItem("role",j.role);
-  sessionStorage.setItem("mid",j.member_id||"");
-  sessionStorage.setItem("photo",j.photo||"");
-  ppTop.src = j.photo || "https://via.placeholder.com/40";
-  bigPhoto.src = j.photo || "";
+  sessionStorage.setItem("user", j.username);
+  sessionStorage.setItem("role", j.role);
+  sessionStorage.setItem("mid", j.member_id || "");
+  sessionStorage.setItem("photo", j.photo || "");
 
-
+  // 🔑 UI show
   loginBox.classList.add("hidden");
   dash.classList.remove("hidden");
   topbar.classList.remove("hidden");
 
-  ppDash.src = j.photo || "https://via.placeholder.com/70";
-  pinfo.innerHTML=`<b>${j.username}</b><br><span class="small">${j.role}</span>`;
+  // 🖼️ Photo sync
+  document.getElementById("ppTop").src  = j.photo || "https://via.placeholder.com/40";
+  document.getElementById("ppDash").src = j.photo || "https://via.placeholder.com/70";
+  document.getElementById("bigPhoto").src = j.photo || "";
+
+  pinfo.innerHTML = `<b>${j.username}</b><br>${j.role}`;
 
   roleUI(j.role);
-loadCharts();
-
+  loadCharts();
  });
 }
+
 
 /******** ROLE UI ********/
 function roleUI(role){
