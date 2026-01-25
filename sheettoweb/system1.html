@@ -179,18 +179,24 @@ const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.jso
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
 
-  fetch(ADMIN_URL)
+const Province = document.getElementById("Province");
+const District = document.getElementById("District");
+const Municipality = document.getElementById("Municipality");
+const CitizenshipDistrict = document.getElementById("CitizenshipDistrict");
+const WardNo = document.getElementById("WardNo");
+
+fetch(ADMIN_URL)
   .then(res => res.json())
   .then(data => {
     adminData = data;
 
-    // Province dropdown
+    // Province
     Province.innerHTML = `<option value="">Select Province</option>`;
     Object.keys(adminData).forEach(p => {
       Province.innerHTML += `<option value="${p}">${p}</option>`;
     });
 
-    // 🔥 Citizenship District – ALL 77 districts
+    // Citizenship District (ALL 77)
     const districtSet = new Set();
     Object.values(adminData).forEach(prov =>
       Object.keys(prov).forEach(d => districtSet.add(d))
@@ -202,10 +208,12 @@ let adminData = {};
     });
   });
 
-// Address cascading
+// Address cascade
 Province.onchange = () => {
   District.innerHTML = `<option value="">Select District</option>`;
   Municipality.innerHTML = `<option value="">Select Municipality</option>`;
+
+  if (!Province.value) return;
 
   Object.keys(adminData[Province.value]).forEach(d => {
     District.innerHTML += `<option value="${d}">${d}</option>`;
@@ -214,18 +222,28 @@ Province.onchange = () => {
 
 District.onchange = () => {
   Municipality.innerHTML = `<option value="">Select Municipality</option>`;
+
+  if (!District.value) return;
+
   adminData[Province.value][District.value].forEach(m => {
     Municipality.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+};
+
+// Ward 1–35
+WardNo.innerHTML = `<option value="">Select Ward</option>`;
+for (let i = 1; i <= 35; i++) {
+  WardNo.innerHTML += `<option value="${i}">${i}</option>`;
 }
 
-// ✅ IMGBB upload
+// IMGBB upload
 function upload(input, target) {
   const r = new FileReader();
   r.onloadend = () => {
     fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-      method: 'POST',
+      method: "POST",
       body: new URLSearchParams({
-        image: r.result.split(',')[1]
+        image: r.result.split(",")[1]
       })
     })
     .then(res => res.json())
@@ -234,7 +252,7 @@ function upload(input, target) {
   r.readAsDataURL(input.files[0]);
 }
 
-// ✅ Submit
+// Submit
 function submitForm() {
   const data = {};
   document.querySelectorAll("input,select,textarea")
