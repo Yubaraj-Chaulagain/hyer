@@ -183,6 +183,122 @@
     <input id="PermanentAddress">
   </div>
 </div>
+  <h3>Contact & Membership</h3>
+<div class="grid">
+  <div>
+    <label>Mobile</label>
+    <input id="Mobile">
+  </div>
+
+  <div>
+    <label>Email</label>
+    <input id="Email">
+  </div>
+
+  <div>
+    <label>Membership Type</label>
+    <select id="MembershipType">
+      <option>General</option>
+      <option>Saving</option>
+      <option>Loan</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Join Date</label>
+    <input type="date" id="JoinDate">
+  </div>
+
+  <div>
+    <label>Share Qty</label>
+    <input type="number" id="ShareQty">
+  </div>
+
+  <div>
+    <label>Share Amount</label>
+    <input type="number" id="ShareAmount">
+  </div>
+
+  <div>
+    <label>Membership Fee</label>
+    <input type="number" id="MembershipFee">
+  </div>
+
+  <div>
+    <label>Member Status</label>
+    <select id="MemberStatus">
+      <option>Active</option>
+      <option>Inactive</option>
+    </select>
+  </div>
+</div>
+<h3>Nominee Details</h3>
+<div class="grid">
+  <div>
+    <label>Nominee Name</label>
+    <input id="NomineeName">
+  </div>
+
+  <div>
+    <label>Relation</label>
+    <select id="NomineeRelation">
+      <option>Father</option>
+      <option>Mother</option>
+      <option>Spouse</option>
+      <option>Son</option>
+      <option>Daughter</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Citizenship No</label>
+    <input id="NomineeCitizenship">
+  </div>
+
+  <div>
+    <label>Phone</label>
+    <input id="NomineePhone">
+  </div>
+
+  <div class="span4">
+    <label>Address</label>
+    <input id="NomineeAddress">
+  </div>
+</div>
+<h3>Occupation & System</h3>
+<div class="grid">
+  <div>
+    <label>Occupation</label>
+    <select id="Occupation">
+      <option>Business</option>
+      <option>Service</option>
+      <option>Agriculture</option>
+      <option>Foreign Employment</option>
+      <option>Other</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Income Source</label>
+    <input id="IncomeSource">
+  </div>
+
+  <div>
+    <label>Username</label>
+    <input id="Username" readonly>
+  </div>
+
+  <div>
+    <label>Password</label>
+    <input id="Password" readonly>
+  </div>
+
+  <div class="span4">
+    <label>Remarks</label>
+    <textarea id="Remarks"></textarea>
+  </div>
+</div>
+
 <h3>Uploads</h3>
 <div class="grid">
   <div>
@@ -302,8 +418,12 @@ function submitForm() {
   data.Username = data.MemberID;
   data.Password = data.Mobile;
 
+  document.getElementById("Username").value = data.Username;
+  document.getElementById("Password").value = data.Password;
+
   google.script.run.saveMember(data);
 }
+
 </script>
 
 
