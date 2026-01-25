@@ -82,165 +82,136 @@
 
 </head>
 <body>
-<h3>welcome my dashboard</h3>
-<label>Member ID</label>
-<input id="MemberID" placeholder="M001" required>
+<div class="container">
 
-<label>Full Name</label>
-<input id="FullName">
+<h3>Member Information</h3>
+<div class="grid">
+  <div>
+    <label>Member ID</label>
+    <input id="MemberID" placeholder="M001" required>
+  </div>
 
-<label>Father Name</label>
-<input id="FatherName">
+  <div>
+    <label>Full Name</label>
+    <input id="FullName">
+  </div>
 
-<label>Husband / Wife Name</label>
-<input id="HusbandWifeName">
+  <div>
+    <label>Father Name</label>
+    <input id="FatherName">
+  </div>
 
-<label>Grandfather Name</label>
-<input id="GrandfatherName">
+  <div>
+    <label>Husband / Wife</label>
+    <input id="HusbandWifeName">
+  </div>
 
-<label>Date of Birth</label>
-<input type="date" id="DOB">
+  <div>
+    <label>Grandfather Name</label>
+    <input id="GrandfatherName">
+  </div>
 
-<label>Gender</label>
-<select id="Gender">
-  <option>Male</option>
-  <option>Female</option>
-  <option>Other</option>
-</select>
+  <div>
+    <label>DOB</label>
+    <input type="date" id="DOB">
+  </div>
 
-<label>Marital Status</label>
-<select id="MaritalStatus">
-  <option>Single</option>
-  <option>Married</option>
-  <option>Widowed</option>
-</select>
+  <div>
+    <label>Gender</label>
+    <select id="Gender">
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+  </div>
 
-<label>Citizenship No</label>
-<input id="CitizenshipNo">
+  <div>
+    <label>Marital Status</label>
+    <select id="MaritalStatus">
+      <option>Single</option>
+      <option>Married</option>
+      <option>Widowed</option>
+    </select>
+  </div>
+</div>
+<h3>Citizenship</h3>
+<div class="grid">
+  <div>
+    <label>Citizenship No</label>
+    <input id="CitizenshipNo">
+  </div>
 
-<label>Citizenship District</label>
-<select id="CitizenshipDistrict">
-  <option value="">Select District</option>
-</select>
+  <div>
+    <label>District</label>
+    <select id="CitizenshipDistrict"></select>
+  </div>
 
+  <div>
+    <label>Issue Date</label>
+    <input type="date" id="CitizenshipIssueDate">
+  </div>
 
-<label>Citizenship Issue Date</label>
-<input type="date" id="CitizenshipIssueDate">
-
-<label>Nationality</label>
-<input id="Nationality" value="Nepali">
-
+  <div>
+    <label>Nationality</label>
+    <input id="Nationality" value="Nepali">
+  </div>
+</div>
 <h3>Address</h3>
+<div class="grid">
+  <div>
+    <label>Province</label>
+    <select id="Province"></select>
+  </div>
 
-<label>Province</label>
-<select id="Province"></select>
+  <div>
+    <label>District</label>
+    <select id="District"></select>
+  </div>
 
-<label>District</label>
-<select id="District"></select>
+  <div>
+    <label>Municipality</label>
+    <select id="Municipality"></select>
+  </div>
 
-<label>Municipality</label>
-<select id="Municipality"></select>
+  <div>
+    <label>Ward No</label>
+    <select id="WardNo"></select>
+  </div>
 
-<label>Ward No</label>
-<select id="WardNo"></select>
+  <div class="span4">
+    <label>Permanent Address</label>
+    <input id="PermanentAddress">
+  </div>
+</div>
+<h3>Uploads</h3>
+<div class="grid">
+  <div>
+    <label>Photo</label>
+    <input type="file" onchange="upload(this,'PhotoURL')">
+    <input id="PhotoURL">
+  </div>
 
-<label>Permanent Address</label>
-<input id="PermanentAddress">
+  <div>
+    <label>Citizenship File</label>
+    <input type="file" onchange="upload(this,'CitizenshipFileURL')">
+    <input id="CitizenshipFileURL">
+  </div>
 
-<h3>Contact</h3>
+  <div>
+    <label>Signature</label>
+    <input type="file" onchange="upload(this,'SignatureURL')">
+    <input id="SignatureURL">
+  </div>
 
-<label>Mobile</label>
-<input id="Mobile">
-
-<label>Email</label>
-<input id="Email">
-
-<h3>Membership</h3>
-
-<label>Membership Type</label>
-<select id="MembershipType">
-  <option>General</option>
-  <option>Saving</option>
-  <option>Loan</option>
-</select>
-
-<label>Join Date</label>
-<input type="date" id="JoinDate">
-
-<label>Share Qty</label>
-<input type="number" id="ShareQty">
-
-<label>Share Amount</label>
-<input type="number" id="ShareAmount">
-
-<label>Membership Fee</label>
-<input type="number" id="MembershipFee">
-
-<label>Member Status</label>
-<select id="MemberStatus">
-  <option>Active</option>
-  <option>Inactive</option>
-</select>
-
-<h3>Nominee</h3>
-
-<label>Nominee Name</label>
-<input id="NomineeName">
-
-<label>Nominee Relation</label>
-<select id="NomineeRelation">
-  <option>Father</option>
-  <option>Mother</option>
-  <option>Spouse</option>
-  <option>Son</option>
-  <option>Daughter</option>
-</select>
-
-<label>Nominee Citizenship</label>
-<input id="NomineeCitizenship">
-
-<label>Nominee Phone</label>
-<input id="NomineePhone">
-
-<label>Nominee Address</label>
-<input id="NomineeAddress">
-
-<h3>Uploads (IMGBB)</h3>
-
-<label>Photo</label>
-<input type="file" onchange="upload(this,'PhotoURL')">
-<input id="PhotoURL">
-
-<label>Citizenship File</label>
-<input type="file" onchange="upload(this,'CitizenshipFileURL')">
-<input id="CitizenshipFileURL">
-
-<label>Signature</label>
-<input type="file" onchange="upload(this,'SignatureURL')">
-<input id="SignatureURL">
-
-<h3>Other</h3>
-
-<label>Occupation</label>
-<select id="Occupation">
-  <option>Business</option>
-  <option>Service</option>
-  <option>Agriculture</option>
-  <option>Foreign Employment</option>
-</select>
-
-<label>Income Source</label>
-<input id="IncomeSource">
-
-<label>Role</label>
-<select id="Role">
-  <option>Member</option>
-  <option>Staff</option>
-  <option>Admin</option>
-</select>
-
-<label>Remarks</label>
-<textarea id="Remarks"></textarea>
+  <div>
+    <label>Role</label>
+    <select id="Role">
+      <option>Member</option>
+      <option>Staff</option>
+      <option>Admin</option>
+    </select>
+  </div>
+</div>
 
 <button onclick="submitForm()">Submit</button>
 
