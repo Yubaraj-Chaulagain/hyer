@@ -1,556 +1,171 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
-  <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f2f4f7;
-    margin: 0;
-    padding: 10px;
-  }
+<meta charset="UTF-8">
+<title>Member Registration</title>
 
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    background: #fff;
-    padding: 14px 18px;
-    border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.08);
-  }
-
-  h3 {
-    margin: 16px 0 8px;
-    padding: 6px 10px;
-    background: #2563eb;
-    color: #fff;
-    font-size: 14px;
-    border-radius: 4px;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px 12px;
-  }
-
-  label {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 2px;
-    display: block;
-  }
-
-  input, select, textarea {
-    width: 100%;
-    padding: 5px 7px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-
-  textarea {
-    resize: none;
-    height: 40px;
-  }
-
-  .span2 { grid-column: span 2; }
-  .span3 { grid-column: span 3; }
-  .span4 { grid-column: span 4; }
-
-  button {
-    margin-top: 12px;
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #1e40af;
-  }
-
-  @media (max-width: 1024px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
-    .span2,.span3,.span4 { grid-column: span 2; }
-  }
+<style>
+body{font-family:Arial;background:#f2f4f7;padding:10px}
+.container{max-width:1200px;margin:auto;background:#fff;padding:16px;border-radius:8px}
+h3{background:#2563eb;color:#fff;padding:6px 10px;font-size:14px;border-radius:4px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+label{font-size:12px;font-weight:bold}
+input,select,textarea{width:100%;padding:6px;font-size:12px}
+textarea{height:40px}
+.span2{grid-column:span 2}
+.span4{grid-column:span 4}
+button{padding:8px;margin-top:10px;font-size:14px;color:#fff;border:none;border-radius:4px;cursor:pointer}
+.save{background:#2563eb}
+.update{background:#16a34a}
+.delete{background:#dc2626}
 </style>
-
 </head>
+
 <body>
 <div class="container">
 
+<h3>Search Member</h3>
+<div class="grid">
+  <div>
+    <label>MemberID</label>
+    <input id="MemberID">
+  </div>
+  <div>
+    <button class="save" onclick="searchMember()">Search</button>
+  </div>
+</div>
+
 <h3>Member Information</h3>
 <div class="grid">
-  <div>
-    <label>Member ID</label>
-<input id="MemberID" placeholder="M001">
-<button type="button" onclick="searchMember()">Search</button>
+<input id="FullName" placeholder="Full Name">
+<input id="FatherName" placeholder="Father Name">
+<input id="Husband/wifeName" placeholder="Husband/Wife Name">
+<input id="GrandfatherName" placeholder="Grandfather Name">
 
-
-  </div>
-
-  <div>
-    <label>Full Name</label>
-    <input id="FullName">
-  </div>
-
-  <div>
-    <label>Father Name</label>
-    <input id="FatherName">
-  </div>
-
-  <div>
-    <label>Husband / Wife</label>
-    <input id="HusbandWifeName">
-  </div>
-
-  <div>
-    <label>Grandfather Name</label>
-    <input id="GrandfatherName">
-  </div>
-
-  <div>
-    <label>DOB</label>
-    <input type="date" id="DOB">
-  </div>
-
-  <div>
-    <label>Gender</label>
-    <select id="Gender">
-      <option>Male</option>
-      <option>Female</option>
-      <option>Other</option>
-    </select>
-  </div>
-
-  <div>
-    <label>Marital Status</label>
-    <select id="MaritalStatus">
-      <option>Single</option>
-      <option>Married</option>
-      <option>Widowed</option>
-    </select>
-  </div>
+<input type="date" id="DOB">
+<select id="Gender"><option>Male</option><option>Female</option><option>Other</option></select>
+<select id="MaritalStatus"><option>Single</option><option>Married</option></select>
+<input id="Nationality" value="Nepali">
 </div>
+
 <h3>Citizenship</h3>
 <div class="grid">
-  <div>
-    <label>Citizenship No</label>
-    <input id="CitizenshipNo">
-  </div>
-
-  <div>
-    <label>District</label>
-    <select id="CitizenshipDistrict"></select>
-  </div>
-
-  <div>
-    <label>Issue Date</label>
-    <input type="date" id="CitizenshipIssueDate">
-  </div>
-
-  <div>
-    <label>Nationality</label>
-    <input id="Nationality" value="Nepali">
-  </div>
+<input id="CitizenshipNo" placeholder="Citizenship No">
+<select id="CitizenshipDistrict"></select>
+<input type="date" id="CitizenshipIssueDate">
 </div>
+
 <h3>Address</h3>
 <div class="grid">
-  <div>
-    <label>Province</label>
-    <select id="Province"></select>
-  </div>
-
-  <div>
-    <label>District</label>
-    <select id="District"></select>
-  </div>
-
-  <div>
-    <label>Municipality</label>
-    <select id="Municipality"></select>
-  </div>
-
-  <div>
-    <label>Ward No</label>
-    <select id="WardNo"></select>
-  </div>
-
-  <div class="span4">
-    <label>Permanent Address</label>
-    <input id="PermanentAddress">
-  </div>
+<select id="Province"></select>
+<select id="District"></select>
+<select id="Municipality"></select>
+<select id="WardNo"></select>
+<input id="PermanentAddress" class="span4" placeholder="Permanent Address">
 </div>
-  <h3>Contact & Membership</h3>
+
+<h3>Contact & Membership</h3>
 <div class="grid">
-  <div>
-    <label>Mobile</label>
-    <input id="Mobile">
-  </div>
-
-  <div>
-    <label>Email</label>
-    <input id="Email">
-  </div>
-
-  <div>
-    <label>Membership Type</label>
-    <select id="MembershipType">
-      <option>General</option>
-      <option>Saving</option>
-      <option>Loan</option>
-    </select>
-  </div>
-
-  <div>
-    <label>Join Date</label>
-    <input type="date" id="JoinDate">
-  </div>
-
-  <div>
-    <label>Share Qty</label>
-    <input type="number" id="ShareQty">
-  </div>
-
-  <div>
-    <label>Share Amount</label>
-    <input type="number" id="ShareAmount">
-  </div>
-
-  <div>
-    <label>Membership Fee</label>
-    <input type="number" id="MembershipFee">
-  </div>
-
-  <div>
-    <label>Member Status</label>
-    <select id="MemberStatus">
-      <option>Active</option>
-      <option>Inactive</option>
-    </select>
-  </div>
+<input id="Mobile" placeholder="Mobile">
+<input id="Email" placeholder="Email">
+<select id="MembershipType"><option>General</option><option>Saving</option><option>Loan</option></select>
+<input type="date" id="JoinDate">
+<input id="ShareQty">
+<input id="ShareAmount">
+<input id="MembershipFee">
+<select id="MemberStatus"><option>Active</option><option>Inactive</option></select>
 </div>
-<h3>Nominee Details</h3>
+
+<h3>Nominee</h3>
 <div class="grid">
-  <div>
-    <label>Nominee Name</label>
-    <input id="NomineeName">
-  </div>
-
-  <div>
-    <label>Relation</label>
-    <select id="NomineeRelation">
-      <option>Father</option>
-      <option>Mother</option>
-      <option>Spouse</option>
-      <option>Son</option>
-      <option>Daughter</option>
-    </select>
-  </div>
-
-  <div>
-    <label>Citizenship No</label>
-    <input id="NomineeCitizenship">
-  </div>
-
-  <div>
-    <label>Phone</label>
-    <input id="NomineePhone">
-  </div>
-
-  <div class="span4">
-    <label>Address</label>
-    <input id="NomineeAddress">
-  </div>
+<input id="NomineeName">
+<select id="NomineeRelation"><option>Father</option><option>Mother</option><option>Spouse</option></select>
+<input id="NomineeCitizenship">
+<input id="NomineePhone">
+<input id="NomineeAddress" class="span4">
 </div>
-<h3>Occupation & System</h3>
+
+<h3>System</h3>
 <div class="grid">
-  <div>
-    <label>Occupation</label>
-    <select id="Occupation">
-      <option>Business</option>
-      <option>Service</option>
-      <option>Agriculture</option>
-      <option>Foreign Employment</option>
-      <option>Other</option>
-    </select>
-  </div>
-
-  <div>
-    <label>Income Source</label>
-    <input id="IncomeSource">
-  </div>
-
-  <div>
-    <label>Username</label>
-    <input id="Username" readonly>
-  </div>
-
-  <div>
-    <label>Password</label>
-    <input id="Password" readonly>
-  </div>
-
-  <div class="span4">
-    <label>Remarks</label>
-    <textarea id="Remarks"></textarea>
-  </div>
+<select id="Occupation"><option>Business</option><option>Service</option><option>Agriculture</option></select>
+<input id="IncomeSource">
+<input id="Username" readonly>
+<input id="Password" readonly>
+<select id="Role"><option>Member</option><option>Staff</option><option>Admin</option></select>
+<textarea id="Remarks" class="span4"></textarea>
 </div>
 
 <h3>Uploads</h3>
 <div class="grid">
-  <div>
-    <label>Photo</label>
-    <input type="file" onchange="upload(this,'PhotoURL')">
-    <input id="PhotoURL">
-  </div>
-
-  <div>
-    <label>Citizenship File</label>
-    <input type="file" onchange="upload(this,'CitizenshipFileURL')">
-    <input id="CitizenshipFileURL">
-  </div>
-
-  <div>
-    <label>Signature</label>
-    <input type="file" onchange="upload(this,'SignatureURL')">
-    <input id="SignatureURL">
-  </div>
-
-  <div>
-    <label>Role</label>
-    <select id="Role">
-      <option>Member</option>
-      <option>Staff</option>
-      <option>Admin</option>
-    </select>
-  </div>
-</div>
-  <button onclick="submitForm()">Save</button>
-  <button onclick="updateForm()" style="background:#16a34a">Update</button>
-  <button onclick="deleteForm()" style="background:#dc2626">Delete</button>
+<input id="PhotoURL" placeholder="Photo URL">
+<input id="CitizenshipFileURL" placeholder="Citizenship File URL">
+<input id="SignatureURL" placeholder="Signature URL">
 </div>
 
+<button class="save" onclick="saveMember()">Save</button>
+<button class="update" onclick="updateMember()">Update</button>
+<button class="delete" onclick="deleteMember()">Delete</button>
+
+</div>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbxcusrJFzAtSRts0zJRjcyOSr4hhuRlFL6jvWUFPdRerG3mg09Clfs0L2nVKxzRkZFH7A/exec";
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEBAPP_URL";
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
-const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
+let loaded=false;
 
-const Province = document.getElementById("Province");
-const District = document.getElementById("District");
-const Municipality = document.getElementById("Municipality");
-const CitizenshipDistrict = document.getElementById("CitizenshipDistrict");
-const WardNo = document.getElementById("WardNo");
+/* ---------- ADMIN DATA ---------- */
+fetch(ADMIN_URL).then(r=>r.json()).then(d=>{
+  adminData=d;
+  Province.innerHTML='<option></option>';
+  Object.keys(d).forEach(p=>Province.innerHTML+=`<option>${p}</option>`);
 
-fetch(ADMIN_URL)
-  .then(res => res.json())
-  .then(data => {
-    adminData = data;
+  const dist=new Set();
+  Object.values(d).forEach(p=>Object.keys(p).forEach(x=>dist.add(x)));
+  CitizenshipDistrict.innerHTML='<option></option>';
+  [...dist].sort().forEach(x=>CitizenshipDistrict.innerHTML+=`<option>${x}</option>`);
+});
 
-    // Province
-    Province.innerHTML = `<option value="">Select Province</option>`;
-    Object.keys(adminData).forEach(p => {
-      Province.innerHTML += `<option value="${p}">${p}</option>`;
-    });
+Province.onchange=()=>{District.innerHTML='<option></option>';Object.keys(adminData[Province.value]||{}).forEach(d=>District.innerHTML+=`<option>${d}</option>`);}
+District.onchange=()=>{Municipality.innerHTML='<option></option>';(adminData[Province.value][District.value]||[]).forEach(m=>Municipality.innerHTML+=`<option>${m}</option>`);}
+for(let i=1;i<=35;i++)WardNo.innerHTML+=`<option>${i}</option>`;
 
-    // Citizenship District (ALL 77)
-    const districtSet = new Set();
-    Object.values(adminData).forEach(prov =>
-      Object.keys(prov).forEach(d => districtSet.add(d))
-    );
-
-    CitizenshipDistrict.innerHTML = `<option value="">Select District</option>`;
-    [...districtSet].sort().forEach(d => {
-      CitizenshipDistrict.innerHTML += `<option value="${d}">${d}</option>`;
-    });
-  });
-
-// Address cascade
-Province.onchange = () => {
-  District.innerHTML = `<option value="">Select District</option>`;
-  Municipality.innerHTML = `<option value="">Select Municipality</option>`;
-
-  if (!Province.value) return;
-
-  Object.keys(adminData[Province.value]).forEach(d => {
-    District.innerHTML += `<option value="${d}">${d}</option>`;
-  });
-};
-
-District.onchange = () => {
-  Municipality.innerHTML = `<option value="">Select Municipality</option>`;
-
-  if (!District.value) return;
-
-  adminData[Province.value][District.value].forEach(m => {
-    Municipality.innerHTML += `<option value="${m}">${m}</option>`;
-  });
-};
-
-// Ward 1–35
-WardNo.innerHTML = `<option value="">Select Ward</option>`;
-for (let i = 1; i <= 35; i++) {
-  WardNo.innerHTML += `<option value="${i}">${i}</option>`;
+/* ---------- CORE ---------- */
+function collect(){
+ const o={};
+ document.querySelectorAll("input,select,textarea").forEach(e=>o[e.id]=e.value);
+ o.Username=o.MemberID;
+ o.Password=o.Mobile;
+ return o;
 }
 
-// IMGBB upload
-function upload(input, target) {
-  const r = new FileReader();
-  r.onloadend = () => {
-    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
-      method: "POST",
-      body: new URLSearchParams({
-        image: r.result.split(",")[1]
-      })
-    })
-    .then(res => res.json())
-    .then(d => document.getElementById(target).value = d.data.url);
-  };
-  r.readAsDataURL(input.files[0]);
+function searchMember(){
+ fetch(API_URL,{method:"POST",body:JSON.stringify({action:"get",memberId:MemberID.value})})
+ .then(r=>r.json()).then(res=>{
+   if(!res.found) return alert("Not found");
+   Object.keys(res.data).forEach(k=>document.getElementById(k)&&(document.getElementById(k).value=res.data[k]));
+   loaded=true;
+ });
 }
 
-// Submit
-function submitForm() {
-  if (window.__loadedMember) {
-    alert("Already exists. Use UPDATE button.");
-    return;
-  }
-
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "save",
-      data: collectData()
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    alert("Member Added");
-    clearForm();
-  });
+function saveMember(){
+ if(loaded) return alert("Use UPDATE");
+ fetch(API_URL,{method:"POST",body:JSON.stringify({action:"save",data:collect()})})
+ .then(()=>alert("Saved"));
 }
 
-function loadMember() {
-  if (!MemberID.value) return;
-
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "get",
-      memberId: MemberID.value
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (!res.found) return alert("Not found");
-    Object.entries(res.data).forEach(([k,v])=>{
-      if (document.getElementById(k)) document.getElementById(k).value = v;
-    });
-  });
+function updateMember(){
+ if(!loaded) return alert("Search first");
+ fetch(API_URL,{method:"POST",body:JSON.stringify({action:"save",data:collect()})})
+ .then(()=>alert("Updated"));
 }
 
-
-function fillForm(data) {
-  Object.keys(data).forEach(k => {
-    const el = document.getElementById(k);
-    if (el) el.value = data[k];
-  });
+function deleteMember(){
+ if(!confirm("Delete?"))return;
+ fetch(API_URL,{method:"POST",body:JSON.stringify({action:"delete",memberId:MemberID.value})})
+ .then(()=>alert("Deleted"));
 }
-
-function clearForm() {
-  document.querySelectorAll("input,select,textarea")
-    .forEach(e => e.value = "");
-  window.__loadedMember = null;
-}
-
-
- function updateForm() {
-  if (!window.__loadedMember) {
-    alert("Search member first");
-    return;
-  }
-
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "save",          // ✅ CHANGE HERE
-      data: collectData()
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    alert("Member Updated");
-  });
-}
-
-  
-function deleteForm() {
-  if (!confirm("Delete member?")) return;
-
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "delete",
-      memberId: MemberID.value
-    })
-  })
-  .then(r => r.json())
-  .then(() => alert("Deleted"));
-}
-
-
-  function collectData() {
-  const data = {};
-  document.querySelectorAll("input,select,textarea")
-    .forEach(e => data[e.id] = e.value);
-  return data;
-}
-  
-  function searchMember() {
-  const id = document.getElementById("MemberID").value.trim();
-  if (!id) {
-    alert("Enter Member ID");
-    return;
-  }
-
-  fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "get",
-      memberId: id
-    })
-  })
-  .then(r => r.json())
-  .then(res => {
-    console.log(res); // 🔍 DEBUG
-    if (!res.found) {
-      alert("Member not found");
-      return;
-    }
-    fillForm(res.data);
-    window.__loadedMember = id;
-  })
-  .catch(err => {
-    alert("API Error");
-    console.error(err);
-  });
-}
-
-
 </script>
-
 
 </body>
 </html>
