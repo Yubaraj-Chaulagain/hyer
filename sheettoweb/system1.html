@@ -179,25 +179,36 @@ const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.jso
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
 
-fetch(ADMIN_URL)
+  fetch(ADMIN_URL)
   .then(res => res.json())
   .then(data => {
     adminData = data;
 
+    // Province dropdown
     Province.innerHTML = `<option value="">Select Province</option>`;
     Object.keys(adminData).forEach(p => {
       Province.innerHTML += `<option value="${p}">${p}</option>`;
     });
+
+    // 🔥 Citizenship District – ALL 77 districts
+    const districtSet = new Set();
+    Object.values(adminData).forEach(prov =>
+      Object.keys(prov).forEach(d => districtSet.add(d))
+    );
+
+    CitizenshipDistrict.innerHTML = `<option value="">Select District</option>`;
+    [...districtSet].sort().forEach(d => {
+      CitizenshipDistrict.innerHTML += `<option value="${d}">${d}</option>`;
+    });
   });
 
+// Address cascading
 Province.onchange = () => {
   District.innerHTML = `<option value="">Select District</option>`;
-  CitizenshipDistrict.innerHTML = `<option value="">Select District</option>`;
   Municipality.innerHTML = `<option value="">Select Municipality</option>`;
 
   Object.keys(adminData[Province.value]).forEach(d => {
     District.innerHTML += `<option value="${d}">${d}</option>`;
-    CitizenshipDistrict.innerHTML += `<option value="${d}">${d}</option>`;
   });
 };
 
@@ -205,13 +216,6 @@ District.onchange = () => {
   Municipality.innerHTML = `<option value="">Select Municipality</option>`;
   adminData[Province.value][District.value].forEach(m => {
     Municipality.innerHTML += `<option value="${m}">${m}</option>`;
-  });
-};
-
-// ✅ Ward loop properly closed
-WardNo.innerHTML = `<option value="">Select Ward</option>`;
-for (let i = 1; i <= 35; i++) {
-  WardNo.innerHTML += `<option value="${i}">${i}</option>`;
 }
 
 // ✅ IMGBB upload
