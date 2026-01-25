@@ -109,63 +109,86 @@ button{padding:8px;margin-top:10px;font-size:14px;color:#fff;border:none;border-
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxcusrJFzAtSRts0zJRjcyOSr4hhuRlFL6jvWUFPdRerG3mg09Clfs0L2nVKxzRkZFH7A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby8MkFWnl46wU9mDAv-ywz7hxzbVdpTUpZsyWJ-QdtsBnBW42BU3URMo8BlUYsGoASaGw/exec";
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let adminData = {};
-let loaded=false;
+let loadedId = null;
 
-/* ---------- ADMIN DATA ---------- */
-fetch(ADMIN_URL).then(r=>r.json()).then(d=>{
-  adminData=d;
-  Province.innerHTML='<option></option>';
-  Object.keys(d).forEach(p=>Province.innerHTML+=`<option>${p}</option>`);
-
-  const dist=new Set();
-  Object.values(d).forEach(p=>Object.keys(p).forEach(x=>dist.add(x)));
-  CitizenshipDistrict.innerHTML='<option></option>';
-  [...dist].sort().forEach(x=>CitizenshipDistrict.innerHTML+=`<option>${x}</option>`);
-});
-
-Province.onchange=()=>{District.innerHTML='<option></option>';Object.keys(adminData[Province.value]||{}).forEach(d=>District.innerHTML+=`<option>${d}</option>`);}
-District.onchange=()=>{Municipality.innerHTML='<option></option>';(adminData[Province.value][District.value]||[]).forEach(m=>Municipality.innerHTML+=`<option>${m}</option>`);}
-for(let i=1;i<=35;i++)WardNo.innerHTML+=`<option>${i}</option>`;
-
-/* ---------- CORE ---------- */
-function collect(){
- const o={};
- document.querySelectorAll("input,select,textarea").forEach(e=>o[e.id]=e.value);
- o.Username=o.MemberID;
- o.Password=o.Mobile;
- return o;
-}
-
+/* ===== SEARCH ===== */
 function searchMember(){
- fetch(API_URL,{method:"POST",body:JSON.stringify({action:"get",memberId:MemberID.value})})
- .then(r=>r.json()).then(res=>{
-   if(!res.found) return alert("Not found");
-   Object.keys(res.data).forEach(k=>document.getElementById(k)&&(document.getElementById(k).value=res.data[k]));
-   loaded=true;
- });
+  const id = MemberID.value.trim();
+  if(!id) return alert("Enter Member ID");
+
+  fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"search", memberId:id})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.found) return alert("Not found");
+    Object.keys(res.data).forEach(k=>{
+      if(document.getElementById(k))
+        document.getElementById(k).value=res.data[k];
+    });
+    loadedId = id;
+  });
 }
 
-function saveMember(){
- if(loaded) return alert("Use UPDATE");
- fetch(API_URL,{method:"POST",body:JSON.stringify({action:"save",data:collect()})})
- .then(()=>alert("Saved"));
+/* ===== ADD ===== */
+function submitForm(){
+  if(loadedId) return alert("Use UPDATE");
+  send("save");
 }
 
-function updateMember(){
- if(!loaded) return alert("Search first");
- fetch(API_URL,{method:"POST",body:JSON.stringify({action:"save",data:collect()})})
- .then(()=>alert("Updated"));
+/* ===== UPDATE ===== */
+function updateForm(){
+  if(!loadedId) return alert("Search first");
+  send("save");
 }
 
-function deleteMember(){
- if(!confirm("Delete?"))return;
- fetch(API_URL,{method:"POST",body:JSON.stringify({action:"delete",memberId:MemberID.value})})
- .then(()=>alert("Deleted"));
+/* ===== DELETE ===== */
+function deleteForm(){
+  if(!confirm("Delete?")) return;
+  fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"delete",memberId:MemberID.value})
+  }).then(()=>alert("Deleted"));
+}
+
+/* ===== SEND ===== */
+function send(action){
+  fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action,data:collect()})
+  }).then(()=>alert("Success"));
+}
+
+function collect(){
+  const d={};
+  document.querySelectorAll("input,select,textarea")
+    .forEach(e=>d[e.id]=e.value);
+  return d;
+}
+
+/* ===== IMGBB ===== */
+function upload(inp,target){
+  const r=new FileReader();
+  r.onload=()=>{
+    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
+      method:"POST",
+      body:new URLSearchParams({image:r.result.split(",")[1]})
+    })
+    .then(r=>r.json())
+    .then(d=>document.getElementById(target).value=d.data.url);
+  };
+  r.readAsDataURL(inp.files[0]);
 }
 </script>
+
 
 </body>
 </html>
