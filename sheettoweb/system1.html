@@ -1,16 +1,81 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta charset="UTF-8">
+<title>Sahakari Member Form</title>
+</head>
 <body>
-<h3>Member Form</h3>
 
-<input id="MemberID" placeholder="Member ID (m001)">
+<h2>Member Registration Form</h2>
+
+<!-- BASIC INFO -->
+<input id="MemberID" placeholder="MemberID (m001)">
 <input id="FullName" placeholder="Full Name">
 <input id="FatherName" placeholder="Father Name">
 <input id="HusbandName" placeholder="Husband Name">
-<input id="Mobile" placeholder="Mobile">
-<input id="PhotoURL" placeholder="Photo URL">
+<input id="GrandfatherName" placeholder="Grandfather Name">
+<input id="DOB" type="date">
+<input id="Gender" placeholder="Gender">
+<input id="MaritalStatus" placeholder="Marital Status">
 
+<!-- CITIZENSHIP -->
+<input id="CitizenshipNo" placeholder="Citizenship No">
+<input id="CitizenshipDistrict" placeholder="Citizenship District">
+<input id="CitizenshipIssueDate" type="date">
+<input id="Nationality" value="Nepali">
+
+<!-- ADDRESS -->
+<input id="PermanentAddress" placeholder="Permanent Address">
+<input id="TemporaryAddress" placeholder="Temporary Address">
+<input id="WardNo" placeholder="Ward No">
+<input id="Municipality" placeholder="Municipality">
+<input id="District" placeholder="District">
+<input id="Province" placeholder="Province">
+
+<!-- CONTACT -->
+<input id="Mobile" placeholder="Mobile">
+<input id="Email" placeholder="Email">
+
+<!-- MEMBERSHIP -->
+<input id="MembershipType" placeholder="Membership Type">
+<input id="JoinDate" type="date">
+<input id="ShareQty" placeholder="Share Qty">
+<input id="ShareAmount" placeholder="Share Amount">
+<input id="MembershipFee" placeholder="Membership Fee">
+<input id="MemberStatus" value="ACTIVE">
+<input id="MemberCategory" placeholder="Member Category">
+
+<!-- NOMINEE -->
+<input id="NomineeName" placeholder="Nominee Name">
+<input id="NomineeRelation" placeholder="Relation">
+<input id="NomineeCitizenship" placeholder="Nominee Citizenship">
+<input id="NomineePhone" placeholder="Nominee Phone">
+<input id="NomineeAddress" placeholder="Nominee Address">
+<input id="NomineeSharePercent" placeholder="Nominee Share %">
+
+<!-- FILE URLS -->
+<input id="PhotoURL" placeholder="Photo URL">
 <input type="file" onchange="uploadImg(this)">
+<input id="CitizenshipFileURL" placeholder="Citizenship File URL">
+<input id="SignatureURL" placeholder="Signature URL">
+<input id="ThumbPrint" placeholder="Thumb Print">
+
+<!-- OTHER -->
+<input id="Occupation" placeholder="Occupation">
+<input id="IncomeSource" placeholder="Income Source">
+<input id="AccountNo" placeholder="Account No">
+<input id="SavingScheme" placeholder="Saving Scheme">
+<input id="LoanStatus" placeholder="Loan Status">
+<input id="OutstandingLoan" placeholder="Outstanding Loan">
+<input id="InterestRate" placeholder="Interest Rate">
+
+<!-- SYSTEM -->
+<input id="Username" placeholder="Username">
+<input id="Password" placeholder="Password">
+<input id="Role" value="MEMBER">
+<input id="Remarks" placeholder="Remarks">
+
+<br><br>
 
 <button onclick="add()">ADD</button>
 <button onclick="search()">SEARCH</button>
@@ -20,10 +85,23 @@
 const API = "https://script.google.com/macros/s/AKfycbwSerY99FxqEzEh8UEQfjfnp7yW1Vj91Iet1etuv_dW5M3apPjpV_3SCM2Q7Qus4rOswg/exec";
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 
-function data(){
- let d={action:""};
- document.querySelectorAll("input").forEach(i=>{
-   d[i.id]=i.value;
+const HEADERS = [
+"MemberID","FullName","FatherName","HusbandName","GrandfatherName","DOB","Gender",
+"MaritalStatus","CitizenshipNo","CitizenshipDistrict","CitizenshipIssueDate",
+"Nationality","PermanentAddress","TemporaryAddress","WardNo","Municipality",
+"District","Province","Mobile","Email","MembershipType","JoinDate","ShareQty",
+"ShareAmount","MembershipFee","MemberStatus","MemberCategory","NomineeName",
+"NomineeRelation","NomineeCitizenship","NomineePhone","NomineeAddress",
+"NomineeSharePercent","PhotoURL","CitizenshipFileURL","SignatureURL","ThumbPrint",
+"Occupation","IncomeSource","AccountNo","SavingScheme","LoanStatus",
+"OutstandingLoan","InterestRate","Username","Password","Role","Remarks"
+];
+
+function collectData(action){
+ let d={action:action};
+ HEADERS.forEach(h=>{
+   let el=document.getElementById(h);
+   d[h]=el?el.value:"";
  });
  d.Username=d.MemberID;
  d.Password=d.Mobile;
@@ -32,32 +110,29 @@ function data(){
 }
 
 function add(){
- let d=data(); d.action="add";
- send(d);
-}
-
-function search(){
- let id=document.getElementById("MemberID").value;
- send({action:"search",MemberID:id},res=>{
-   if(res.status){
-     Object.keys(res.data).forEach(k=>{
-       let el=document.getElementById(k);
-       if(el) el.value=res.data[k];
-     });
-   }
- });
+ send(collectData("add"));
 }
 
 function update(){
- let d=data(); d.action="update";
- send(d);
+ send(collectData("update"));
+}
+
+function search(){
+ send({action:"search",MemberID:document.getElementById("MemberID").value},res=>{
+   if(res.status){
+     HEADERS.forEach(h=>{
+       let el=document.getElementById(h);
+       if(el) el.value=res.data[h] || "";
+     });
+   }else alert("Not found");
+ });
 }
 
 function send(d,cb){
  fetch(API,{method:"POST",body:JSON.stringify(d)})
  .then(r=>r.json()).then(r=>{
    alert(JSON.stringify(r));
-   if(cb)cb(r);
+   if(cb) cb(r);
  });
 }
 
@@ -65,11 +140,12 @@ function uploadImg(f){
  let fd=new FormData();
  fd.append("image",f.files[0]);
  fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
-   method:"POST",body:fd
+   method:"POST", body:fd
  }).then(r=>r.json()).then(d=>{
    document.getElementById("PhotoURL").value=d.data.url;
  });
 }
 </script>
+
 </body>
 </html>
