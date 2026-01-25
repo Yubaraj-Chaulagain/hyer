@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="ne">
-<header class="topbar">
-  <div class="title">सहकारी व्यवस्थापन प्रणाली</div>
-
-  <div class="profile" onclick="toggleProfile()">
-    <img id="pp" src="https://via.placeholder.com/40">
+<header class="topbar hidden" id="topbar">
+<div class="title">सहकारी व्यवस्थापन प्रणाली</div>
+ <div class="profile" onclick="toggleProfile()">
+    <img id="ppTop" src="https://via.placeholder.com/40">
     <div class="dropdown" id="profileMenu">
-      <div onclick="show('profileBox')">👤 Profile</div>
+      <div onclick="show('profileBox')">👤 Profile
+      <input type="file" id="photoFile" accept="image/*">
+<button onclick="uploadPhoto()">📷 Upload Photo</button>
+</div>
       <div onclick="show('pwBox')">🔑 Change Password</div>
       <div onclick="logout()">🚪 Logout</div>
     </div>
@@ -82,13 +84,14 @@
   <input type="password" id="newpw" placeholder="New Password">
   <button onclick="changePw()">Change Password</button>
 </div>
-    <img id="pp" width="70">
+    <img id="ppTop" width="70">
     <div id="pinfo"></div>
     <button class="secondary" onclick="logout()">Logout</button>
   </div>
   <div class="card hidden" id="profileBox">
   <h3>My Profile</h3>
-  <img id="bigPhoto" width="100"><br>
+  <img id="bigPhoto"
+ width="100"><br>
   <input id="newPhoto" placeholder="Paste Image URL">
   <button onclick="updatePhoto()">Update Photo</button>
   <div id="profileInfo"></div>
@@ -171,6 +174,7 @@
 
 <script>
 /******** CONFIG ********/
+const IMGBB_KEY = "तपाईंको_IMGBB_API_KEY";
 const API = "https://script.google.com/macros/s/AKfycbxqhodOxJDQb2ad1RDq2CaqS7Da8Mfb68smll09ZIzz6_-RBSElRjvi2zTzbG_uDWMf1w/exec";
 const KEY = "sarojkumar643";
 
@@ -188,11 +192,16 @@ ip:"WEB"
   sessionStorage.setItem("role",j.role);
   sessionStorage.setItem("mid",j.member_id||"");
   sessionStorage.setItem("photo",j.photo||"");
+  ppTop.src = j.photo || "https://via.placeholder.com/40";
+  bigPhoto.src = j.photo || "";
+
 
   loginBox.classList.add("hidden");
   dash.classList.remove("hidden");
+  topbar.classList.remove("hidden");
 
   pp.src=j.photo||"https://via.placeholder.com/70";
+   ppTop.src = url;
   pinfo.innerHTML=`<b>${j.username}</b><br><span class="small">${j.role}</span>`;
 
   roleUI(j.role);
@@ -298,6 +307,10 @@ function logout(){
  }).then(()=>{
   sessionStorage.clear();
   location.reload();
+   topbar.classList.add("hidden");
+dash.classList.add("hidden");
+loginBox.classList.remove("hidden");
+
  });
 }
 
@@ -389,6 +402,49 @@ function updatePhoto(){
       bigPhoto.src = newPhoto.value;
     }else alert(r.error);
   });
+}
+function uploadPhoto(){
+  const file = document.getElementById("photoFile").files[0];
+  if(!file) return alert("फोटो छान्नुहोस्");
+
+  const fd = new FormData();
+  fd.append("image", file);
+
+  fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
+    method:"POST",
+    body:fd
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success) return alert("Upload असफल");
+
+    const photoUrl = res.data.url;
+    updatePhotoToSystem(photoUrl);
+  });
+}
+function updatePhotoToSystem(url){
+  post({
+    apiKey:KEY,
+    action:"updatePhoto",
+    username:sessionStorage.getItem("user"),
+    photo:url
+  }).then(r=>{
+    if(r.success){
+      sessionStorage.setItem("photo",url);
+      ppTop.src = url;
+      bigPhoto.src = url;
+      alert("Photo सफलतापूर्वक update भयो");
+    }else{
+      alert(r.error);
+    }
+  });
+}
+
+
+  if(!sessionStorage.getItem("user")){
+  topbar.classList.add("hidden");
+  dash.classList.add("hidden");
+  loginBox.classList.remove("hidden");
 }
 
 
