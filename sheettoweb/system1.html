@@ -88,7 +88,8 @@
 <div class="grid">
   <div>
     <label>Member ID</label>
-    <input id="MemberID" placeholder="M001" required>
+<input id="MemberID" placeholder="M001" onblur="loadMember()" required>
+
   </div>
 
   <div>
@@ -328,8 +329,11 @@
     </select>
   </div>
 </div>
+  <button onclick="submitForm()">Save</button>
+  <button onclick="updateForm()" style="background:#16a34a">Update</button>
+  <button onclick="deleteForm()" style="background:#dc2626">Delete</button>
+</div>
 
-<button onclick="submitForm()">Submit</button>
 
 <script>
 const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
@@ -411,17 +415,61 @@ function upload(input, target) {
 
 // Submit
 function submitForm() {
+  const data = collectData();
+  google.script.run
+    .withSuccessHandler(() => alert("Member Added"))
+    .saveMember(data);
+}
+
+function loadMember() {
+  const memberId = document.getElementById("MemberID").value;
+  if (!memberId) return;
+
+  google.script.run
+    .withSuccessHandler(fillForm)
+    .getMember(memberId);
+}
+
+function fillForm(data) {
+  if (!data) {
+    alert("Member not found");
+    return;
+  }
+  Object.keys(data).forEach(k => {
+    if (document.getElementById(k))
+      document.getElementById(k).value = data[k];
+  });
+}
+
+  function updateForm() {
+  const data = collectData();
+  google.script.run
+    .withSuccessHandler(() => alert("Member Updated"))
+    .saveMember(data);
+}
+  
+function deleteForm() {
+  const memberId = document.getElementById("MemberID").value;
+  if (!memberId) return alert("Enter MemberID");
+
+  if (!confirm("Delete this member permanently?")) return;
+
+  google.script.run
+    .withSuccessHandler(() => {
+      alert("Member Deleted");
+      clearForm();
+    })
+    .deleteMember(memberId);
+}
+  function collectData() {
   const data = {};
   document.querySelectorAll("input,select,textarea")
     .forEach(e => data[e.id] = e.value);
-
-  data.Username = data.MemberID;
-  data.Password = data.Mobile;
-
-  document.getElementById("Username").value = data.Username;
-  document.getElementById("Password").value = data.Password;
-
-  google.script.run.saveMember(data);
+  return data;
+}
+  function clearForm() {
+  document.querySelectorAll("input,select,textarea")
+    .forEach(e => e.value = "");
 }
 
 </script>
