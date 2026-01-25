@@ -144,7 +144,7 @@
     <input id="from" placeholder="From Member ID">
     <input id="to" placeholder="To Member ID">
     <input id="tamt2" type="number" placeholder="Amount">
-    <button onclick="transfer()">Transfer</button>
+    <button onclick="memberTransfer()">Transfer</button>
   </div>
 
   <!-- STOCK -->
@@ -196,7 +196,7 @@
 <script>
 /******** CONFIG ********/
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-const API = "https://script.google.com/macros/s/AKfycbwRWNEouISN_7TvdwnH9C1kKCwnFtbh_ytkK1WoLaaStlNkd_zYlP7BfC2uUt8pB1ys9Q/exec";
+const API = "https://script.google.com/macros/s/AKfycbw_GSVV66ehlzmtB1Y-qTxLvNgJ81j0s4fHZvPMZZQ8d16USW2PlwF7mXRP6cf-qOIQwg/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -285,8 +285,8 @@ function withdraw(){
  }).then(r=>alert(r.success?"Done":r.error));
 }
 
-function transfer(){
- post({apiKey:KEY,action:"transfer",
+function memberTransfer(){
+ post({apiKey:KEY,action:"memberTransfer",
   from:from.value,to:to.value,
   amount:+tamt2.value,
   by:sessionStorage.getItem("user")
