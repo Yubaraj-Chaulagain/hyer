@@ -39,7 +39,7 @@ button{padding:8px;margin-top:10px;font-size:14px;color:#fff;border:none;border-
 <div class="grid">
 <input id="FullName" placeholder="Full Name">
 <input id="FatherName" placeholder="Father Name">
-<input id="Husband/wifeName" placeholder="Husband/Wife Name">
+<input id="HusbandWifeName" placeholder="Husband/Wife Name">
 <input id="GrandfatherName" placeholder="Grandfather Name">
 
 <input type="date" id="DOB">
@@ -110,12 +110,11 @@ button{padding:8px;margin-top:10px;font-size:14px;color:#fff;border:none;border-
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycby8MkFWnl46wU9mDAv-ywz7hxzbVdpTUpZsyWJ-QdtsBnBW42BU3URMo8BlUYsGoASaGw/exec";
-const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
+  const ADMIN_URL = "https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json";
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-let adminData = {};
 let loadedId = null;
 
-/* ===== SEARCH ===== */
+/* ========= SEARCH ========= */
 function searchMember(){
   const id = MemberID.value.trim();
   if(!id) return alert("Enter Member ID");
@@ -128,45 +127,64 @@ function searchMember(){
   .then(r=>r.json())
   .then(res=>{
     if(!res.found) return alert("Not found");
+
     Object.keys(res.data).forEach(k=>{
-      if(document.getElementById(k))
-        document.getElementById(k).value=res.data[k];
+      const el = document.getElementById(k);
+      if(el) el.value = res.data[k];
     });
+
     loadedId = id;
+    alert("Loaded for update");
   });
 }
 
-/* ===== ADD ===== */
-function submitForm(){
-  if(loadedId) return alert("Use UPDATE");
-  send("save");
+/* ========= SAVE ========= */
+function saveMember(){
+  if(loadedId) return alert("Already exists. Use UPDATE");
+
+  autoSystemFields();
+  sendData();
 }
 
-/* ===== UPDATE ===== */
-function updateForm(){
-  if(!loadedId) return alert("Search first");
-  send("save");
+/* ========= UPDATE ========= */
+function updateMember(){
+  if(!loadedId) return alert("Search member first");
+
+  autoSystemFields();
+  sendData();
 }
 
-/* ===== DELETE ===== */
-function deleteForm(){
-  if(!confirm("Delete?")) return;
+/* ========= DELETE ========= */
+function deleteMember(){
+  if(!confirm("Delete member?")) return;
+
   fetch(API_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({action:"delete",memberId:MemberID.value})
-  }).then(()=>alert("Deleted"));
+  })
+  .then(r=>r.json())
+  .then(()=>alert("Deleted successfully"));
 }
 
-/* ===== SEND ===== */
-function send(action){
+/* ========= SEND ========= */
+function sendData(){
   fetch(API_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action,data:collect()})
-  }).then(()=>alert("Success"));
+    body:JSON.stringify({
+      action:"save",
+      data:collect()
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success) alert("Saved successfully");
+    else alert("Error");
+  });
 }
 
+/* ========= COLLECT ========= */
 function collect(){
   const d={};
   document.querySelectorAll("input,select,textarea")
@@ -174,20 +192,20 @@ function collect(){
   return d;
 }
 
-/* ===== IMGBB ===== */
-function upload(inp,target){
-  const r=new FileReader();
-  r.onload=()=>{
-    fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{
-      method:"POST",
-      body:new URLSearchParams({image:r.result.split(",")[1]})
-    })
-    .then(r=>r.json())
-    .then(d=>document.getElementById(target).value=d.data.url);
-  };
-  r.readAsDataURL(inp.files[0]);
+/* ========= AUTO SYSTEM ========= */
+function autoSystemFields(){
+  Username.value = MemberID.value;
+  Password.value = Mobile.value;
+}
+
+/* ========= WARD ========= */
+for(let i=1;i<=32;i++){
+  const o=document.createElement("option");
+  o.text=i;o.value=i;
+  WardNo.appendChild(o);
 }
 </script>
+
 
 
 </body>
