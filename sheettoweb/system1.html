@@ -121,13 +121,75 @@
   </div>
 
   <!-- ADD MEMBER -->
-  <div class="card hidden" id="memberBox">
-    <h3>नयाँ सदस्य</h3>
-    <input id="mname" placeholder="नाम">
-    <input id="mphone" placeholder="फोन">
-    <input id="memail" placeholder="Email">
-    <button onclick="addMember()">Save</button>
-  </div>
+  <div class="card" id="memberBox">
+<h3>🧾 सदस्य दर्ता फारम (सहकारी ऐन अनुसार)</h3>
+
+<h4>१️⃣ व्यक्तिगत विवरण</h4>
+<input id="m_name" placeholder="पूरा नाम (नेपालीमा)" required>
+
+<input id="m_dob" type="date">
+<select id="m_gender">
+  <option value="">लिङ्ग छान्नुहोस्</option>
+  <option>पुरुष</option>
+  <option>महिला</option>
+  <option>अन्य</option>
+</select>
+
+<input id="m_father" placeholder="बुवाको नाम">
+<input id="m_mother" placeholder="आमाको नाम">
+<input id="m_spouse" placeholder="पति / पत्नीको नाम">
+
+<input id="m_profession" placeholder="पेशा">
+
+<h4>२️⃣ स्थायी ठेगाना</h4>
+<input id="m_province" placeholder="प्रदेश">
+<input id="m_district" placeholder="जिल्ला">
+<input id="m_palika" placeholder="पालिका">
+<input id="m_ward" placeholder="वडा नं">
+
+<h4>३️⃣ सम्पर्क विवरण</h4>
+<input id="m_phone" placeholder="मोबाइल नं" required>
+<input id="m_email" placeholder="Email (यदि छ भने)">
+
+<h4>४️⃣ नागरिकता विवरण</h4>
+<input id="m_ctz_no" placeholder="नागरिकता नं" required>
+<input id="m_ctz_dist" placeholder="जारी जिल्ला">
+<input id="m_ctz_date" type="date">
+
+<label>📷 नागरिकता फोटो (अगाडि/पछाडि)</label>
+<input type="file" id="m_ctz_img" accept="image/*" required>
+
+<h4>५️⃣ सदस्य फोटो</h4>
+<input type="file" id="m_photo" accept="image/*" required>
+
+<h4>६️⃣ शेयर विवरण</h4>
+<input id="m_share_qty" type="number" placeholder="शेयर संख्या">
+<input id="m_share_amt" type="number" placeholder="शेयर रकम">
+<input id="m_join_date" type="date">
+
+<select id="m_type">
+  <option value="">सदस्य प्रकार</option>
+  <option>साधारण</option>
+  <option>संस्थागत</option>
+</select>
+
+<h4>७️⃣ Nominee (हकवाला)</h4>
+<input id="n_name" placeholder="हकवालाको नाम" required>
+<input id="n_relation" placeholder="नाता">
+<input id="n_phone" placeholder="फोन">
+<input id="n_ctz" placeholder="नागरिकता नं">
+
+<h4>८️⃣ घोषणा</h4>
+<label>
+<input type="checkbox" required>
+म सहकारीको नियम, ऐन तथा विधान पालना गर्ने घोषणा गर्दछु।
+</label>
+
+<br><br>
+<button onclick="addMember()">✅ सदस्य दर्ता गर्नुहोस्</button>
+</div>
+
+
 
   <!-- SAVINGS / WITHDRAW -->
   <div class="card hidden" id="txnBox">
@@ -196,7 +258,7 @@
 <script>
 /******** CONFIG ********/
 const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-const API = "https://script.google.com/macros/s/AKfycbw_GSVV66ehlzmtB1Y-qTxLvNgJ81j0s4fHZvPMZZQ8d16USW2PlwF7mXRP6cf-qOIQwg/exec";
+const API = "https://script.google.com/macros/s/AKfycbzPE9qDSTWJ3A6uLiijdGfUrcI5VA29fWIbg1vLF8lKl1Dqhy5jTAlYaCLnpovKmVdn1Q/exec";
 const KEY = "sarojkumar643";
 
 /******** LOGIN ********/
@@ -266,10 +328,48 @@ function post(o){
 
 /******** ACTIONS ********/
 function addMember(){
- post({apiKey:KEY,action:"addMember",
-  name:mname.value,phone:mphone.value,email:memail.value
- }).then(()=>alert("Saved"));
+  post({
+    apiKey:KEY,
+    action:"addMember",
+
+    name:m_name.value,
+    dob:m_dob.value,
+    gender:m_gender.value,
+
+    father:m_father.value,
+    mother:m_mother.value,
+    spouse:m_spouse.value,
+    profession:m_profession.value,
+
+    province:m_province.value,
+    district:m_district.value,
+    palika:m_palika.value,
+    ward:m_ward.value,
+
+    phone:m_phone.value,
+    email:m_email.value,
+
+    ctz_no:m_ctz_no.value,
+    ctz_dist:m_ctz_dist.value,
+    ctz_date:m_ctz_date.value,
+    ctz_img:"IMG_URL",   // imgbb बाट
+
+    photo:"PHOTO_URL",
+
+    share_qty:m_share_qty.value,
+    share_amount:m_share_amt.value,
+    join_date:m_join_date.value,
+    member_type:m_type.value,
+
+    nominee_name:n_name.value,
+    nominee_relation:n_relation.value,
+    nominee_phone:n_phone.value,
+    nominee_citizenship:n_ctz.value
+  }).then(r=>{
+    alert("Member ID: " + r.member_id);
+  });
 }
+
 
 function savings(){
  post({apiKey:KEY,action:"savings",
