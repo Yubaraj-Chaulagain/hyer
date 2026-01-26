@@ -95,8 +95,35 @@
     <input type="email" class="form-control" name="member_email">
   </div>
 </div>
+  <!-- 4. member type -->
+<h6 class="text-primary mt-4">७. सदस्यको प्रकार</h6>
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">सदस्यको प्रकार</label>
+    <select class="form-select" name="member_type" required>
+      <option value="">छान्नुहोस्</option>
+      <option>साधारण सदस्य</option>
+      <option>संस्थापक सदस्य</option>
+      <option>ऋणी सदस्य</option>
+      <option>बाल सदस्य</option>
+    </select>
+  </div>
 
-<!-- 4. Occupation -->
+  <div class="col-md-6">
+    <label class="form-label">सेयर संख्या</label>
+    <input type="number" class="form-control" name="share_count">
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">सदस्य स्थिति</label>
+    <select class="form-select" name="member_status" required>
+      <option value="">छान्नुहोस्</option>
+              <option>सक्रिय</option>
+              <option>निष्क्रिय</option>
+    </select>
+  </div>
+</div>
+
+<!-- 5. Occupation -->
 <h6 class="text-primary mt-4">४. पेशा तथा आम्दानी</h6>
 <div class="row mb-3">
   <div class="col-md-6">
@@ -112,12 +139,13 @@
   </div>
 </div>
 
-<!-- 5. Nominee -->
+<!-- 6. Nominee -->
 <h6 class="text-primary mt-4">५. हकवालाको विवरण</h6>
+
 <div class="row mb-3">
   <div class="col-md-4">
-    <label class="form-label">नाम</label>
-    <input class="form-control" name="nominee_name">
+    <label class="form-label">हकवालाको नाम</label>
+    <input class="form-control" name="nominee_name" required>
   </div>
   <div class="col-md-4">
     <label class="form-label">सम्बन्ध</label>
@@ -129,7 +157,38 @@
   </div>
 </div>
 
-<!-- 6. Documents -->
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">मोबाइल नं.</label>
+    <input class="form-control" name="nominee_mobile">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">नागरिकता नं.</label>
+    <input class="form-control" name="nominee_citizenship_no">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">नागरिकता जारी जिल्ला</label>
+    <input class="form-control" name="nominee_citizenship_district">
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">हकवालाको ठेगाना</label>
+    <input class="form-control" name="nominee_address">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">नागरिकता अगाडि</label>
+    <input type="file" class="form-control" name="nominee_citizenship_front">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">नागरिकता पछाडि</label>
+    <input type="file" class="form-control" name="nominee_citizenship_back">
+  </div>
+</div>
+
+
+<!-- 7. Documents -->
 <h6 class="text-primary mt-4">६. फोटो तथा कागजात</h6>
 <div class="row mb-3">
   <div class="col-md-4">
@@ -145,6 +204,41 @@
     <input type="file" class="form-control" name="citizenship_back">
   </div>
 </div>
+  <!-- 8. official use only -->
+  <h6 class="text-danger mt-4">८. कार्यालयीय प्रयोग (Office Use Only)</h6>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">दर्ता मिति</label>
+    <input type="date" class="form-control" name="register_date">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">स्वीकृत स्थिति</label>
+    <select class="form-select" name="approval_status">
+      <option>Pending</option>
+      <option>Approved</option>
+      <option>Rejected</option>
+    </select>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Approved By</label>
+    <input class="form-control" name="approved_by" placeholder="Chairman / Manager">
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">पद</label>
+    <input class="form-control" name="approved_designation">
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">कैफियत</label>
+    <input class="form-control" name="remarks">
+  </div>
+</div>
+
 
 <div class="form-check mt-3">
   <input class="form-check-input" type="checkbox" required>
