@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <title>सहकारी सदस्य दर्ता फारम</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container my-4">
+  <div class="card shadow">
+    <div class="card-header bg-success text-white text-center">
+      <h4 class="mb-0">सहकारी सदस्य दर्ता फारम</h4>
+    </div>
+
+    <div class="card-body">
+      <form enctype="multipart/form-data">
+
+        <!-- 1. Personal Details -->
+        <h6 class="text-primary">१. व्यक्तिगत विवरण</h6>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">सदस्य नं.</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">पूरा नाम</label>
+            <input type="text" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">लिङ्ग</label>
+            <select class="form-select">
+              <option>पुरुष</option>
+              <option>महिला</option>
+              <option>अन्य</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">जन्म मिति</label>
+            <input type="date" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">नागरिकता नं.</label>
+            <input type="text" class="form-control">
+          </div>
+        </div>
+
+        <!-- 2. Address -->
+        <h6 class="text-primary mt-4">२. ठेगाना</h6>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">प्रदेश</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">जिल्ला</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">पालिका</label>
+            <input type="text" class="form-control">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">वडा नं.</label>
+          <input type="text" class="form-control">
+        </div>
+
+        <!-- 3. Contact -->
+        <h6 class="text-primary mt-4">३. सम्पर्क विवरण</h6>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">मोबाइल नं.</label>
+            <input type="tel" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">ईमेल</label>
+            <input type="email" class="form-control">
+          </div>
+        </div>
+
+        <!-- 4. Member Type -->
+        <h6 class="text-primary mt-4">४. सदस्यको प्रकार</h6>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">सदस्य प्रकार</label>
+            <select class="form-select">
+              <option>साधारण सदस्य</option>
+              <option>संस्थागत सदस्य</option>
+              <option>ऋणी सदस्य</option>
+              <option>सेयरधनी सदस्य</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">सदस्य स्थिति</label>
+            <select class="form-select">
+              <option>सक्रिय</option>
+              <option>निष्क्रिय</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 5. Occupation -->
+        <h6 class="text-primary mt-4">५. पेशा तथा आम्दानी</h6>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">पेशा</label>
+            <select class="form-select">
+              <option>कृषि</option>
+              <option>व्यवसाय</option>
+              <option>सेवा</option>
+              <option>वैदेशिक रोजगारी</option>
+              <option>मजदुरी</option>
+              <option>अन्य</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">वार्षिक आम्दानी (रु.)</label>
+            <input type="number" class="form-control">
+          </div>
+        </div>
+
+        <!-- 6. Nominee -->
+        <h6 class="text-primary mt-4">६. नोमिनी विवरण</h6>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">नोमिनीको नाम</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">सम्बन्ध</label>
+            <select class="form-select">
+              <option>पति / पत्नी</option>
+              <option>छोरा</option>
+              <option>छोरी</option>
+              <option>बुबा</option>
+              <option>आमा</option>
+              <option>अन्य</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">नागरिकता नं.</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">सम्पर्क नं.</label>
+            <input type="tel" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">हक प्रतिशत (%)</label>
+            <input type="number" class="form-control" value="100">
+          </div>
+        </div>
+
+        <!-- 7. Documents -->
+        <h6 class="text-primary mt-4">७. फोटो तथा कागजात</h6>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">सदस्य फोटो</label>
+            <input type="file" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">नागरिकता (अगाडि)</label>
+            <input type="file" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">नागरिकता (पछाडि)</label>
+            <input type="file" class="form-control">
+          </div>
+        </div>
+
+        <!-- 8. Approval -->
+        <h6 class="text-primary mt-4">८. कार्यालयीय प्रयोग (Approved By)</h6>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">स्वीकृत गर्ने व्यक्ति</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">पद</label>
+            <input type="text" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">स्वीकृत मिति</label>
+            <input type="date" class="form-control">
+          </div>
+        </div>
+
+        <!-- Declaration -->
+        <div class="form-check mt-4">
+          <input class="form-check-input" type="checkbox" required>
+          <label class="form-check-label">
+            म सहकारीको ऐन, नियम तथा विनियम पालना गर्न सहमत छु।
+          </label>
+        </div>
+
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-success px-5">दर्ता गर्नुहोस्</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
