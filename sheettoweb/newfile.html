@@ -106,7 +106,7 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">सदस्य प्रकार</label>
-            <select class="form-select">
+            <select class="form-select" name="member_type">
               <option>साधारण सदस्य</option>
               <option>संस्थागत सदस्य</option>
               <option>ऋणी सदस्य</option>
@@ -115,7 +115,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">सदस्य स्थिति</label>
-            <select class="form-select">
+            <select class="form-select" name="member_status">
               <option>सक्रिय</option>
               <option>निष्क्रिय</option>
             </select>
@@ -167,10 +167,17 @@
             <label class="form-label">नागरिकता नं.</label>
            <input type="text" class="form-control" name="nominee_citizenship">
           </div>
-          <div class="col-md-4">
-            <label class="form-label">सम्पर्क नं.</label>
-            <input type="tel" class="form-control" name="nominee_mobile">
-          </div>
+         <div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">मोबाइल नं.</label>
+    <input type="tel" class="form-control" name="mobile">
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">ईमेल</label>
+    <input type="email" class="form-control" name="email">
+  </div>
+</div>
+
           <div class="col-md-4">
             <label class="form-label">हक प्रतिशत (%)</label>
             <input type="number" class="form-control" name="nominee_share">
@@ -232,20 +239,22 @@
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
 
-document.querySelector("form").addEventListener("submit", e => {
+document.getElementById("memberForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  const formData = new FormData(e.target);
-  let data = { action: "add" };
-
-  formData.forEach((v, k) => data[k] = v);
+  const fd = new FormData(this);
+  fd.append("action", "add");
 
   fetch(API, {
     method: "POST",
-    body: JSON.stringify(data)
+    body: fd
   })
   .then(res => res.text())
-  .then(alert);
+  .then(msg => {
+    alert(msg);
+    this.reset();
+  })
+  .catch(err => alert("Error: " + err));
 });
 </script>
 
