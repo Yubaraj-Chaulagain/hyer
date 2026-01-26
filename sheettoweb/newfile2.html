@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <title>सहकारी सदस्य दर्ता फारम</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div class="container my-4">
+<div class="card shadow">
+<div class="card-header bg-success text-white text-center">
+  <h4 class="mb-0">सहकारी सदस्य दर्ता फारम</h4>
+</div>
+
+<div class="card-body">
+<form id="memberForm" enctype="multipart/form-data">
+
+<!-- 1. Personal -->
+<h6 class="text-primary">१. व्यक्तिगत विवरण</h6>
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">सदस्य नं.</label>
+    <input class="form-control" name="member_no">
+  </div>
+  <div class="col-md-8">
+    <label class="form-label">पूरा नाम</label>
+    <input class="form-control" name="full_name" required>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">बुबाको नाम</label>
+    <input class="form-control" name="father_name">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">हजुर बुबाको नाम</label>
+    <input class="form-control" name="grandfather_name">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">पति / पत्नी</label>
+    <input class="form-control" name="spouse_name">
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">लिङ्ग</label>
+    <select class="form-select" name="gender">
+      <option>पुरुष</option><option>महिला</option><option>अन्य</option>
+    </select>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">जन्म मिति</label>
+    <input type="date" class="form-control" name="dob">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">नागरिकता नं.</label>
+    <input class="form-control" name="citizenship_no">
+  </div>
+</div>
+
+<!-- 2. Address -->
+<h6 class="text-primary mt-4">२. ठेगाना</h6>
+<div class="row mb-3">
+  <div class="col-md-3">
+    <label class="form-label">प्रदेश</label>
+    <input class="form-control" name="province">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">जिल्ला</label>
+    <input class="form-control" name="district">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">पालिका</label>
+    <input class="form-control" name="municipality">
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">वडा नं.</label>
+    <input class="form-control" name="ward">
+  </div>
+</div>
+
+<!-- 3. Contact -->
+<h6 class="text-primary mt-4">३. सम्पर्क विवरण</h6>
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">मोबाइल नं.</label>
+    <input class="form-control" name="member_mobile">
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">ईमेल</label>
+    <input type="email" class="form-control" name="member_email">
+  </div>
+</div>
+
+<!-- 4. Occupation -->
+<h6 class="text-primary mt-4">४. पेशा तथा आम्दानी</h6>
+<div class="row mb-3">
+  <div class="col-md-6">
+    <label class="form-label">पेशा</label>
+    <select class="form-select" name="occupation">
+      <option>कृषि</option><option>व्यवसाय</option><option>सेवा</option>
+      <option>वैदेशिक रोजगारी</option><option>मजदुरी</option>
+    </select>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">वार्षिक आम्दानी</label>
+    <input type="number" class="form-control" name="annual_income">
+  </div>
+</div>
+
+<!-- 5. Nominee -->
+<h6 class="text-primary mt-4">५. हकवालाको विवरण</h6>
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">नाम</label>
+    <input class="form-control" name="nominee_name">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">सम्बन्ध</label>
+    <input class="form-control" name="nominee_relation">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">हक प्रतिशत (%)</label>
+    <input type="number" class="form-control" name="nominee_share">
+  </div>
+</div>
+
+<!-- 6. Documents -->
+<h6 class="text-primary mt-4">६. फोटो तथा कागजात</h6>
+<div class="row mb-3">
+  <div class="col-md-4">
+    <label class="form-label">सदस्य फोटो</label>
+    <input type="file" class="form-control" name="photo">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">नागरिकता अगाडि</label>
+    <input type="file" class="form-control" name="citizenship_front">
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">नागरिकता पछाडि</label>
+    <input type="file" class="form-control" name="citizenship_back">
+  </div>
+</div>
+
+<div class="form-check mt-3">
+  <input class="form-check-input" type="checkbox" required>
+  <label class="form-check-label">
+    म सहकारीको नियम पालना गर्न सहमत छु
+  </label>
+</div>
+
+<div class="text-center mt-4">
+  <button class="btn btn-success px-5">दर्ता गर्नुहोस्</button>
+</div>
+
+</form>
+</div>
+</div>
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
+document.getElementById("memberForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  fd.append("action","add");
+  fetch(API,{method:"POST",body:fd})
+  .then(r=>r.text()).then(m=>{alert(m);e.target.reset();});
+});
+</script>
+</body>
+</html>
