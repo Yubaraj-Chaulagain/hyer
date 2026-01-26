@@ -23,12 +23,12 @@
 
         <div class="row mb-3">
           <div class="col-md-4">
-            <label class="form-label">सदस्य नं.</label>
-            <input type="text" class="form-control">
+            <label class="form-label">सदस्य नं.</label><form id="memberForm" enctype="multipart/form-data">
+            <input type="text" class="form-control" name="member_no">
           </div>
           <div class="col-md-8">
             <label class="form-label">पूरा नाम</label>
-            <input type="text" class="form-control" required>
+            <input type="text" class="form-control" name="full_name" required>
           </div>
         </div>
 
@@ -36,22 +36,22 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">बुबाको नाम</label>
-            <input type="text" class="form-control" required>
+           <input type="text" class="form-control" name="father_name">
           </div>
           <div class="col-md-4">
             <label class="form-label">हजुर बुबाको नाम</label>
-            <input type="text" class="form-control">
+           <input type="text" class="form-control" name="grandfather_name">
           </div>
           <div class="col-md-4">
             <label class="form-label">श्रीमान / श्रीमतीको नाम</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="spouse_name">
           </div>
         </div>
 
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">लिङ्ग</label>
-            <select class="form-select">
+            <select class="form-select" name="gender">
               <option>पुरुष</option>
               <option>महिला</option>
               <option>अन्य</option>
@@ -59,11 +59,11 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">जन्म मिति</label>
-            <input type="date" class="form-control">
+            <input type="date" class="form-control" name="dob">
           </div>
           <div class="col-md-4">
             <label class="form-label">नागरिकता नं.</label>
-            <input type="text" class="form-control">
+           <input type="text" class="form-control" name="citizenship_no">
           </div>
         </div>
 
@@ -72,21 +72,21 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">प्रदेश</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="province">
           </div>
           <div class="col-md-4">
             <label class="form-label">जिल्ला</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="district">
           </div>
           <div class="col-md-4">
             <label class="form-label">पालिका</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="municipality">
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label">वडा नं.</label>
-          <input type="text" class="form-control">
+         <input type="text" class="form-control" name="ward">
         </div>
 
         <!-- 3. Contact -->
@@ -94,11 +94,10 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">मोबाइल नं.</label>
-            <input type="tel" class="form-control">
-          </div>
+            <input type="tel" class="form-control" name="mobile">
           <div class="col-md-6">
             <label class="form-label">ईमेल</label>
-            <input type="email" class="form-control">
+            <input type="email" class="form-control" name="email">
           </div>
         </div>
 
@@ -128,7 +127,7 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">पेशा</label>
-            <select class="form-select">
+            <select class="form-select" name="occupation">
               <option>कृषि</option>
               <option>व्यवसाय</option>
               <option>सेवा</option>
@@ -139,7 +138,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">वार्षिक आम्दानी (रु.)</label>
-            <input type="number" class="form-control">
+            <input type="number" class="form-control" name="annual_income">
           </div>
         </div>
 
@@ -148,11 +147,11 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">हकवालाको नाम</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="nominee_name">
           </div>
           <div class="col-md-6">
             <label class="form-label">सम्बन्ध</label>
-            <select class="form-select">
+          <select class="form-select" name="nominee_relation">
               <option>पति / पत्नी</option>
               <option>छोरा</option>
               <option>छोरी</option>
@@ -166,15 +165,15 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">नागरिकता नं.</label>
-            <input type="text" class="form-control">
+           <input type="text" class="form-control" name="nominee_citizenship">
           </div>
           <div class="col-md-4">
             <label class="form-label">सम्पर्क नं.</label>
-            <input type="tel" class="form-control">
+            <input type="tel" class="form-control" name="nominee_mobile">
           </div>
           <div class="col-md-4">
             <label class="form-label">हक प्रतिशत (%)</label>
-            <input type="number" class="form-control" value="100">
+            <input type="number" class="form-control" name="nominee_share">
           </div>
         </div>
 
@@ -183,15 +182,15 @@
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">सदस्य फोटो</label>
-            <input type="file" class="form-control">
+            <input type="file" class="form-control" name="photo">
           </div>
           <div class="col-md-4">
             <label class="form-label">नागरिकता (अगाडि)</label>
-            <input type="file" class="form-control">
+            <input type="file" class="form-control" name="citizenship_front">
           </div>
           <div class="col-md-4">
             <label class="form-label">नागरिकता (पछाडि)</label>
-            <input type="file" class="form-control">
+            <input type="file" class="form-control" name="citizenship_back">
           </div>
         </div>
 
@@ -200,20 +199,20 @@
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">स्वीकृत गर्ने व्यक्ति</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="approved_by">
           </div>
           <div class="col-md-3">
             <label class="form-label">पद</label>
-            <input type="text" class="form-control">
+           <input type="text" class="form-control" name="approved_post">
           </div>
           <div class="col-md-3">
             <label class="form-label">स्वीकृत मिति</label>
-            <input type="date" class="form-control">
+            <input type="date" class="form-control" name="approved_date">
           </div>
         </div>
 
         <div class="form-check mt-4">
-          <input class="form-check-input" type="checkbox" required>
+          <input class="form-check-input" type="checkbox" name="Agreement" required>
           <label class="form-check-label">
             म सहकारीको ऐन, नियम तथा विनियम पालना गर्न सहमत छु।
           </label>
@@ -230,3 +229,23 @@
 
 </body>
 </html>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
+
+document.querySelector("form").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  let data = { action: "add" };
+
+  formData.forEach((v, k) => data[k] = v);
+
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(res => res.text())
+  .then(alert);
+});
+</script>
+
