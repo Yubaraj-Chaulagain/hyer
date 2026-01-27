@@ -20,11 +20,15 @@
 <!-- 1. Personal -->
 <h6 class="text-primary">१. व्यक्तिगत विवरण</h6>
 <div class="row mb-3">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <label class="form-label">सदस्य नं.</label>
     <input class="form-control" name="member_no">
   </div>
-  <div class="col-md-8">
+  <div class="col-md-3">
+    <label class="form-label">खाता नं.</label>
+    <input class="form-control" name="member_ac" id="member_id" required>
+  </div>
+  <div class="col-md-7">
     <label class="form-label">पूरा नाम</label>
     <input class="form-control" name="full_name" required>
   </div>
@@ -183,10 +187,13 @@
   <div class="col-md-3">
     <label class="form-label">नागरिकता अगाडि</label>
     <input type="file" class="form-control" name="nominee_citizenship_front">
+    <input type="hidden" name="nominee_citizenship_front_url" id="nominee_citizenship_front_url">
+
   </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता पछाडि</label>
     <input type="file" class="form-control" name="nominee_citizenship_back">
+    <input type="hidden" name="nominee_citizenship_back_url" id="nominee_citizenship_back_url">
   </div>
 </div>
 
@@ -197,14 +204,18 @@
   <div class="col-md-4">
     <label class="form-label">सदस्य फोटो</label>
     <input type="file" class="form-control" name="photo">
+    <input type="hidden" name="photo_url" id="photo_url">
+
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता अगाडि</label>
     <input type="file" class="form-control" name="citizenship_front">
+    <input type="hidden" name="citizenship_front_url" id="citizenship_front_url">
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता पछाडि</label>
     <input type="file" class="form-control" name="citizenship_back">
+    <input type="hidden" name="citizenship_back_url" id="citizenship_back_url">
   </div>
 </div>
   <!-- 8. official use only -->
