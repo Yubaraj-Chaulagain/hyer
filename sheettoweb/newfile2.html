@@ -66,17 +66,19 @@
 <h6 class="text-primary mt-4">२. ठेगाना</h6>
 <div class="row mb-3">
   <div class="col-md-3">
-    <label class="form-label">प्रदेश</label>
-    <input class="form-control" name="province">
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">जिल्ला</label>
-    <input class="form-control" name="district">
-  </div>
-  <div class="col-md-3">
-    <label class="form-label">पालिका</label>
-    <input class="form-control" name="municipality">
-  </div>
+  <label class="form-label">प्रदेश</label>
+  <select class="form-select" name="province" id="province"></select>
+</div>
+
+<div class="col-md-3">
+  <label class="form-label">जिल्ला</label>
+  <select class="form-select" name="district" id="district"></select>
+</div>
+
+<div class="col-md-3">
+  <label class="form-label">पालिका</label>
+  <select class="form-select" name="municipality" id="municipality"></select>
+</div>
   <div class="col-md-3">
     <label class="form-label">वडा नं.</label>
     <input class="form-control" name="ward">
@@ -256,15 +258,51 @@
 </div>
 </div>
 
-<script>
-const API="https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
-document.getElementById("memberForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const fd=new FormData(e.target);
-  fd.append("action","add");
-  fetch(API,{method:"POST",body:fd})
-  .then(r=>r.text()).then(m=>{alert(m);e.target.reset();});
+</body>
+  <script>
+let addressData = {};
+
+fetch('https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json')
+  .then(res => res.json())
+  .then(data => {
+    addressData = data;
+    loadProvinces();
+  });
+
+function loadProvinces() {
+  const province = document.getElementById('province');
+  province.innerHTML = '<option value="">प्रदेश छान्नुहोस्</option>';
+
+  for (let p in addressData) {
+    province.innerHTML += `<option value="${p}">${p}</option>`;
+  }
+}
+
+document.getElementById('province').addEventListener('change', function () {
+  const district = document.getElementById('district');
+  const municipality = document.getElementById('municipality');
+
+  district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  if (!this.value) return;
+
+  for (let d in addressData[this.value]) {
+    district.innerHTML += `<option value="${d}">${d}</option>`;
+  }
+});
+
+document.getElementById('district').addEventListener('change', function () {
+  const municipality = document.getElementById('municipality');
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  const province = document.getElementById('province').value;
+  if (!this.value) return;
+
+  addressData[province][this.value].forEach(m => {
+    municipality.innerHTML += `<option value="${m}">${m}</option>`;
+  });
 });
 </script>
-</body>
+
 </html>
