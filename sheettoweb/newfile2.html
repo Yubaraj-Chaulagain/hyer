@@ -169,9 +169,10 @@
     <input class="form-control" name="nominee_citizenship_no">
   </div>
   <div class="col-md-4">
-    <label class="form-label">नागरिकता जारी जिल्ला</label>
-    <input class="form-control" name="nominee_citizenship_district">
-  </div>
+  <label class="form-label">नागरिकता जारी जिल्ला</label>
+  <select class="form-select" name="nominee_citizenship_district" id="citizenship_district">
+    <option value="">जिल्ला छान्नुहोस्</option>
+  </select>
 </div>
 
 <div class="row mb-3">
@@ -267,6 +268,7 @@ fetch('https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json')
   .then(data => {
     addressData = data;
     loadProvinces();
+    loadCitizenshipDistricts(); // 👈 add this
   });
 
 function loadProvinces() {
@@ -304,5 +306,33 @@ document.getElementById('district').addEventListener('change', function () {
   });
 });
 </script>
+  <script>
+function loadCitizenshipDistricts() {
+  const districtSelect = document.getElementById('citizenship_district');
+  districtSelect.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+
+  for (let province in addressData) {
+    for (let district in addressData[province]) {
+      districtSelect.innerHTML +=
+        `<option value="${district}">${district}</option>`;
+    }
+  }
+}
+</script>
+  <script>
+function loadCitizenshipDistricts() {
+  const districtSelect = document.getElementById('citizenship_district');
+  districtSelect.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+
+  for (let province in addressData) {
+    for (let district in addressData[province]) {
+      districtSelect.innerHTML +=
+        `<option value="${district}">${district}</option>`;
+    }
+  }
+}
+</script>
+
+
 
 </html>
