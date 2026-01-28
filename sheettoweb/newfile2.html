@@ -349,9 +349,7 @@ function loadCitizenshipDistricts() {
     }
   }
 }
-</script>
 
-  <script>
 const IMGBB_API_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 
 async function uploadToImgbb(file, rename) {
@@ -367,67 +365,67 @@ async function uploadToImgbb(file, rename) {
   const data = await res.json();
   return data.data.url;
 }
-</script>
-<script>
+
+const GAS_API = "https://script.google.com/macros/s/AKfycbxDhyNQ9gxWGOfGF0vfaUxyLnN_C930C4XtcueRdM05DTADJjCZU_qL2pW1CiQk0Ue-JQ/exec";
+
 async function handleUpload(input, type) {
   const memberId = document.getElementById("member_id").value;
-
   if (!memberId) {
     alert("पहिले खाता नं. हाल्नुहोस्");
     input.value = "";
     return;
   }
 
-  if (!input.files || !input.files[0]) {
-    return; // user cancelled file selection
-  }
-
   const file = input.files[0];
-  let rename = "";
+  if (!file) return;
 
-  if (type === "photo") rename = `${memberId}_photo`;
-  if (type === "citizen_front") rename = `${memberId}_citizen_front`;
-  if (type === "citizen_back") rename = `${memberId}_citizen_back`;
-  if (type === "nominee_front") rename = `${memberId}_nominee_citizen_front`;
-  if (type === "nominee_back") rename = `${memberId}_nominee_citizen_back`;
+  let rename = memberId + "_" + type;
+
+  const fd = new FormData();
+  fd.append("action", "upload");
+  fd.append("name", rename);
+  fd.append("file", file);
 
   try {
-    const url = await uploadToImgbb(file, rename);
+    const res = await fetch(GAS_API, {
+      method: "POST",
+      body: fd
+    });
 
+    const data = await res.json();
+
+    if (!data.success) throw data.error;
+
+    const url = data.url;
+
+    // 🔹 set values
     if (type === "photo") {
-      document.getElementById("photo_url").value = url;
-      document.getElementById("photo_url_display").value = url;
+      photo_url.value = url;
+      photo_url_display.value = url;
     }
-
     if (type === "citizen_front") {
-      document.getElementById("citizenship_front_url").value = url;
-      document.getElementById("citizenship_front_url_display").value = url;
+      citizenship_front_url.value = url;
+      citizenship_front_url_display.value = url;
     }
-
     if (type === "citizen_back") {
-      document.getElementById("citizenship_back_url").value = url;
-      document.getElementById("citizenship_back_url_display").value = url;
+      citizenship_back_url.value = url;
+      citizenship_back_url_display.value = url;
     }
-
     if (type === "nominee_front") {
-      document.getElementById("nominee_citizenship_front_url").value = url;
-      document.getElementById("nominee_front_url_display").value = url;
+      nominee_citizenship_front_url.value = url;
+      nominee_front_url_display.value = url;
     }
-
     if (type === "nominee_back") {
-      document.getElementById("nominee_citizenship_back_url").value = url;
-      document.getElementById("nominee_back_url_display").value = url;
+      nominee_citizenship_back_url.value = url;
+      nominee_back_url_display.value = url;
     }
 
   } catch (err) {
-    alert("Image upload failed");
     console.error(err);
+    alert("Image upload failed");
   }
 }
-</script>
 
-<script>
-const API = "https://script.google.com/macros/s/AKfycbzXbBtO7sjDTGovdvWWveIjMrYsQ9LSqiKgopm24WjhLKAnT-uaZco574Hv4HDTyxwzMw/exec";
 document.getElementById("memberForm").addEventListener("submit", function(e){
   e.preventDefault();
 
