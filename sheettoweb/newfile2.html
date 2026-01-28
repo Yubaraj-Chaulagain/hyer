@@ -188,12 +188,14 @@
     <label class="form-label">नागरिकता अगाडि</label>
     <input type="file" class="form-control"
 onchange="handleUpload(this,'nominee_front')">
+<input type="text" class="form-control mt-1" id="nominee_front_url_display" readonly>
  <input type="hidden" name="nominee_citizenship_front_url" id="nominee_citizenship_front_url">
  </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता पछाडि</label>
     <input type="file" class="form-control"
 onchange="handleUpload(this,'nominee_back')">
+<input type="text" class="form-control mt-1" id="nominee_back_url_display" readonly>
     <input type="hidden" name="nominee_citizenship_back_url" id="nominee_citizenship_back_url">
   </div>
 </div>
@@ -206,6 +208,11 @@ onchange="handleUpload(this,'nominee_back')">
     <label class="form-label">सदस्य फोटो</label>
     <input type="file" class="form-control" name="photo"
 onchange="handleUpload(this,'photo')">
+<input type="text"
+       class="form-control mt-1"
+       id="photo_url_display"
+       placeholder="Photo URL auto generate हुन्छ"
+       readonly>
     <input type="hidden" name="photo_url" id="photo_url">
 
   </div>
@@ -213,6 +220,7 @@ onchange="handleUpload(this,'photo')">
     <label class="form-label">नागरिकता अगाडि</label>
     <input type="file" class="form-control"
 onchange="handleUpload(this,'citizen_front')">
+<input type="text" class="form-control mt-1" id="citizenship_front_url_display" readonly>
 
     <input type="hidden" name="citizenship_front_url" id="citizenship_front_url">
   </div>
@@ -220,6 +228,8 @@ onchange="handleUpload(this,'citizen_front')">
     <label class="form-label">नागरिकता पछाडि</label>
    <input type="file" class="form-control"
 onchange="handleUpload(this,'citizen_back')">
+<input type="text" class="form-control mt-1" id="citizenship_back_url_display" readonly>
+
     <input type="hidden" name="citizenship_back_url" id="citizenship_back_url">
   </div>
 </div>
@@ -363,7 +373,7 @@ async function uploadToImgbb(file, rename) {
 async function handleUpload(input, type) {
   const memberId = document.getElementById("member_id").value;
   if (!memberId) {
-    alert("पहिले सदस्य नं. हाल्नुहोस्");
+    alert("पहिले खाता नं. हाल्नुहोस्");
     input.value = "";
     return;
   }
@@ -379,13 +389,33 @@ async function handleUpload(input, type) {
 
   const url = await uploadToImgbb(file, rename);
 
-  if (type === "photo") document.getElementById("photo_url").value = url;
-  if (type === "citizen_front") document.getElementById("citizenship_front_url").value = url;
-  if (type === "citizen_back") document.getElementById("citizenship_back_url").value = url;
-  if (type === "nominee_front") document.getElementById("nominee_citizenship_front_url").value = url;
-  if (type === "nominee_back") document.getElementById("nominee_citizenship_back_url").value = url;
+  if (type === "photo") {
+    document.getElementById("photo_url").value = url;
+    document.getElementById("photo_url_display").value = url;
+  }
+
+  if (type === "citizen_front") {
+    document.getElementById("citizenship_front_url").value = url;
+    document.getElementById("citizenship_front_url_display").value = url;
+  }
+
+  if (type === "citizen_back") {
+    document.getElementById("citizenship_back_url").value = url;
+    document.getElementById("citizenship_back_url_display").value = url;
+  }
+
+  if (type === "nominee_front") {
+    document.getElementById("nominee_citizenship_front_url").value = url;
+    document.getElementById("nominee_front_url_display").value = url;
+  }
+
+  if (type === "nominee_back") {
+    document.getElementById("nominee_citizenship_back_url").value = url;
+    document.getElementById("nominee_back_url_display").value = url;
+  }
 }
 </script>
+
 
 
 
