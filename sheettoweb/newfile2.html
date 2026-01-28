@@ -368,14 +368,18 @@ async function uploadToImgbb(file, rename) {
   return data.data.url;
 }
 </script>
-
-  <script>
+<script>
 async function handleUpload(input, type) {
   const memberId = document.getElementById("member_id").value;
+
   if (!memberId) {
     alert("पहिले खाता नं. हाल्नुहोस्");
     input.value = "";
     return;
+  }
+
+  if (!input.files || !input.files[0]) {
+    return; // user cancelled file selection
   }
 
   const file = input.files[0];
@@ -387,39 +391,51 @@ async function handleUpload(input, type) {
   if (type === "nominee_front") rename = `${memberId}_nominee_citizen_front`;
   if (type === "nominee_back") rename = `${memberId}_nominee_citizen_back`;
 
-  const url = await uploadToImgbb(file, rename);
+  try {
+    const url = await uploadToImgbb(file, rename);
 
-  if (type === "photo") {
-    document.getElementById("photo_url").value = url;
-    document.getElementById("photo_url_display").value = url;
-  }
+    if (type === "photo") {
+      document.getElementById("photo_url").value = url;
+      document.getElementById("photo_url_display").value = url;
+    }
 
-  if (type === "citizen_front") {
-    document.getElementById("citizenship_front_url").value = url;
-    document.getElementById("citizenship_front_url_display").value = url;
-  }
+    if (type === "citizen_front") {
+      document.getElementById("citizenship_front_url").value = url;
+      document.getElementById("citizenship_front_url_display").value = url;
+    }
 
-  if (type === "citizen_back") {
-    document.getElementById("citizenship_back_url").value = url;
-    document.getElementById("citizenship_back_url_display").value = url;
-  }
+    if (type === "citizen_back") {
+      document.getElementById("citizenship_back_url").value = url;
+      document.getElementById("citizenship_back_url_display").value = url;
+    }
 
-  if (type === "nominee_front") {
-    document.getElementById("nominee_citizenship_front_url").value = url;
-    document.getElementById("nominee_front_url_display").value = url;
-  }
+    if (type === "nominee_front") {
+      document.getElementById("nominee_citizenship_front_url").value = url;
+      document.getElementById("nominee_front_url_display").value = url;
+    }
 
-  if (type === "nominee_back") {
-    document.getElementById("nominee_citizenship_back_url").value = url;
-    document.getElementById("nominee_back_url_display").value = url;
+    if (type === "nominee_back") {
+      document.getElementById("nominee_citizenship_back_url").value = url;
+      document.getElementById("nominee_back_url_display").value = url;
+    }
+
+  } catch (err) {
+    alert("Image upload failed");
+    console.error(err);
   }
 }
 </script>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
-
 document.getElementById("memberForm").addEventListener("submit", function(e){
   e.preventDefault();
+
+  // 🔴 PHOTO upload check (यहाँ राख्ने)
+  if (!document.getElementById("photo_url").value) {
+    alert("पहिले सदस्यको फोटो upload गर्नुहोस्");
+    return;
+  }
 
   const fd = new FormData(this);
   fd.append("action", "add");
@@ -437,7 +453,4 @@ document.getElementById("memberForm").addEventListener("submit", function(e){
 });
 </script>
 
-
-
-</body>
 </html>
