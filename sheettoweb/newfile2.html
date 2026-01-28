@@ -342,19 +342,6 @@ function loadCitizenshipDistricts() {
 </script>
 
   <script>
-function loadCitizenshipDistricts() {
-  const districtSelect = document.getElementById('citizenship_district');
-  districtSelect.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
-
-  for (let province in addressData) {
-    for (let district in addressData[province]) {
-      districtSelect.innerHTML +=
-        `<option value="${district}">${district}</option>`;
-    }
-  }
-}
-</script>
-  <script>
 const IMGBB_API_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 
 async function uploadToImgbb(file, rename) {
