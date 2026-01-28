@@ -186,13 +186,14 @@
   </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता अगाडि</label>
-    <input type="file" class="form-control" name="nominee_citizenship_front">
-    <input type="hidden" name="nominee_citizenship_front_url" id="nominee_citizenship_front_url">
-
-  </div>
+    <input type="file" class="form-control"
+onchange="handleUpload(this,'nominee_front')">
+ <input type="hidden" name="nominee_citizenship_front_url" id="nominee_citizenship_front_url">
+ </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता पछाडि</label>
-    <input type="file" class="form-control" name="nominee_citizenship_back">
+    <input type="file" class="form-control"
+onchange="handleUpload(this,'nominee_back')">
     <input type="hidden" name="nominee_citizenship_back_url" id="nominee_citizenship_back_url">
   </div>
 </div>
@@ -203,18 +204,22 @@
 <div class="row mb-3">
   <div class="col-md-4">
     <label class="form-label">सदस्य फोटो</label>
-    <input type="file" class="form-control" name="photo">
+    <input type="file" class="form-control" name="photo"
+onchange="handleUpload(this,'photo')">
     <input type="hidden" name="photo_url" id="photo_url">
 
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता अगाडि</label>
-    <input type="file" class="form-control" name="citizenship_front">
+    <input type="file" class="form-control"
+onchange="handleUpload(this,'citizen_front')">
+
     <input type="hidden" name="citizenship_front_url" id="citizenship_front_url">
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता पछाडि</label>
-    <input type="file" class="form-control" name="citizenship_back">
+   <input type="file" class="form-control"
+onchange="handleUpload(this,'citizen_back')">
     <input type="hidden" name="citizenship_back_url" id="citizenship_back_url">
   </div>
 </div>
@@ -343,6 +348,52 @@ function loadCitizenshipDistricts() {
   }
 }
 </script>
+  <script>
+const IMGBB_API_KEY = "f5d95811959fdcd59c8ea459aadb650b";
+
+async function uploadToImgbb(file, rename) {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("name", rename);
+
+  const res = await fetch(
+    `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+    { method: "POST", body: formData }
+  );
+
+  const data = await res.json();
+  return data.data.url;
+}
+</script>
+
+  <script>
+async function handleUpload(input, type) {
+  const memberId = document.getElementById("member_id").value;
+  if (!memberId) {
+    alert("पहिले सदस्य नं. हाल्नुहोस्");
+    input.value = "";
+    return;
+  }
+
+  const file = input.files[0];
+  let rename = "";
+
+  if (type === "photo") rename = `${memberId}_photo`;
+  if (type === "citizen_front") rename = `${memberId}_citizen_front`;
+  if (type === "citizen_back") rename = `${memberId}_citizen_back`;
+  if (type === "nominee_front") rename = `${memberId}_nominee_citizen_front`;
+  if (type === "nominee_back") rename = `${memberId}_nominee_citizen_back`;
+
+  const url = await uploadToImgbb(file, rename);
+
+  if (type === "photo") document.getElementById("photo_url").value = url;
+  if (type === "citizen_front") document.getElementById("citizenship_front_url").value = url;
+  if (type === "citizen_back") document.getElementById("citizenship_back_url").value = url;
+  if (type === "nominee_front") document.getElementById("nominee_citizenship_front_url").value = url;
+  if (type === "nominee_back") document.getElementById("nominee_citizenship_back_url").value = url;
+}
+</script>
+
 
 
 
