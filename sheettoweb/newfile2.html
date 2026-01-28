@@ -186,17 +186,11 @@
   </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता अगाडि</label>
-    <input type="file" class="form-control"
-onchange="handleUpload(this,'nominee_front')">
-<input type="text" class="form-control mt-1" id="nominee_front_url_display" readonly>
- <input type="hidden" name="nominee_citizenship_front_url" id="nominee_citizenship_front_url">
+    <input type="file" class="form-control" name="nonf_photo">
  </div>
   <div class="col-md-3">
     <label class="form-label">नागरिकता पछाडि</label>
-    <input type="file" class="form-control"
-onchange="handleUpload(this,'nominee_back')">
-<input type="text" class="form-control mt-1" id="nominee_back_url_display" readonly>
-    <input type="hidden" name="nominee_citizenship_back_url" id="nominee_citizenship_back_url">
+    <input type="file" class="form-control" name="nonb_photo">
   </div>
 </div>
 
@@ -206,31 +200,16 @@ onchange="handleUpload(this,'nominee_back')">
 <div class="row mb-3">
   <div class="col-md-4">
     <label class="form-label">सदस्य फोटो</label>
-    <input type="file" class="form-control" name="photo"
-onchange="handleUpload(this,'photo')">
-<input type="text"
-       class="form-control mt-1"
-       id="photo_url_display"
-       placeholder="Photo URL auto generate हुन्छ"
-       readonly>
-    <input type="hidden" name="photo_url" id="photo_url">
+    <input type="file" class="form-control" name="photo">
 
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता अगाडि</label>
-    <input type="file" class="form-control"
-onchange="handleUpload(this,'citizen_front')">
-<input type="text" class="form-control mt-1" id="citizenship_front_url_display" readonly>
-
-    <input type="hidden" name="citizenship_front_url" id="citizenship_front_url">
+    <input type="file" class="form-control" name="citf_photo">
   </div>
   <div class="col-md-4">
     <label class="form-label">नागरिकता पछाडि</label>
-   <input type="file" class="form-control"
-onchange="handleUpload(this,'citizen_back')">
-<input type="text" class="form-control mt-1" id="citizenship_back_url_display" readonly>
-
-    <input type="hidden" name="citizenship_back_url" id="citizenship_back_url">
+   <input type="file" class="form-control" name="citb_photo">
   </div>
 </div>
   <!-- 8. official use only -->
@@ -284,163 +263,5 @@ onchange="handleUpload(this,'citizen_back')">
 </div>
 </div>
 </div>
-
-
-  <script>
-let addressData = {};
-
-fetch('https://fulkumari.com.np/sheettoweb/nepal-admin-structure.json')
-  .then(res => res.json())
-  .then(data => {
-    addressData = data;
-    loadProvinces();
-    loadCitizenshipDistricts(); // 👈 add this
-  });
-
-function loadProvinces() {
-  const province = document.getElementById('province');
-  province.innerHTML = '<option value="">प्रदेश छान्नुहोस्</option>';
-
-  for (let p in addressData) {
-    province.innerHTML += `<option value="${p}">${p}</option>`;
-  }
-}
-
-document.getElementById('province').addEventListener('change', function () {
-  const district = document.getElementById('district');
-  const municipality = document.getElementById('municipality');
-
-  district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
-  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
-
-  if (!this.value) return;
-
-  for (let d in addressData[this.value]) {
-    district.innerHTML += `<option value="${d}">${d}</option>`;
-  }
-});
-
-document.getElementById('district').addEventListener('change', function () {
-  const municipality = document.getElementById('municipality');
-  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
-
-  const province = document.getElementById('province').value;
-  if (!this.value) return;
-
-  addressData[province][this.value].forEach(m => {
-    municipality.innerHTML += `<option value="${m}">${m}</option>`;
-  });
-});
-</script>
-  <script>
-function loadCitizenshipDistricts() {
-  const districtSelect = document.getElementById('citizenship_district');
-  districtSelect.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
-
-  const added = new Set();
-
-  for (let province in addressData) {
-    for (let district in addressData[province]) {
-      if (!added.has(district)) {
-        added.add(district);
-        districtSelect.innerHTML +=
-          `<option value="${district}">${district}</option>`;
-      }
-    }
-  }
-}
-
-<script>
-const GAS_API = "https://script.google.com/macros/s/AKfycbxsAj_r5J9m1_MGhSOlm6PF4KDCsNkki-yb49fVdpI0TttiLisjHIA4wjyimmJcSwFSwQ/exec";
-
-function handleUpload(input, type) {
-  const memberId = document.getElementById("member_id").value;
-  if (!memberId) {
-    alert("पहिले खाता नं. हाल्नुहोस्");
-    input.value = "";
-    return;
-  }
-
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = async () => {
-    const base64 = reader.result.split(",")[1];
-    const rename = memberId + "_" + type;
-
-    const fd = new FormData();
-    fd.append("action", "upload");
-    fd.append("name", rename);
-    fd.append("image", base64);
-
-    try {
-      const res = await fetch(GAS_API, {
-        method: "POST",
-        body: fd
-      });
-
-      const data = await res.json();
-      if (!data.success) throw data.error;
-
-      const url = data.url;
-
-      if (type === "photo") {
-        photo_url.value = url;
-        photo_url_display.value = url;
-      }
-      if (type === "citizen_front") {
-        citizenship_front_url.value = url;
-        citizenship_front_url_display.value = url;
-      }
-      if (type === "citizen_back") {
-        citizenship_back_url.value = url;
-        citizenship_back_url_display.value = url;
-      }
-      if (type === "nominee_front") {
-        nominee_citizenship_front_url.value = url;
-        nominee_front_url_display.value = url;
-      }
-      if (type === "nominee_back") {
-        nominee_citizenship_back_url.value = url;
-        nominee_back_url_display.value = url;
-      }
-
-    } catch (err) {
-      console.error(err);
-      alert("Image upload failed");
-    }
-  };
-
-  reader.readAsDataURL(file);
-}
-</script>
-<script>
-
-document.getElementById("memberForm").addEventListener("submit", function(e){
-  e.preventDefault();
-
-  // 🔴 PHOTO upload check (यहाँ राख्ने)
-  if (!document.getElementById("photo_url").value) {
-    alert("पहिले सदस्यको फोटो upload गर्नुहोस्");
-    return;
-  }
-
-  const fd = new FormData(this);
-  fd.append("action", "add");
-
-  fetch(GAS_API, {
-    method: "POST",
-    body: fd
-  })
-  .then(res => res.text())
-  .then(msg => {
-    alert(msg);
-    this.reset();
-  })
-  .catch(err => alert("Error: " + err));
-});
-</script>
 
 </html>
