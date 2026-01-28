@@ -415,7 +415,27 @@ async function handleUpload(input, type) {
   }
 }
 </script>
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzQ-w9IFwS-XfxvZdugkdgTi5LUXbzJPI4KJhjdwrW_hSv8MfptjQrPTrcQCz63hoTSmA/exec";
 
+document.getElementById("memberForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const fd = new FormData(this);
+  fd.append("action", "add");
+
+  fetch(API, {
+    method: "POST",
+    body: fd
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    this.reset();
+  })
+  .catch(err => alert("Error: " + err));
+});
+</script>
 
 
 
