@@ -275,7 +275,7 @@ onchange="handleUpload(this,'citizen_back')">
 </div>
 </div>
 
-</body>
+
   <script>
 let addressData = {};
 
@@ -327,14 +327,20 @@ function loadCitizenshipDistricts() {
   const districtSelect = document.getElementById('citizenship_district');
   districtSelect.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
 
+  const added = new Set();
+
   for (let province in addressData) {
     for (let district in addressData[province]) {
-      districtSelect.innerHTML +=
-        `<option value="${district}">${district}</option>`;
+      if (!added.has(district)) {
+        added.add(district);
+        districtSelect.innerHTML +=
+          `<option value="${district}">${district}</option>`;
+      }
     }
   }
 }
 </script>
+
   <script>
 function loadCitizenshipDistricts() {
   const districtSelect = document.getElementById('citizenship_district');
@@ -396,5 +402,5 @@ async function handleUpload(input, type) {
 
 
 
-
+</body>
 </html>
