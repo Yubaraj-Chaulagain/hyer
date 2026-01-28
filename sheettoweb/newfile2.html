@@ -350,25 +350,10 @@ function loadCitizenshipDistricts() {
   }
 }
 
-const IMGBB_API_KEY = "f5d95811959fdcd59c8ea459aadb650b";
-
-async function uploadToImgbb(file, rename) {
-  const formData = new FormData();
-  formData.append("image", file);
-  formData.append("name", rename);
-
-  const res = await fetch(
-    `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
-    { method: "POST", body: formData }
-  );
-
-  const data = await res.json();
-  return data.data.url;
-}
-
+<script>
 const GAS_API = "https://script.google.com/macros/s/AKfycbxsAj_r5J9m1_MGhSOlm6PF4KDCsNkki-yb49fVdpI0TttiLisjHIA4wjyimmJcSwFSwQ/exec";
 
-async function handleUpload(input, type) {
+function handleUpload(input, type) {
   const memberId = document.getElementById("member_id").value;
   if (!memberId) {
     alert("पहिले खाता नं. हाल्नुहोस्");
@@ -379,52 +364,59 @@ async function handleUpload(input, type) {
   const file = input.files[0];
   if (!file) return;
 
-  let rename = memberId + "_" + type;
+  const reader = new FileReader();
 
-  const fd = new FormData();
-  fd.append("action", "upload");
-  fd.append("name", rename);
-  fd.append("file", file);
+  reader.onload = async () => {
+    const base64 = reader.result.split(",")[1];
+    const rename = memberId + "_" + type;
 
-  try {
-    const res = await fetch(GAS_API, {
-      method: "POST",
-      body: fd
-    });
+    const fd = new FormData();
+    fd.append("action", "upload");
+    fd.append("name", rename);
+    fd.append("image", base64);
 
-    const data = await res.json();
+    try {
+      const res = await fetch(GAS_API, {
+        method: "POST",
+        body: fd
+      });
 
-    if (!data.success) throw data.error;
+      const data = await res.json();
+      if (!data.success) throw data.error;
 
-    const url = data.url;
+      const url = data.url;
 
-    // 🔹 set values
-    if (type === "photo") {
-      photo_url.value = url;
-      photo_url_display.value = url;
+      if (type === "photo") {
+        photo_url.value = url;
+        photo_url_display.value = url;
+      }
+      if (type === "citizen_front") {
+        citizenship_front_url.value = url;
+        citizenship_front_url_display.value = url;
+      }
+      if (type === "citizen_back") {
+        citizenship_back_url.value = url;
+        citizenship_back_url_display.value = url;
+      }
+      if (type === "nominee_front") {
+        nominee_citizenship_front_url.value = url;
+        nominee_front_url_display.value = url;
+      }
+      if (type === "nominee_back") {
+        nominee_citizenship_back_url.value = url;
+        nominee_back_url_display.value = url;
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed");
     }
-    if (type === "citizen_front") {
-      citizenship_front_url.value = url;
-      citizenship_front_url_display.value = url;
-    }
-    if (type === "citizen_back") {
-      citizenship_back_url.value = url;
-      citizenship_back_url_display.value = url;
-    }
-    if (type === "nominee_front") {
-      nominee_citizenship_front_url.value = url;
-      nominee_front_url_display.value = url;
-    }
-    if (type === "nominee_back") {
-      nominee_citizenship_back_url.value = url;
-      nominee_back_url_display.value = url;
-    }
+  };
 
-  } catch (err) {
-    console.error(err);
-    alert("Image upload failed");
-  }
+  reader.readAsDataURL(file);
 }
+</script>
+<script>
 
 document.getElementById("memberForm").addEventListener("submit", function(e){
   e.preventDefault();
@@ -438,7 +430,7 @@ document.getElementById("memberForm").addEventListener("submit", function(e){
   const fd = new FormData(this);
   fd.append("action", "add");
 
-  fetch(API, {
+  fetch(GAS_API, {
     method: "POST",
     body: fd
   })
