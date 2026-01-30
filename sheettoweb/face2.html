@@ -10,12 +10,12 @@
 <video id="video" width="400" autoplay playsinline muted></video>
 <br>
 <button id="markAttendanceBtn">Mark Attendance</button>
-
 <script>
   const video = document.getElementById('video');
   const markAttendanceBtn = document.getElementById('markAttendanceBtn');
 
   let labeledDescriptors = [];
+  let currentStream = null;   // FIX 1
 
   async function loadModels() {
     await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
@@ -23,27 +23,25 @@
     await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
   }
 
-  async function startCamera(mode) {
-  try {
-    if (currentStream) {
-      currentStream.getTracks().forEach(track => track.stop());
+  async function startCamera(mode = "environment") { // FIX 2
+    try {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: mode },
+        audio: false
+      });
+
+      video.srcObject = stream;
+      currentStream = stream;
+
+    } catch (err) {
+      alert("Camera error: " + err.message);
     }
-
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: mode },
-      audio: false
-    });
-
-    video.srcObject = stream;
-    currentStream = stream;
-
-  } catch (err) {
-    alert("Camera error: " + err.message);
   }
-}
 
-
-  // Fetch registered users' face descriptors from Google Sheet (via Web App API)
   async function fetchRegisteredFaces() {
     const response = await fetch('YOUR_REGISTERED_FACE_DATA_API');
     const data = await response.json();
@@ -55,20 +53,21 @@
   }
 
   async function markAttendance() {
-    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withFaceDescriptors();
+    const detections = await faceapi.detectAllFaces(
+      video,
+      new faceapi.TinyFaceDetectorOptions()
+    ).withFaceLandmarks().withFaceDescriptors();
 
     if (detections.length === 0) {
       alert('No face detected');
       return;
     }
 
-    const maxDistance = 0.6;
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, maxDistance);
+    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
 
     detections.forEach(detection => {
       const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+
       if (bestMatch.label !== 'unknown') {
         sendAttendance(bestMatch.label);
         alert(`Attendance marked for ${bestMatch.label}`);
@@ -91,11 +90,10 @@
 
   markAttendanceBtn.addEventListener('click', markAttendance);
 
-  // Init
   loadModels()
-    .then(() => fetchRegisteredFaces())
-    .then(() => startCamera());
-
+    .then(fetchRegisteredFaces)
+    .then(() => startCamera("environment")); // FIX 3
 </script>
+
 </body>
 </html>
