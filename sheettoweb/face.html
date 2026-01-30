@@ -1,58 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Face Attendance</title>
+  <title>Face Register</title>
   <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 </head>
 <body>
-  <h2>Face Attendance System</h2>
-  <video id="video" width="400" autoplay></video>
-  <button onclick="markAttendance()">Mark Attendance</button>
-<button onclick="startCamera('user')">Front Camera</button>
-<button onclick="startCamera('environment')">Back Camera</button><h3> wonder by yubaraj</h3>
 
+<h2>Register Face</h2>
+
+<input id="name" placeholder="Enter Name" />
+<br><br>
+
+<video id="video" width="400" autoplay muted></video>
+<br>
+<button id="registerBtn">Register Face</button>
 
 <script>
-const video = document.getElementById("video");
-let currentStream;
+  const video = document.getElementById('video');
+  const registerBtn = document.getElementById('registerBtn');
+  const nameInput = document.getElementById('name');
 
-async function startCamera(mode) {
-  if (currentStream) {
-    currentStream.getTracks().forEach(track => track.stop());
+  async function startCamera() {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+    video.srcObject = stream;
   }
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: mode }
-  });
-
-  video.srcObject = stream;
-  currentStream = stream;
-}
-
-// Default back camera
-startCamera("environment");
-
-async function markAttendance() {
-  const detections = await faceapi.detectAllFaces(video);
-
-  if (detections.length > 0) {
-    sendToSheet("Face Detected");
-    alert("Attendance Recorded");
-  } else {
-    alert("No Face Detected");
+  async function loadModels() {
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
   }
-}
 
-function sendToSheet(status) {
-  fetch("https://script.google.com/macros/s/AKfycbwXmEzo3wccdr9B9ybjzwCLeyAArNMziNjQJkCchPFovhMWXyX6TplVy_yfHanoO1udEw/exec", {
-    method: "POST",
-    body: JSON.stringify({
-      name: "Member",
-      status: status,
-      time: new Date().toLocaleString()
-    })
-  });
-}
+  async function getFaceDescriptor() {
+    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    return detection ? detection.descriptor : null;
+  }
+
+  async function registerFace() {
+    const name = nameInput.value;
+    if (!name) {
+      alert('Please enter your name');
+      return;
+    }
+
+    const descriptor = await getFaceDescriptor();
+    if (!descriptor) {
+      alert('Face not detected, please try again');
+      return;
+    }
+
+    // Send to Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbxaUTrsJhlCsDSMFs7g0E8t_kI1Up5JvsL51g3cVgEJ7l7IHdxS04yCzc_fZtgEIeRM8A/exec', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'register',
+        name: name,
+        descriptor: Array.from(descriptor)
+      })
+    }).then(() => alert('Face registered successfully!'));
+  }
+
+  registerBtn.addEventListener('click', registerFace);
+
+  // Init
+  loadModels().then(startCamera);
 </script>
 </body>
 </html>
