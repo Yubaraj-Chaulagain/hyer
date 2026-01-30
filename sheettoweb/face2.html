@@ -11,89 +11,48 @@
 <br>
 <button id="markAttendanceBtn">Mark Attendance</button>
 <script>
-  const video = document.getElementById('video');
-  const markAttendanceBtn = document.getElementById('markAttendanceBtn');
+const video = document.getElementById('video');
+const markAttendanceBtn = document.getElementById('markAttendanceBtn');
 
-  let labeledDescriptors = [];
-  let currentStream = null;   // FIX 1
+let labeledDescriptors = [];
+let currentStream = null;
 
-  async function loadModels() {
+async function startCamera(mode = "environment") {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+
+    video.srcObject = stream;
+    currentStream = stream;
+
+  } catch (err) {
+    alert("Camera error: " + err.message);
+  }
+}
+
+// camera first
+startCamera();
+
+// ===== Optional parts below =====
+async function loadModels() {
+  try {
     await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
     await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
     await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+  } catch(e) {
+    console.log("Model load skipped");
   }
+}
 
-  async function startCamera(mode = "environment") { // FIX 2
-    try {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
+async function markAttendance() {
+  alert("Camera working. Face detection next step.");
+}
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: mode },
-        audio: false
-      });
-
-      video.srcObject = stream;
-      currentStream = stream;
-
-    } catch (err) {
-      alert("Camera error: " + err.message);
-    }
-  }
-
-  async function fetchRegisteredFaces() {
-    const response = await fetch('YOUR_REGISTERED_FACE_DATA_API');
-    const data = await response.json();
-
-    labeledDescriptors = data.map(user => {
-      const descriptors = user.descriptors.map(d => new Float32Array(d));
-      return new faceapi.LabeledFaceDescriptors(user.name, descriptors);
-    });
-  }
-
-  async function markAttendance() {
-    const detections = await faceapi.detectAllFaces(
-      video,
-      new faceapi.TinyFaceDetectorOptions()
-    ).withFaceLandmarks().withFaceDescriptors();
-
-    if (detections.length === 0) {
-      alert('No face detected');
-      return;
-    }
-
-    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6);
-
-    detections.forEach(detection => {
-      const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
-
-      if (bestMatch.label !== 'unknown') {
-        sendAttendance(bestMatch.label);
-        alert(`Attendance marked for ${bestMatch.label}`);
-      } else {
-        alert('Face not registered');
-      }
-    });
-  }
-
-  function sendAttendance(name) {
-    fetch('https://script.google.com/macros/s/AKfycbxaUTrsJhlCsDSMFs7g0E8t_kI1Up5JvsL51g3cVgEJ7l7IHdxS04yCzc_fZtgEIeRM8A/exec', {
-      method: 'POST',
-      body: JSON.stringify({
-        type: 'attendance',
-        name: name,
-        status: 'Present'
-      })
-    });
-  }
-
-  markAttendanceBtn.addEventListener('click', markAttendance);
-
-  loadModels()
-    .then(fetchRegisteredFaces)
-    .then(() => startCamera("environment")); // FIX 3
+markAttendanceBtn.addEventListener('click', markAttendance);
 </script>
+
 
 </body>
 </html>
