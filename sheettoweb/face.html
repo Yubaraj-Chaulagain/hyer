@@ -8,12 +8,29 @@
   <h2>Face Attendance System</h2>
   <video id="video" width="400" autoplay></video>
   <button onclick="markAttendance()">Mark Attendance</button>
+<button onclick="startCamera('user')">Front Camera</button>
+<button onclick="startCamera('environment')">Back Camera</button>
+
 
 <script>
 const video = document.getElementById("video");
+let currentStream;
 
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => video.srcObject = stream);
+async function startCamera(mode) {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: mode }
+  });
+
+  video.srcObject = stream;
+  currentStream = stream;
+}
+
+// Default back camera
+startCamera("environment");
 
 async function markAttendance() {
   const detections = await faceapi.detectAllFaces(video);
