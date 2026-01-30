@@ -7,7 +7,7 @@
 <body>
 
 <h2>Face Attendance</h2>
-<video id="video" width="400" autoplay muted></video>
+<video id="video" width="400" autoplay playsinline muted></video>
 <br>
 <button id="markAttendanceBtn">Mark Attendance</button>
 
@@ -23,10 +23,25 @@
     await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
   }
 
-  async function startCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+  async function startCamera(mode) {
+  try {
+    if (currentStream) {
+      currentStream.getTracks().forEach(track => track.stop());
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: mode },
+      audio: false
+    });
+
     video.srcObject = stream;
+    currentStream = stream;
+
+  } catch (err) {
+    alert("Camera error: " + err.message);
   }
+}
+
 
   // Fetch registered users' face descriptors from Google Sheet (via Web App API)
   async function fetchRegisteredFaces() {
