@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Face Attendance</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+</head>
+<body>
+
+<h2>Face Attendance</h2>
+<video id="video" width="400" autoplay muted></video>
+<br>
+<button id="markAttendanceBtn">Mark Attendance</button>
+
+<script>
+  const video = document.getElementById('video');
+  const markAttendanceBtn = document.getElementById('markAttendanceBtn');
+
+  let labeledDescriptors = [];
+
+  async function loadModels() {
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+  }
+
+  async function startCamera() {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = stream;
+  }
+
+  // Fetch registered users' face descriptors from Google Sheet (via Web App API)
+  async function fetchRegisteredFaces() {
+    const response = await fetch('YOUR_REGISTERED_FACE_DATA_API');
+    const data = await response.json();
+
+    labeledDescriptors = data.map(user => {
+      const descriptors = user.descriptors.map(d => new Float32Array(d));
+      return new faceapi.LabeledFaceDescriptors(user.name, descriptors);
+    });
+  }
+
+  async function markAttendance() {
+    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptors();
+
+    if (detections.length === 0) {
+      alert('No face detected');
+      return;
+    }
+
+    const maxDistance = 0.6;
+    const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, maxDistance);
+
+    detections.forEach(detection => {
+      const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
+      if (bestMatch.label !== 'unknown') {
+        sendAttendance(bestMatch.label);
+        alert(`Attendance marked for ${bestMatch.label}`);
+      } else {
+        alert('Face not registered');
+      }
+    });
+  }
+
+  function sendAttendance(name) {
+    fetch('https://script.google.com/macros/s/AKfycbxaUTrsJhlCsDSMFs7g0E8t_kI1Up5JvsL51g3cVgEJ7l7IHdxS04yCzc_fZtgEIeRM8A/exec', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'attendance',
+        name: name,
+        status: 'Present'
+      })
+    });
+  }
+
+  markAttendanceBtn.addEventListener('click', markAttendance);
+
+  // Init
+  loadModels()
+    .then(() => fetchRegisteredFaces())
+    .then(() => startCamera());
+
+</script>
+</body>
+</html>
