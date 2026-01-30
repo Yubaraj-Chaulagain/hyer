@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Face Attendance</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+</head>
+<body>
+  <h2>Face Attendance System</h2>
+  <video id="video" width="400" autoplay></video>
+  <button onclick="markAttendance()">Mark Attendance</button>
+
+<script>
+const video = document.getElementById("video");
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => video.srcObject = stream);
+
+async function markAttendance() {
+  const detections = await faceapi.detectAllFaces(video);
+
+  if (detections.length > 0) {
+    sendToSheet("Face Detected");
+    alert("Attendance Recorded");
+  } else {
+    alert("No Face Detected");
+  }
+}
+
+function sendToSheet(status) {
+  fetch("https://script.google.com/macros/s/AKfycbwXmEzo3wccdr9B9ybjzwCLeyAArNMziNjQJkCchPFovhMWXyX6TplVy_yfHanoO1udEw/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      name: "Member",
+      status: status,
+      time: new Date().toLocaleString()
+    })
+  });
+}
+</script>
+</body>
+</html>
