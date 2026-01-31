@@ -247,29 +247,51 @@ district.onchange = () => {
   });
 };
   
-async function handleUpload(input, targetId){
-  if(!member_id.value){
+async function handleUpload(input, targetId) {
+
+  if (!member_id.value) {
     alert("पहिला खाता नं. लेख्नुहोस्");
-    input.value="";
+    input.value = "";
+    return;
+  }
+
+  if (!input.files || !input.files[0]) {
+    alert("फाइल छानिएको छैन");
     return;
   }
 
   const fd = new FormData();
   fd.append("key", IMGBB_KEY);
-  fd.append("name", member_id.value + "_" + targetId);
   fd.append("image", input.files[0]);
+  fd.append("name", member_id.value + "_" + targetId);
 
-  const r = await fetch("https://api.imgbb.com/1/upload", {
-    method: "POST",
-    body: fd
-  });
+  try {
+    const r = await fetch("https://api.imgbb.com/1/upload", {
+      method: "POST",
+      body: fd
+    });
 
-  const j = await r.json();
+    const j = await r.json();
+    console.log("IMGBB RESPONSE:", j); // 🔥 DEBUG
 
-  document.getElementById(targetId).value = j.data.url;
+    if (!j.success) {
+      alert("❌ Upload failed (check API key / file)");
+      return;
+    }
 
-  const display = document.getElementById(targetId + "_display");
-  if(display) display.value = j.data.url;
+    // hidden input
+    document.getElementById(targetId).value = j.data.url;
+
+    // display input
+    const display = document.getElementById(targetId + "_display");
+    if (display) display.value = j.data.url;
+
+    alert("✅ Upload successful");
+
+  } catch (err) {
+    console.error(err);
+    alert("❌ Network error");
+  }
 }
 
 </script>
