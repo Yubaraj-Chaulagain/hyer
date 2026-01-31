@@ -206,33 +206,52 @@ fetch("nepal-admin-structure.json")
 .then(r=>r.json())
 .then(d=>{
   addressData=d;
-  province.innerHTML='<option>प्रदेश</option>';
-  for(let p in d) province.innerHTML+=`<option>${p}</option>`;
-});
 
-province.onchange=()=>{
-  district.innerHTML='<option>जिल्ला</option>';
-  for(let x in addressData[province.value]) district.innerHTML+=`<option>${x}</option>`;
-};
+  // province
+  province.innerHTML='<option value="">प्रदेश</option>';
+  for(let p in d){
+    province.innerHTML+=`<option value="${p}">${p}</option>`;
+  }
+
+  // citizenship district (ALL districts)
+  citizenship_district.innerHTML='<option value="">जिल्ला छान्नुहोस्</option>';
+  for(let p in d){
+    for(let dist in d[p]){
+      citizenship_district.innerHTML+=`<option value="${dist}">${dist}</option>`;
+    }
+  }
+});
 
 district.onchange=()=>{
   municipality.innerHTML='<option>पालिका</option>';
   addressData[province.value][district.value].forEach(m=>municipality.innerHTML+=`<option>${m}</option>`);
 };
+  
+async function handleUpload(input, targetId){
+  if(!member_id.value){
+    alert("पहिला खाता नं. लेख्नुहोस्");
+    input.value="";
+    return;
+  }
 
-async function handleUpload(input,type){
-  if(!member_id.value) return alert("पहिला खाता नं. लेख्नुहोस्");
-  const fd=new FormData();
-  fd.append("key",IMGBB_KEY);
-  fd.append("name",member_id.value+"_"+type);
-  fd.append("image",input.files[0]);
+  const fd = new FormData();
+  fd.append("key", IMGBB_KEY);
+  fd.append("name", member_id.value + "_" + targetId);
+  fd.append("image", input.files[0]);
 
-  const r=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:fd});
-  const j=await r.json();
-  document.getElementById(type+"_url").value=j.data.url;
-  if(document.getElementById(type+"_display"))
-    document.getElementById(type+"_display").value=j.data.url;
+  const r = await fetch("https://api.imgbb.com/1/upload", {
+    method: "POST",
+    body: fd
+  });
+
+  const j = await r.json();
+
+  document.getElementById(targetId).value = j.data.url;
+
+  const display = document.getElementById(targetId + "_display");
+  if(display) display.value = j.data.url;
 }
+
 </script>
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeub0dmeH4abdY0CY3YO2VlWqPIZDr7qNds6BcfAsvO-PBz39yxezJlSud88KfLpwPow/exec";
