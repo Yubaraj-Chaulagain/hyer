@@ -234,6 +234,40 @@ async function handleUpload(input,type){
     document.getElementById(type+"_display").value=j.data.url;
 }
 </script>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeub0dmeH4abdY0CY3YO2VlWqPIZDr7qNds6BcfAsvO-PBz39yxezJlSud88KfLpwPow/exec";
+
+document.getElementById("memberForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const form = e.target;
+  const data = {};
+
+  [...form.elements].forEach(el => {
+    if (el.name) data[el.name] = el.value;
+  });
+
+  // hidden image urls
+  data.member_photo_url = document.getElementById("member_photo_url").value;
+  data.member_citizen_front_url = document.getElementById("member_citizen_front_url").value;
+  data.member_citizen_back_url = document.getElementById("member_citizen_back_url").value;
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  const j = await res.json();
+
+  if (j.status === "success") {
+    alert("✅ सदस्य दर्ता सफल भयो");
+    form.reset();
+  } else {
+    alert("❌ Error भयो");
+  }
+});
+</script>
 
 </body>
 </html>
+
