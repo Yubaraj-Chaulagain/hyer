@@ -28,49 +28,49 @@
 <div class="row mb-3">
   <div class="col-md-2">
     <label>सदस्य नं.</label>
-    <input class="form-control" name="member_no">
+    <input class="form-control" name="सदस्य नं.">
   </div>
   <div class="col-md-3">
     <label>खाता नं.</label>
-    <input class="form-control" id="member_id" name="member_ac" required>
+    <input class="form-control" id="member_id" name="खाता नं." required>
   </div>
   <div class="col-md-7">
     <label>पूरा नाम</label>
-    <input class="form-control" name="full_name" required>
+    <input class="form-control" name="पूरा नाम" required>
   </div>
 </div>
 
 <div class="row mb-3">
-  <div class="col-md-4"><label>बुबाको नाम</label><input class="form-control" name="father_name"></div>
-  <div class="col-md-4"><label>हजुर बुबाको नाम</label><input class="form-control" name="grandfather_name"></div>
-  <div class="col-md-4"><label>पति / पत्नी</label><input class="form-control" name="spouse_name"></div>
+  <div class="col-md-4"><label>बुबाको नाम</label><input class="form-control" name="बुबाको नाम"></div>
+  <div class="col-md-4"><label>हजुर बुबाको नाम</label><input class="form-control" name="हजुर बुबाको नाम"></div>
+  <div class="col-md-4"><label>पति / पत्नी</label><input class="form-control" name="पति / पत्नी"></div>
 </div>
 
 <div class="row mb-3">
   <div class="col-md-4">
     <label>लिङ्ग</label>
-    <select class="form-select" name="gender">
+    <select class="form-select" name="लिङ्ग">
       <option>पुरुष</option><option>महिला</option><option>अन्य</option>
     </select>
   </div>
-  <div class="col-md-4"><label>जन्म मिति</label><input type="date" class="form-control" name="dob"></div>
-  <div class="col-md-4"><label>नागरिकता नं.</label><input class="form-control" name="citizenship_no"></div>
+  <div class="col-md-4"><label>जन्म मिति</label><input type="date" class="form-control" name="जन्म मिति"></div>
+  <div class="col-md-4"><label>नागरिकता नं.</label><input class="form-control" name="नागरिकता नं."></div>
 </div>
 
 <!-- ================== 2. ADDRESS ================== -->
 <h6 class="text-primary mt-4">२. ठेगाना</h6>
 <div class="row mb-3">
-  <div class="col-md-3"><label>प्रदेश</label><select id="province" class="form-select"></select></div>
-  <div class="col-md-3"><label>जिल्ला</label><select id="district" class="form-select"></select></div>
-  <div class="col-md-3"><label>पालिका</label><select id="municipality" class="form-select"></select></div>
-  <div class="col-md-3"><label>वडा नं.</label><input class="form-control" name="ward"></div>
+  <div class="col-md-3"><label>प्रदेश</label><select id="province" name="प्रदेश" class="form-select"></select></div>
+  <div class="col-md-3"><label>जिल्ला</label><select id="district" name="जिल्ला" class="form-select"></select></div>
+  <div class="col-md-3"><label>पालिका</label><select id="municipality" name="पालिका" class="form-select"></select></div>
+  <div class="col-md-3"><label>वडा नं.</label><input class="form-control" name="वडा नं."></div>
 </div>
 
 <!-- ================== 3. CONTACT ================== -->
 <h6 class="text-primary mt-4">३. सम्पर्क विवरण</h6>
 <div class="row mb-3">
-  <div class="col-md-6"><label>मोबाइल नं.</label><input class="form-control" name="member_mobile"></div>
-  <div class="col-md-6"><label>ईमेल</label><input type="email" class="form-control" name="member_email"></div>
+  <div class="col-md-6"><label>मोबाइल नं.</label><input class="form-control" name="मोबाइल नं."></div>
+  <div class="col-md-6"><label>ईमेल</label><input type="email" class="form-control" name="ईमेल"></div>
 </div>
 
 <!-- ================== 4. MEMBER TYPE ================== -->
@@ -78,17 +78,17 @@
 <div class="row mb-3">
   <div class="col-md-4">
     <label>सदस्य प्रकार</label>
-    <select class="form-select" name="member_type">
+    <select class="form-select" name="सदस्य प्रकार">
       <option>साधारण सदस्य</option>
       <option>संस्थापक सदस्य</option>
       <option>ऋणी सदस्य</option>
       <option>बाल सदस्य</option>
     </select>
   </div>
-  <div class="col-md-4"><label>सेयर संख्या</label><input type="number" class="form-control" name="share_count"></div>
+  <div class="col-md-4"><label>सेयर संख्या</label><input type="number" class="form-control" name="सेयर संख्या"></div>
   <div class="col-md-4">
     <label>सदस्य स्थिति</label>
-    <select class="form-select" name="member_status">
+    <select class="form-select" name="सदस्य स्थिति">
       <option>सक्रिय</option><option>निष्क्रिय</option>
     </select>
   </div>
@@ -99,28 +99,28 @@
 <div class="row mb-3">
   <div class="col-md-6">
     <label>पेशा</label>
-    <select class="form-select" name="occupation">
+    <select class="form-select" name="पेशा">
       <option>कृषि</option><option>व्यवसाय</option><option>सेवा</option>
       <option>वैदेशिक रोजगारी</option><option>मजदुरी</option>
     </select>
   </div>
-  <div class="col-md-6"><label>वार्षिक आम्दानी</label><input type="number" class="form-control" name="annual_income"></div>
+  <div class="col-md-6"><label>वार्षिक आम्दानी</label><input type="number" class="form-control" name="वार्षिक आम्दानी"></div>
 </div>
 
 <!-- ================== 6. NOMINEE ================== -->
 <h6 class="text-primary mt-4">६. हकवालाको विवरण</h6>
 <div class="row mb-3">
-  <div class="col-md-4"><label>नाम</label><input class="form-control" name="nominee_name"></div>
-  <div class="col-md-4"><label>सम्बन्ध</label><input class="form-control" name="nominee_relation"></div>
-  <div class="col-md-4"><label>हक %</label><input type="number" class="form-control" name="nominee_share"></div>
+  <div class="col-md-4"><label>नाम</label><input class="form-control" name="हकवालाको नाम"></div>
+  <div class="col-md-4"><label>सम्बन्ध</label><input class="form-control" name="हकवाला संगको सम्बन्ध"></div>
+  <div class="col-md-4"><label>हक %</label><input type="number" class="form-control" name="हकवालाको हक %"></div>
 </div>
 
 <div class="row mb-3">
-  <div class="col-md-4"><label>मोबाइल</label><input class="form-control" name="nominee_mobile"></div>
-  <div class="col-md-4"><label>नागरिकता नं.</label><input class="form-control" name="nominee_citizenship_no"></div>
+  <div class="col-md-4"><label>मोबाइल</label><input class="form-control" name="मोबाइल नं."></div>
+  <div class="col-md-4"><label>नागरिकता नं.</label><input class="form-control" name="नागरिकता नं."></div>
   <div class="col-md-4">
     <label>नागरिकता जारी जिल्ला</label>
-    <select id="citizenship_district" class="form-select"></select>
+    <select id="citizenship_district" name="नागरिकता जारी जिल्ला" class="form-select"></select>
   </div>
 </div>
 
@@ -132,19 +132,19 @@
     <label>सदस्य फोटो</label>
     <input type="file" class="form-control" onchange="handleUpload(this,'member_photo')">
     <input type="text" id="member_photo_display" class="form-control mt-1" readonly>
-    <input type="hidden" id="member_photo_url" name="member_photo_url">
+    <input type="hidden" id="member_photo_url" name="सदस्य फोटो">
   </div>
 
   <div class="col-md-4">
     <label>नागरिकता अगाडि</label>
     <input type="file" class="form-control" onchange="handleUpload(this,'member_citizen_front')">
-    <input type="hidden" id="member_citizen_front_url">
+    <input type="hidden" name="नागरिकता अगाडि" id="member_citizen_front_url">
   </div>
 
   <div class="col-md-4">
     <label>नागरिकता पछाडि</label>
     <input type="file" class="form-control" onchange="handleUpload(this,'member_citizen_back')">
-    <input type="hidden" id="member_citizen_back_url">
+    <input type="hidden" id="member_citizen_back_url" name="नागरिकता पछाडि">
   </div>
 </div>
   <!-- 8. official use only -->
@@ -153,12 +153,12 @@
 <div class="row mb-3">
   <div class="col-md-4">
     <label class="form-label">दर्ता मिति</label>
-    <input type="date" class="form-control" name="register_date">
+    <input type="date" class="form-control" name="दर्ता मिति">
   </div>
 
   <div class="col-md-4">
     <label class="form-label">स्वीकृत स्थिति</label>
-    <select class="form-select" name="approval_status">
+    <select class="form-select" name="स्वीकृत स्थिति">
       <option>Pending</option>
       <option>Approved</option>
       <option>Rejected</option>
