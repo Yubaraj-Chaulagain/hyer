@@ -309,7 +309,7 @@ async function handleUpload(input, targetId) {
 
 </script>
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxQciKEGfjC3YB4_bL9qg5q-8onufy5CDWJTBDgliqC2U-77a_ozP7lIoP5ta-e4Lkow/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwshVlENWw4SfS9Sb4Eg_Qv9jBcie97afzOmgmdY1ZR0FE4B_L3KZPpZnYpf4ZPDnIbg/exec";
 
 document.getElementById("memberForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -383,19 +383,27 @@ async function updateMember(){
   alert(j.status==="updated" ? "✅ Update भयो" : "❌ Update failed");
 }
 
-async function deleteMember(){
-  if(!confirm("Delete गर्नुहुन्छ?")) return;
+async function deleteMemberById(id){
+  if(!confirm("Delete गर्न पक्का हो?")) return;
 
-  const r = await fetch(SCRIPT_URL,{
+  const res = await fetch(SCRIPT_URL, {
     method:"POST",
-    body:JSON.stringify({
+    body: JSON.stringify({
       action:"delete",
-      "खाता नं.":member_id.value
+      id:id
     })
   });
-  const j = await r.json();
-  alert(j.status==="deleted" ? "🗑️ Deleted" : "Not found");
+
+  const j = await res.json();
+
+  if(j.status==="deleted"){
+    alert("🗑️ Row deleted successfully");
+    memberForm.reset();
+  }else{
+    alert("❌ Delete failed");
+  }
 }
+
 
 function collectForm(){
   const data = {};
