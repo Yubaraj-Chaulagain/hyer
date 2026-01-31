@@ -203,28 +203,46 @@ const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
 let addressData = {};
 
 fetch("nepal-admin-structure.json")
-.then(r=>r.json())
-.then(d=>{
-  addressData=d;
+.then(r => r.json())
+.then(d => {
+  addressData = d;
 
-  // province
-  province.innerHTML='<option value="">प्रदेश</option>';
-  for(let p in d){
-    province.innerHTML+=`<option value="${p}">${p}</option>`;
+  // Province load
+  province.innerHTML = '<option value="">प्रदेश छान्नुहोस्</option>';
+  for (let p in d) {
+    province.innerHTML += `<option value="${p}">${p}</option>`;
   }
 
-  // citizenship district (ALL districts)
-  citizenship_district.innerHTML='<option value="">जिल्ला छान्नुहोस्</option>';
-  for(let p in d){
-    for(let dist in d[p]){
-      citizenship_district.innerHTML+=`<option value="${dist}">${dist}</option>`;
+  // Citizenship district (ALL)
+  citizenship_district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+  for (let p in d) {
+    for (let dist in d[p]) {
+      citizenship_district.innerHTML += `<option value="${dist}">${dist}</option>`;
     }
   }
 });
 
-district.onchange=()=>{
-  municipality.innerHTML='<option>पालिका</option>';
-  addressData[province.value][district.value].forEach(m=>municipality.innerHTML+=`<option>${m}</option>`);
+// Province → District
+province.onchange = () => {
+  district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  if (!province.value) return;
+
+  for (let dist in addressData[province.value]) {
+    district.innerHTML += `<option value="${dist}">${dist}</option>`;
+  }
+};
+
+// District → Municipality
+district.onchange = () => {
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  if (!district.value) return;
+
+  addressData[province.value][district.value].forEach(m => {
+    municipality.innerHTML += `<option value="${m}">${m}</option>`;
+  });
 };
   
 async function handleUpload(input, targetId){
