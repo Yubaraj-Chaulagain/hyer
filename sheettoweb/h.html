@@ -36,7 +36,7 @@
   <div class="mt-1">
     <button type="button" class="btn btn-sm btn-primary" onclick="searchMember()">Search</button>
     <button type="button" class="btn btn-sm btn-warning" onclick="updateMember()">Update</button>
-    <button type="button" class="btn btn-sm btn-danger" onclick="deleteMember()">Delete</button>
+<button type="button" class="btn btn-danger" onclick="deleteMemberById(member_id.value)">🗑️ Delete</button>
   </div>
 </div>
 
@@ -383,23 +383,30 @@ async function updateMember(){
   alert(j.status==="updated" ? "✅ Update भयो" : "❌ Update failed");
 }
 
-async function deleteMemberById(id){
-  if(!confirm("Delete गर्न पक्का हो?")) return;
+async function deleteMemberById(id) {
+  if (!id) {
+    alert("पहिला खाता नं. लेख्नुहोस्");
+    return;
+  }
+
+  if (!confirm("यो सदस्य delete गर्न पक्का हो?")) return;
 
   const res = await fetch(SCRIPT_URL, {
-    method:"POST",
+    method: "POST",
     body: JSON.stringify({
-      action:"delete",
-      id:id
+      action: "delete",
+      id: id
     })
   });
 
   const j = await res.json();
 
-  if(j.status==="deleted"){
+  if (j.status === "deleted") {
     alert("🗑️ Row deleted successfully");
-    memberForm.reset();
-  }else{
+    document.getElementById("memberForm").reset();
+  } else if (j.status === "notfound") {
+    alert("❌ Member not found");
+  } else {
     alert("❌ Delete failed");
   }
 }
