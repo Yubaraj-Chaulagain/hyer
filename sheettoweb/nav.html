@@ -300,24 +300,45 @@ function toggleTransfer(){
   
 async function submitTransaction(){
 
-  const data = {
-    action:"transaction",
-    member_id: tx_member.value,
-    type: tx_type.value,
-    amount: tx_amount.value,
-    to_member: tx_to_member.value,
-    remark: tx_remark.value
-  };
+  try{
 
-  const r = await fetch(SCRIPT_URL,{
-    method:"POST",
-    body: JSON.stringify(data)
-  });
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        action: "transaction",
+        member_id: tx_member.value,
+        type: tx_type.value,
+        amount: tx_amount.value,
+        to_member: tx_to_member.value || "",
+        remark: tx_remark.value || ""
+      })
+    });
 
-  const j = await r.json();
+    const data = await res.json();
 
-  alert(j.status==="success" ? "✅ Transaction saved" : "❌ Error");
+    if(data.status === "success"){
+      alert("✅ Transaction सफल भयो");
+
+      // reset
+      tx_amount.value = "";
+      tx_remark.value = "";
+      tx_type.value = "";
+      document.getElementById("transfer_box").style.display = "none";
+
+    }else{
+      alert("❌ Failed : " + (data.message || "error"));
+    }
+
+  }catch(err){
+    alert("❌ Network / Script Error");
+    console.error(err);
+  }
 }
+
+
 
 
 function toggleNav(){
