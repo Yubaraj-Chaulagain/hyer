@@ -19,25 +19,24 @@
 <div class="d-flex" style="min-height:100vh">
 
   <!-- ===== SIDE NAV ===== -->
-  <div class="bg-dark text-white p-3" style="width:240px">
-    <div class="d-flex align-items-center mb-3">
-  <button class="btn btn-outline-success me-2" onclick="toggleNav()">
-    ☰
-  </button>
-  <h5 class="mb-0">सहकारी Management System</h5>
-</div>
+  <div class="d-flex" style="min-height:100vh">
+
+  <!-- SIDE NAV -->
+  <div id="sideNav"
+       class="bg-dark text-white p-3"
+       style="width:240px; transition:all .3s">
+
     <h5 class="text-center mb-4">🏦 सहकारी</h5>
 
     <ul class="nav flex-column gap-2">
-      <li class="nav-item">
+      <li>
         <a class="nav-link text-white active"
            href="#"
            onclick="showSection('memberSection', this)">
            👤 सदस्य विवरण
         </a>
       </li>
-
-      <li class="nav-item">
+      <li>
         <a class="nav-link text-white"
            href="#"
            onclick="showSection('transactionSection', this)">
@@ -47,14 +46,34 @@
     </ul>
   </div>
 
-
   <!-- CONTENT -->
   <div id="mainContent" class="flex-grow-1 p-4 bg-light">
 
+    <!-- top bar -->
+    <div class="d-flex align-items-center mb-3">
+      <button class="btn btn-outline-success me-2" onclick="toggleNav()">☰</button>
+      <h5 class="mb-0">सहकारी Management System</h5>
+    </div>
 
+    <div id="memberSection">
+      <!-- member form -->
+    </div>
 
+    <div id="transactionSection" style="display:none">
+      <!-- transaction -->
+    </div>
+
+  </div>
+</div>
 
   <!-- ===== CONTENT AREA ===== -->
+  <div class="d-flex align-items-center mb-3">
+  <button class="btn btn-outline-success me-2" onclick="toggleNav()">
+    ☰
+  </button>
+  <h5 class="mb-0">सहकारी Management System</h5>
+</div>
+
   <div class="flex-grow-1 p-4 bg-light">
     
 
@@ -293,3 +312,22 @@
 
   </div>
 </div>
+  <script>
+let navOpen = true;
+
+function toggleNav(){
+  const nav = document.getElementById("sideNav");
+
+  if(navOpen){
+    nav.style.width = "0";
+    nav.style.padding = "0";
+    nav.style.overflow = "hidden";
+  }else{
+    nav.style.width = "240px";
+    nav.style.padding = "1rem";
+  }
+
+  navOpen = !navOpen;
+}
+</script>
+
