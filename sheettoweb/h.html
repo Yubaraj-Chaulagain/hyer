@@ -381,6 +381,7 @@ async function updateMember(){
   const j = await r.json();
 
   alert(j.status==="updated" ? "✅ Update भयो" : "❌ Update failed");
+  document.getElementById("memberForm").reset();
 }
 
 async function deleteMember(){
