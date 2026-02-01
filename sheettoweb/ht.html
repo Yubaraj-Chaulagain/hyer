@@ -19,8 +19,21 @@
 <div class="card-header bg-success text-white text-center">
   <h4 class="mb-0">सहकारी सदस्य दर्ता फारम</h4>
 </div>
-
 <div class="card-body">
+  <ul class="nav nav-tabs mb-3" id="mainTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#memberTab">
+      👤 सदस्य विवरण
+    </button>
+  </li>
+
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#transactionTab">
+      💰 Member Transaction
+    </button>
+  </li>
+</ul>
+
 <div class="tab-content">
 
 <!-- ================= TAB 1 : MEMBER ================= -->
@@ -519,6 +532,31 @@ async function updatePhoto(){
   alert("✅ Photo updated & old deleted");
 }
 
+</script>
+<script>
+async function loadMembers(){
+  const r = await fetch(SCRIPT_URL+"?action=members");
+  const j = await r.json();
+
+  tx_member.innerHTML = '<option value="">छान्नुहोस्</option>';
+  tx_to_member.innerHTML = '<option value="">छान्नुहोस्</option>';
+
+  j.data.forEach(m=>{
+    const opt = `<option value="${m.id}">
+      ${m.id} - ${m.name}
+    </option>`;
+    tx_member.innerHTML += opt;
+    tx_to_member.innerHTML += opt;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", loadMembers);
+</script>
+<script>
+function toggleTransfer(){
+  transfer_box.style.display =
+    tx_type.value==="Transfer" ? "flex" : "none";
+}
 </script>
 
 
