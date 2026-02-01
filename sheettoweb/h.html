@@ -309,7 +309,7 @@ async function handleUpload(input, targetId) {
 
 </script>
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPsJXj8riFOrw-94iIFUKbAU7KM0Dyp63a6Uj__BWSpeNG1Y4Htn9R2yBYXX9CbWJwtQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKiJ6XnS1Ssj81FzWXoh1688QMlMzHFzN43LuepRVzookPGrmpZFwuqNVpH6t1i3eNqw/exec";
 
 document.getElementById("memberForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -428,6 +428,43 @@ function collectForm(){
   data.member_citizen_back_url = member_citizen_back_url.value;
   return data;
 }
+
+    async function uploadImgBB(file){
+  const fd = new FormData();
+  fd.append("image", file);
+
+  const r = await fetch(
+    "https://api.imgbb.com/1/upload?key=IMGBB_API_KEY",
+    { method:"POST", body: fd }
+  );
+
+  const j = await r.json();
+  if (!j.success) throw "Upload failed";
+
+  return {
+    url: j.data.url,
+    delete_url: j.data.delete_url
+  };
+}
+async function updatePhoto(){
+  const file = member_photo.files[0];
+  if(!file) return alert("Photo छान");
+
+  const img = await uploadImgBB(file);
+
+  await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"update",
+      "खाता नं.": member_id.value,
+      member_photo_url: img.url,
+      member_photo_delete_url: img.delete_url
+    })
+  });
+
+  alert("✅ Photo updated & old deleted");
+}
+
 </script>
 
 
