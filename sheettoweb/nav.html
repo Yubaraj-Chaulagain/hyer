@@ -284,9 +284,12 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
     </div>
   </div>
 
-  <button class="btn btn-success" onclick="submitTransaction()">
-    💾 Save Transaction
-  </button>
+  <button type="button"
+        class="btn btn-success"
+        onclick="submitTransaction()">
+  💾 Save Transaction
+</button>
+
    
     </div>
 
@@ -631,51 +634,43 @@ async function loadMembers(){
 }
 </script>
   <script>
-  function submitTransaction(data){
+async function submitTransaction(){
 
-  if(!data.member_id || !data.type || !data.amount){
-    return out({status:"error", message:"Incomplete transaction data"});
+  const member_id = document.getElementById("tx_member").value;
+  const type = document.getElementById("tx_type").value;
+  const amount = document.getElementById("tx_amount").value;
+  const to_member = document.getElementById("tx_to_member").value;
+  const remark = document.getElementById("tx_remark").value;
+
+  if(!member_id || !type || !amount){
+    alert("❗ सबै field भर्नुहोस्");
+    return;
   }
 
-  const ss = SpreadsheetApp.openById(SS_ID);
-  const txSheet = ss.getSheetByName(TX_SHEET);
-  const memSheet = ss.getSheetByName(MEMBER_SHEET);
+  const payload = {
+    action: "transaction",
+    member_id,
+    type,
+    amount: Number(amount),
+    to_member: type==="Transfer" ? to_member : "",
+    remark
+  };
 
-  if(!txSheet){
-    return out({status:"error", message:"Transactions sheet not found"});
+  const res = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  });
+
+  const json = await res.json();
+
+  if(json.status === "success"){
+    alert("✅ Transaction save भयो");
+    document.getElementById("tx_amount").value = "";
+    document.getElementById("tx_remark").value = "";
+    loadBalance();
+  }else{
+    alert("❌ " + json.message);
   }
-
-  if(!memSheet){
-    return out({status:"error", message:"Members sheet not found"});
-  }
-
-  if(data.type === "Transfer" && !data.to_member){
-    return out({status:"error", message:"to_member required for transfer"});
-  }
-
-  const amount = Number(data.amount);
-  if(isNaN(amount)){
-    return out({status:"error", message:"Invalid amount"});
-  }
-
-  txSheet.appendRow([
-    new Date(),
-    data.member_id,
-    data.type,
-    amount,
-    data.to_member || "",
-    data.remark || ""
-  ]);
-
-  updateBalance(
-    memSheet,
-    data.member_id,
-    data.type,
-    amount,
-    data.to_member
-  );
-
-  return out({ status:"success" });
 }
 </script>
 
