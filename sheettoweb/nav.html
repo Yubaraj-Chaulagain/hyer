@@ -644,5 +644,33 @@ async function loadBalance(){
 
 
 </script>
+  <script>
+document.addEventListener("DOMContentLoaded", loadMembers);
+
+async function loadMembers(){
+
+  const res = await fetch(SCRIPT_URL + "?action=members");
+  const json = await res.json();
+
+  const sel1 = document.getElementById("tx_member");
+  const sel2 = document.getElementById("tx_to_member");
+
+  sel1.innerHTML = `<option value="">-- सदस्य छान्नुहोस् --</option>`;
+  sel2.innerHTML = `<option value="">-- सदस्य छान्नुहोस् --</option>`;
+
+  json.data.forEach(m => {
+    const opt1 = document.createElement("option");
+    opt1.value = m.id;
+    opt1.textContent = m.id + " - " + m.name;
+    sel1.appendChild(opt1);
+
+    const opt2 = document.createElement("option");
+    opt2.value = m.id;
+    opt2.textContent = m.id + " - " + m.name;
+    sel2.appendChild(opt2);
+  });
+}
+</script>
+
 </body>
 </html>
