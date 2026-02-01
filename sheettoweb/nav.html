@@ -426,7 +426,7 @@ async function handleUpload(input, targetId) {
 
 </script>
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby7gnr17K9vGvI2Ac-N72c761ikM_7KkxqQkDDOpywkDquEAlc5bL_TVsIkXPUJJg-Xyw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwupgM-rqhZCxfuC156OL5TNZHvULVgdzzNM-vVVzV1QX8EXd6c4asYavTdj_CsE1ydQQ/exec";
 
 document.getElementById("memberForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -631,51 +631,51 @@ async function loadMembers(){
 }
 </script>
   <script>
-async function submitTransaction(){
+  function submitTransaction(data){
 
-  if(!tx_member.value || !tx_type.value || !tx_amount.value){
-    alert("❗ सबै field भर्नुहोस्");
-    return;
+  if(!data.member_id || !data.type || !data.amount){
+    return out({status:"error", message:"Incomplete transaction data"});
   }
 
-  try{
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify({
-        action: "transaction",
-        member_id: tx_member.value,
-        type: tx_type.value,
-        amount: Number(tx_amount.value),
-        to_member: tx_to_member.value || "",
-        remark: tx_remark.value || ""
-      })
-    });
+  const ss = SpreadsheetApp.openById(SS_ID);
+  const txSheet = ss.getSheetByName(TX_SHEET);
+  const memSheet = ss.getSheetByName(MEMBER_SHEET);
 
-    const json = await res.json();
-
-    if(json.status === "success"){
-      alert("✅ Transaction save भयो");
-
-      tx_amount.value = "";
-      tx_remark.value = "";
-      tx_type.value = "";
-      tx_to_member.value = "";
-      transfer_box.style.display = "none";
-
-      loadBalance(); // refresh balance
-    }else{
-      alert("❌ Failed : " + JSON.stringify(json));
-    }
-
-  }catch(err){
-    console.error(err);
-    alert("❌ Network / Script Error");
+  if(!txSheet){
+    return out({status:"error", message:"Transactions sheet not found"});
   }
+
+  if(!memSheet){
+    return out({status:"error", message:"Members sheet not found"});
+  }
+
+  if(data.type === "Transfer" && !data.to_member){
+    return out({status:"error", message:"to_member required for transfer"});
+  }
+
+  const amount = Number(data.amount);
+  if(isNaN(amount)){
+    return out({status:"error", message:"Invalid amount"});
+  }
+
+  txSheet.appendRow([
+    new Date(),
+    data.member_id,
+    data.type,
+    amount,
+    data.to_member || "",
+    data.remark || ""
+  ]);
+
+  updateBalance(
+    memSheet,
+    data.member_id,
+    data.type,
+    amount,
+    data.to_member
+  );
+
+  return out({ status:"success" });
 }
 </script>
 
-</body>
-</html>
