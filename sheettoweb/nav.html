@@ -307,6 +307,266 @@ function showSection(id, el){
   el.classList.add("active");
 }
 </script>
+<!-- ================== JS ================== -->
+<script>
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b";
+let addressData = {};
 
+fetch("nepal-admin-structure.json")
+.then(r => r.json())
+.then(d => {
+  addressData = d;
+
+  // Province load
+  province.innerHTML = '<option value="">प्रदेश छान्नुहोस्</option>';
+  for (let p in d) {
+    province.innerHTML += `<option value="${p}">${p}</option>`;
+  }
+
+  // Citizenship district (ALL)
+  citizenship_district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+  for (let p in d) {
+    for (let dist in d[p]) {
+      citizenship_district.innerHTML += `<option value="${dist}">${dist}</option>`;
+    }
+  }
+});
+
+// Province → District
+province.onchange = () => {
+  district.innerHTML = '<option value="">जिल्ला छान्नुहोस्</option>';
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  if (!province.value) return;
+
+  for (let dist in addressData[province.value]) {
+    district.innerHTML += `<option value="${dist}">${dist}</option>`;
+  }
+};
+
+// District → Municipality
+district.onchange = () => {
+  municipality.innerHTML = '<option value="">पालिका छान्नुहोस्</option>';
+
+  if (!district.value) return;
+
+  addressData[province.value][district.value].forEach(m => {
+    municipality.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+};
+  
+async function handleUpload(input, targetId) {
+
+  if (!member_id.value) {
+    alert("पहिला खाता नं. लेख्नुहोस्");
+    input.value = "";
+    return;
+  }
+
+  const file = input.files[0];
+  if (!file) return;
+
+  const ext = file.name.split('.').pop(); // jpg / png
+
+  const fd = new FormData();
+  fd.append("key", IMGBB_KEY);
+  fd.append("image", file);
+
+  const r = await fetch("https://api.imgbb.com/1/upload", {
+    method: "POST",
+    body: fd
+  });
+
+  const j = await r.json();
+  if (!j.success) {
+    alert("Upload failed");
+    return;
+  }
+
+  // 🔥 ORIGINAL imgbb url
+  const originalUrl = j.data.url;  
+  // example: https://i.ibb.co/jPBZdddZ/abcxyz.jpg
+
+  // 🔥 base folder extract
+  const base = originalUrl.substring(0, originalUrl.lastIndexOf('/') + 1);
+
+  // 🔥 custom filename
+  const customFile =
+    member_id.value + "-" +
+    targetId.replace("_url", "").replaceAll("_", "-") +
+    "." + ext;
+
+  const finalUrl = base + customFile;
+
+  // save custom url
+  document.getElementById(targetId).value = finalUrl;
+
+  const display = document.getElementById(targetId + "_display");
+  if (display) display.value = finalUrl;
+
+  console.log("ORIGINAL:", originalUrl);
+  console.log("CUSTOM:", finalUrl);
+}
+
+
+</script>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyKiJ6XnS1Ssj81FzWXoh1688QMlMzHFzN43LuepRVzookPGrmpZFwuqNVpH6t1i3eNqw/exec";
+
+document.getElementById("memberForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const form = e.target;
+  const data = {};
+
+  [...form.elements].forEach(el => {
+    if (el.name) data[el.name] = el.value;
+  });
+
+  // hidden image urls
+  data.member_photo_url = document.getElementById("member_photo_url").value;
+  data.member_citizen_front_url = document.getElementById("member_citizen_front_url").value;
+  data.member_citizen_back_url = document.getElementById("member_citizen_back_url").value;
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  const j = await res.json();
+
+  if (j.status === "success") {
+    alert("✅ सदस्य दर्ता सफल भयो");
+    form.reset();
+  } else {
+    alert("❌ Error भयो");
+  }
+});
+</script>
+  <script>
+async function searchMember(){
+  if(!member_id.value) return alert("खाता नं. लेख्नुहोस्");
+
+  const r = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"search",
+      "खाता नं.":member_id.value
+    })
+  });
+  const j = await r.json();
+
+  if(j.status!=="found") return alert("Member not found");
+
+  for(let k in j.data){
+    const el = document.querySelector(`[name="${k}"]`);
+    if(el) el.value = j.data[k];
+  }
+
+  // image urls
+  member_photo_url.value = j.data.member_photo_url || "";
+  member_photo_url_display.value = j.data.member_photo_url || "";
+  member_citizen_front_url.value = j.data.member_citizen_front_url || "";
+  member_citizen_front_url_display.value = j.data.member_citizen_front_url || "";
+  member_citizen_back_url.value = j.data.member_citizen_back_url || "";
+  member_citizen_back_url_display.value = j.data.member_citizen_back_url || "";
+}
+
+async function updateMember(){
+  const data = collectForm();
+  data.action = "update";
+
+  const r = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
+  const j = await r.json();
+
+  alert(j.status==="updated" ? "✅ Update भयो" : "❌ Update failed");
+  document.getElementById("memberForm").reset();
+}
+
+async function deleteMember(){
+
+  const id = document.getElementById("member_id").value;
+
+  if (!id) {
+    alert("पहिला खाता नं. लेख्नुहोस्");
+    return;
+  }
+
+  if (!confirm("यो सदस्य delete गर्न पक्का हो?")) return;
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "delete",
+      "खाता नं.": id
+    })
+  });
+
+  const j = await res.json();
+
+  if (j.status === "deleted") {
+    alert("🗑️ सदस्य delete भयो");
+    document.getElementById("memberForm").reset();
+  } 
+  else if (j.status === "notfound") {
+    alert("❌ खाता नं. भेटिएन");
+  } 
+  else {
+    alert("❌ Delete failed");
+  }
+}
+
+
+function collectForm(){
+  const data = {};
+  [...memberForm.elements].forEach(el=>{
+    if(el.name) data[el.name]=el.value;
+  });
+  data.member_photo_url = member_photo_url.value;
+  data.member_citizen_front_url = member_citizen_front_url.value;
+  data.member_citizen_back_url = member_citizen_back_url.value;
+  return data;
+}
+
+    async function uploadImgBB(file){
+  const fd = new FormData();
+  fd.append("image", file);
+
+  const r = await fetch(
+    "https://api.imgbb.com/1/upload?key=IMGBB_API_KEY",
+    { method:"POST", body: fd }
+  );
+
+  const j = await r.json();
+  if (!j.success) throw "Upload failed";
+
+  return {
+    url: j.data.url,
+    delete_url: j.data.delete_url
+  };
+}
+async function updatePhoto(){
+  const file = member_photo.files[0];
+  if(!file) return alert("Photo छान");
+
+  const img = await uploadImgBB(file);
+
+  await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"update",
+      "खाता नं.": member_id.value,
+      member_photo_url: img.url,
+      member_photo_delete_url: img.delete_url
+    })
+  });
+
+  alert("✅ Photo updated & old deleted");
+}
+
+</script>
 </body>
 </html>
