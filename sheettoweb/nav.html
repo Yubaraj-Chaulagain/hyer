@@ -285,6 +285,31 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
 <script>
 let navOpen = true;
 
+function toggleTransfer(){
+  const type = document.getElementById("tx_type").value;
+  document.getElementById("transfer_box").style.display =
+    type === "Transfer" ? "block" : "none";
+}
+  
+function submitTransaction(){
+  const d = {
+    member: tx_member.value,
+    type: tx_type.value,
+    amount: tx_amount.value,
+    to: tx_to_member.value,
+    remark: tx_remark.value
+  };
+
+  if(!d.member || !d.type || !d.amount){
+    alert("सबै आवश्यक field भर्नुहोस्");
+    return;
+  }
+
+  console.log("Transaction Data:", d);
+  alert("Transaction ready (API जोड्न बाँकी)");
+}
+
+
 function toggleNav(){
   const nav = document.getElementById("sideNav");
   if(navOpen){
