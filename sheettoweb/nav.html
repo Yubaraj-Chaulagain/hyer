@@ -238,11 +238,18 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
   <h5 class="text-primary mt-4">💰 Member Transaction</h5>
 
   <div class="row mb-3">
-    <div class="col-md-4">
-      <form id="TransactionForm">
-      <label>सदस्य (खाता नं.)</label>
-      <select id="tx_member" class="form-select"></select>
-    </div>
+  <div class="col-md-4">
+    <label>सदस्य (खाता नं.)</label>
+    <select id="tx_member" class="form-select"
+            onchange="loadBalance()"></select>
+  </div>
+
+  <div class="col-md-4">
+    <label>Current Balance</label>
+    <input id="tx_balance" class="form-control" readonly>
+  </div>
+</div>
+
 
     <div class="col-md-4">
       <label>Transaction Type</label>
@@ -439,7 +446,7 @@ async function handleUpload(input, targetId) {
 
 </script>
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8_3GL0IqxDHqMl-cNhL4j3qyQNsDCBdS3ECUiYBUmuFwr6Mtc4jklVBqP4YpDjD6gSQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi0R_3-xkZw-N6WnbZyNsE6j4uZmOafphefZzi8DfxufFdh0x0pSNipL1uIujOb2TIdQ/exec";
 
 document.getElementById("memberForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -594,6 +601,26 @@ async function updatePhoto(){
 
   alert("✅ Photo updated & old deleted");
 }
+
+    
+async function loadBalance(){
+
+  const id = tx_member.value;
+  if(!id){
+    tx_balance.value = "";
+    return;
+  }
+
+  const r = await fetch(
+    SCRIPT_URL + "?action=balance&member_id=" + id
+  );
+
+  const j = await r.json();
+
+  tx_balance.value =
+    j.status==="success" ? j.balance : "0";
+}
+
 
 </script>
 </body>
