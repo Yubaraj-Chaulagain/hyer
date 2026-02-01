@@ -18,6 +18,39 @@
 
 <div class="d-flex" style="min-height:100vh">
 
+  <!-- SIDE NAV -->
+  <div id="sideNav"
+       class="bg-dark text-white p-3"
+       style="width:240px; transition:all .3s">
+
+    <h5 class="text-center mb-4">🏦 सहकारी</h5>
+
+    <ul class="nav flex-column gap-2">
+      <li>
+        <a class="nav-link text-white active"
+           href="#"
+           onclick="showSection('memberSection', this)">
+           👤 सदस्य विवरण
+        </a>
+      </li>
+      <li>
+        <a class="nav-link text-white"
+           href="#"
+           onclick="showSection('transactionSection', this)">
+           💰 Transaction
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="mainContent" class="flex-grow-1 p-4 bg-light">
+
+    <!-- top bar -->
+    <div class="d-flex align-items-center mb-3">
+      <button class="btn btn-outline-success me-2" onclick="toggleNav()">☰</button>
+
+
   <!-- ===== SIDE NAV ===== -->
   <div class="bg-dark text-white p-3" style="width:240px">
     <h5 class="text-center mb-4">🏦 सहकारी</h5>
