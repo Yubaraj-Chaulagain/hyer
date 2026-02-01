@@ -297,39 +297,7 @@ function toggleTransfer(){
   document.getElementById("transfer_box").style.display =
     type === "Transfer" ? "block" : "none";
 }
-  
-async function submitTransaction(){
 
-  try{
-    const res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "transaction",
-        member_id: tx_member.value,
-        type: tx_type.value,
-        amount: tx_amount.value,
-        to_member: tx_to_member.value || "",
-        remark: tx_remark.value || ""
-      })
-    });
-
-    const txt = await res.text();   // 🔥 important
-    console.log("RAW:", txt);
-
-    const data = JSON.parse(txt);
-
-    if(data.status === "success"){
-      alert("✅ Transaction सफल भयो");
-    }else{
-      alert("❌ " + (data.message || "Failed"));
-    }
-
-  }catch(err){
-    console.error(err);
-    alert("❌ Network / Script Error");
-  }
-}
 
 function toggleNav(){
   const nav = document.getElementById("sideNav");
@@ -659,6 +627,52 @@ async function loadMembers(){
     opt2.textContent = m.id + " - " + m.name;
     sel2.appendChild(opt2);
   });
+}
+</script>
+  <script>
+async function submitTransaction(){
+
+  if(!tx_member.value || !tx_type.value || !tx_amount.value){
+    alert("❗ सबै field भर्नुहोस्");
+    return;
+  }
+
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method: "POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({
+        action: "transaction",
+        member_id: tx_member.value,
+        type: tx_type.value,
+        amount: Number(tx_amount.value),
+        to_member: tx_to_member.value || "",
+        remark: tx_remark.value || ""
+      })
+    });
+
+    const json = await res.json();
+
+    if(json.status === "success"){
+      alert("✅ Transaction save भयो");
+
+      tx_amount.value = "";
+      tx_remark.value = "";
+      tx_type.value = "";
+      tx_to_member.value = "";
+      transfer_box.style.display = "none";
+
+      loadBalance(); // refresh balance
+    }else{
+      alert("❌ Failed : " + JSON.stringify(json));
+    }
+
+  }catch(err){
+    console.error(err);
+    alert("❌ Network / Script Error");
+  }
 }
 </script>
 
