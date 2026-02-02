@@ -234,7 +234,23 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
 
     <!-- ===== TRANSACTION SECTION ===== -->
     <div id="transactionSection" style="display:none">
-       
+      <div>
+       <h5 class="text-primary">🔍 Transaction Search</h5>
+
+<input id="tx_row" class="form-control mb-2" placeholder="Transaction Row No">
+
+<button type="button" class="btn btn-info" onclick="searchTx()">
+Search
+</button>
+<input id="et_member" class="form-control mb-2" placeholder="Member ID">
+<input id="et_type" class="form-control mb-2" placeholder="Type">
+<input id="et_amount" class="form-control mb-2" placeholder="Amount">
+<input id="et_to" class="form-control mb-2" placeholder="To Member">
+<input id="et_remark" class="form-control mb-2" placeholder="Remark">
+
+<button type="button" class="btn btn-success" onclick="updateTx()">Update</button>
+<button type="button" class="btn btn-danger" onclick="deleteTx()">Delete</button>
+    </div>    
 
   <h5 class="text-primary mt-4">💰 Member Transaction</h5>
 
@@ -673,4 +689,70 @@ async function submitTransaction(){
   }
 }
 </script>
+  <script>
+  let CURRENT_ROW = 0;
+
+async function searchTx(){
+  const id = tx_row.value;
+  const res = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"tx_search",
+      id
+    })
+  });
+
+  const j = await res.json();
+  if(j.status!=="found"){
+    alert("❌ Transaction not found");
+    return;
+  }
+
+  CURRENT_ROW = j.row;
+
+  et_member.value = j.data.member_id;
+  et_type.value = j.data.type;
+  et_amount.value = j.data.amount;
+  et_to.value = j.data.to_member;
+  et_remark.value = j.data.remark;
+}
+</script>
+<script>
+async function updateTx(){
+  const res = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"tx_update",
+      row: CURRENT_ROW,
+      member_id: et_member.value,
+      type: et_type.value,
+      amount: et_amount.value,
+      to_member: et_to.value,
+      remark: et_remark.value,
+      date: new Date()
+    })
+  });
+
+  const j = await res.json();
+  alert(j.status==="updated" ? "✅ Updated" : "❌ Error");
+}
+  
+</script>
+  <script>
+    async function deleteTx(){
+  if(!confirm("Delete transaction?")) return;
+
+  const res = await fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"tx_delete",
+      row: CURRENT_ROW
+    })
+  });
+
+  const j = await res.json();
+  alert(j.status==="deleted" ? "🗑 Deleted" : "❌ Error");
+}
+
+  </script>
 
