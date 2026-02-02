@@ -649,45 +649,40 @@ async function loadMembers(){
   });
 }
 </script>
-  <script>
+<script>
 async function submitTransaction(){
 
-  const member_id = document.getElementById("tx_member").value;
-  const type = document.getElementById("tx_type").value;
-  const amount = document.getElementById("tx_amount").value;
-  const to_member = document.getElementById("tx_to_member").value;
-  const remark = document.getElementById("tx_remark").value;
+  const data = {
+    action: "transaction",
+    member_id: document.getElementById("tx_member").value,
+    type: document.getElementById("tx_type").value,
+    amount: document.getElementById("tx_amount").value,
+    to_member: document.getElementById("tx_to_member").value,
+    remark: document.getElementById("tx_remark").value
+  };
 
-  if(!member_id || !type || !amount){
-    alert("❗ सबै field भर्नुहोस्");
+  if(!data.member_id || !data.type || !data.amount){
+    alert("सबै field भर्नुहोस्");
     return;
   }
 
-  const payload = {
-    action: "transaction",
-    member_id,
-    type,
-    amount: Number(amount),
-    to_member: type==="Transfer" ? to_member : "",
-    remark
-  };
-
   const res = await fetch(SCRIPT_URL,{
     method:"POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify(data)
   });
 
-  const json = await res.json();
+  const j = await res.json();
 
-  if(json.status === "success"){
-    alert("✅ Transaction save भयो");
-    document.getElementById("tx_amount").value = "";
-    document.getElementById("tx_remark").value = "";
+  if(j.status==="success"){
+    alert("✅ Transaction saved");
+    document.getElementById("tx_amount").value="";
+    document.getElementById("tx_remark").value="";
     loadBalance();
   }else{
-    alert("❌ " + json.message);
+    alert("❌ "+j.message);
   }
 }
+
 </script>
   <script>
   let CURRENT_ROW = 0;
