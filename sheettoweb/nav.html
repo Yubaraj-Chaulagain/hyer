@@ -718,7 +718,7 @@ async function updateTx(){
     method:"POST",
     body:JSON.stringify({
       action:"tx_update",
-      row: CURRENT_ROW,
+      row: row,
       member_id: et_member.value,
       type: et_type.value,
       amount: et_amount.value,
@@ -730,6 +730,12 @@ async function updateTx(){
 
   const j = await res.json();
   alert(j.status==="updated" ? "✅ Updated" : "❌ Error");
+  document.getElementById("CURRENT_ROW").value="";
+    document.getElementById("member_id").value="";
+  document.getElementById("type").value="";
+  document.getElementById("amount").value="";
+  document.getElementById("to_member").value="";
+  document.getElementById("remark").value="";
 }
   
 </script>
