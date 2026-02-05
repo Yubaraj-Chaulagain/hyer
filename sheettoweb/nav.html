@@ -36,6 +36,12 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
           💰 Transaction
         </a>
       </li>
+      <li>
+        <a class="nav-link text-white" href="#"
+           onclick="showSection('transactionupdate', this)">
+          💰 Transaction update/delete
+        </a>
+      </li>
     </ul>
   </div>
 
@@ -233,7 +239,7 @@ h6{border-bottom:2px solid #e5e7eb;padding-bottom:4px}
     </div>
 
     <!-- ===== TRANSACTION SECTION ===== -->
-    <div id="transactionSection" style="display:none">
+    <div id="transactionupdate" style="display:none">
       <div>
        <h5 class="text-primary">🔍 Transaction Search</h5>
 <form id="hero">
@@ -252,6 +258,7 @@ Search
 <button type="button" class="btn btn-danger" onclick="deleteTx()">Delete</button>
     </div>    
 </form>
+      <div id="transactionSection" style="display:none">
   <h5 class="text-primary mt-4">💰 Member Transaction</h5>
 <form id="transaction">
   <div class="row mb-3">
@@ -308,6 +315,7 @@ Search
 
    
     </div>
+    </div>
 </form>
 <script>
 let navOpen = true;
@@ -335,6 +343,7 @@ function toggleNav(){
 function showSection(id, el){
   document.getElementById("memberSection").style.display = "none";
   document.getElementById("transactionSection").style.display = "none";
+  document.getElementById("transactionupdate").style.display = "none";
   document.getElementById(id).style.display = "block";
 
   document.querySelectorAll(".nav-link").forEach(a=>a.classList.remove("active"));
