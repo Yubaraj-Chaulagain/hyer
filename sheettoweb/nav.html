@@ -718,7 +718,7 @@ async function updateTx(){
     method:"POST",
     body:JSON.stringify({
       action:"tx_update",
-      row: row,
+      row: CURRENT_ROW,
       member_id: et_member.value,
       type: et_type.value,
       amount: et_amount.value,
