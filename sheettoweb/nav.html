@@ -730,6 +730,7 @@ async function updateTx(){
 
   const j = await res.json();
   alert(j.status==="updated" ? "✅ Updated" : "❌ Error");
+  document.getElementById("hero").reset();
 }
   
 </script>
