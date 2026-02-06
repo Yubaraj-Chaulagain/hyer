@@ -142,15 +142,19 @@ function spinWheel() {
 }
 
 // 📧 Save + Gmail
-function sendWinner(winner) {
+    function sendWinner(winner) {
   fetch(API_URL, {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
     body: JSON.stringify(winner)
   })
   .then(res => res.json())
-  .then(r => console.log("Saved + Gmail sent", r))
-  .catch(err => alert("❌ Gmail failed"));
+  .then(r => {
+    console.log("Saved + Gmail sent", r);
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Gmail failed");
+  });
 }
 </script>
 
