@@ -94,31 +94,36 @@
 <div class="winner" id="winnerText"></div>
 
 <script>
-/* 🔗 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL */
-const API_URL = "https://script.google.com/macros/s/AKfycbxXvv3UZsIANrX2wJ-yBTLQBufzTEWYq-wULilOZ32wJmmRAx5JIA_TnKXJe2qxUj08/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw-7P8FXMJREBiQ8YH5mwtxzcw3wW9WV6Er0bDRCKQS3mww2qbvute6i47mEjnlcY5d/exec";
 
 let members = [];
 let rotation = 0;
+let dataLoaded = false;
 
-/* 🔄 Load Members from Google Sheet */
+// ⏳ Load members
 fetch(API_URL)
   .then(res => res.json())
   .then(data => {
     members = data;
-    console.log("Members loaded:", members);
+    dataLoaded = true;
+    document.getElementById("spinBtn").disabled = false;
   })
-  .catch(err => alert("Failed to load members"));
+  .catch(() => alert("Failed to load members"));
 
 function spinWheel() {
+  if (!dataLoaded) {
+    alert("⏳ Members loading... please wait");
+    return;
+  }
+
   if (members.length === 0) {
-    alert("No members found!");
+    alert("❌ No member found");
     return;
   }
 
   document.getElementById("spinBtn").disabled = true;
 
   const wheel = document.getElementById("wheel");
-
   const spin = Math.floor(Math.random() * 360) + 1440;
   rotation += spin;
   wheel.style.transform = `rotate(${rotation}deg)`;
@@ -130,18 +135,25 @@ function spinWheel() {
     document.getElementById("winnerText").innerHTML =
       "🏆 Winner: <b>" + winner.name + "</b><br>ID: " + winner.memberId;
 
-    // 💾 Save winner + 📧 Gmail send
-    fetch(API_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(winner)
-    });
+    sendWinner(winner);
 
     document.getElementById("spinBtn").disabled = false;
-
   }, 4200);
 }
+
+// 📧 Save + Gmail
+function sendWinner(winner) {
+  fetch(API_URL, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(winner)
+  })
+  .then(res => res.json())
+  .then(r => console.log("Saved + Gmail sent", r))
+  .catch(err => alert("❌ Gmail failed"));
+}
 </script>
+
 
 </body>
 </html>
