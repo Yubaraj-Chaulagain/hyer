@@ -1,1 +1,163 @@
-https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wheel Winner Selection</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin: 0;
+    background: #0f172a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .wheel-container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+  }
+
+  .wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid #fff;
+    background: conic-gradient(
+      #f87171 0deg 60deg,
+      #34d399 60deg 120deg,
+      #60a5fa 120deg 180deg,
+      #fde047 180deg 240deg,
+      #a78bfa 240deg 300deg,
+      #2dd4bf 300deg 360deg
+    );
+    transition: transform 4s cubic-bezier(0.33,1,0.68,1);
+  }
+
+  .pointer {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid #ef4444;
+  }
+
+  button {
+    margin-top: 30px;
+    padding: 14px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #22c55e;
+    color: #000;
+  }
+
+  button:disabled {
+    background: #64748b;
+    cursor: not-allowed;
+  }
+
+  .winner {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #38bdf8;
+  }
+</style>
+</head>
+
+<body>
+
+<h2>🎉 Lucky Draw Wheel 🎉</h2>
+
+<div class="wheel-container">
+  <div class="pointer"></div>
+  <div class="wheel" id="wheel"></div>
+</div>
+
+<button id="spinBtn" onclick="spinWheel()">SPIN</button>
+
+<div class="winner" id="winnerText"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec";
+
+let members = [];
+let rotation = 0;
+let dataLoaded = false;
+
+// ⏳ Load members
+fetch(API_URL)
+  .then(res => res.json())
+  .then(data => {
+    members = data;
+    dataLoaded = true;
+    document.getElementById("spinBtn").disabled = false;
+  })
+  .catch(() => alert("Failed to load members"));
+
+function spinWheel() {
+  if (!dataLoaded) {
+    alert("⏳ Members loading... please wait");
+    return;
+  }
+
+  if (members.length === 0) {
+    alert("❌ No member found");
+    return;
+  }
+
+  document.getElementById("spinBtn").disabled = true;
+
+  const wheel = document.getElementById("wheel");
+  const spin = Math.floor(Math.random() * 360) + 1440;
+  rotation += spin;
+  wheel.style.transform = `rotate(${rotation}deg)`;
+
+  setTimeout(() => {
+    const index = Math.floor(Math.random() * members.length);
+    const winner = members[index];
+
+    document.getElementById("winnerText").innerHTML =
+      "🏆 Winner: <b>" + winner.name + "</b><br>ID: " + winner.memberId;
+
+    sendWinner(winner);
+
+    document.getElementById("spinBtn").disabled = false;
+  }, 4200);
+}
+
+// 📧 Save + Gmail
+    function sendWinner(winner) {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify(winner)
+  })
+  .then(res => res.json())
+  .then(r => {
+    console.log("Saved + Gmail sent", r);
+  })
+  .catch(err => {
+    console.error(err);
+    alert("❌ Gmail failed");
+  });
+}
+</script>
+
+
+</body>
+</html>
