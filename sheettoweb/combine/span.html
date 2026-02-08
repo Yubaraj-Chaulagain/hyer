@@ -2,162 +2,155 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wheel Winner Selection</title>
+<title>Lucky Draw Wheel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body {
-    margin: 0;
-    background: #0f172a;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
-
-  h2 {
-    margin-bottom: 20px;
-  }
-
-  .wheel-container {
-    position: relative;
-    width: 320px;
-    height: 320px;
-  }
-
-  .wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 8px solid #fff;
-    background: conic-gradient(
-      #f87171 0deg 60deg,
-      #34d399 60deg 120deg,
-      #60a5fa 120deg 180deg,
-      #fde047 180deg 240deg,
-      #a78bfa 240deg 300deg,
-      #2dd4bf 300deg 360deg
-    );
-    transition: transform 4s cubic-bezier(0.33,1,0.68,1);
-  }
-
-  .pointer {
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 30px solid #ef4444;
-  }
-
-  button {
-    margin-top: 30px;
-    padding: 14px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #22c55e;
-    color: #000;
-  }
-
-  button:disabled {
-    background: #64748b;
-    cursor: not-allowed;
-  }
-
-  .winner {
-    margin-top: 20px;
-    font-size: 18px;
-    color: #38bdf8;
-  }
+body{
+  background:#0f172a;
+  color:#fff;
+  font-family:Arial;
+  text-align:center;
+}
+h1{margin:10px 0}
+#wheelBox{
+  position:relative;
+  width:360px;
+  height:360px;
+  margin:20px auto;
+}
+#wheel{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:10px solid #22c55e;
+  transition:transform 4s cubic-bezier(.17,.67,.25,1);
+}
+#pointer{
+  position:absolute;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:30px;
+  color:#facc15;
+}
+button{
+  padding:12px 24px;
+  font-size:16px;
+  background:#22c55e;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+#winner{
+  margin-top:20px;
+  font-size:18px;
+  color:#facc15;
+}
 </style>
 </head>
 
 <body>
 
-<h2>🎉 Lucky Draw Wheel 🎉</h2>
-
-<div class="wheel-container">
-  <div class="pointer"></div>
-  <div class="wheel" id="wheel"></div>
+<h1>🎡 Lucky Draw</h1>
+<div id="wheelBox">
+  <div id="pointer">▼</div>
+  <canvas id="wheel" width="360" height="360"></canvas>
 </div>
 
-<button id="spinBtn" onclick="spinWheel()">SPIN</button>
+<button onclick="spinWheel()">SPIN</button>
 
-<div class="winner" id="winnerText"></div>
+<div id="winner"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec";
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const radius = canvas.width/2;
 
 let members = [];
-let rotation = 0;
-let dataLoaded = false;
+let angle = 0;
+let spinning = false;
 
-// ⏳ Load members
-fetch(API_URL)
-  .then(res => res.json())
-  .then(data => {
-    members = data;
-    dataLoaded = true;
-    document.getElementById("spinBtn").disabled = false;
-  })
-  .catch(() => alert("Failed to load members"));
+// ---------- Fetch members ----------
+fetch(scriptURL,{
+  method:"POST",
+  body:JSON.stringify({action:"getLuckyDrawMembers"})
+})
+.then(r=>r.json())
+.then(d=>{
+  members = d;
+  drawWheel();
+});
 
-function spinWheel() {
-  if (!dataLoaded) {
-    alert("⏳ Members loading... please wait");
-    return;
-  }
+// ---------- Draw Wheel ----------
+function drawWheel(){
+  const slice = 2*Math.PI / members.length;
+  ctx.clearRect(0,0,360,360);
 
-  if (members.length === 0) {
-    alert("❌ No member found");
-    return;
-  }
+  members.forEach((m,i)=>{
+    const start = i*slice;
+    ctx.beginPath();
+    ctx.moveTo(radius,radius);
+    ctx.arc(radius,radius,radius,start,start+slice);
+    ctx.fillStyle = i%2 ? "#2563eb" : "#16a34a";
+    ctx.fill();
 
-  document.getElementById("spinBtn").disabled = true;
-
-  const wheel = document.getElementById("wheel");
-  const spin = Math.floor(Math.random() * 360) + 1440;
-  rotation += spin;
-  wheel.style.transform = `rotate(${rotation}deg)`;
-
-  setTimeout(() => {
-    const index = Math.floor(Math.random() * members.length);
-    const winner = members[index];
-
-    document.getElementById("winnerText").innerHTML =
-      "🏆 Winner: <b>" + winner.name + "</b><br>ID: " + winner.memberId;
-
-    sendWinner(winner);
-
-    document.getElementById("spinBtn").disabled = false;
-  }, 4200);
+    ctx.save();
+    ctx.translate(radius,radius);
+    ctx.rotate(start + slice/2);
+    ctx.fillStyle="#fff";
+    ctx.font="14px Arial";
+    ctx.fillText(m.name, radius/2, 5);
+    ctx.restore();
+  });
 }
 
-// 📧 Save + Gmail
-    function sendWinner(winner) {
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify(winner)
-  })
-  .then(res => res.json())
-  .then(r => {
-    console.log("Saved + Gmail sent", r);
-  })
-  .catch(err => {
-    console.error(err);
-    alert("❌ Gmail failed");
+// ---------- Spin ----------
+function spinWheel(){
+  if(spinning || members.length===0) return;
+  spinning = true;
+
+  const extra = Math.random()*360 + 1440; // 4+ rounds
+  angle += extra;
+
+  canvas.style.transform = `rotate(${angle}deg)`;
+
+  setTimeout(selectWinner, 4200);
+}
+
+// ---------- Winner ----------
+function selectWinner(){
+  const sliceDeg = 360 / members.length;
+  const current = angle % 360;
+  const index = Math.floor((360-current)/sliceDeg) % members.length;
+
+  const winner = members[index];
+  document.getElementById("winner").innerHTML =
+    `🏆 Winner: <b>${winner.name}</b> (ID: ${winner.memberId})`;
+
+  saveWinner(winner);
+  spinning = false;
+}
+
+// ---------- Save Winner + Email ----------
+function saveWinner(w){
+  fetch(scriptURL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"saveLuckyDrawWinner",
+      memberId:w.memberId,
+      name:w.name,
+      email:w.email
+    })
   });
 }
 </script>
-
 
 </body>
 </html>
