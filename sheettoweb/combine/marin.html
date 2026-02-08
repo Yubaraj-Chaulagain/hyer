@@ -1,1 +1,1946 @@
-https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec
+<!DOCTYPE html>
+<html>
+<head>
+<title>Finance System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+</head>
+<body class="p-3">
+
+<h4>Member Finance System</h4>
+
+<div id="login">
+<input id="u" class="form-control mb-2" placeholder="Username">
+<input id="p" type="password" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary" onclick="login()">Login</button>
+</div>
+  <!-- PAY LOAN MODAL -->
+<div class="modal fade" id="payLoanModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 id="payLoanModalTitle">Pay Loan</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class= "modal-body">
+        <p>LoanID: <span id="payLoanID"></span></p>
+        <p>Remaining: <span id="payLoanRemaining"></span></p>
+        <input id="payLoanAmount" type="number" class="form-control" placeholder="Enter amount">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" onclick="confirmPayLoan()">Pay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const payLoanModalInstance = new bootstrap.Modal(document.getElementById("payLoanModal"));
+let selectedLoan = null;
+
+function payLoan(loanId){
+  selectedLoan = loans.find(l => l.LoanID === loanId);
+
+  if(!selectedLoan){
+    alert("Loan not found. Please refresh.");
+    return;
+  }
+
+  // Fill modal safely
+  document.getElementById("payLoanID").innerText = selectedLoan.LoanID;
+  document.getElementById("payLoanRemaining").innerText =
+    selectedLoan.Remaining ?? selectedLoan.Amount;
+
+  document.getElementById("payLoanAmount").value = "";
+
+  payLoanModalInstance.show();
+}
+
+
+function confirmPayLoan(){
+  const amt = Number(payLoanAmount.value);
+  if(!amt || amt <= 0) return alert("Enter valid amount");
+
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "payLoan",
+      LoanID: selectedLoan.LoanID,
+      Amount: amt
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(!d.status) return alert(d.message || "Payment failed");
+
+    payLoanModalInstance.hide();
+    loadLoans(); // refresh loan table
+    alert(d.message || "Payment successful");
+  });
+}
+
+
+
+  
+
+  function calculateNextDueDate(loan){
+  let baseDate = loan.NextDueDate || new Date().toISOString().split("T")[0];
+  const d = new Date(baseDate);
+  d.setMonth(d.getMonth() + 1);
+  return d.toISOString().split("T")[0];
+}
+
+
+
+</script>
+<!-- MEMBER HISTORY MODAL -->
+<div class="modal fade" id="memberHistoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Member Transaction History</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="memberHistoryBody"></div>
+    </div>
+  </div>
+</div>
+
+  
+<script>
+  const memberHistoryModal =
+  new bootstrap.Modal(document.getElementById("memberHistoryModal"));
+
+function showMemberHistory(memberID){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"getMemberTransactions",
+      MemberID: memberID
+    })
+  })
+  .then(r=>r.json())
+  .then(txns=>{
+    if(!txns.length){
+       memberHistoryBody.innerHTML = "<p>No transactions found</p>";
+    } else {
+      let html = `<table class="table table-bordered table-sm">
+        <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Details</th>
+        </tr>
+        </thead><tbody>`;
+      txns.forEach(t=>{
+        html += `<tr>
+          <td>${t.Date}</td>
+          <td>${t.Type}</td>
+          <td>${t.Amount}</td>
+          <td>${t.Details||""}</td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      memberHistoryBody.innerHTML = html;
+    }
+    memberHistoryModal.show();
+  });
+}
+
+</script>
+
+ <!-- MURGE SMS -->
+<div class="modal fade" id="emailModal">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <h5>Send Email to All Members</h5>
+      <input id="subject" class="form-control mb-2" placeholder="Subject">
+      <textarea id="message" class="form-control mb-2" rows="5" placeholder="Message"></textarea>
+      <button class="btn btn-success" onclick="sendEmail()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- NoFAKE allsendEmailRemainder SCRIPT -->
+<script>
+function sendEmail(){
+  const subject = document.getElementById("subject").value.trim();
+  const message = document.getElementById("message").value.trim();
+
+  if(!subject || !message){
+    alert("Subject and message required");
+    return;
+  }
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({
+      action: "sendBulkEmail",
+      subject: subject,
+      message: message,
+      html: false
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.status){
+      alert(res.message || "Email failed");
+      return;
+    }
+
+    alert("✅ Email sent to " + res.sent + " members");
+
+    // ✅ close modal
+    bootstrap.Modal.getInstance(
+      document.getElementById("emailModal")
+    ).hide();
+
+    // optional clear fields
+    document.getElementById("subject").value = "";
+    document.getElementById("message").value = "";
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Server error");
+  });
+}
+</script>
+
+<!-- MEMBER MODAL -->
+<div class="modal fade" id="memberModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 id="memberModalTitle">Add Member</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body row g-2">
+        <input id="mMemberID" class="form-control col-6" placeholder="Member ID">
+        <input id="mName" class="form-control col-6" placeholder="Name">
+        <input id="mAddress" class="form-control col-6" placeholder="Address">
+        <input id="mFather" class="form-control col-6" placeholder="Father Name">
+        <input id="mGrand" class="form-control col-6" placeholder="Grand Father Name">
+        <input id="mSpouse" class="form-control col-6" placeholder="Spouse/Wife Name">
+        <input id="mPhone" class="form-control col-6" placeholder="Phone">
+        <input id="mEmail" class="form-control col-6" placeholder="Email">
+
+        <!-- File inputs for photos -->
+        <input id="mIDPhotoFile" type="file" class="form-control col-6">
+        <input id="mPhotoFile" type="file" class="form-control col-6">
+
+        <!-- URL fields to store uploaded images -->
+        <input id="mIDPhoto" class="form-control col-6" placeholder="Identy PhotoURL">
+        <input id="mPhoto" class="form-control col-6" placeholder="Member PhotoURL">
+
+        <input id="mStatus" class="form-control col-6" placeholder="Status">
+        <input id="mOTP" class="form-control col-6" placeholder="OTP">
+        <input id="mDate" type="date" class="form-control col-6">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="uploadPhotosAndSave()">Upload & Save</button>
+        <button class="btn btn-danger" onclick="deleteMember()">Delete</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const IMGBB_KEY = "f5d95811959fdcd59c8ea459aadb650b"; // <-- Put your imgbb key here
+
+async function uploadToImgbb(file, renameTo) {
+  const formData = new FormData();
+  const renamedFile = new File([file], renameTo + "." + file.name.split(".").pop(), { type: file.type });
+  formData.append("image", renamedFile);
+  
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+    method: "POST",
+    body: formData
+  });
+  const data = await res.json();
+  if(data.success) return data.data.url;
+  throw new Error("Upload failed: " + (data.error?.message || "Unknown error"));
+}
+
+async function uploadPhotosAndSave() {
+  try {
+    const name = document.getElementById("mName").value.trim();
+    if(!name) return alert("Enter member name first!");
+
+    // Get files
+    const idFile = document.getElementById("mIDPhotoFile").files[0];
+    const memberFile = document.getElementById("mPhotoFile").files[0];
+
+    if(idFile) {
+      const idUrl = await uploadToImgbb(idFile, name + "_ID");
+      document.getElementById("mIDPhoto").value = idUrl;
+    }
+    if(memberFile) {
+      const photoUrl = await uploadToImgbb(memberFile, name);
+      document.getElementById("mPhoto").value = photoUrl;
+    }
+
+    // Now call your existing saveMember() function
+    saveMember();
+
+  } catch(err) {
+    alert("Photo upload failed: " + err.message);
+  }
+}
+</script>
+
+  <!-- USERS MODAL -->
+<div class="modal fade" id="userModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="userModalTitle"></h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input id="UUsername" class="form-control mb-2" placeholder="Username">
+    <input id="UPassword" class="form-control mb-2" placeholder="Password">
+    <select id="URole" class="form-control mb-2">
+      <option value="admin">Admin</option>
+      <option value="user">User</option>
+      <option value="member">Member</option>
+    </select>
+    <input id="UMemberID" class="form-control mb-2" placeholder="MemberID (optional)">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveUser()">Save</button>
+    <button class="btn btn-danger" onclick="deleteUser()">Delete</button>
+  </div>
+</div></div>
+</div>
+
+ 
+  <!-- ITEMS MODAL -->
+<div class="modal fade" id="itemModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="itemModalTitle"></h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input id="ItemID" class="form-control mb-2" placeholder="Item ID">
+    <input id="ItemName" class="form-control mb-2" placeholder="Item Name">
+    <input id="ItemPrice" type="number" class="form-control mb-2" placeholder="Price">
+    <input id="ItemQty" type="number" class="form-control mb-2" placeholder="Quantity">
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveItem()">Save</button>
+    <button class="btn btn-danger" onclick="deleteItem()">Delete</button>
+  </div>
+</div></div>
+</div>
+  <!-- TRANSACTIONS MODAL -->
+  <div class="modal fade" id="transactionModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="txnModalTitle"></h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <select id="TxnType" class="form-control mb-2">
+      <option value="Deposit">Deposit</option>
+      <option value="Withdraw">Withdraw</option>
+      <option value="Transfer">Transfer</option>
+      <option value="Buy">Buy</option>
+      <option value="Sell">Sell</option>
+    </select>
+    <input id="TxnAmount" type="number" class="form-control mb-2" placeholder="Amount">
+    <input id="TxnDetails" class="form-control mb-2" placeholder="Details / To MemberID">
+    <select id="PaymentType" class="form-control mb-2">
+      <option value="Cash">Cash</option>
+      <option value="Bank">Bank</option>
+    </select>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveTransaction()">Save</button>
+  </div>
+</div></div>
+</div>
+
+  <!-- Transfer Balance Modal -->
+<div class="modal fade" id="transferModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Transfer Balance</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <label>From Member</label>
+        <select id="fromMember" class="form-select mb-2"></select>
+
+        <label>To Member</label>
+        <select id="toMember" class="form-select mb-2"></select>
+
+        <label>Amount</label>
+        <input id="transferAmount" type="number" class="form-control" />
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success" onclick="confirmTransfer()">Transfer</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+ <!-- Transfer History Modal -->
+<div class="modal fade" id="transferHistoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Transfer History</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <table class="table table-bordered">
+  <thead class="table-dark">
+    <tr>
+      <th>TxnID</th>
+      <th>MemberID</th>
+      <th>Type</th>
+      <th>Amount</th>
+      <th>Details</th>
+      <th>Date</th>
+      <th>PaymentType</th>
+      <th>RefMemberID</th>
+    </tr>
+  </thead>
+  <tbody id="transferHistoryBody"></tbody>
+</table>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+ 
+<!-- LOANS History MODAL -->
+  
+<div class="modal fade" id="loanHistoryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Loan Payment History</h5>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>LoanID</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="loanHistoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- LOANS MODAL -->
+<div class="modal fade" id="loanModal">
+<div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="loanModalTitle"></h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <input id="LoanID" class="form-control mb-2" placeholder="Loan ID">
+    <input id="LoanMemberID" class="form-control mb-2" placeholder="MemberID">
+    <input id="LoanAmount" type="number" class="form-control mb-2" placeholder="Loan Amount">
+    <input id="LoanMonths" type="number" class="form-control mb-2" placeholder="Months">
+    <input id="LoanEMI" class="form-control mb-2"
+ placeholder="Monthly EMI" readonly>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="saveLoan()">Save Loan</button>
+  </div>
+</div></div>
+</div>
+
+
+  <!-- REPORTS MODAL -->
+<div class="modal fade" id="reportModal">
+<div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-header">
+    <h5 id="reportModalTitle">Reports</h5>
+    <button class="btn-close" data-bs-dismiss="modal"></button>
+  </div>
+  <div class="modal-body">
+    <label>Date From:</label>
+    <input type="date" id="reportFrom" class="form-control mb-2">
+    <label>Date To:</label>
+    <input type="date" id="reportTo" class="form-control mb-2">
+    <button class="btn btn-primary mb-2" onclick="generateReport()">Generate Report</button>
+    <div id="reportContent" class="table-responsive"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-success" onclick="printReport()">Print</button>
+  </div>
+</div></div>
+</div>
+
+  
+
+  <script>
+    const reportModalInstance = new bootstrap.Modal(reportModal);
+
+// Open reports modal
+function openReportsModal(){
+  reportFrom.value = reportTo.value = "";
+  reportContent.innerHTML = "";
+  reportModalInstance.show();
+}
+
+// Generate report (daily/monthly)
+function generateReport(){
+  const from = reportFrom.value;
+  const to = reportTo.value;
+  if(!from || !to){ alert("Select date range"); return; }
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getTransactions"})
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    const filtered = data.filter(t=>{
+      return t.Date >= from && t.Date <= to;
+    });
+
+    let html = `<table class="table table-bordered table-sm">
+      <thead class="table-dark">
+        <tr><th>TxnID</th><th>MemberID</th><th>Type</th><th>Amount</th><th>Details</th><th>PaymentType</th><th>Date</th></tr>
+      </thead><tbody>`;
+    filtered.forEach(t=>{
+      html += `<tr>
+        <td>${t.TxnID}</td>
+        <td>${t.MemberID}</td>
+        <td>${t.Type}</td>
+        <td>${t.Amount}</td>
+        <td>${t.Details||""}</td>
+        <td>${t.PaymentType}</td>
+        <td>${t.Date}</td>
+      </tr>`;
+    });
+    html += "</tbody></table>";
+    reportContent.innerHTML = html;
+  });
+}
+  </script>
+    <script>
+const loanHistoryModal = new bootstrap.Modal(document.getElementById("loanHistoryModal"));
+const loanHistoryModalBody = document.getElementById("loanHistoryModalBody");
+
+// Print report / invoice
+function printReport(){
+  const content = reportContent.innerHTML;
+  if(!content){ alert("No report to print"); return; }
+  const win = window.open('', '', 'width=900,height=600');
+  win.document.write(`<html><head><title>Report</title></head><body>${content}</body></html>`);
+  win.document.close();
+  win.print();
+}
+
+  </script>
+
+  <script>
+    const txnModalInstance = new bootstrap.Modal(document.getElementById("transactionModal"));
+
+let transactions = [];
+let editTxnMode = false;
+let currentTxnID = "";
+function openTransactionModal(){
+  editTxnMode = false;
+  currentTxnID = "";
+  txnModalTitle.innerText = "New Transaction";
+  TxnType.value = "Deposit";
+  TxnAmount.value = "";
+  TxnDetails.value = "";
+  PaymentType.value = "Cash";
+  txnModalInstance.show();
+}
+
+// Open edit
+function openTxnEdit(t){
+  editTxnMode = true;
+  currentTxnID = t.TxnID;
+  txnModalTitle.innerText = "Edit Transaction";
+
+  TxnType.value = t.Type;
+  TxnAmount.value = t.Amount;
+  TxnDetails.value = t.Details || "";
+  PaymentType.value = t.PaymentType;
+
+  txnModalInstance.show();
+}
+// Draw
+    function drawTransfers(data = transfers){
+  const tbody = document.getElementById("tbodyTransfers"); // 👈 यही line
+  tbody.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML =
+      "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.RefMemberID || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>${t.Type || ""}</td>
+      </tr>
+    `;
+  });
+}
+
+
+// Delete
+function deleteTransaction(id){
+  if(!confirm("Delete transaction "+id+" ?")) return;
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"deleteTransaction",TxnID:id})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      loadTransactions();
+      alert("Transaction deleted");
+    }
+  });
+}
+
+  </script>
+  <script>
+function drawTransactions(data = transactions){
+  const tbody = document.getElementById("tbodyTransactions");
+  tbody.innerHTML = "";
+
+  if(!data || data.length === 0){
+    tbody.innerHTML =
+      "<tr><td colspan='8' class='text-center'>No transactions found</td></tr>";
+    return;
+  }
+
+  data.forEach(t=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.Type || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.Details || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>
+          <button class="btn btn-sm btn-warning"
+            onclick='openTxnEdit(${JSON.stringify(t)})'>Edit</button>
+          <button class="btn btn-sm btn-danger"
+            onclick='deleteTransaction("${t.TxnID}")'>Del</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+</script>
+
+
+<script>
+// Load loans
+let loans = [];
+const loanModalInstance = new bootstrap.Modal(document.getElementById("loanModal"));
+const LoanID = document.getElementById("LoanID");
+const LoanMemberID = document.getElementById("LoanMemberID");
+const LoanAmount = document.getElementById("LoanAmount");
+const LoanMonths = document.getElementById("LoanMonths");
+  LoanAmount.oninput = LoanMonths.oninput = () => {
+  const amt = Number(LoanAmount.value);
+  const months = Number(LoanMonths.value);
+  LoanEMI.value =
+    (amt > 0 && months > 0) ? Math.round(amt / months) : "";
+};
+
+const loanModalTitle = document.getElementById("loanModalTitle");
+  
+function openLoanModal(){
+  loanModalTitle.innerText = "Add Loan";
+  LoanID.value = "LN" + Date.now();   // unique Loan ID
+  LoanMemberID.value = "";             // optionally set a current member
+  LoanAmount.value = "";
+  LoanMonths.value = "";
+  loanModalInstance.show();
+}
+
+function loadLoans(){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({action: "getLoans"})
+  })
+  .then(r => r.json())
+  .then(d => {
+    loans = d;
+    drawLoans();
+  });
+}
+
+
+// Draw loans table
+function drawLoans(data = loans){
+  if(!data.length){
+    tbodyLoans.innerHTML = "<tr><td colspan='8'>No loans</td></tr>";
+    return;
+  }
+  tbodyLoans.innerHTML = "";
+  data.forEach(l => {
+    tbodyLoans.innerHTML += `<tr>
+      <td>${l.LoanID}</td>
+      <td>${l.MemberID}</td>
+      <td>${l.Amount}</td>
+      <td>${l.Paid || 0}</td>
+      <td>${l.MonthlyPayment || 0}</td>
+      <td>${l.Remaining || l.Amount}</td>
+      <td>${l.NextDueDate || ''}</td>
+      <td>
+        <button class="btn btn-sm btn-success"
+ onclick="payLoan('${l.LoanID}')">Pay</button>
+<button class="btn btn-info btn-sm"
+  onclick="showLoanHistory('${l.LoanID}')"
+  data-bs-toggle="modal"
+  data-bs-target="#loanHistoryModal">
+  History
+</button>
+
+
+      </td>
+    </tr>`;
+  });
+}
+
+
+// Save loan
+function saveLoan(){
+  if(!LoanAmount.value || !LoanMonths.value){ alert("Enter valid data"); return; }
+  const payload = {
+    action: "addLoan",
+    LoanID: LoanID.value,
+    MemberID: LoanMemberID.value,
+    Amount: LoanAmount.value,
+    Months: LoanMonths.value
+  };
+  fetch(API,{method:"POST",body:JSON.stringify(payload)})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      loanModalInstance.hide();
+      loadLoans();
+      alert("Loan added successfully");
+    } else alert(res.message);
+  });
+}
+
+
+ function showLoans(){
+  // Hide all sections
+  tbl.style.display = "none";
+  userSection.style.display = "none";
+  itemSection.style.display = "none";
+  transactionSection.style.display = "none";
+
+  // Show loans section
+  loanSection.style.display = "block";
+
+  // Load loans from backend
+  loadLoans();
+}
+
+
+
+  </script>
+
+  <script>
+
+
+// Load transactions from backend
+function loadTransactions(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getTransactions"})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    transactions = d;
+    drawTransactions();
+  });
+}
+
+
+// Save transaction
+function saveTransaction(){
+
+  if(!TxnAmount.value || TxnAmount.value <= 0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  const payload = {
+    action: editTxnMode ? "updateTransaction" : "addTransaction",
+    TxnID: editTxnMode ? currentTxnID : "",
+    MemberID: prompt("Enter MemberID"),
+    Type: TxnType.value,
+    Amount: TxnAmount.value,
+    Details: TxnDetails.value,
+    PaymentType: PaymentType.value
+  };
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      txnModalInstance.hide();
+      loadTransactions();
+      alert("Transaction saved");
+    }else{
+      alert(res.message || "Failed");
+    }
+  });
+}
+
+  </script>
+
+  <script>
+    const itemModalInstance = new bootstrap.Modal(itemModal);
+let items = [];
+let editItemMode = false;
+
+// Open modal for add
+function openItemModal(){
+  editItemMode = false;
+  itemModalTitle.innerText = "Add Item";
+  ItemID.value = "";
+  ItemName.value = "";
+  ItemPrice.value = "";
+  ItemQty.value = "";
+  ItemID.readOnly = false;
+  itemModalInstance.show();
+}
+
+// Open modal for edit
+function openItemEdit(i){
+  editItemMode = true;
+  itemModalTitle.innerText = "Edit Item";
+  ItemID.value = i.ItemID;
+  ItemName.value = i.Name;
+  ItemPrice.value = i.Price;
+  ItemQty.value = i.Quantity;
+  ItemID.readOnly = true; // ID cannot change
+  itemModalInstance.show();
+}
+
+// Load items from backend
+function loadItems(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getItems"})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    items = d;
+    drawItems();
+  });
+}
+
+// Draw items table
+function drawItems(data=items){
+  tbodyItems.innerHTML = "";
+  data.forEach(i=>{
+    tbodyItems.innerHTML += `<tr>
+      <td>${i.ItemID}</td>
+      <td>${i.Name}</td>
+      <td>${i.Price}</td>
+      <td>${i.Quantity}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" onclick='openItemEdit(${JSON.stringify(i)})'>Edit</button>
+        <button class="btn btn-sm btn-danger" onclick='deleteItem("${i.ItemID}")'>Del</button>
+      </td>
+    </tr>`;
+  });
+}
+
+// Save item (add/update)
+function saveItem(){
+  const payload = {
+    action: editItemMode ? "updateItem" : "addItem",
+    ItemID: ItemID.value,
+    Name: ItemName.value,
+    Price: ItemPrice.value,
+    Quantity: ItemQty.value
+  };
+  fetch(API,{method:"POST",body:JSON.stringify(payload)})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      itemModalInstance.hide();
+      loadItems();
+      alert("Item saved successfully");
+    } else alert(res.message);
+  });
+}
+
+// Delete item
+function deleteItem(id){
+  const itemID = id || ItemID.value;
+  if(!confirm("Delete item "+itemID+" ?")) return;
+  fetch(API,{method:"POST",body:JSON.stringify({action:"deleteItem",ItemID:itemID})})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      itemModalInstance.hide();
+      loadItems();
+      alert("Item deleted successfully");
+    }
+  });
+}
+  </script>
+<script>
+  const userModalInstance = new bootstrap.Modal(userModal);
+let users = [];
+let editUserMode = false;
+
+// Open modal for add
+function openUserModal(){
+  editUserMode = false;
+  userModalTitle.innerText = "Add User";
+  UUsername.value = "";
+  UPassword.value = "";
+  URole.value = "user";
+  UMemberID.value = "";
+  UUsername.readOnly = false;
+  userModalInstance.show();
+}
+
+// Open modal for edit
+function openUserEdit(u){
+  editUserMode = true;
+  userModalTitle.innerText = "Edit User";
+  UUsername.value = u.Username;
+  UPassword.value = u.Password;
+  URole.value = u.Role;
+  UMemberID.value = u.MemberID || "";
+  UUsername.readOnly = true; // username cannot change
+  userModalInstance.show();
+}
+
+// Load users from backend
+function loadUsers(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({action:"getUsers"})
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    users = d;
+    drawUsers();
+  });
+}
+
+// Draw users table
+function drawUsers(data=users){
+  tbodyUsers.innerHTML = "";
+  data.forEach(u=>{
+    tbodyUsers.innerHTML += `<tr>
+      <td>${u.Username}</td>
+      <td>${u.Password}</td>
+      <td>${u.Role}</td>
+      <td>${u.MemberID || ""}</td>
+      <td>
+        <button class="btn btn-sm btn-warning" onclick='openUserEdit(${JSON.stringify(u)})'>Edit</button>
+        <button class="btn btn-sm btn-danger" onclick='deleteUser("${u.Username}")'>Del</button>
+      </td>
+    </tr>`;
+  });
+}
+
+// Save user (add/update)
+function saveUser(){
+  const payload = {
+    action: editUserMode ? "updateUser" : "addUser",
+    Username: UUsername.value,
+    Password: UPassword.value,
+    Role: URole.value,
+    MemberID: UMemberID.value
+  };
+  fetch(API,{method:"POST",body:JSON.stringify(payload)})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      userModalInstance.hide();
+      loadUsers();
+      alert("User saved successfully");
+    } else alert(res.message);
+  });
+}
+
+// Delete user
+function deleteUser(username){
+  if(!confirm("Delete user "+username+" ?")) return;
+  fetch(API,{method:"POST",body:JSON.stringify({action:"deleteUser",Username:username})})
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      loadUsers();
+      alert("User deleted successfully");
+    }
+  });
+}
+</script>
+
+<script>
+const memberModal = new bootstrap.Modal(document.getElementById("memberModal"));
+let editMode = false;
+let currentRole = "admin"; // change based on login
+
+// ===== OPEN ADD =====
+function openAdd(){
+  if(currentRole === "member") return alert("Members cannot add!");
+  editMode = false;
+  memberModalTitle.innerText = "Add Member";
+  document.querySelectorAll("#memberModal input").forEach(i=>i.value="");
+  mMemberID.readOnly = false;
+  memberModal.show();
+}
+
+// ===== OPEN EDIT =====
+function openEditMember(m){
+  if(currentRole === "member") return alert("Members cannot edit!");
+  editMode = true;
+  memberModalTitle.innerText = "Edit Member";
+  mMemberID.value = m.MemberID;
+  mMemberID.readOnly = true;
+
+  mName.value = m.Name;
+  mAddress.value = m.Address;
+  mFather.value = m["Father Name"];
+  mGrand.value = m["Grand Father Name"];
+  mSpouse.value = m["spouse/wife Name"];
+  mPhone.value = m.Phone;
+  mEmail.value = m.Email;
+  mIDPhoto.value = m["Identy PhotoURL"];
+  mPhoto.value = m["Member PhotoURL"];
+  mStatus.value = m.Status;
+  mOTP.value = m.OTP;
+  mDate.value = m.EntryDate;
+
+  memberModal.show();
+}
+
+// ===== SAVE =====
+function saveMember(){
+  const payload = {
+    action: editMode ? "updateMember" : "addMember",
+    "MemberID": mMemberID.value,
+    "Name": mName.value,
+    "Address": mAddress.value,
+    "Father Name": mFather.value,
+    "Grand Father Name": mGrand.value,
+    "spouse/wife Name": mSpouse.value,
+    "Phone": mPhone.value,
+    "Email": mEmail.value,
+    "Identy PhotoURL": mIDPhoto.value,
+    "Member PhotoURL": mPhoto.value,
+    "Status": mStatus.value,
+    "OTP": mOTP.value,
+    "EntryDate": mDate.value
+  };
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify(payload)
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    } else alert("Error saving member");
+  });
+}
+
+// ===== DELETE =====
+function deleteMember(){
+  if(!editMode) return alert("Select member first!");
+  if(currentRole === "member") return alert("Members cannot delete!");
+  if(!confirm("Delete this member?")) return;
+
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({ action:"deleteMember", "MemberID": mMemberID.value })
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){
+      memberModal.hide();
+      load("getMembers");
+    } else alert("Error deleting member");
+  });
+}
+  </script>
+
+<!-- ===== DRAW  ===== -->
+<div id="app" style="display:none;">
+  <ul class="nav nav-tabs mb-3">
+  <li class="nav-item"><a class="nav-link active" onclick="showTab('MembersSection')">Members</a></li>
+  <li class="nav-item admin"><a class="nav-link" onclick="showTab('userSection')">Users</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('itemSection')">Items</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('transactionSection')">Transactions</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('loanSection')">Loans</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('transferSection')">Transfers</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="openReportsModal()">Reports</a></li>
+  <li class="nav-item"><a class="nav-link" onclick="showTab('memberResultSection')">Member Result</a></li>
+
+</ul>
+
+
+  <div class="mb-2">
+    <button class="btn btn-warning" onclick="testEmailReminder()">Test Email Reminder</button>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#emailModal">📧 Send Email to Members</button>
+    <button class="btn btn-dark" onclick="openReportsModal()">Reports</button>
+  </div>
+  <script>
+   function testEmailReminder(){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({ action: "testEmailReminder" })
+  })
+  .then(r => r.json())
+  .then(res => {
+    if(res.status){
+      alert(res.message);
+    }else{
+      alert("Failed: " + res.message);
+    }
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Server error");
+  });
+}
+
+  </script>
+
+ <!-- MEMBERS SECTION -->
+<div id="MembersSection">
+  <button class="btn btn-success" onclick="openAdd()">+ Add Member</button>
+  <input id="memberSearch" class="form-control mb-2"
+         placeholder="Search members"
+         onkeyup="searchMembers()">
+
+  <table class="table table-bordered table-sm">
+    <tbody id="tbl"></tbody>
+  </table>
+</div>
+  
+  <script>
+    let members = []; // global array
+</script>
+  <!-- USERS SECTION -->
+<div id="userSection" style="display:none;">
+  <button class="btn btn-primary admin" onclick="openUserModal()">+ Add User</button>
+ <input id="searchUsers"
+       class="form-control mb-2"
+       placeholder="Search users"
+       onkeyup="searchUsersTable()">
+<script>
+function searchUsersTable(){
+  const q = document
+    .getElementById("searchUsers")
+    .value
+    .toLowerCase();
+
+  const filtered = users.filter(u =>
+    Object.values(u).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawUsers(filtered);
+}
+</script>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>Username</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>MemberID</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyUsers"></tbody>
+  </table>
+</div>
+
+<!-- ITEMS SECTION -->
+<div id="itemSection" style="display:none;">
+   <button class="btn btn-warning" onclick="openItemModal()">+ Add Item</button>
+ <input id="searchItems"
+       class="form-control mb-2"
+       placeholder="Search items"
+       onkeyup="searchItemsTable()">
+  <script>
+function searchItemsTable(){
+  const q = document
+    .getElementById("searchItems")
+    .value
+    .toLowerCase();
+
+  const filtered = items.filter(i =>
+    Object.values(i).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawItems(filtered);
+}
+</script>
+
+ <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>ItemID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyItems"></tbody>
+  </table>
+</div>
+
+ <!-- TRANSFER SECTION -->
+<div id="transferSection" style="display:none;">
+  <div class="mb-2">
+    <button class="btn btn-success" onclick="openTransferModal()">🔁 New Transfer</button><button class="btn btn-success" onclick="loadTransfersTable()">
+  🔁 Load Transfers
+</button>
+
+  </div>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>TxnID</th>
+        <th>MemberID</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>PaymentType</th>
+        <th>Date</th>
+        <th>RefMemberID</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyTransfers"></tbody>
+  </table>
+</div>
+
+  <script>
+  // Logged-in member ID, login पछि set गर्नुहोस्
+
+// Tab open + auto load
+function openTransfersTab() {
+  // सबै tab hide गर्नुहोस्
+  document.querySelectorAll('.tabcontent').forEach(tab => tab.style.display = 'none');
+
+  // Transfer tab देखाउनुहोस् (id सही गर्नुभयो)
+  document.getElementById("transferSection").style.display = "block";
+
+  // Transfer table load
+  loadTransfers(currentMemberID);
+}
+
+// Fetch transfer history from Apps Script
+function loadTransfers(memberID){
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "getTransferHistory",
+      MemberID: memberID
+    })
+  })
+  .then(response => response.json())
+  .then(data => drawTransfers(data))
+  .catch(err => console.error("Transfer fetch failed:", err));
+}
+
+// Draw
+function drawTransfers(data){
+  const tbody = document.getElementById("tbodyTransfers");
+  tbody.innerHTML = "";
+
+  if(!data || data.length === 0){
+    tbody.innerHTML = "<tr><td colspan='7' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID || ""}</td>
+        <td>${t.MemberID || ""}</td>
+        <td>${t.Type || ""}</td>
+        <td>${t.Amount || ""}</td>
+        <td>${t.PaymentType || ""}</td>
+        <td>${t.Date || ""}</td>
+        <td>${t.RefMemberID || ""}</td>
+      </tr>
+    `;
+  });
+}
+</script>
+  <script>
+function loadTransfersTable(){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({ action: "getTransactions" })
+  })
+  .then(r => r.json())
+  .then(data => {
+    // Only transfers
+    const transfers = data.filter(t => t.Type === "Transfer");
+
+    // Prepare Transfer Out / In columns
+    const tableData = transfers.map(t => ({
+      TxnID: t.TxnID,
+      Date: t.Date,
+      PaymentType: t.PaymentType,
+      TransferOut: t.MemberID ? t.Amount : "",
+      TransferIn: t.RefMemberID ? t.Amount : "",
+      Type: t.Type
+    }));
+
+    drawTransfersTable(tableData);
+  });
+}
+
+function drawTransfersTable(data){
+  const tbody = document.getElementById("tbodyTransfers");
+  tbody.innerHTML = "";
+
+  if(!data.length){
+    tbody.innerHTML = "<tr><td colspan='6' class='text-center'>No transfers found</td></tr>";
+    return;
+  }
+
+  data.forEach(t => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.TxnID}</td>
+        <td>${t.Date}</td>
+        <td>${t.PaymentType}</td>
+        <td>${t.TransferOut || "-"}</td>
+        <td>${t.TransferIn || "-"}</td>
+        <td>${t.Type}</td>
+      </tr>
+    `;
+  });
+}
+</script>
+<!-- TRANSACTIONS SECTION -->
+<div id="transactionSection" style="display:none;">
+ <button class="btn btn-info" onclick="openTransactionModal()">+ Add Transaction</button>
+    <input id="searchTransactions"
+       class="form-control mb-2"
+       placeholder="Search transactions"
+       onkeyup="searchTransactionsTable()">
+<script>
+function searchTransactionsTable(){
+  const q = document
+    .getElementById("searchTransactions")
+    .value
+    .toLowerCase();
+
+  const filtered = transactions.filter(t =>
+    Object.values(t).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawTransactions(filtered);
+}
+</script>
+
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>TxnID</th>
+        <th>MemberID</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Details</th>
+        <th>Payment</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyTransactions"></tbody>
+  </table>
+</div>
+
+  
+  <!-- LOANS TABLE -->
+<div id="loanSection" style="display:none;">
+  <h5 class="mt-3">Loans</h5>
+  <!-- Test Loan Email Reminder -->
+<button class="btn btn-secondary" onclick="openLoanModal()">+ Add Loan</button>
+<input id="searchLoans"
+       class="form-control mb-2"
+       placeholder="Search loans"
+       onkeyup="searchLoansTable()">
+<script>
+function searchLoansTable(){
+  const q = document
+    .getElementById("searchLoans")
+    .value
+    .toLowerCase();
+
+  const filtered = loans.filter(l =>
+    Object.values(l).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+
+  drawLoans(filtered);
+}
+</script>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>LoanID</th>
+        <th>MemberID</th>
+        <th>Amount</th>
+        <th>Paid</th>
+        <th>Monthly</th>
+        <th>Remaining</th>
+        <th>Next Due</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyLoans"></tbody>
+  </table>
+</div>
+   <!--member tranjection result result-->
+  <div id="memberResultSection" style="display:none;">
+    <input class="form-control mb-2" placeholder="Search Member Result" onkeyup="searchMemberResult(this.value)">
+<table class="table table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>MemberID</th>
+        <th>Result Balance</th>
+        <th>Deposit</th>
+        <th>Withdraw</th>
+        <th>LoanPay</th>
+        <th>Transfer Sent</th>
+        <th>Transfer Received</th>
+        <th>Buying</th>
+        <th>Selling</th>
+        <th>Loans</th>
+        <th>Office To Transfar</th>
+      </tr>
+    </thead>
+    <tbody id="memberResultBody"></tbody>
+  </table>
+</div>
+  
+  <script>
+  function searchMemberResult(q){
+  q = q.toLowerCase();
+  document.querySelectorAll("#memberResultBody tr").forEach(tr=>{
+    tr.style.display =
+      tr.innerText.toLowerCase().includes(q) ? "" : "none";
+  });
+}
+  </script>
+
+
+</div>
+
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyBSIk_drCjoCW8TETfc-4JCKsG562eeUbRMcEgSK6hYA_cXL1ql5jVJOnMlW-4T3cuPg/exec";
+let role="";
+
+function login(){
+ fetch(API,{method:"POST",body:JSON.stringify({action:"login",username:u.value,password:p.value})})
+ .then(r=>r.json()).then(d=>{
+  if(!d.status) return alert("Invalid");
+  currentRole = d.role;
+  role = d.role;
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  if(role!=="admin") document.querySelectorAll(".admin").forEach(x=>x.remove());
+
+  showTab("MembersSection");
+
+ });
+}
+
+function load(a){
+  MembersSection.style.display = "none";
+  loanSection.style.display = "none";
+  userSection.style.display = "none";
+  itemSection.style.display = "none";
+  transactionSection.style.display = "none";
+memberResultSection.style.display = "none";  // नयाँ line
+  
+  if(a === "getUsers"){ userSection.style.display="block"; loadUsers(); return; }
+  if(a === "getItems"){ itemSection.style.display="block"; loadItems(); return; }
+  if(a === "getTransactions"){ transactionSection.style.display="block"; loadTransactions(); return; }
+if(a === "getMemberResult"){memberResultSection.style.display="block"; loadMemberResults();return; }
+  MembersSection.style.display = "block";
+  loadMembers();
+  loadMemberResults();
+}
+</script>
+<script>
+const MEMBER_RESULT_SHEET =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=467702364&single=true&output=csv";
+
+function loadMemberResult(){
+  Papa.parse(MEMBER_RESULT_SHEET, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results){
+      let html = "";
+
+      results.data.forEach(row => {
+        if(!row.MemberID) return;
+
+        html += `<tr>
+          <td>${row.MemberID}</td>
+          <td>${row["Result ballance"] || 0}</td>
+          <td>${row.Deposit || 0}</td>
+          <td>${row.Withdraw || 0}</td>
+          <td>${row.LoanPay || 0}</td>
+          <td>${row["Transfer Sent"] || 0}</td>
+          <td>${row["Transfer Received"] || 0}</td>
+          <td>${row.Buying || 0}</td>
+          <td>${row.Selling || 0}</td>
+          <td>${row.Loans || 0}</td>
+          <td>${row["Office To Transfar"] || 0}</td>
+        </tr>`;
+      });
+
+      document.getElementById("memberResultBody").innerHTML = html;
+document.getElementById("memberResultSection").style.display = "block";
+
+    }
+  });
+}
+
+// page load हुँदा call
+loadMemberResult();
+</script>
+
+  <script>
+
+
+function loadMembers(){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({action:"getMembers"})
+  })
+  .then(r => r.json())
+  .then(d => {
+    members = d;
+    drawMembers(d);
+  });
+}
+
+
+function drawMembers(data){
+  if(!data.length){
+    tbl.innerHTML = "<tr><td colspan='100%'>No members found</td></tr>";
+    return;
+  }
+
+  // Build table header
+  let h = "<tr>";
+  Object.keys(data[0]).forEach(k => {
+    if(k === "Member PhotoURL") h += `<th>Photos</th>`; // one column for both photos
+    else if(k !== "Identy PhotoURL") h += `<th>${k}</th>`; // skip Identy PhotoURL column, handled together
+  });
+  h += "<th>Action</th></tr>";
+
+  // Build table rows
+  data.forEach(m => {
+    h += "<tr>";
+    Object.entries(m).forEach(([k,v])=>{
+      if(k === "Member PhotoURL"){
+        // Show both photos side by side
+        h += `<td>
+          <img src="${m["Identy PhotoURL"]}" alt="ID Photo" style="width:40px;height:40px;border-radius:5px;object-fit:cover;margin-right:5px;">
+          <img src="${v}" alt="Member Photo" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+        </td>`;
+      } else if(k !== "Identy PhotoURL"){ // skip Identy column
+        h += `<td>${v}</td>`;
+      }
+    });
+
+    h += `<td>
+      <button class="btn btn-sm btn-warning"
+ onclick='openEditMember(${JSON.stringify(m)})'>Edit</button>
+
+      <button class="btn btn-sm btn-info"
+ onclick="showMemberHistory('${m.MemberID}')">History</button>
+
+      <button class="btn btn-warning btn-sm"
+        onclick="openTransferModal()">
+        🔁 Transfer Balance
+      </button>
+
+      <button class="btn btn-info btn-sm"
+       onclick="openTransferHistory('${m.MemberID}')">
+        📜 Transfer History
+      </button>
+    </td></tr>`;
+  });
+
+  tbl.innerHTML = h;
+}
+
+
+function searchMembers(){
+  const q = memberSearch.value.toLowerCase();
+  const filtered = members.filter(m =>
+    Object.values(m).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
+  drawMembers(filtered);
+}
+
+  
+function openTransferModal(){
+  const from = document.getElementById("fromMember");
+  const to = document.getElementById("toMember");
+
+  from.innerHTML = "";
+  to.innerHTML = "";
+
+  members.forEach(m=>{
+    from.innerHTML += `<option value="${m.MemberID}">
+      ${m.MemberID} - ${m.Name}
+    </option>`;
+    to.innerHTML += `<option value="${m.MemberID}">
+      ${m.MemberID} - ${m.Name}
+    </option>`;
+  });
+
+  new bootstrap.Modal(
+    document.getElementById("transferModal")
+  ).show();
+}
+
+async function confirmTransfer() {
+  const from = document.getElementById("fromMember").value;
+  const to = document.getElementById("toMember").value;
+  const amount = Number(document.getElementById("transferAmount").value);
+
+  if(!amount || amount <= 0) return alert("Enter valid amount");
+  if(from === to) return alert("Cannot transfer to the same member");
+
+  try {
+    // 1️⃣ Transfer request
+    const transferRes = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "transfer",
+        Type: "Transfer",
+        From: from,
+        To: to,
+        Amount: amount
+      })
+    });
+    const resData = await transferRes.json();
+
+    if(!resData.status) return alert("❌ Transfer failed: " + (resData.message || "Unknown error"));
+
+    // ✅ Transfer सफल भयो
+    alert("✅ Transfer Successful");
+
+    const now = new Date().toISOString().slice(0,19).replace("T"," ");
+
+    // 2️⃣ Transactions record थप्ने (Pathaune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addTransaction",
+        MemberID: from,
+        Type: "Transfer Sent",
+        Amount: amount,
+        Details: "To " + to,
+        PaymentType: "Transfer",
+        Date: now,
+        RefMemberID: to
+      })
+    });
+
+    // 3️⃣ Transactions record थप्ने (Paune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addTransaction",
+        MemberID: to,
+        Type: "Transfer Received",
+        Amount: amount,
+        Details: "From " + from,
+        PaymentType: "Transfer",
+        Date: now,
+        RefMemberID: from
+      })
+    });
+
+    // 4️⃣ Email notifications (pathaune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendEmail",
+        To: from,
+        Subject: "💸 Transfer Sent",
+        Message: `You have sent ${amount} to ${to} on ${now}`
+      })
+    });
+
+    // 5️⃣ Email notifications (paune)
+    await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "sendEmail",
+        To: to,
+        Subject: "💰 Transfer Received",
+        Message: `You have received ${amount} from ${from} on ${now}`
+      })
+    });
+
+    // 6️⃣ Table refresh
+    loadMembers();
+    loadTransactions();
+
+  } catch(err){
+    console.error(err);
+    alert("❌ Something went wrong, check console");
+  }
+}
+
+  function openTransferHistory(memberID){
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "getTransferHistory",
+      MemberID: memberID
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    const body = document.getElementById("transferHistoryBody");
+    body.innerHTML = "";
+
+    if(!res.length){
+      body.innerHTML = "<tr><td colspan='8'>No transfer history</td></tr>";
+    }
+
+    res.forEach(t => {
+      body.innerHTML += `
+      <tr>
+        <td>${t.TxnID}</td>
+        <td>${t.MemberID || ""}</td>       <!-- ✅ correct property -->
+        <td>${t.Type || ""}</td>           <!-- ✅ correct property -->
+        <td>${t.Amount || ""}</td>         <!-- ✅ correct property -->
+        <td>${t.Details || ""}</td>        <!-- ✅ correct property -->
+        <td>${t.Date || ""}</td>           <!-- ✅ correct property -->
+        <td>${t.PaymentType || ""}</td>    <!-- ✅ correct property -->
+        <td>${t.RefMemberID || ""}</td>    <!-- ✅ correct property -->
+      </tr>`;
+    });
+
+    new bootstrap.Modal(
+      document.getElementById("transferHistoryModal")
+    ).show();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Transfer history load error");
+  });
+}
+ 
+
+
+// ===== INVOICE PRINT =====
+function printInvoice(txn){
+ let w=window.open("");
+ w.document.write(`<h3>Invoice</h3><pre>${JSON.stringify(txn,null,2)}</pre>`);
+ w.print();
+}
+
+  
+function showTab(tabName) {
+  // Hide all sections
+     
+  const transferSection = document.getElementById("transferSection");
+  document.getElementById("MembersSection").style.display = "none";
+  document.getElementById("userSection").style.display = "none";
+  document.getElementById("itemSection").style.display = "none";
+  document.getElementById("transactionSection").style.display = "none";
+  document.getElementById("loanSection").style.display = "none";
+  document.getElementById("transferSection").style.display = "none";
+  document.getElementById("memberResultSection").style.display = "none";
+  // Remove 'active' class from all nav links
+  document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+
+  // Show the selected tab
+  if(tabName === "MembersSection") {
+    document.getElementById("MembersSection").style.display = "block";
+    loadMembers();
+    document.querySelector('a.nav-link[onclick="showTab(\'MembersSection\')"]').classList.add("active");
+  }
+  else if(tabName === "userSection") {
+    document.getElementById("userSection").style.display = "block";
+    loadUsers();
+    document.querySelector('a.nav-link[onclick="showTab(\'userSection\')"]').classList.add("active");
+  }
+  else if(tabName === "itemSection") {
+    document.getElementById("itemSection").style.display = "block";
+    loadItems();
+    document.querySelector('a.nav-link[onclick="showTab(\'itemSection\')"]').classList.add("active");
+  }
+ else if(tabName === "transactionSection") {
+  document.getElementById("transactionSection").style.display = "block";
+  loadTransactions(); // 🔥 REQUIRED
+}
+
+  else if(tabName === "transferSection"){
+  transferSection.style.display = "block";
+  loadTransfers();
+  document
+    .querySelector('a.nav-link[onclick="showTab(\'transferSection\')"]')
+    .classList.add("active");
+}
+
+ else if(tabName === "memberResultSection"){
+  document.getElementById("memberResultSection").style.display = "block";
+  loadMemberResults();                
+  startMemberResultAutoRefresh();     
+
+  document
+    .querySelector('a.nav-link[onclick="showTab(\'memberResultSection\')"]')
+    .classList.add("active");
+}
+
+
+  else if(tabName === "loanSection") {
+    document.getElementById("loanSection").style.display = "block";
+    loadLoans();
+    document.querySelector('a.nav-link[onclick="showTab(\'loanSection\')"]').classList.add("active");
+  }
+}
+  
+   function openEmailForm(){
+  document.getElementById("emailForm").style.display = "block";
+}
+
+function closeEmailForm(){
+  document.getElementById("emailForm").style.display = "none";
+}
+
+ 
+
+function loadTransfers(){
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({ action:"getTransfers" })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    console.log("TRANSFERS:", d); // 🔥 DEBUG
+
+    transfers = d;
+    drawTransfers();
+  })
+  .catch(e=>{
+    console.error("Transfer load error", e);
+  });
+}
+
+function showLoanHistory(loanID){
+ fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"getLoanPayments",
+      LoanID: loanID
+    })
+  })
+  .then(r=>r.json())
+  .then(list=>{
+    const tbody = document.getElementById("loanHistoryBody");
+    tbody.innerHTML = "";
+
+    if(!list || list.length === 0){
+      tbody.innerHTML =
+        `<tr><td colspan="3" class="text-center">No history found</td></tr>`;
+      return;
+    }
+
+    list.forEach(p=>{
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.LoanID}</td>
+          <td>${p.Amount}</td>
+          <td>${p.Date}</td>
+        </tr>`;
+    });
+  });
+}
+  
+const loanSection = document.getElementById("loanSection");
+const tbodyLoans = document.getElementById("tbodyLoans");
+
+  let memberResultTimer = null;
+
+function startMemberResultAutoRefresh(){
+  if(memberResultTimer) return; // already running
+
+  memberResultTimer = setInterval(() => {
+    loadMemberResults();
+    console.log("Member Result auto refreshed");
+  }, 60000); // 60000 ms = 1 minute
+}
+</script>
+</body>
+</html>
