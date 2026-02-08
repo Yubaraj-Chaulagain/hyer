@@ -1284,7 +1284,7 @@ function openTransfersTab() {
 
 // Fetch transfer history from Apps Script
 function loadTransfers(memberID){
-  fetch(scriptURL, {
+  fetch(API, {
     method: "POST",
     body: JSON.stringify({
       action: "getTransferHistory",
