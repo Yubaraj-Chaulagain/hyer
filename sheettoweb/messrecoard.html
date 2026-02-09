@@ -141,21 +141,25 @@ function searchBill() {
   });
 }
 
-  function editBill(billNo){
+ function editBill(billNo){
   editingBillNo = billNo;
 
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({
       action:"getBill",
-      billNo:billNo
+      billNo: billNo
     })
   })
   .then(r=>r.json())
   .then(d=>{
+    if(!d || !d.items){
+      alert("Bill load failed");
+      return;
+    }
+
     member.value = d.member;
 
-    // reset table
     document.getElementById("bill").innerHTML = `
       <tr>
         <th>S.N</th><th>Description</th>
@@ -165,7 +169,10 @@ function searchBill() {
 
     d.items.forEach(it=>{
       addRow();
-      const r = document.querySelectorAll("#bill tr")[sn];
+
+      const rows = document.querySelectorAll("#bill tr");
+      const r = rows[rows.length - 1];
+
       r.cells[1].children[0].value = it.desc;
       r.cells[2].children[0].value = it.qty;
       r.cells[3].children[0].value = it.rate;
@@ -175,6 +182,7 @@ function searchBill() {
     calc();
   });
 }
+
   function deleteBill(billNo){
   if(!confirm("Delete this bill?")) return;
 
