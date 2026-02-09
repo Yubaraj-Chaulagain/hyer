@@ -109,3 +109,82 @@ function searchBill() {
 
 </body>
 </html>
+
+
+
+
+
+<script>
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.getActive();
+
+  if (data.action === "login") {
+    const sh = ss.getSheetByName("Users");
+    const users = sh.getDataRange().getValues();
+    const ok = users.some(r =>
+      r[0] === data.user && r[1] === data.pass
+    );
+    return output(ok ? "success" : "fail");
+  }
+
+  if (data.action === "saveBill") {
+    const billSh = ss.getSheetByName("Bills");
+    const itemSh = ss.getSheetByName("BillItems");
+
+    const billNo = "BILL-" + (billSh.getLastRow());
+    billSh.appendRow([
+      billNo,
+      new Date(),
+      data.member,
+      data.subtotal,
+      data.gst,
+      data.total
+    ]);
+
+    data.items.forEach(i => {
+      itemSh.appendRow([
+        billNo, i.desc, i.qty, i.rate, i.total
+      ]);
+    });
+
+    return output(billNo);
+  }
+
+  if (data.action === "searchBill") {
+    const sh = ss.getSheetByName("Bills");
+    const bills = sh.getDataRange().getValues();
+    const result = bills.filter(r => r[2] == data.member);
+    return json(result);
+  }
+}
+
+function doGet() {
+  const sh = SpreadsheetApp.getActive()
+    .getSheetByName("Bills");
+  const data = sh.getDataRange().getValues();
+  data.shift();
+  return json(data);
+}
+
+function output(msg) {
+  return ContentService.createTextOutput(msg);
+}
+function json(d) {
+  return ContentService.createTextOutput(
+    JSON.stringify(d)
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+</script>
+
+Bills:
+BillNo | Date | MemberID | SubTotal | GST | GrandTotal
+
+BillItems:
+BillNo | Description | Qty | Rate | Total
+
+Users:
+Username | Password
+admin    | 1234
+
+
