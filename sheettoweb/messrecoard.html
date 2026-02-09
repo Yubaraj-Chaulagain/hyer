@@ -34,9 +34,19 @@ Grand Total: <span id="gt">0</span>
 <hr>
 <input id="search" placeholder="Search MemberID">
 <button onclick="searchBill()">Search</button>
+  <h3>📜 Bills List</h3>
+<table id="billList">
+<tr>
+  <th>Bill No</th>
+  <th>Member</th>
+  <th>Total</th>
+  <th>Action</th>
+</tr>
+</table>
+
 </div>
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbxoIM7F7Kz0ePMMvgj524_wOMuaR0h_zyb9vPqncDlsjyTTAUeVAzVyXE9Sa2GHDDFBAA/exec";
+const URL = "https://script.google.com/macros/s/AKfycbwzbPIgIB19uTF7agfuD5dPIfPUdrzv_eYN_RUcDD-Ow1ZjfulK18mTv2KAeYuHsAof8Q/exec";
 let sn = 0;
 
 function addRow() {
@@ -81,15 +91,20 @@ function saveBill() {
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({
-      action:"saveBill",
-      member:member.value,
-      subtotal:sub.innerText,
-      gst:gst.innerText,
-      total:gt.innerText,
-      items:items
+      action: editingBillNo ? "updateBill" : "saveBill",
+      billNo: editingBillNo,
+      member: member.value,
+      subtotal: sub.innerText,
+      gst: gst.innerText,
+      total: gt.innerText,
+      items: items
     })
-  }).then(r=>r.text()).then(b=>{
-    alert("Saved Bill No: "+b);
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    alert(editingBillNo ? "Bill Updated" : "Bill Saved");
+    editingBillNo = null;
+    location.reload();
   });
 }
 
@@ -100,11 +115,84 @@ function searchBill() {
       action:"searchBill",
       member:search.value
     })
-  }).then(r=>r.json()).then(d=>{
-    console.log(d);
-    alert("Found "+d.length+" bills");
+  })
+  .then(r=>r.json())
+  .then(list=>{
+    const t = document.getElementById("billList");
+    t.innerHTML = `
+      <tr>
+        <th>Bill No</th>
+        <th>Member</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>`;
+
+    list.forEach(b=>{
+      const r = t.insertRow();
+      r.innerHTML = `
+        <td>${b.BillNo}</td>
+        <td>${b.MemberID}</td>
+        <td>${b.Total}</td>
+        <td>
+          <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
+          <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
+        </td>`;
+    });
   });
 }
+
+  function editBill(billNo){
+  editingBillNo = billNo;
+
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"getBill",
+      billNo:billNo
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    member.value = d.member;
+
+    // reset table
+    document.getElementById("bill").innerHTML = `
+      <tr>
+        <th>S.N</th><th>Description</th>
+        <th>Qty</th><th>Rate</th><th>Total</th>
+      </tr>`;
+    sn = 0;
+
+    d.items.forEach(it=>{
+      addRow();
+      const r = document.querySelectorAll("#bill tr")[sn];
+      r.cells[1].children[0].value = it.desc;
+      r.cells[2].children[0].value = it.qty;
+      r.cells[3].children[0].value = it.rate;
+      r.cells[4].innerText = it.total;
+    });
+
+    calc();
+  });
+}
+  function deleteBill(billNo){
+  if(!confirm("Delete this bill?")) return;
+
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"deleteBill",
+      billNo:billNo
+    })
+  })
+  .then(r=>r.json())
+  .then(()=>{
+    alert("Bill deleted");
+    searchBill();
+  });
+}
+
+
 </script>
 
 </body>
