@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Billing System</title>
+<style>
+table { width:100%; border-collapse:collapse }
+td,th { border:1px solid #aaa; padding:5px }
+</style>
+</head>
+<body>
+
+<h3>🧾 Billing System</h3>
+
+<input id="member" placeholder="Member ID">
+<button onclick="addRow()">+ Add Row</button>
+
+<table id="bill">
+<tr>
+<th>S.N</th><th>Description</th><th>Qty</th>
+<th>Rate</th><th>Total</th>
+</tr>
+</table>
+
+<h4>
+SubTotal: <span id="sub">0</span><br>
+GST (13%): <span id="gst">0</span><br>
+Grand Total: <span id="gt">0</span>
+</h4>
+
+<button onclick="saveBill()">💾 Save Bill</button>
+<button onclick="window.print()">🖨️ Print</button>
+
+<hr>
+<input id="search" placeholder="Search MemberID">
+<button onclick="searchBill()">Search</button>
+
+<script>
+const URL = "PASTE_WEBAPP_URL";
+let sn = 0;
+
+function addRow() {
+  sn++;
+  const t = document.getElementById("bill");
+  const r = t.insertRow();
+  r.innerHTML = `
+    <td>${sn}</td>
+    <td><input></td>
+    <td><input type="number" oninput="calc()"></td>
+    <td><input type="number" oninput="calc()"></td>
+    <td class="tot">0</td>`;
+}
+
+function calc() {
+  let sub = 0;
+  document.querySelectorAll("#bill tr").forEach((r,i)=>{
+    if(i==0) return;
+    const q = r.cells[2].children[0].value||0;
+    const rate = r.cells[3].children[0].value||0;
+    const t = q*rate;
+    r.cells[4].innerText = t;
+    sub += t;
+  });
+  document.getElementById("sub").innerText = sub;
+  document.getElementById("gst").innerText = sub*0.13;
+  document.getElementById("gt").innerText = sub*1.13;
+}
+
+function saveBill() {
+  let items = [];
+  document.querySelectorAll("#bill tr").forEach((r,i)=>{
+    if(i==0) return;
+    items.push({
+      desc: r.cells[1].children[0].value,
+      qty: r.cells[2].children[0].value,
+      rate: r.cells[3].children[0].value,
+      total: r.cells[4].innerText
+    });
+  });
+
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"saveBill",
+      member:member.value,
+      subtotal:sub.innerText,
+      gst:gst.innerText,
+      total:gt.innerText,
+      items:items
+    })
+  }).then(r=>r.text()).then(b=>{
+    alert("Saved Bill No: "+b);
+  });
+}
+
+function searchBill() {
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"searchBill",
+      member:search.value
+    })
+  }).then(r=>r.json()).then(d=>{
+    console.log(d);
+    alert("Found "+d.length+" bills");
+  });
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+<script>
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.getActive();
+
+  if (data.action === "login") {
+    const sh = ss.getSheetByName("Users");
+    const users = sh.getDataRange().getValues();
+    const ok = users.some(r =>
+      r[0] === data.user && r[1] === data.pass
+    );
+    return output(ok ? "success" : "fail");
+  }
+
+  if (data.action === "saveBill") {
+    const billSh = ss.getSheetByName("Bills");
+    const itemSh = ss.getSheetByName("BillItems");
+
+    const billNo = "BILL-" + (billSh.getLastRow());
+    billSh.appendRow([
+      billNo,
+      new Date(),
+      data.member,
+      data.subtotal,
+      data.gst,
+      data.total
+    ]);
+
+    data.items.forEach(i => {
+      itemSh.appendRow([
+        billNo, i.desc, i.qty, i.rate, i.total
+      ]);
+    });
+
+    return output(billNo);
+  }
+
+  if (data.action === "searchBill") {
+    const sh = ss.getSheetByName("Bills");
+    const bills = sh.getDataRange().getValues();
+    const result = bills.filter(r => r[2] == data.member);
+    return json(result);
+  }
+}
+
+function doGet() {
+  const sh = SpreadsheetApp.getActive()
+    .getSheetByName("Bills");
+  const data = sh.getDataRange().getValues();
+  data.shift();
+  return json(data);
+}
+
+function output(msg) {
+  return ContentService.createTextOutput(msg);
+}
+function json(d) {
+  return ContentService.createTextOutput(
+    JSON.stringify(d)
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+</script>
+
+Bills:
+BillNo | Date | MemberID | SubTotal | GST | GrandTotal
+
+BillItems:
+BillNo | Description | Qty | Rate | Total
+
+Users:
+Username | Password
+admin    | 1234
+
+
