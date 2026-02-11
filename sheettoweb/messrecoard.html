@@ -19,7 +19,11 @@
   <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
 
-<input id="member" placeholder="Member ID">
+<select id="member" onchange="toggleCustomMember(this.value)">
+  <option value="">-- Select Member --</option>
+</select>
+<input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
+
 <button onclick="addRow()">+ Add Row</button>
 
 <table id="bill">
@@ -116,16 +120,26 @@ function saveBill() {
     alert("At least one item required");
     return;
   }
+const selectedMember = document.getElementById("member").value;
+const memberName = selectedMember === "guest" 
+                   ? document.getElementById("customMember").value 
+                   : selectedMember;
 
-  const payload = {
-    action: editingBillNo ? "updateBill" : "saveBill",
-    billNo: editingBillNo || "",
-    member: member.value,
-    subtotal: document.getElementById("sub").innerText,
-    gst: document.getElementById("gst").innerText,
-    total: document.getElementById("gt").innerText,
-    items: items
-  };
+if(!memberName){
+  alert("Enter member or customer name");
+  return;
+}
+
+const payload = {
+  action: editingBillNo ? "updateBill" : "saveBill",
+  billNo: editingBillNo || "",
+  member: memberName,
+  subtotal: document.getElementById("sub").innerText,
+  gst: document.getElementById("gst").innerText,
+  total: document.getElementById("gt").innerText,
+  items: items
+};
+
 
   fetch(URL, {
     method: "POST",
@@ -257,7 +271,39 @@ function searchBill() {
   document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
 }
+  
+function loadMembers() {
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "getMembers" })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const sel = document.getElementById("member");
+    sel.innerHTML = `<option value="">-- Select Member --</option>`; // reset
+    data.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.MemberID;
+      opt.text = `${m.MemberID} - ${m.Name || ''}`;
+      sel.appendChild(opt);
+    });
+    // Add guest option
+    const guest = document.createElement("option");
+    guest.value = "guest";
+    guest.text = "Other / Guest Customer";
+    sel.appendChild(guest);
+  });
+}
 
+function toggleCustomMember(val) {
+  const input = document.getElementById("customMember");
+  if(val === "guest") {
+    input.style.display = "inline-block";
+  } else {
+    input.style.display = "none";
+    input.value = "";
+  }
+}
 
 </script>
 
