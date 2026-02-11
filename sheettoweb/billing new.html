@@ -13,7 +13,11 @@
 </style>
 </head>
 <body onload="init()">
-
+<div class="tab-buttons">
+  <button onclick="showTab('billing')">🧾 Billing</button>
+  <button onclick="showTab('list')">📜 Bills List</button>
+</div>
+  <div id="billing" class="tab active">
 <h3>🧾 Select Member to Start Billing</h3>
 <select id="member" onchange="onMemberSelect()"></select>
 
@@ -41,6 +45,7 @@ Grand Total: <span id="gt">0</span>
 <button onclick="saveBill()">💾 Save Bill</button>
 <button onclick="window.print()">🖨️ Print</button>
 </div>
+    </div>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbyxZSIZk5x-o_wUnwJ5i9WA22DSM1odnwwOKzKpDIruavs3V9xc9AwKUpf93ZtfWpNU/exec";
