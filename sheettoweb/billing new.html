@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Billing System</title>
+<!-- Tom Select Library -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
 <style>
 body { font-family: Arial; }
@@ -54,28 +57,8 @@ input[type=number] { width:80px; }
 <br><br>
 
 <!-- SEARCHABLE DROPDOWN -->
-<div style="position:relative; width:300px;">
-
-  <div style="display:flex;">
-    <input type="text" id="memberInput"
-           placeholder="Select or type member..."
-           oninput="filterMembers()"
-           onfocus="showDropdown()"
-           style="flex:1;">
-    <button type="button" onclick="toggleDropdown()">▼</button>
-  </div>
-
-  <div id="memberDropdown" class="dropdown-box"></div>
-
-  <input type="hidden" id="memberID">
-
-  <input type="text" id="customMember"
-         placeholder="Enter Guest Name"
-         style="display:none; margin-top:5px; width:100%;">
-</div>
-
-<br>
-
+<label>Member:</label>
+<select id="member"></select>
 <button onclick="addRow()">+ Add Row</button>
 
 <table id="bill">
@@ -126,18 +109,37 @@ function init(){
   loadMembers();
   newBillNo();
 }
+// Initialize Tom Select
+const memberSelect = new TomSelect("#member", {
+    valueField: "MemberID",
+    labelField: "Name",
+    searchField: ["MemberID", "Name"],
+    options: [],
+    create: false,
+    placeholder: "Select or type member...",
+});
+// Load members from Google Sheet
+function loadMembers() {
+    fetch(URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "getMembers" })
+    })
+    .then(r => r.json())
+    .then(data => {
+        memberSelect.clearOptions();
+        memberSelect.addOptions(data); // add members
+        // Optional: add guest option
+        memberSelect.addOption({ MemberID: "guest", Name: "Other / Guest Customer" });
+    });
+}
 
-/* ================= LOAD MEMBERS ================= */
-function loadMembers(){
-  fetch(URL,{
-    method:"POST",
-    body:JSON.stringify({action:"getMembers"})
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    members = data || [];
-    members.push({MemberID:"guest", Name:"Other / Guest Customer"});
-  });
+// Call on page load
+loadMembers();
+
+// Example: get selected member
+function getSelectedMember() {
+    const selectedID = memberSelect.getValue();
+    console.log("Selected MemberID:", selectedID);
 }
 
 /* ================= DROPDOWN ================= */
