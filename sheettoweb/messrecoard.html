@@ -121,24 +121,30 @@ function saveBill() {
     return;
   }
 const selectedMember = document.getElementById("member").value;
-const memberName = selectedMember === "guest" 
-                   ? document.getElementById("customMember").value 
-                   : selectedMember;
+const isGuest = selectedMember === "guest";
+  const memberName = isGuest 
+                     ? document.getElementById("customMember").value 
+                     : selectedMember;
 
 if(!memberName){
   alert("Enter member or customer name");
   return;
 }
+  
+  const txnPrefix = isGuest ? "CUSTXT" : "TXN";
+  const txnNo = Math.floor(Math.random() * 90000) + 10000; 
+  const transactionID = txnPrefix + txnNo;
 
-const payload = {
-  action: editingBillNo ? "updateBill" : "saveBill",
-  billNo: editingBillNo || "",
-  member: memberName,
-  subtotal: document.getElementById("sub").innerText,
-  gst: document.getElementById("gst").innerText,
-  total: document.getElementById("gt").innerText,
-  items: items
-};
+ const payload = {
+    action: editingBillNo ? "updateBill" : "saveBill",
+    billNo: editingBillNo || "",
+    member: memberName,
+    transactionID: transactionID,   // ✅ Add transaction ID
+    subtotal: document.getElementById("sub").innerText,
+    gst: document.getElementById("gst").innerText,
+    total: document.getElementById("gt").innerText,
+    items: items
+  };
 
 
   fetch(URL, {
@@ -147,8 +153,9 @@ const payload = {
   })
   .then(res => res.json())
   .then(res => {
-    alert(editingBillNo ? "✅ Bill Updated" : "✅ Bill Saved");
-
+     alert(editingBillNo 
+          ? `✅ Bill Updated` 
+          : `✅ Bill Saved (Txn: ${transactionID})`);  // show txn ID
     // reset
     editingBillNo = null;
     showTab('list');  // Save पछि list मा जान्छ
@@ -163,6 +170,7 @@ const payload = {
       </tr>`;
     sn = 0;
     member.value = "";
+    document.getElementById("customMember").value = "";
     document.getElementById("sub").innerText = 0;
     document.getElementById("gst").innerText = 0;
     document.getElementById("gt").innerText = 0;
