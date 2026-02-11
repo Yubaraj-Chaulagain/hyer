@@ -26,51 +26,7 @@
 <select id="member" onchange="toggleCustomMember(this.value)">
   <option value="">-- Select Member --</option>
 </select>
- <label>Member / Customer: </label>
-<input type="text" id="memberSearch" placeholder="Type to search member">
-<select id="memberDropdown" style="display:none;"></select>
-  <script>
- let members = [];
-
-function loadMembers() {
-  fetch(URL, {method:"POST", body: JSON.stringify({action:"getMembers"})})
-    .then(r=>r.json())
-    .then(data=>{
-      members = data; // save for searching
-      const sel = document.getElementById("memberDropdown");
-      sel.innerHTML = `<option value="">-- Select Member --</option>`;
-      members.forEach(m=>{
-        const opt = document.createElement("option");
-        opt.value = m.MemberID;
-        opt.text = `${m.MemberID} - ${m.Name}`;
-        sel.appendChild(opt);
-      });
-    });
-}
-
-// search & filter
-document.getElementById("memberSearch").addEventListener("input", function(){
-  const val = this.value.toLowerCase();
-  const sel = document.getElementById("memberDropdown");
-  sel.innerHTML = `<option value="">-- Select Member --</option>`;
-  members.filter(m => (m.MemberID+m.Name).toLowerCase().includes(val))
-         .forEach(m => {
-           const opt = document.createElement("option");
-           opt.value = m.MemberID;
-           opt.text = `${m.MemberID} - ${m.Name}`;
-           sel.appendChild(opt);
-         });
-});
-
-// select member on dropdown change
-document.getElementById("memberDropdown").addEventListener("change", function(){
-  const selected = this.value;
-  document.getElementById("memberSearch").value = selected; // update input
-});
-
-</script>
- 
-<input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
+ <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
   <label>Member / Customer: </label>
 <input type="text" id="memberSearch" placeholder="Type to search member">
 <select id="memberDropdown" style="display:none;"></select>
@@ -276,6 +232,24 @@ function showTab(tab){
 }
 
 // ------------------ LOAD MEMBERS ----------------
+function loadMembers() {
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
+  .then(r=>r.json())
+  .then(data=>{
+    const sel = document.getElementById("member");
+    sel.innerHTML = `<option value="">-- Select Member --</option>`;
+    data.forEach(m=>{
+      const opt = document.createElement("option");
+      opt.value = m.MemberID;
+      opt.text = `${m.MemberID} - ${m.Name || ''}`;
+      sel.appendChild(opt);
+    });
+    const guest = document.createElement("option");
+    guest.value="guest";
+    guest.text="Other / Guest Customer";
+    sel.appendChild(guest);
+  });
+}
 
 // ------------------ CUSTOM MEMBER ----------------
 function toggleCustomMember(val){
