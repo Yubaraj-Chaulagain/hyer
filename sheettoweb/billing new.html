@@ -6,8 +6,8 @@
 <style>
   .tab { display:none; }
   .tab.active { display:block; }
-  table { width:100%; border-collapse:collapse }
-  td,th { border:1px solid #aaa; padding:5px }
+  table { width:100%; border-collapse:collapse; }
+  td, th { border:1px solid #aaa; padding:5px; }
   .tab-buttons button { margin-right:5px; padding:5px 10px; }
   input[type=number] { width:80px; }
   #memberDropdown {
@@ -20,6 +20,7 @@
     z-index:10;
   }
   #memberDropdown div:hover, #memberDropdown .selected { background:#def; }
+  #billing { position: relative; }
 </style>
 </head>
 <body onload="init()">
@@ -39,7 +40,6 @@
 <input type="hidden" id="memberID">
 <input type="text" id="memberName" placeholder="Selected Member" readonly>
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
-
 
 <button onclick="addRow()">+ Add Row</button>
 
@@ -95,7 +95,7 @@ function loadMembers() {
   fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
   .then(r=>r.json())
   .then(data=>{
-    members = data;
+    members = data || [];
     members.push({MemberID:"guest", Name:"Other / Guest Customer"});
   });
 }
@@ -126,11 +126,13 @@ function filterMembers() {
   dropdown.style.display = filteredMembers.length ? "block" : "none";
 }
 
+// ---------------- SELECT MEMBER ----------------
 function selectMember(index){
   const m = filteredMembers[index];
-  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name || ''}`;
-  document.getElementById("memberID").value = m.MemberID;       // hidden ID
-  document.getElementById("memberName").value = m.Name || '';   // readonly Name input
+  if(!m) return;
+  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name||''}`;
+  document.getElementById("memberID").value = m.MemberID;
+  document.getElementById("memberName").value = m.Name||'';
   toggleCustomMember(m.MemberID);
   document.getElementById("memberDropdown").style.display="none";
 }
@@ -143,30 +145,20 @@ function memberKeyNav(e){
 
   if(e.key === "ArrowDown") {
     e.preventDefault();
-    if(selectedIndex<items.length-1){ selectedIndex++; }
+    if(selectedIndex<items.length-1) selectedIndex++;
     updateHighlight(items);
   } else if(e.key==="ArrowUp") {
     e.preventDefault();
-    if(selectedIndex>0){ selectedIndex--; }
+    if(selectedIndex>0) selectedIndex--;
     updateHighlight(items);
   } else if(e.key==="Enter") {
     e.preventDefault();
-    if(selectedIndex>=0){ selectMember(selectedIndex); }
+    if(selectedIndex>=0) selectMember(selectedIndex);
   }
 }
 
 function updateHighlight(items){
-  items.forEach((it,i)=>{
-    it.classList.toggle("selected", i===selectedIndex);
-  });
-}
-
-function selectMember(index){
-  const m = filteredMembers[index];
-  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name||''}`;
-  document.getElementById("member").value = m.MemberID;
-  toggleCustomMember(m.MemberID);
-  document.getElementById("memberDropdown").style.display="none";
+  items.forEach((it,i)=>{ it.classList.toggle("selected", i===selectedIndex); });
 }
 
 // ---------------- SHOW/HIDE CUSTOM MEMBER ----------------
@@ -217,11 +209,11 @@ function saveBill() {
   });
   if(items.length===0){ alert("At least one item required"); return; }
 
-  const selectedMember = document.getElementById("member").value || "guest";
-  const memberName = selectedMember==="guest"? document.getElementById("customMember").value : selectedMember;
+  const selectedMemberID = document.getElementById("memberID").value || "guest";
+  const memberName = selectedMemberID==="guest"? document.getElementById("customMember").value : document.getElementById("memberName").value;
   if(!memberName){ alert("Enter member or customer name"); return; }
 
-  const billNo = editingBillNo || generateBillNo(selectedMember);
+  const billNo = editingBillNo || generateBillNo(selectedMemberID);
   document.getElementById("billNoDisplay").innerText = billNo;
 
   const gstPercent = parseFloat(document.getElementById("gstManual").value||0);
@@ -229,6 +221,7 @@ function saveBill() {
   const payload = {
     action: editingBillNo ? "updateBill" : "saveBill",
     billNo: billNo,
+    memberID: selectedMemberID,
     member: memberName,
     subtotal: document.getElementById("sub").innerText,
     gst: gstPercent,
@@ -253,7 +246,8 @@ function resetBillForm(){
   document.getElementById("bill").innerHTML=`<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
   sn=0;
   document.getElementById("memberSearch").value="";
-  document.getElementById("member").value="";
+  document.getElementById("memberID").value="";
+  document.getElementById("memberName").value="";
   document.getElementById("customMember").value="";
   document.getElementById("sub").innerText=0;
   document.getElementById("gstManual").value=13;
@@ -271,7 +265,7 @@ function showTab(tab){ document.querySelectorAll('.tab').forEach(d=>d.classList.
 // ---------------- BILL LIST ----------------
 function searchBill(){
   const q=document.getElementById("search").value.trim();
-  fetch(URL,{method:"POST",body:JSON.stringify({action:"searchBill", member:q})})
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"searchBill", query:q})})
   .then(r=>r.json())
   .then(list=>{
     const t=document.getElementById("billList");
@@ -294,12 +288,21 @@ function editBill(billNo){
     if(!d || !d.items){ alert("Bill load failed"); return; }
     showTab('billing');
     document.getElementById("billNoDisplay").innerText=d.BillNo;
-    document.getElementById("memberSearch").value=d.member;
-    document.getElementById("member").value=d.member;
-    toggleCustomMember(d.member);
+    document.getElementById("memberSearch").value = `${d.memberID} - ${d.member}`;
+    document.getElementById("memberID").value = d.memberID;
+    document.getElementById("memberName").value = d.member;
+    toggleCustomMember(d.memberID);
     document.getElementById("bill").innerHTML=`<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
     sn=0;
-    d.items.forEach(it=>{ addRow(); const rows=document.querySelectorAll("#bill tr"); const r=rows[rows.length-1]; r.cells[1].children[0].value=it.desc; r.cells[2].children[0].value=it.qty; r.cells[3].children[0].value=it.rate; r.cells[4].innerText=it.total; });
+    d.items.forEach(it=>{
+      addRow();
+      const rows=document.querySelectorAll("#bill tr");
+      const r=rows[rows.length-1];
+      r.cells[1].children[0].value=it.desc;
+      r.cells[2].children[0].value=it.qty;
+      r.cells[3].children[0].value=it.rate;
+      r.cells[4].innerText=it.total;
+    });
     document.getElementById("gstManual").value=d.gst || 13;
     calc();
   });
