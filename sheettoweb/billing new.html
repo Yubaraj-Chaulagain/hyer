@@ -36,8 +36,10 @@
 <input type="text" id="memberSearch" placeholder="Select Member or type..." 
        oninput="filterMembers()" onkeydown="memberKeyNav(event)">
 <div id="memberDropdown"></div>
-<input type="hidden" id="member">
+<input type="hidden" id="memberID">
+<input type="text" id="memberName" placeholder="Selected Member" readonly>
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
+
 
 <button onclick="addRow()">+ Add Row</button>
 
@@ -75,7 +77,7 @@ Grand Total: <span id="gt">0</span>
 </div>
 
 <script>
-const URL = "YOUR_GOOGLE_SCRIPT_URL";
+const URL = "https://script.google.com/macros/s/AKfycbyxZSIZk5x-o_wUnwJ5i9WA22DSM1odnwwOKzKpDIruavs3V9xc9AwKUpf93ZtfWpNU/exec";
 let sn = 0;
 let editingBillNo = null;
 let members = [];
@@ -115,13 +117,22 @@ function filterMembers() {
     const div = document.createElement("div");
     div.style.padding="5px";
     div.style.cursor="pointer";
-    div.innerText = `${m.MemberID} - ${m.Name||''}`;
+    div.innerText = `${m.MemberID} - ${m.Name || ''}`;
     div.dataset.index = i;
     div.onclick = ()=>selectMember(i);
     dropdown.appendChild(div);
   });
 
   dropdown.style.display = filteredMembers.length ? "block" : "none";
+}
+
+function selectMember(index){
+  const m = filteredMembers[index];
+  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name || ''}`;
+  document.getElementById("memberID").value = m.MemberID;       // hidden ID
+  document.getElementById("memberName").value = m.Name || '';   // readonly Name input
+  toggleCustomMember(m.MemberID);
+  document.getElementById("memberDropdown").style.display="none";
 }
 
 // ---------------- KEYBOARD NAV ----------------
