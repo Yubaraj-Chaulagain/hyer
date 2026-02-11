@@ -6,60 +6,58 @@
 <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 <style>
-  #billingSystem { display:none; } /* Initially hidden */
+  #billingSystem { display:none; margin-top:20px; }
+  .tab { display:none; }
+  .tab.active { display:block; }
   table { width:100%; border-collapse:collapse; margin-top:10px; }
   td,th { border:1px solid #aaa; padding:5px; }
   input[type=number] { width:80px; }
 </style>
 </head>
 <body onload="init()">
-<div class="tab-buttons">
-  <button onclick="showTab('billing')">🧾 Billing</button>
-  <button onclick="showTab('list')">📜 Bills List</button>
-</div>
-  <div id="billing" class="tab active"><div>
+
 <h3>🧾 Select Member to Start Billing</h3>
 <select id="member" onchange="onMemberSelect()"></select>
-  </div>
-<div id="billingSystem">
-<h3>🧾 Billing System</h3>
-<label>Bill No: <span id="billNoDisplay"></span></label><br><br>
-
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
 
-<button onclick="addRow()">+ Add Row</button>
+<!-- Billing Section -->
+<div id="billingSystem">
+  <h3>🧾 Billing System</h3>
+  <label>Bill No: <span id="billNoDisplay"></span></label><br><br>
 
-<table id="bill">
-<tr>
-<th>S.N</th><th>Description</th><th>Qty</th>
-<th>Rate</th><th>Total</th>
-</tr>
-</table>
+  <button onclick="addRow()">+ Add Row</button>
 
-<h4>
-SubTotal: <span id="sub">0</span><br>
-GST (%): <input type="number" id="gstManual" value="13" style="width:50px" oninput="calc()"><br>
-Grand Total: <span id="gt">0</span>
-</h4>
+  <table id="bill">
+    <tr>
+      <th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+    </tr>
+  </table>
 
-<button onclick="saveBill()">💾 Save Bill</button>
-<button onclick="window.print()">🖨️ Print</button>
+  <h4>
+    SubTotal: <span id="sub">0</span><br>
+    GST (%): <input type="number" id="gstManual" value="13" style="width:50px" oninput="calc()"><br>
+    Grand Total: <span id="gt">0</span>
+  </h4>
+
+  <button onclick="saveBill()">💾 Save Bill</button>
+  <button onclick="window.print()">🖨️ Print</button>
 </div>
-    </div>
-  <div id="list" class="tab">
-<hr>
-<input id="search" placeholder="Search MemberID or Bill No">
-<button onclick="searchBill()">Search</button>
 
-<h3>📜 Bills List</h3>
-<table id="billList">
-<tr>
-  <th>Bill No</th>
-  <th>Member</th>
-  <th>Total</th>
-  <th>Action</th>
-</tr>
-</table>
+<!-- Bills List Tab -->
+<div id="list" class="tab" style="margin-top:30px;">
+  <hr>
+  <input id="search" placeholder="Search MemberID or Bill No">
+  <button onclick="searchBill()">Search</button>
+
+  <h3>📜 Bills List</h3>
+  <table id="billList">
+    <tr>
+      <th>Bill No</th>
+      <th>Member</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>
+  </table>
 </div>
 
 <script>
@@ -67,13 +65,7 @@ const URL = "https://script.google.com/macros/s/AKfycbyxZSIZk5x-o_wUnwJ5i9WA22DS
 let sn = 0;
 let editingBillNo = null;
 
-// ------------------ INIT -------------------
-function init() {
-    loadMembers();
-    newBillNo();
-}
-
-// ------------------ LOAD MEMBERS ----------------
+// Initialize Tom Select dropdown
 const memberSelect = new TomSelect("#member", {
     valueField: "MemberID",
     labelField: "Name",
@@ -83,11 +75,15 @@ const memberSelect = new TomSelect("#member", {
     placeholder: "Select or type member...",
 });
 
+// ------------------ INIT -------------------
+function init() {
+    loadMembers();
+    newBillNo();
+}
+
+// ------------------ LOAD MEMBERS ----------------
 function loadMembers() {
-    fetch(URL, {
-        method: "POST",
-        body: JSON.stringify({ action: "getMembers" })
-    })
+    fetch(URL, { method:"POST", body:JSON.stringify({ action:"getMembers" }) })
     .then(r => r.json())
     .then(data => {
         memberSelect.clearOptions();
@@ -101,17 +97,15 @@ function onMemberSelect() {
     const selectedID = memberSelect.getValue();
     if(!selectedID) {
         document.getElementById("billingSystem").style.display = "none";
+        document.getElementById("customMember").style.display = "none";
     } else {
         document.getElementById("billingSystem").style.display = "block";
-        toggleCustomMember(selectedID);
+        if(selectedID === "guest") {
+            document.getElementById("customMember").style.display = "inline-block";
+        } else {
+            document.getElementById("customMember").style.display = "none";
+        }
     }
-}
-
-// ------------------ TOGGLE CUSTOM MEMBER ----------------
-function toggleCustomMember(val){
-    const input = document.getElementById("customMember");
-    if(val==="guest"){ input.style.display="inline-block"; }
-    else{ input.style.display="none"; input.value=""; }
 }
 
 // ------------------ ADD ROW ----------------
@@ -140,8 +134,7 @@ function calc() {
   });
   document.getElementById("sub").innerText = sub.toFixed(2);
   const gstPercent = parseFloat(document.getElementById("gstManual").value) || 0;
-  const gstAmount = sub * gstPercent / 100;
-  document.getElementById("gt").innerText = (sub + gstAmount).toFixed(2);
+  document.getElementById("gt").innerText = (sub + sub*gstPercent/100).toFixed(2);
 }
 
 // ------------------ SAVE BILL ----------------
@@ -201,6 +194,7 @@ function resetBillForm(){
   document.getElementById("billingSystem").style.display = "none";
 }
 
+// ------------------ BILL NO ----------------
 function generateBillNo(memberId){
   const ts = Date.now();
   return memberId==="guest" ? `CUSTXT${ts}` : `TXN${ts}`;
@@ -209,7 +203,7 @@ function generateBillNo(memberId){
 function newBillNo(){
   document.getElementById("billNoDisplay").innerText = generateBillNo('');
 }
-  
+
 // ------------------ SEARCH ----------------
 function searchBill() {
   const q = document.getElementById("search").value.trim();
@@ -232,40 +226,6 @@ function searchBill() {
                      </td>`;
     });
   });
-}
-
-// ------------------ EDIT BILL ----------------
-function editBill(billNo){
-  editingBillNo = billNo;
-  fetch(URL,{method:"POST",body:JSON.stringify({action:"getBill", billNo:billNo})})
-  .then(r=>r.json())
-  .then(d=>{
-    if(!d || !d.items){ alert("Bill load failed"); return; }
-    showTab('billing');
-    document.getElementById("billNoDisplay").innerText = d.BillNo;
-    member.value = d.member;
-    document.getElementById("bill").innerHTML = `<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
-    sn=0;
-    d.items.forEach(it=>{
-      addRow();
-      const rows = document.querySelectorAll("#bill tr");
-      const r = rows[rows.length-1];
-      r.cells[1].children[0].value = it.desc;
-      r.cells[2].children[0].value = it.qty;
-      r.cells[3].children[0].value = it.rate;
-      r.cells[4].innerText = it.total;
-    });
-    document.getElementById("gstManual").value = d.gst || 13;
-    calc();
-  });
-}
-
-// ------------------ DELETE BILL ----------------
-function deleteBill(billNo){
-  if(!confirm("Delete this bill?")) return;
-  fetch(URL,{method:"POST",body:JSON.stringify({action:"deleteBill", billNo:billNo})})
-  .then(r=>r.json())
-  .then(()=>{ alert("Bill deleted"); searchBill(); });
 }
 
 // ------------------ SHOW TAB ----------------
