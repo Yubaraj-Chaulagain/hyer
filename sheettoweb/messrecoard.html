@@ -9,7 +9,6 @@ td,th { border:1px solid #aaa; padding:5px }
 </style>
 </head>
 <body>
-<div id="Messrecoard">
   <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
 
@@ -31,7 +30,8 @@ Grand Total: <span id="gt">0</span>
 
 <button onclick="saveBill()">💾 Save Bill</button>
 <button onclick="window.print()">🖨️ Print</button>
-
+  </div>
+<div id="list" class="tab">
 <hr>
 <input id="search" placeholder="Search MemberID">
 <button onclick="searchBill()">Search</button>
