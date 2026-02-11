@@ -18,7 +18,7 @@
 <body onload="loadMembers()">
   <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
-
+<label>Bill No: <span id="billNoDisplay"></span></label><br><br>   
 <input type="text" id="member" list="memberList" placeholder="Select Member or type...">
 <datalist id="memberList"></datalist>
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
@@ -95,242 +95,161 @@ function calc() {
 
   
 function saveBill() {
-
-  if (!member.value) {
-    alert("Member ID required");
-    return;
-  }
-
   let items = [];
-
-  document.querySelectorAll("#bill tr").forEach((r, i) => {
-    if (i === 0) return;
-
+  document.querySelectorAll("#bill tr").forEach((r,i)=>{
+    if(i==0) return;
     const desc = r.cells[1].children[0].value;
-    const qty  = r.cells[2].children[0].value;
+    const qty = r.cells[2].children[0].value;
     const rate = r.cells[3].children[0].value;
     const total = r.cells[4].innerText;
-
-    if (desc && qty && rate) {
-      items.push({
-        desc: desc,
-        qty: qty,
-        rate: rate,
-        total: total
-      });
-    }
+    if(desc && qty && rate) items.push({desc, qty, rate, total});
   });
 
-  if (items.length === 0) {
-    alert("At least one item required");
-    return;
-  }
-const selectedMember = document.getElementById("member").value;
-const isGuest = selectedMember === "guest";
-  const memberName = isGuest 
-                     ? document.getElementById("customMember").value 
-                     : selectedMember;
+  if(items.length===0) { alert("At least one item required"); return; }
 
-if(!memberName){
-  alert("Enter member or customer name");
-  return;
-}
-  
-  const txnPrefix = isGuest ? "CUSTXT" : "TXN";
-  const txnNo = Math.floor(Math.random() * 90000) + 10000; 
-  const transactionID = txnPrefix + txnNo;
+  const selectedMember = document.getElementById("member").value;
+  const memberName = selectedMember === "guest" ? document.getElementById("customMember").value : selectedMember;
+  if(!memberName){ alert("Enter member or customer name"); return; }
 
- const payload = {
+  // bill no auto generate if new
+  const billNo = editingBillNo || generateBillNo(selectedMember);
+  document.getElementById("billNoDisplay").innerText = billNo;
+
+  const gstPercent = parseFloat(document.getElementById("gstManual").value||0);
+
+  const payload = {
     action: editingBillNo ? "updateBill" : "saveBill",
-    billNo: editingBillNo || "",
+    billNo: billNo,
     member: memberName,
     subtotal: document.getElementById("sub").innerText,
-    gst: document.getElementById("gstManual").value, // user input GST number
+    gst: gstPercent,
     total: document.getElementById("gt").innerText,
     items: items
-};
-
-
+  };
 
   fetch(URL, {
-    method: "POST",
+    method:"POST",
     body: JSON.stringify(payload)
   })
-  .then(res => res.json())
-  .then(res => {
-     alert(editingBillNo 
-          ? `✅ Bill Updated` 
-          : `✅ Bill Saved (Txn: ${transactionID})`);  // show txn ID
-    // reset
+  .then(r=>r.json())
+  .then(res=>{
+    alert(editingBillNo ? "✅ Bill Updated" : `✅ Bill Saved - ${billNo}`);
     editingBillNo = null;
-    showTab('list');  // Save पछि list मा जान्छ
+    showTab('list');
     searchBill();
-    document.getElementById("bill").innerHTML = `
-      <tr>
-        <th>S.N</th>
-        <th>Description</th>
-        <th>Qty</th>
-        <th>Rate</th>
-        <th>Total</th>
-      </tr>`;
-    sn = 0;
-    member.value = "";
-    document.getElementById("customMember").value = "";
-    document.getElementById("sub").innerText = 0;
-    document.getElementById("gst").innerText = 0;
-    document.getElementById("gt").innerText = 0;
-
-    searchBill(); // refresh list
+    resetBillForm();
   })
-  .catch(err => {
-    alert("❌ Save failed");
-    console.error(err);
-  });
+  .catch(err=>{ alert("❌ Save failed"); console.error(err); });
 }
 
+function resetBillForm() {
+  document.getElementById("bill").innerHTML = `
+    <tr>
+      <th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+    </tr>`;
+  sn = 0;
+  member.value = "";
+  document.getElementById("customMember").value = "";
+  document.getElementById("sub").innerText = 0;
+  document.getElementById("gstManual").value = 13;
+  document.getElementById("gt").innerText = 0;
+}
 function searchBill() {
+  const q = document.getElementById("search").value.trim();
   fetch(URL,{
     method:"POST",
-    body:JSON.stringify({
-      action:"searchBill",
-      member:search.value
-    })
+    body:JSON.stringify({action:"searchBill", query:q})
   })
   .then(r=>r.json())
   .then(list=>{
     const t = document.getElementById("billList");
-    t.innerHTML = `
-      <tr>
-        <th>Bill No</th>
-        <th>Member</th>
-        <th>Total</th>
-        <th>Action</th>
-      </tr>`;
-
+    t.innerHTML = `<tr><th>Bill No</th><th>Member</th><th>Total</th><th>Action</th></tr>`;
     list.forEach(b=>{
       const r = t.insertRow();
-      r.innerHTML = `
-        <td>${b.BillNo}</td>
-        <td>${b.MemberID}</td>
-        <td>${b.GrandTotal}</td>
-
-        <td>
-          <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
-          <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
-        </td>`;
+      r.innerHTML = `<td>${b.BillNo}</td>
+                     <td>${b.MemberID}</td>
+                     <td>${b.GrandTotal}</td>
+                     <td>
+                       <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
+                       <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
+                     </td>`;
     });
   });
 }
-
- function editBill(billNo){
+function editBill(billNo){
   editingBillNo = billNo;
-
-  fetch(URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"getBill",
-      billNo: billNo
-    })
-  })
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getBill", billNo:billNo})})
   .then(r=>r.json())
   .then(d=>{
-    if(!d || !d.items){
-      alert("Bill load failed");
-      return;
-    }
-   showTab('billing');
+    if(!d || !d.items){ alert("Bill load failed"); return; }
+    showTab('billing');
+    document.getElementById("billNoDisplay").innerText = d.BillNo;
     member.value = d.member;
-
-    document.getElementById("bill").innerHTML = `
-      <tr>
-        <th>S.N</th><th>Description</th>
-        <th>Qty</th><th>Rate</th><th>Total</th>
-      </tr>`;
-    sn = 0;
-
+    document.getElementById("bill").innerHTML = `<tr>
+      <th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+    </tr>`;
+    sn=0;
     d.items.forEach(it=>{
       addRow();
-
       const rows = document.querySelectorAll("#bill tr");
-      const r = rows[rows.length - 1];
-
+      const r = rows[rows.length-1];
       r.cells[1].children[0].value = it.desc;
       r.cells[2].children[0].value = it.qty;
       r.cells[3].children[0].value = it.rate;
       r.cells[4].innerText = it.total;
     });
-
+    document.getElementById("gstManual").value = d.gst || 13;
     calc();
   });
 }
 
-  function deleteBill(billNo){
+// --- DELETE BILL ---
+function deleteBill(billNo){
   if(!confirm("Delete this bill?")) return;
-
-  fetch(URL,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"deleteBill",
-      billNo:billNo
-    })
-  })
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"deleteBill", billNo:billNo})})
   .then(r=>r.json())
-  .then(()=>{
-    alert("Bill deleted");
-    searchBill();
-  });
+  .then(()=>{ alert("Bill deleted"); searchBill(); });
 }
-  function showTab(tab){
+function showTab(tab){
   document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active'));
   document.getElementById(tab).classList.add('active');
 }
-  
+
+// --- LOAD MEMBERS ---
 function loadMembers() {
-  fetch(URL, {
-    method: "POST",
-    body: JSON.stringify({ action: "getMembers" })
-  })
-  .then(r => r.json())
-  .then(data => {
-    const list = document.getElementById("memberList");
-    list.innerHTML = ""; // reset datalist
-
-    data.forEach(m => {
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
+  .then(r=>r.json())
+  .then(data=>{
+    const sel = document.getElementById("member");
+    sel.innerHTML = `<option value="">-- Select Member --</option>`;
+    data.forEach(m=>{
       const opt = document.createElement("option");
-      opt.value = m.MemberID + " - " + (m.Name || '');
-      list.appendChild(opt);
+      opt.value = m.MemberID;
+      opt.text = `${m.MemberID} - ${m.Name || ''}`;
+      sel.appendChild(opt);
     });
-
-    // Add guest option
     const guest = document.createElement("option");
-    guest.value = "Guest / Other Customer";
-    list.appendChild(guest);
+    guest.value="guest";
+    guest.text="Other / Guest Customer";
+    sel.appendChild(guest);
   });
 }
 
-// Guest toggle
-document.getElementById("member").addEventListener("input", function() {
-  const val = this.value;
+// --- SHOW/HIDE CUSTOM MEMBER ---
+function toggleCustomMember(val){
   const input = document.getElementById("customMember");
-  if(val.toLowerCase().includes("guest")) {
-    input.style.display = "inline-block";
-  } else {
-    input.style.display = "none";
-    input.value = "";
-  }
-});
-
-loadMembers();
-
-function toggleCustomMember(val) {
-  const input = document.getElementById("customMember");
-  if(val === "guest") {
-    input.style.display = "inline-block";
-  } else {
-    input.style.display = "none";
-    input.value = "";
-  }
+  if(val==="guest"){ input.style.display="inline-block"; }
+  else{ input.style.display="none"; input.value=""; }
 }
+  
+  function generateBillNo(memberId) {
+  // simple timestamp based bill no
+  const ts = Date.now(); // unique number
+  if(memberId === "guest") return `CUSTXT${ts}`;
+  return `TXN${ts}`;
+}
+
+  loadMembers();
 
 
 </script>
