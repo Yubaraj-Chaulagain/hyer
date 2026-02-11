@@ -35,7 +35,7 @@
 
 <h4>
 SubTotal: <span id="sub">0</span><br>
-GST (13%): <span id="gst">0</span><br>
+GST: <input type="number" id="gstManual" value="13" style="width:50px" oninput="calc()"><br>
 Grand Total: <span id="gt">0</span>
 </h4>
 
@@ -77,17 +77,22 @@ function addRow() {
 function calc() {
   let sub = 0;
   document.querySelectorAll("#bill tr").forEach((r,i)=>{
-    if(i==0) return;
-    const q = r.cells[2].children[0].value||0;
-    const rate = r.cells[3].children[0].value||0;
-    const t = q*rate;
-    r.cells[4].innerText = t;
+    if(i==0) return; // skip header
+    const q = parseFloat(r.cells[2].children[0].value) || 0;
+    const rate = parseFloat(r.cells[3].children[0].value) || 0;
+    const t = q * rate;
+    r.cells[4].innerText = t.toFixed(2);
     sub += t;
   });
-  document.getElementById("sub").innerText = sub;
-  document.getElementById("gst").innerText = sub*0.13;
-  document.getElementById("gt").innerText = sub*1.13;
+
+  document.getElementById("sub").innerText = sub.toFixed(2);
+
+  const gstPercent = parseFloat(document.getElementById("gstManual").value) || 0;
+  const gstAmount = sub * gstPercent / 100;
+
+  document.getElementById("gt").innerText = (sub + gstAmount).toFixed(2);
 }
+
   
 function saveBill() {
 
@@ -139,12 +144,12 @@ if(!memberName){
     action: editingBillNo ? "updateBill" : "saveBill",
     billNo: editingBillNo || "",
     member: memberName,
-    transactionID: transactionID,   // ✅ Add transaction ID
     subtotal: document.getElementById("sub").innerText,
-    gst: document.getElementById("gst").innerText,
+    gst: document.getElementById("gstManual").value, // user input GST number
     total: document.getElementById("gt").innerText,
     items: items
-  };
+};
+
 
 
   fetch(URL, {
