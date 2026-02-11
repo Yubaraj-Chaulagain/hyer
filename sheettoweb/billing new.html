@@ -10,6 +10,16 @@
   td,th { border:1px solid #aaa; padding:5px }
   .tab-buttons button { margin-right:5px; padding:5px 10px; }
   input[type=number] { width:80px; }
+  #memberDropdown {
+    border:1px solid #aaa; 
+    max-height:150px; 
+    overflow-y:auto; 
+    display:none; 
+    position:absolute; 
+    background:#fff; 
+    z-index:10;
+  }
+  #memberDropdown div:hover, #memberDropdown .selected { background:#def; }
 </style>
 </head>
 <body onload="init()">
@@ -23,8 +33,9 @@
 <h3>🧾 Billing System</h3>
 <label>Bill No: <span id="billNoDisplay"></span></label><br><br>
 
-<input type="text" id="memberSearch" placeholder="Select Member or type..." oninput="filterMembers()">
-<div id="memberDropdown" style="border:1px solid #aaa; max-height:150px; overflow-y:auto; display:none; position:absolute; background:#fff; z-index:10;"></div>
+<input type="text" id="memberSearch" placeholder="Select Member or type..." 
+       oninput="filterMembers()" onkeydown="memberKeyNav(event)">
+<div id="memberDropdown"></div>
 <input type="hidden" id="member">
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
 
@@ -64,19 +75,20 @@ Grand Total: <span id="gt">0</span>
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbyxZSIZk5x-o_wUnwJ5i9WA22DSM1odnwwOKzKpDIruavs3V9xc9AwKUpf93ZtfWpNU/exec";
+const URL = "YOUR_GOOGLE_SCRIPT_URL";
 let sn = 0;
 let editingBillNo = null;
-let members = []; // all members
+let members = [];
 let filteredMembers = [];
+let selectedIndex = -1;
 
-// ------------------ INIT -------------------
+// ---------------- INIT ----------------
 function init() {
   loadMembers();
   newBillNo();
 }
 
-// ------------------ SEARCHABLE MEMBER ----------------
+// ---------------- LOAD MEMBERS ----------------
 function loadMembers() {
   fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
   .then(r=>r.json())
@@ -86,42 +98,74 @@ function loadMembers() {
   });
 }
 
+// ---------------- FILTER MEMBERS ----------------
 function filterMembers() {
   const input = document.getElementById("memberSearch");
   const dropdown = document.getElementById("memberDropdown");
   const val = input.value.toLowerCase();
   dropdown.innerHTML = "";
+  selectedIndex = -1;
   if(!val){ dropdown.style.display="none"; return; }
 
   filteredMembers = members.filter(m=>{
     return (m.MemberID.toLowerCase().includes(val) || (m.Name||'').toLowerCase().includes(val));
   });
 
-  filteredMembers.forEach(m=>{
+  filteredMembers.forEach((m,i)=>{
     const div = document.createElement("div");
     div.style.padding="5px";
     div.style.cursor="pointer";
     div.innerText = `${m.MemberID} - ${m.Name||''}`;
-    div.onclick = ()=>{
-      document.getElementById("memberSearch").value = div.innerText;
-      document.getElementById("member").value = m.MemberID;
-      toggleCustomMember(m.MemberID);
-      dropdown.style.display="none";
-    };
+    div.dataset.index = i;
+    div.onclick = ()=>selectMember(i);
     dropdown.appendChild(div);
   });
 
   dropdown.style.display = filteredMembers.length ? "block" : "none";
 }
 
-// ------------------ SHOW/HIDE CUSTOM MEMBER ----------------
+// ---------------- KEYBOARD NAV ----------------
+function memberKeyNav(e){
+  const dropdown = document.getElementById("memberDropdown");
+  const items = dropdown.querySelectorAll("div");
+  if(!items.length) return;
+
+  if(e.key === "ArrowDown") {
+    e.preventDefault();
+    if(selectedIndex<items.length-1){ selectedIndex++; }
+    updateHighlight(items);
+  } else if(e.key==="ArrowUp") {
+    e.preventDefault();
+    if(selectedIndex>0){ selectedIndex--; }
+    updateHighlight(items);
+  } else if(e.key==="Enter") {
+    e.preventDefault();
+    if(selectedIndex>=0){ selectMember(selectedIndex); }
+  }
+}
+
+function updateHighlight(items){
+  items.forEach((it,i)=>{
+    it.classList.toggle("selected", i===selectedIndex);
+  });
+}
+
+function selectMember(index){
+  const m = filteredMembers[index];
+  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name||''}`;
+  document.getElementById("member").value = m.MemberID;
+  toggleCustomMember(m.MemberID);
+  document.getElementById("memberDropdown").style.display="none";
+}
+
+// ---------------- SHOW/HIDE CUSTOM MEMBER ----------------
 function toggleCustomMember(val){
   const input = document.getElementById("customMember");
   if(val==="guest"){ input.style.display="inline-block"; }
   else{ input.style.display="none"; input.value=""; }
 }
 
-// ------------------ BILL ROW & CALC ----------------
+// ---------------- BILL ROW & CALC ----------------
 function addRow() {
   sn++;
   const t = document.getElementById("bill");
@@ -134,30 +178,30 @@ function addRow() {
 }
 
 function calc() {
-  let sub = 0;
+  let sub=0;
   document.querySelectorAll("#bill tr").forEach((r,i)=>{
     if(i==0) return;
-    const q = parseFloat(r.cells[2].children[0].value) || 0;
-    const rate = parseFloat(r.cells[3].children[0].value) || 0;
-    const t = q * rate;
+    const q = parseFloat(r.cells[2].children[0].value)||0;
+    const rate = parseFloat(r.cells[3].children[0].value)||0;
+    const t = q*rate;
     r.cells[4].innerText = t.toFixed(2);
     sub += t;
   });
   document.getElementById("sub").innerText = sub.toFixed(2);
-  const gstPercent = parseFloat(document.getElementById("gstManual").value) || 0;
+  const gstPercent = parseFloat(document.getElementById("gstManual").value)||0;
   const gstAmount = sub * gstPercent / 100;
   document.getElementById("gt").innerText = (sub + gstAmount).toFixed(2);
 }
 
-// ------------------ BILL SAVE ----------------
+// ---------------- BILL SAVE ----------------
 function saveBill() {
   let items = [];
   document.querySelectorAll("#bill tr").forEach((r,i)=>{
     if(i==0) return;
-    const desc = r.cells[1].children[0].value;
-    const qty = r.cells[2].children[0].value;
-    const rate = r.cells[3].children[0].value;
-    const total = r.cells[4].innerText;
+    const desc=r.cells[1].children[0].value;
+    const qty=r.cells[2].children[0].value;
+    const rate=r.cells[3].children[0].value;
+    const total=r.cells[4].innerText;
     if(desc && qty && rate) items.push({desc, qty, rate, total});
   });
   if(items.length===0){ alert("At least one item required"); return; }
@@ -181,7 +225,7 @@ function saveBill() {
     items: items
   };
 
-  fetch(URL,{method:"POST",body: JSON.stringify(payload)})
+  fetch(URL,{method:"POST", body:JSON.stringify(payload)})
   .then(r=>r.json())
   .then(res=>{
     alert(editingBillNo ? "✅ Bill Updated" : `✅ Bill Saved - ${billNo}`);
@@ -193,62 +237,59 @@ function saveBill() {
   .catch(err=>{ alert("❌ Save failed"); console.error(err); });
 }
 
-// ------------------ OTHER FUNCTIONS ----------------
+// ---------------- RESET BILL ----------------
 function resetBillForm(){
-  document.getElementById("bill").innerHTML = `<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
-  sn = 0;
-  document.getElementById("memberSearch").value = "";
-  document.getElementById("member").value = "";
-  document.getElementById("customMember").value = "";
-  document.getElementById("sub").innerText = 0;
-  document.getElementById("gstManual").value = 13;
-  document.getElementById("gt").innerText = 0;
+  document.getElementById("bill").innerHTML=`<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
+  sn=0;
+  document.getElementById("memberSearch").value="";
+  document.getElementById("member").value="";
+  document.getElementById("customMember").value="";
+  document.getElementById("sub").innerText=0;
+  document.getElementById("gstManual").value=13;
+  document.getElementById("gt").innerText=0;
   newBillNo();
 }
 
+// ---------------- BILL NO ----------------
+function generateBillNo(memberId){ return memberId==="guest"?`CUSTXT${Date.now()}`:`TXN${Date.now()}`; }
+function newBillNo(){ document.getElementById("billNoDisplay").innerText = generateBillNo(''); }
+
+// ---------------- TAB ----------------
+function showTab(tab){ document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active')); document.getElementById(tab).classList.add('active'); }
+
+// ---------------- BILL LIST ----------------
 function searchBill(){
-  const q = document.getElementById("search").value.trim();
+  const q=document.getElementById("search").value.trim();
   fetch(URL,{method:"POST",body:JSON.stringify({action:"searchBill", member:q})})
   .then(r=>r.json())
   .then(list=>{
-    const t = document.getElementById("billList");
-    t.innerHTML = `<tr><th>Bill No</th><th>Member</th><th>Total</th><th>Action</th></tr>`;
+    const t=document.getElementById("billList");
+    t.innerHTML=`<tr><th>Bill No</th><th>Member</th><th>Total</th><th>Action</th></tr>`;
     list.forEach(b=>{
-      const r = t.insertRow();
-      r.innerHTML = `<td>${b.BillNo}</td>
-                     <td>${b.MemberID}</td>
-                     <td>${b.GrandTotal}</td>
-                     <td>
-                       <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
-                       <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
-                     </td>`;
+      const r=t.insertRow();
+      r.innerHTML=`<td>${b.BillNo}</td><td>${b.MemberID}</td><td>${b.GrandTotal}</td>
+                     <td><button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
+                         <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button></td>`;
     });
   });
 }
 
+// ---------------- EDIT & DELETE ----------------
 function editBill(billNo){
-  editingBillNo = billNo;
+  editingBillNo=billNo;
   fetch(URL,{method:"POST",body:JSON.stringify({action:"getBill", billNo:billNo})})
   .then(r=>r.json())
   .then(d=>{
     if(!d || !d.items){ alert("Bill load failed"); return; }
     showTab('billing');
-    document.getElementById("billNoDisplay").innerText = d.BillNo;
-    document.getElementById("memberSearch").value = d.member;
-    document.getElementById("member").value = d.member;
+    document.getElementById("billNoDisplay").innerText=d.BillNo;
+    document.getElementById("memberSearch").value=d.member;
+    document.getElementById("member").value=d.member;
     toggleCustomMember(d.member);
-    document.getElementById("bill").innerHTML = `<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
+    document.getElementById("bill").innerHTML=`<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
     sn=0;
-    d.items.forEach(it=>{
-      addRow();
-      const rows = document.querySelectorAll("#bill tr");
-      const r = rows[rows.length-1];
-      r.cells[1].children[0].value = it.desc;
-      r.cells[2].children[0].value = it.qty;
-      r.cells[3].children[0].value = it.rate;
-      r.cells[4].innerText = it.total;
-    });
-    document.getElementById("gstManual").value = d.gst || 13;
+    d.items.forEach(it=>{ addRow(); const rows=document.querySelectorAll("#bill tr"); const r=rows[rows.length-1]; r.cells[1].children[0].value=it.desc; r.cells[2].children[0].value=it.qty; r.cells[3].children[0].value=it.rate; r.cells[4].innerText=it.total; });
+    document.getElementById("gstManual").value=d.gst || 13;
     calc();
   });
 }
@@ -259,21 +300,7 @@ function deleteBill(billNo){
   .then(r=>r.json())
   .then(()=>{ alert("Bill deleted"); searchBill(); });
 }
-
-function showTab(tab){
-  document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active'));
-  document.getElementById(tab).classList.add('active');
-}
-
-function generateBillNo(memberId){
-  const ts = Date.now();
-  return memberId==="guest"? `CUSTXT${ts}` : `TXN${ts}`;
-}
-
-function newBillNo(){
-  document.getElementById("billNoDisplay").innerText = generateBillNo('');
-}
-
 </script>
+
 </body>
 </html>
