@@ -19,12 +19,14 @@
   <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
 
-<select id="member" onchange="toggleCustomMember(this.value)">
+<select id="member" onchange="toggleCustomMember(this.value)" list="memberList">
   <option value="">-- Select Member --</option>
 </select>
+<datalist id="memberList"></datalist>
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
 
-<button onclick="addRow()">+ Add Row</button>
+
+<button onclick="addRow()">+</button>
 
 <table id="bill">
 <tr>
@@ -280,17 +282,23 @@ function loadMembers() {
   .then(r => r.json())
   .then(data => {
     const sel = document.getElementById("member");
+    const list = document.getElementById("memberList");
     sel.innerHTML = `<option value="">-- Select Member --</option>`; // reset
+    list.innerHTML = ""; // reset datalist
+
     data.forEach(m => {
       const opt = document.createElement("option");
-      opt.value = m.MemberID;
-      opt.text = `${m.MemberID} - ${m.Name || ''}`;
+      opt.value = m.MemberID + " - " + (m.Name || '');
       sel.appendChild(opt);
+
+      const listOpt = document.createElement("option");
+      listOpt.value = m.MemberID + " - " + (m.Name || '');
+      list.appendChild(listOpt);
     });
+
     // Add guest option
     const guest = document.createElement("option");
     guest.value = "guest";
-    guest.text = "Other / Guest Customer";
     sel.appendChild(guest);
   });
 }
