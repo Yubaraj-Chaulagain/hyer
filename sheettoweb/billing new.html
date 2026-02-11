@@ -46,6 +46,21 @@ Grand Total: <span id="gt">0</span>
 <button onclick="window.print()">🖨️ Print</button>
 </div>
     </div>
+  <div id="list" class="tab">
+<hr>
+<input id="search" placeholder="Search MemberID or Bill No">
+<button onclick="searchBill()">Search</button>
+
+<h3>📜 Bills List</h3>
+<table id="billList">
+<tr>
+  <th>Bill No</th>
+  <th>Member</th>
+  <th>Total</th>
+  <th>Action</th>
+</tr>
+</table>
+</div>
 
 <script>
 const URL = "https://script.google.com/macros/s/AKfycbyxZSIZk5x-o_wUnwJ5i9WA22DSM1odnwwOKzKpDIruavs3V9xc9AwKUpf93ZtfWpNU/exec";
@@ -193,6 +208,70 @@ function generateBillNo(memberId){
 
 function newBillNo(){
   document.getElementById("billNoDisplay").innerText = generateBillNo('');
+}
+  
+// ------------------ SEARCH ----------------
+function searchBill() {
+  const q = document.getElementById("search").value.trim();
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({action:"searchBill", member:q})
+  })
+  .then(r=>r.json())
+  .then(list=>{
+    const t = document.getElementById("billList");
+    t.innerHTML = `<tr><th>Bill No</th><th>Member</th><th>Total</th><th>Action</th></tr>`;
+    list.forEach(b=>{
+      const r = t.insertRow();
+      r.innerHTML = `<td>${b.BillNo}</td>
+                     <td>${b.MemberID}</td>
+                     <td>${b.GrandTotal}</td>
+                     <td>
+                       <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
+                       <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
+                     </td>`;
+    });
+  });
+}
+
+// ------------------ EDIT BILL ----------------
+function editBill(billNo){
+  editingBillNo = billNo;
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getBill", billNo:billNo})})
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d || !d.items){ alert("Bill load failed"); return; }
+    showTab('billing');
+    document.getElementById("billNoDisplay").innerText = d.BillNo;
+    member.value = d.member;
+    document.getElementById("bill").innerHTML = `<tr><th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr>`;
+    sn=0;
+    d.items.forEach(it=>{
+      addRow();
+      const rows = document.querySelectorAll("#bill tr");
+      const r = rows[rows.length-1];
+      r.cells[1].children[0].value = it.desc;
+      r.cells[2].children[0].value = it.qty;
+      r.cells[3].children[0].value = it.rate;
+      r.cells[4].innerText = it.total;
+    });
+    document.getElementById("gstManual").value = d.gst || 13;
+    calc();
+  });
+}
+
+// ------------------ DELETE BILL ----------------
+function deleteBill(billNo){
+  if(!confirm("Delete this bill?")) return;
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"deleteBill", billNo:billNo})})
+  .then(r=>r.json())
+  .then(()=>{ alert("Bill deleted"); searchBill(); });
+}
+
+// ------------------ SHOW TAB ----------------
+function showTab(tab){
+  document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
 }
 </script>
 </body>
