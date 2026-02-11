@@ -10,6 +10,7 @@ td,th { border:1px solid #aaa; padding:5px }
 </head>
 <body>
 <div id="Messrecoard">
+  <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
 
 <input id="member" placeholder="Member ID">
@@ -129,6 +130,8 @@ function saveBill() {
 
     // reset
     editingBillNo = null;
+    showTab('list');  // Save पछि list मा जान्छ
+    searchBill();
     document.getElementById("bill").innerHTML = `
       <tr>
         <th>S.N</th>
@@ -201,7 +204,7 @@ function searchBill() {
       alert("Bill load failed");
       return;
     }
-
+   showTab('billing');
     member.value = d.member;
 
     document.getElementById("bill").innerHTML = `
@@ -242,6 +245,10 @@ function searchBill() {
     alert("Bill deleted");
     searchBill();
   });
+}
+  function showTab(tab){
+  document.querySelectorAll('.tab').forEach(d=>d.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
 }
 
 
