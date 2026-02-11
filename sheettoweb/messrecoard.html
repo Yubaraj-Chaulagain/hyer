@@ -154,17 +154,23 @@ function resetBillForm() {
   document.getElementById("gstManual").value = 13;
   document.getElementById("gt").innerText = 0;
 }
+  
 function searchBill() {
   const q = document.getElementById("search").value.trim();
+  if(!q) return;
+
   fetch(URL,{
     method:"POST",
-    body:JSON.stringify({action:"searchBill", query:q})
+    body: JSON.stringify({
+      action:"searchBill",
+      memberOrBill: q // <-- यहाँ server ले memberOrBill field handle गर्नुपर्छ
+    })
   })
-  .then(r=>r.json())
-  .then(list=>{
+  .then(r => r.json())
+  .then(list => {
     const t = document.getElementById("billList");
     t.innerHTML = `<tr><th>Bill No</th><th>Member</th><th>Total</th><th>Action</th></tr>`;
-    list.forEach(b=>{
+    list.forEach(b => {
       const r = t.insertRow();
       r.innerHTML = `<td>${b.BillNo}</td>
                      <td>${b.MemberID}</td>
@@ -176,6 +182,7 @@ function searchBill() {
     });
   });
 }
+
 function editBill(billNo){
   editingBillNo = billNo;
   fetch(URL,{method:"POST",body:JSON.stringify({action:"getBill", billNo:billNo})})
