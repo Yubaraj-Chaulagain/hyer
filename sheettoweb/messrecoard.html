@@ -15,7 +15,7 @@
   <button onclick="showTab('billing')">🧾 Billing</button>
   <button onclick="showTab('list')">📜 Bills List</button>
 </div>
-<body>
+<body onload="loadMembers()">
   <div id="billing" class="tab active">
 <h3>🧾 Billing System</h3>
 
@@ -304,6 +304,8 @@ function toggleCustomMember(val) {
     input.value = "";
   }
 }
+  
+loadMembers();
 
 </script>
 
