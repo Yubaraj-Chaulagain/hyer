@@ -175,7 +175,8 @@ function searchBill() {
       r.innerHTML = `
         <td>${b.BillNo}</td>
         <td>${b.MemberID}</td>
-        <td>${b.Total}</td>
+        <td>${b.Total || b.total || 0}</td>
+
         <td>
           <button onclick="editBill('${b.BillNo}')">✏️ Edit</button>
           <button onclick="deleteBill('${b.BillNo}')">❌ Delete</button>
