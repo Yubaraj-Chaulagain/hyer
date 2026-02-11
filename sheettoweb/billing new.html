@@ -34,12 +34,21 @@
 <h3>🧾 Billing System</h3>
 <label>Bill No: <span id="billNoDisplay"></span></label><br><br>
 
-<input type="text" id="memberSearch" placeholder="Select Member or type..." 
+<label>Member Selection:</label><br>
+<!-- Option 1: Typing searchable -->
+<input type="text" id="memberSearch" placeholder="Search Member..." 
        oninput="filterMembers()" onkeydown="memberKeyNav(event)">
+
+<!-- Option 2: Direct dropdown select -->
+<select id="memberSelect" onchange="selectMemberFromDropdown()">
+  <option value="">-- Select Member --</option>
+</select>
+
 <div id="memberDropdown"></div>
 <input type="hidden" id="memberID">
 <input type="text" id="memberName" placeholder="Selected Member" readonly>
 <input type="text" id="customMember" placeholder="Enter Customer Name" style="display:none">
+
 
 <button onclick="addRow()">+ Add Row</button>
 
@@ -91,14 +100,40 @@ function init() {
 }
 
 // ---------------- LOAD MEMBERS ----------------
+// Populate both typing-search and direct select dropdown
 function loadMembers() {
   fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
   .then(r=>r.json())
   .then(data=>{
     members = data || [];
     members.push({MemberID:"guest", Name:"Other / Guest Customer"});
+
+    // Populate direct select dropdown
+    const sel = document.getElementById("memberSelect");
+    sel.innerHTML = `<option value="">-- Select Member --</option>`;
+    members.forEach(m=>{
+      const opt = document.createElement("option");
+      opt.value = m.MemberID;
+      opt.text = `${m.MemberID} - ${m.Name||''}`;
+      sel.appendChild(opt);
+    });
   });
 }
+
+// Called when direct dropdown changes
+function selectMemberFromDropdown() {
+  const sel = document.getElementById("memberSelect");
+  const val = sel.value;
+  if(!val) return;
+  const m = members.find(x=>x.MemberID===val);
+  if(!m) return;
+  document.getElementById("memberID").value = m.MemberID;
+  document.getElementById("memberName").value = m.Name||'';
+  document.getElementById("memberSearch").value = `${m.MemberID} - ${m.Name||''}`;
+  toggleCustomMember(m.MemberID);
+  document.getElementById("memberDropdown").style.display = "none";
+}
+
 
 // ---------------- FILTER MEMBERS ----------------
 function filterMembers() {
@@ -210,7 +245,9 @@ function saveBill() {
   if(items.length===0){ alert("At least one item required"); return; }
 
   const selectedMemberID = document.getElementById("memberID").value || "guest";
-  const memberName = selectedMemberID==="guest"? document.getElementById("customMember").value : document.getElementById("memberName").value;
+const memberName = selectedMemberID==="guest" ? document.getElementById("customMember").value
+                                               : document.getElementById("memberName").value;
+
   if(!memberName){ alert("Enter member or customer name"); return; }
 
   const billNo = editingBillNo || generateBillNo(selectedMemberID);
