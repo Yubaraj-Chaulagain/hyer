@@ -304,9 +304,21 @@ function editBill(billNo){
 // ---------------- Delete Bill ----------------
 function deleteBill(billNo){
   if(!confirm("Delete this bill?")) return;
-  fetch(URL,{ method:"POST", body:JSON.stringify({ action:"deleteBill", billNo }) })
-    .then(r=>r.json()).then(()=>{ alert("Bill deleted"); searchBill(); });
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({ action:"deleteBill", billNo })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      alert("✅ Bill deleted");
+      searchBill();
+    } else {
+      alert("❌ Delete failed: " + (res.message || ""));
+    }
+  });
 }
+
 </script>
 </body>
 </html>
