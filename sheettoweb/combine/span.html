@@ -67,7 +67,7 @@ button:disabled{
 <div id="winner"></div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbzV6lfOQ5pLum6H6OMFoAT6Ea2rQuytRkwt7_c6HOLBUQzE-bGEWYo-Y65VP4mP8CBVjw/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbypaq02Kny5VzCMOPG-XM8hhF_-L2isFECk7c-X_VqX9kIizAOlMTGrM_oH6Jzx7rxxbw/exec";
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
@@ -106,7 +106,7 @@ function drawWheel(){
     ctx.rotate(start + slice/2);
     ctx.fillStyle="#fff";
     ctx.font="14px Arial";
-    ctx.fillText(m.name, radius/2, 5);
+    ctx.fillText(m.Name, radius/2, 5);
     ctx.restore();
   });
 }
@@ -132,7 +132,8 @@ function selectWinner(){
 
   const winner = members[index];
   document.getElementById("winner").innerHTML =
-    `🏆 Winner: <b>${winner.name}</b> (ID: ${winner.memberId})`;
+    `🏆 Winner: <b>${winner.Name}</b> (ID: ${winner.MemberID})`;
+
 
   saveWinner(winner);
   spinning = false;
@@ -144,9 +145,10 @@ function saveWinner(w){
     method:"POST",
     body:JSON.stringify({
       action:"saveLuckyDrawWinner",
-      memberId:w.memberId,
-      name:w.name,
-      email:w.email
+      memberId:w.MemberID,
+      name:w.Name,
+      email:w.Email
+
     })
   });
 }
