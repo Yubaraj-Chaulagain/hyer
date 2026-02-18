@@ -68,7 +68,7 @@
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbxGfaHgQd1Wa5VJ_JkScJmVRZW8y3_odnN59keEmacaONIcqHBymzhUveNchSnw4IePcA/exec";
+const URL = "https://script.google.com/macros/s/AKfycbwR2P7jwA_l5yZDgEqLUd21OcQOkT3J9ORokz3Gq4rxE-mzT2gbP3E-QaMKcE0W_WAbXQ/exec";
 let sn = 0;
 let editingBillNo = null;
 
@@ -174,25 +174,23 @@ function saveBill() {
   document.getElementById("billNoDisplay").innerText = billNo;
 
   const gstPercent = parseFloat(document.getElementById("gstManual").value||0);
-
- const payload = {
-  action:"saveBill",
-  bill:{
+const payload = {
+  action: "saveBill",
+  bill: {
     BillNo: billNo,
     Date: new Date().toISOString().slice(0,10),
     MemberID: memberName,
-    SubTotal: document.getElementById("sub").innerText,
+    SubTotal: parseFloat(document.getElementById("sub").innerText),
     GST: gstPercent,
-    GrandTotal: document.getElementById("gt").innerText
+    GrandTotal: parseFloat(document.getElementById("gt").innerText)
   },
-  items: items.map(i=>({
-    Description:i.desc,
-    Qty:i.qty,
-    Rate:i.rate,
-    Total:i.total
+  items: items.map(it=>({
+    Description: it.desc,
+    Qty: parseFloat(it.qty),
+    Rate: parseFloat(it.rate),
+    Total: parseFloat(it.total)
   }))
 };
-
 
   fetch(URL,{ method:"POST", body: JSON.stringify(payload) })
     .then(r=>r.json())
