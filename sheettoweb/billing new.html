@@ -176,13 +176,23 @@ function saveBill() {
   const gstPercent = parseFloat(document.getElementById("gstManual").value||0);
 
   const payload = {
-    action: editingBillNo?"updateBill":"saveBill",
-    billNo, member: memberName,
-    subtotal: document.getElementById("sub").innerText,
-    gst: gstPercent,
-    total: document.getElementById("gt").innerText,
-    items
-  };
+  action: editingBillNo ? "updateBill" : "saveBill",
+  bill:{
+    BillNo: billNo,
+    Date: new Date().toISOString().slice(0,10),
+    MemberID: memberName,
+    SubTotal: document.getElementById("sub").innerText,
+    GST: gstPercent,
+    GrandTotal: document.getElementById("gt").innerText
+  },
+  items: items.map(i=>({
+    Description:i.desc,
+    Qty:i.qty,
+    Rate:i.rate,
+    Total:i.total
+  }))
+};
+
 
   fetch(URL,{ method:"POST", body: JSON.stringify(payload) })
     .then(r=>r.json())
