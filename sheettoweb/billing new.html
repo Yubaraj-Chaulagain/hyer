@@ -175,8 +175,8 @@ function saveBill() {
 
   const gstPercent = parseFloat(document.getElementById("gstManual").value||0);
 
-  const payload = {
-  action: editingBillNo ? "updateBill" : "saveBill",
+ const payload = {
+  action:"saveBill",
   bill:{
     BillNo: billNo,
     Date: new Date().toISOString().slice(0,10),
