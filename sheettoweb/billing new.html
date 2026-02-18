@@ -68,7 +68,7 @@
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbwMAMvDkfv2NdRU3zxoKnBbVrvN40pZEP3zAuoctJmDaVx9slZxDbdFb-VJRte7wpc87A/exec";
+const URL = "https://script.google.com/macros/s/AKfycbw5XQodYHm83wn5CoF9eAtd8xGXQE2DlNqxbmMi1JCizpD6IjMS4Zl5j6Ogm1CdybGEaw/exec";
 let sn = 0;
 let editingBillNo = null;
 
@@ -251,30 +251,54 @@ function searchBill() {
 
 // ---------------- Edit Bill ----------------
 function editBill(billNo){
-  editingBillNo=billNo;
-  fetch(URL,{ method:"POST", body:JSON.stringify({ action:"getBill", billNo }) })
-    .then(r=>r.json())
-    .then(d=>{
-      if(!d || !d.items){ alert("Bill load failed"); return; }
-      showTab('billingTab');
-      document.getElementById("billNoDisplay").innerText=d.BillNo;
-      memberSelect.setValue(d.member);
-      document.getElementById("bill").innerHTML=`<tr>
-        <th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
-      </tr>`;
-      sn=0;
-      d.items.forEach(it=>{
-        addRow();
-        const rows=document.querySelectorAll("#bill tr");
-        const r=rows[rows.length-1];
-        r.cells[1].children[0].value=it.desc;
-        r.cells[2].children[0].value=it.qty;
-        r.cells[3].children[0].value=it.rate;
-        r.cells[4].innerText=it.total;
-      });
-      document.getElementById("gstManual").value=d.gst || 13;
-      calc();
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({ action:"getBill", billNo })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(!d.status || !d.items){ 
+      alert("Bill load failed"); 
+      return; 
+    }
+
+    // 1️⃣ Switch to billing tab
+    showTab('billingTab');
+    document.getElementById("billingSystem").style.display = "block";
+
+    // 2️⃣ Fill BillNo
+    document.getElementById("billNoDisplay").innerText = d.BillNo;
+    editingBillNo = d.BillNo;
+
+    // 3️⃣ Set Member
+    memberSelect.setValue(d.MemberID);
+    if(d.MemberID==="guest"){
+      document.getElementById("customMember").value = d.MemberID; 
+      document.getElementById("customMember").style.display = "inline-block";
+    }
+
+    // 4️⃣ Clear Table
+    const t = document.getElementById("bill");
+    t.innerHTML = `<tr>
+      <th>S.N</th><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th>
+    </tr>`;
+    sn = 0;
+
+    // 5️⃣ Fill Items
+    d.items.forEach(it => {
+      addRow(); // adds new row and increments sn
+      const rows = document.querySelectorAll("#bill tr");
+      const r = rows[rows.length-1]; // last row
+      r.cells[1].children[0].value = it.desc;
+      r.cells[2].children[0].value = it.qty;
+      r.cells[3].children[0].value = it.rate;
+      r.cells[4].innerText = it.total;
     });
+
+    // 6️⃣ Set GST & calculate totals
+    document.getElementById("gstManual").value = d.GST || 13;
+    calc(); // recalc totals
+  });
 }
 
 // ---------------- Delete Bill ----------------
