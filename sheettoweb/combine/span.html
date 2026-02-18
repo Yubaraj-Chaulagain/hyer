@@ -67,7 +67,7 @@ button:disabled{
 <div id="winner"></div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbypaq02Kny5VzCMOPG-XM8hhF_-L2isFECk7c-X_VqX9kIizAOlMTGrM_oH6Jzx7rxxbw/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxnFQGLid6caYrJXEe1ngHx8Oly0-WifA54JbWuhsXZWvgikd77ol-ydecNL3q1454/exec";
 
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
@@ -145,13 +145,16 @@ function saveWinner(w){
     method:"POST",
     body:JSON.stringify({
       action:"saveLuckyDrawWinner",
-      memberId:w.MemberID,
-      name:w.Name,
-      email:w.Email
-
+      MemberID:w.MemberID,
+      Name:w.Name,
+      Email:w.Email
     })
-  });
+  })
+  .then(r=>r.json())
+  .then(d=>console.log("Saved:",d))
+  .catch(e=>console.log("Error:",e));
 }
+
 </script>
 
 </body>
