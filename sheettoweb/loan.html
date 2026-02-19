@@ -242,9 +242,10 @@ h+=`<tr ${color}>
 staffTbl.innerHTML=h;
 });
 
-   function reRequest(id){
-  // Optionally allow staff to edit Amount before resubmitting
-  let newAmount = prompt("Enter new Amount:", document.querySelector(`#staffTbl tr td:contains('${id}')`).nextSibling.textContent);
+  function reRequest(id){
+  // Get amount from the table input
+  let amtInput = document.getElementById("amt_" + id);
+  let newAmount = prompt("Enter new Amount:", amtInput ? amtInput.value : "");
 
   fetch(URL,{
     method:"POST",
@@ -253,11 +254,12 @@ staffTbl.innerHTML=h;
       RequestID:id,
       Amount:newAmount
     })
-  }).then(r=>r.json())
+  })
+  .then(r=>r.json())
   .then(res=>{
     if(res.status){
       alert("Request Re-submitted ✅");
-      loadMyRequests(); // refresh table
+      loadMyRequests(); // refresh staff table
     }
   });
 }
