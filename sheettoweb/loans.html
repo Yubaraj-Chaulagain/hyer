@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Loan System</title>
+<style>
+body{font-family:Arial;margin:20px;background:#f5f5f5}
+.box{background:white;padding:15px;margin-bottom:20px;border-radius:10px}
+input,select,button{padding:6px;margin:4px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td,th{border:1px solid #ccc;padding:6px;text-align:center}
+</style>
+</head>
+
+<body>
+
+<h2>🏦 Loan System</h2>
+
+<div class="box">
+<h3>📌 Loan Request</h3>
+MemberID <input id="member">
+Name <input id="name">
+Amount <input id="amount" type="number">
+Monthly EMI <input id="emi" type="number">
+<button onclick="requestLoan()">Request Loan</button>
+</div>
+
+<div class="box">
+<h3>📊 EMI Calculator</h3>
+Loan Amount <input id="loanAmt" type="number">
+Interest % <input id="interest" type="number">
+Months <input id="months" type="number">
+<button onclick="calcEMI()">Calculate</button>
+<h4 id="emiResult"></h4>
+</div>
+
+<div class="box">
+<h3>📋 Loan Requests</h3>
+<button onclick="loadRequests()">Refresh</button>
+<table id="reqTable">
+<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>
+</table>
+</div>
+
+<script>
+const URL="YOUR_APPS_SCRIPT_URL";
+
+// -------- Loan Request ----------
+function requestLoan(){
+fetch(URL,{
+method:"POST",
+body:JSON.stringify({
+action:"requestLoan",
+MemberID:member.value,
+Name:name.value,
+Amount:amount.value,
+MonthlyPayment:emi.value,
+Staff:"staff1"
+})
+})
+.then(r=>r.json())
+.then(()=>alert("Loan Requested"));
+}
+
+// -------- EMI Calculator ----------
+function calcEMI(){
+
+let P=Number(loanAmt.value);
+let r=Number(interest.value)/100/12;
+let n=Number(months.value);
+
+let emi=P*r*(1+r)**n/((1+r)**n-1);
+
+emiResult.innerText="Monthly EMI = "+emi.toFixed(2);
+}
+
+// -------- Load Requests ----------
+function loadRequests(){
+
+fetch(URL,{
+method:"POST",
+body:JSON.stringify({action:"getLoanRequests"})
+})
+.then(r=>r.json())
+.then(list=>{
+
+let t=reqTable;
+t.innerHTML=`<tr>
+<th>ID</th><th>Member</th><th>Amount</th>
+<th>Status</th><th>Action</th></tr>`;
+
+list.forEach(r=>{
+t.innerHTML+=`<tr>
+<td>${r.RequestID}</td>
+<td>${r.Name}</td>
+<td>${r.Amount}</
+```
