@@ -19,7 +19,6 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
 
 <h2 style="text-align:center">Loan Workflow</h2>
 
-<!-- Tabs -->
 <div class="tabs">
   <button class="tablinks active" onclick="openTab('loginTab', this)">Login</button>
   <button class="tablinks" id="staffTabBtn" onclick="openTab('staffTab', this)" style="display:none">Staff</button>
@@ -27,12 +26,10 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
   <button class="tablinks" id="adminTabBtn" onclick="openTab('adminTab', this)" style="display:none">Admin</button>
 </div>
 
-<!-- Login -->
 <div id="loginTab" class="tabcontent" style="display:block;text-align:center">
   Code: <input id="code"><button onclick="login()">Login</button>
 </div>
 
-<!-- Staff -->
 <div id="staffTab" class="tabcontent">
   <h3>Staff Loan Request</h3>
   <form id="requests">
@@ -47,14 +44,12 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
   <table id="staffTbl"></table>
 </div>
 
-<!-- Manager -->
 <div id="managerTab" class="tabcontent">
   <h3>Manager Approval</h3>
   <button onclick="loadPending()">Load Pending</button>
   <table id="tbl"></table>
 </div>
 
-<!-- Admin -->
 <div id="adminTab" class="tabcontent">
   <h3>Admin Final Approve</h3>
   <button onclick="loadManagerApproved()">Load</button>
@@ -64,7 +59,6 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
 <script>
 let user={};
 
-// ---------------- Tab Switching ----------------
 function openTab(tabName, el){
   document.querySelectorAll(".tabcontent").forEach(tab=>tab.style.display="none");
   document.querySelectorAll(".tablinks").forEach(btn=>btn.classList.remove("active"));
@@ -72,26 +66,20 @@ function openTab(tabName, el){
   el.classList.add("active");
 }
 
-// ---------------- Web App URL ----------------
-const URL="https://script.google.com/macros/s/AKfycbzjfdmYSpgyNg4CoXnwTPabDPPLgx48rVi2OUf0TjAbQ1kcXUBu1e6NFbCWwzUnqw05TQ/exec"; // replace with your deployed Apps Script URL
+const URL="https://script.google.com/macros/s/AKfycbzjfdmYSpgyNg4CoXnwTPabDPPLgx48rVi2OUf0TjAbQ1kcXUBu1e6NFbCWwzUnqw05TQ/exec"; // <-- replace with deployed Apps Script URL
 
-// ---------------- LOGIN ----------------
 function login(){
   const codeVal = document.getElementById("code").value.trim();
-  
-  fetch(URL, {
-    method: "POST",
-    body: JSON.stringify({action:"login", code: codeVal})
+  fetch(URL,{
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body:JSON.stringify({action:"login", code: codeVal})
   })
-  .then(r => r.json())
-  .then(u => {
-    if(!u.status){
-      alert("Wrong Code or User not found");
-      return;
-    }
+  .then(r=>r.json())
+  .then(u=>{
+    if(!u.status) return alert("Wrong Code");
     user = u;
-    console.log("Login success:", u);
-    
+
     if(u.role=="Staff"){
       document.getElementById("staffTabBtn").style.display="inline-block";
       openTab('staffTab', document.getElementById("staffTabBtn"));
@@ -111,14 +99,15 @@ function login(){
       loadPending();
       loadManagerApproved();
     }
-  });
+  })
+  .catch(e=>console.error("Login fetch error:", e));
 }
 
-
-// ---------------- STAFF REQUEST ----------------
+// --- Staff Functions ---
 function requestLoan(){
   fetch(URL,{
     method:"POST",
+    headers: {"Content-Type":"application/json"},
     body:JSON.stringify({
       action:"addLoanRequest",
       MemberID:m.value,
@@ -128,6 +117,70 @@ function requestLoan(){
       BranchCode:user.branch,
       StaffCode:user.code
     })
-  }).then(r=>r.json())
-  .then(res=>{
-    if(res.s
+  }).then(r=>r.json()).then(res=>{
+    if(res.status){ alert("Request Sent ✅"); document.getElementById("requests").reset(); loadMyRequests(); }
+  });
+}
+
+function loadMyRequests(){
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"getStaffRequests", StaffCode:user.code})})
+  .then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      let color = x.Status=="ManagerRejected"||x.Status=="AdminRejected"?"style='color:red'":x.Status=="AdminApproved"?"style='color:lightgreen'":"";
+      let actionBtn = (x.Status=="ManagerRejected"||x.Status=="AdminRejected")?`<button onclick="reRequest('${x.RequestID}')">Re-Request</button>`:"";
+      h+=`<tr ${color}><td>${x.RequestID}</td><td>${x.MemberID}</td><td><input id="amt_${x.RequestID}" value="${x.Amount}"></td><td>${x.Status}</td><td>${actionBtn}</td></tr>`;
+    });
+    staffTbl.innerHTML=h;
+  });
+}
+
+function reRequest(id){
+  let amtInput = document.getElementById("amt_"+id);
+  let newAmount = prompt("Enter new Amount:", amtInput? amtInput.value:"");
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"reRequest", RequestID:id, Amount:newAmount})})
+  .then(r=>r.json()).then(res=>{if(res.status){alert("Request Re-submitted ✅"); loadMyRequests();}});
+}
+
+// --- Manager ---
+function loadPending(){
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"getPending", branch:user.branch})})
+  .then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      h+=`<tr><td>${x.RequestID}</td><td>${x.MemberID}</td><td><input id="amt_${x.RequestID}" value="${x.Amount}"></td><td><button onclick="updateAmount('${x.RequestID}')">Save</button></td><td><button onclick="managerAction('${x.RequestID}',true)">Approve</button> <button onclick="managerAction('${x.RequestID}',false)">Reject</button></td></tr>`;
+    });
+    tbl.innerHTML=h;
+  });
+}
+
+function managerAction(id,a){
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"managerAction", RequestID:id, approve:a})})
+  .then(()=>loadPending());
+}
+
+// --- Admin ---
+function loadManagerApproved(){
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"getManagerApproved"})})
+  .then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Final</th></tr>";
+    list.forEach(x=>{
+      h+=`<tr><td>${x.RequestID}</td><td>${x.MemberID}</td><td><input id="adm_${x.RequestID}" value="${x.Amount}"></td><td><input id="reason_${x.RequestID}" placeholder="Reason"></td><td><button onclick="updateAmount('${x.RequestID}',true)">Save</button> <button onclick="adminApprove('${x.RequestID}')">Approve</button></td></tr>`;
+    });
+    tbl2.innerHTML=h;
+  });
+}
+
+function updateAmount(id,admin=false){
+  let amt = admin ? document.getElementById("adm_"+id).value : document.getElementById("amt_"+id).value;
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"updateAmount", RequestID:id, Amount:amt})})
+  .then(()=>alert("Amount Updated ✅"));
+}
+
+function adminApprove(id){
+  fetch(URL,{method:"POST",headers: {"Content-Type":"application/json"}, body:JSON.stringify({action:"adminApprove", RequestID:id})})
+  .then(()=>alert("Loan Added ✅"));
+}
+</script>
+</body>
+</html>
