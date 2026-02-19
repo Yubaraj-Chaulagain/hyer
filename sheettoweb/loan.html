@@ -49,7 +49,7 @@ Interest <input id="i"><br>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbzAy3ykSFK6RVEuXLqWu7wRfzjYdoDQCZXdFdTZjeXsLnIaUxYg7ey6pJoebLmWUd0mwg/exec";
+const URL="https://script.google.com/macros/s/AKfycbythifTaMD9kenQNprkg1KLc2VovgrZqb7hXh8b43cb7_9uFiR45nwFNkMp5GqHJxs5nw/exec";
 let user={};
 
 function login(){
@@ -180,18 +180,18 @@ Amount:amt
 }).then(()=>alert("Amount Updated ✅"));
 }
 
-  function loadMyRequests(){
+ function loadMyRequests(){
 fetch(URL,{
-method:"POST",
-body:JSON.stringify({
-action:"getStaffRequests",
-StaffCode:user.code
-})
+  method:"POST",
+  body:JSON.stringify({
+    action:"getStaffRequests",
+    StaffCode:user.code
+  })
 })
 .then(r=>r.json())
 .then(list=>{
 
-let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th></tr>";
+let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
 
 list.forEach(x=>{
 let color =
@@ -201,20 +201,43 @@ x.Status=="ManagerRejected" || x.Status=="AdminRejected"
 ? "style='color:lightgreen'"
 : "";
 
+let actionBtn = "";
+if(x.Status=="ManagerRejected" || x.Status=="AdminRejected"){
+  actionBtn = `<button onclick="reRequest('${x.RequestID}')">Re-Request</button>`;
+}
+
 h+=`<tr ${color}>
 <td>${x.RequestID}</td>
 <td>${x.MemberID}</td>
 <td>${x.Amount}</td>
 <td>${x.Status}</td>
-<td>${x.RejectReason || ""}</td>
+<td>${actionBtn}</td>
 </tr>`;
 });
 
 staffTbl.innerHTML=h;
 });
+
+   function reRequest(id){
+  // Optionally allow staff to edit Amount before resubmitting
+  let newAmount = prompt("Enter new Amount:", document.querySelector(`#staffTbl tr td:contains('${id}')`).nextSibling.textContent);
+
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"reRequest",
+      RequestID:id,
+      Amount:newAmount
+    })
+  }).then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      alert("Request Re-submitted ✅");
+      loadMyRequests(); // refresh table
+    }
+  });
 }
 
-  
 function adminApprove(id){
 fetch(URL,{method:"POST",body:JSON.stringify({
 action:"adminApprove",
