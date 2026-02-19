@@ -1,0 +1,29 @@
+<!-- New Request Tab -->
+<div id="newRequestTab" style="display:none">
+  <h3>New Request</h3>
+  MemberID <select id="staffMember"></select><br>
+  Amount <input id="staffAmount" type="number"><br>
+  Months <input id="staffMonths" type="number"><br>
+  Interest % <input id="staffInterest" type="number"><br>
+  <button onclick="sendRequest()">Send Loan Request</button>
+</div>
+
+<!-- Rejected / Re-Requestable Loans -->
+<div id="staffTab" style="display:none">
+  <h3>Rejected / Re-Requestable Loans</h3>
+  <table id="staffTbl"></table>
+</div>
+
+<!-- Manager Panel -->
+<div id="managerTab" style="display:none">
+  <h3>Manager Panel</h3>
+  <button onclick="loadManagerPending()">Load Pending</button>
+  <table id="managerTbl"></table>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminTab" style="display:none">
+  <h3>Admin Panel</h3>
+  <button onclick="loadAdminPending()">Load Manager Approved</button>
+  <table id="adminTbl"></table>
+</div>
