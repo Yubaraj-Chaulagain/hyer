@@ -77,21 +77,36 @@ const URL="https://script.google.com/macros/s/AKfycbz2u6QX920V9ZGDzwoilCRNH16Kxn
 
 // Login function
 function login(){
-  const codeVal = document.getElementById("code").value;
+  const codeVal = document.getElementById("code").value.trim();
+  
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({action:"login", code: codeVal})
-  }).then(r=>r.json())
+  })
+  .then(r=>r.json())
   .then(u=>{
-    if(!u.status) return alert("Wrong Code");
+    if(!u.status){
+      alert("Wrong Code");
+      return;
+    }
     user=u;
 
-    // Auto open relevant tabs
-    if(u.role=="Staff") openTab('staffTab');
-    if(u.role=="Manager") openTab('managerTab');
-    if(u.role=="Admin") openTab('adminTab');
+    if(u.role=="Staff"){
+      openTab('staffTab');
+      loadMyRequests();   // auto load staff table
+    }
+    if(u.role=="Manager"){
+      openTab('managerTab');
+      loadPending();
+    }
+    if(u.role=="Admin"){
+      openTab('adminTab');
+      loadManagerApproved();
+      loadPending();
+    }
   });
 }
+
   
 function requestLoan(){
 
