@@ -68,20 +68,51 @@ function sendRequest(){
 
 // Load rejected loans to allow Re-Request
 function loadStaffRejected(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"getRejected"})})
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({action:"getRejected"})
+ })
  .then(r=>r.json())
  .then(list=>{
    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+
    list.forEach(x=>{
      h+=`<tr>
 <td>${x.RequestID}</td>
 <td>${x.MemberID} - ${x.Name}</td>
 <td>${x.Amount}</td>
-<td><button class="reRequest" onclick="reRequest('${x.RequestID}')">Re-Request</button></td>
+<td>
+<button class="reRequest" onclick="reRequest('${x.RequestID}')">Re-Request</button>
+<button class="reject" onclick="deleteRequest('${x.RequestID}')">Delete</button>
+</td>
 </tr>`;
    });
+
    staffTbl.innerHTML=h;
  });
+}
+ 
+function deleteRequest(id){
+
+ if(!confirm("Are you sure to delete this request?")) return;
+
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({
+     action:"deleteLoanRequest",
+     RequestID:id
+   })
+ })
+ .then(r=>r.json())
+ .then(res=>{
+   if(res.status){
+     alert("Deleted Successfully ✅");
+     loadStaffRejected();
+   }else{
+     alert("Delete Failed ❌");
+   }
+ });
+
 }
 
 function reRequest(id){
