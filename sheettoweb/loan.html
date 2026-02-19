@@ -70,20 +70,19 @@ fetch(URL,{
     MemberID:m.value,
     Amount:a.value,
     Months:mo.value,
-    Interest:i.value
+    Interest:i.value,
+    BranchCode:user.branch,     // ✅ ADD THIS
+    StaffCode:user.code         // ✅ ADD THIS
   })
 })
 .then(r=>r.json())
 .then(res=>{
   if(res.status){
     alert("Request Sent ✅");
-
-    // 🔹 FORM RESET
     document.getElementById("requests").reset();
   }
 });
 }
-
 
 function loadPending(){
 fetch(URL,{method:"POST",body:JSON.stringify({
