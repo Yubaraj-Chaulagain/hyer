@@ -37,7 +37,9 @@ Interest <input id="i"><br>
 <div id="admin" style="display:none">
 <h2>Admin Final Approve</h2>
 <button onclick="loadManagerApproved()">Load</button>
-<table id="tbl2"></table>
+<table id="tbl2">
+  
+</table>
 </div>
 
 <script>
@@ -88,17 +90,29 @@ function loadPending(){
 fetch(URL,{method:"POST",body:JSON.stringify({
 action:"getPending",branch:user.branch
 })}).then(r=>r.json()).then(list=>{
-let h="<tr><th>ID</th><th>Member</th><th>Amt</th><th>Action</th></tr>";
+
+let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Action</th></tr>";
+
 list.forEach(x=>{
 h+=`<tr>
 <td>${x.RequestID}</td>
 <td>${x.MemberID}</td>
-<td>${x.Amount}</td>
+
+<td>
+<input id="amt_${x.RequestID}" value="${x.Amount}">
+</td>
+
+<td>
+<button onclick="updateAmount('${x.RequestID}')">Save</button>
+</td>
+
 <td>
 <button onclick="managerAction('${x.RequestID}',true)">Approve</button>
 <button onclick="managerAction('${x.RequestID}',false)">Reject</button>
-</td></tr>`;
+</td>
+</tr>`;
 });
+
 tbl.innerHTML=h;
 });
 }
@@ -115,20 +129,52 @@ function loadManagerApproved(){
 fetch(URL,{method:"POST",body:JSON.stringify({
 action:"getManagerApproved"
 })}).then(r=>r.json()).then(list=>{
-let h="<tr><th>ID</th><th>Member</th><th>Amt</th><th>Final</th></tr>";
+
+let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Final</th></tr>";
+
 list.forEach(x=>{
 h+=`<tr>
 <td>${x.RequestID}</td>
 <td>${x.MemberID}</td>
-<td>${x.Amount}</td>
+
+<td>
+<input id="adm_${x.RequestID}" value="${x.Amount}">
+</td>
+<td>
+<input id="reason_${x.RequestID}" placeholder="Reason">
+</td>
+<td>
+<button onclick="rejectWithReason('${x.RequestID}')">Reject</button>
+<button onclick="updateAmount('${x.RequestID}',true)">Save</button>
+</td>
+
 <td>
 <button onclick="adminApprove('${x.RequestID}')">Approve</button>
-</td></tr>`;
+</td>
+</tr>`;
 });
+
 tbl2.innerHTML=h;
 });
 }
 
+function updateAmount(id,admin=false){
+
+let amt = admin
+? document.getElementById("adm_"+id).value
+: document.getElementById("amt_"+id).value;
+
+fetch(URL,{
+method:"POST",
+body:JSON.stringify({
+action:"updateAmount",
+RequestID:id,
+Amount:amt
+})
+}).then(()=>alert("Amount Updated ✅"));
+}
+
+  
 function adminApprove(id){
 fetch(URL,{method:"POST",body:JSON.stringify({
 action:"adminApprove",
