@@ -19,11 +19,13 @@ Code <input id="code">
 
 <div id="staff" style="display:none">
 <h2>Staff Loan Request</h2>
+  <form id="requests" >
 MemberID <input id="m"><br>
 Amount <input id="a"><br>
 Months <input id="mo"><br>
 Interest <input id="i"><br>
 <button onclick="requestLoan()">Send</button>
+    </form>
 </div>
 
 <div id="manager" style="display:none">
@@ -77,10 +79,7 @@ fetch(URL,{
     alert("Request Sent ✅");
 
     // 🔹 FORM RESET
-    document.getElementById("m").value="";
-    document.getElementById("a").value="";
-    document.getElementById("mo").value="";
-    document.getElementById("i").value="";
+    document.getElementById("requests").value="";
   }
 });
 }
