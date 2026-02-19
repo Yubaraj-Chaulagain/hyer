@@ -60,16 +60,31 @@ admin.style.display="block";
 }
 
 function requestLoan(){
-fetch(URL,{method:"POST",body:JSON.stringify({
-action:"addLoanRequest",
-MemberID:m.value,
-Amount:a.value,
-Months:mo.value,
-Interest:i.value,
-StaffCode:user.code,
-BranchCode:user.branch
-})}).then(()=>alert("Request Sent"));
+
+fetch(URL,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"addLoanRequest",
+    MemberID:m.value,
+    Amount:a.value,
+    Months:mo.value,
+    Interest:i.value
+  })
+})
+.then(r=>r.json())
+.then(res=>{
+  if(res.status){
+    alert("Request Sent ✅");
+
+    // 🔹 FORM RESET
+    document.getElementById("m").value="";
+    document.getElementById("a").value="";
+    document.getElementById("mo").value="";
+    document.getElementById("i").value="";
+  }
+});
 }
+
 
 function loadPending(){
 fetch(URL,{method:"POST",body:JSON.stringify({
