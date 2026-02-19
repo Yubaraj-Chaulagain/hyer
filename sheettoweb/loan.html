@@ -1,28 +1,26 @@
-<!-- ================= FULL ONE FILE SYSTEM ================= -->
-<!-- GOOGLE APPS SCRIPT + HTML UI FOR LOAN REQUEST WORKFLOW -->
-
-<!-- ================== HTML UI ================== -->
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>Loan Request System</title>
 <style>
-body{font-family:Arial;background:#0f172a;color:#fff;text-align:center}
+body{font-family:Arial;background:#0f172a;color:#fff;text-align:center;padding:20px}
 input,button,select{padding:8px;margin:5px}
-table{margin:auto;border-collapse:collapse}
-th,td{border:1px solid #fff;padding:6px}
-button{background:#22c55e;border:none}
+table{margin:auto;border-collapse:collapse;width:80%}
+th,td{border:1px solid #fff;padding:6px;text-align:center}
+button{background:#22c55e;border:none;color:#fff;cursor:pointer}
 </style>
 </head>
 <body>
 
 <h2>Loan Request</h2>
 
-MemberID <input id="member"><br>
-Amount <input id="amount"><br>
-Months <input id="months"><br>
-Interest % <input id="interest"><br>
+MemberID 
+<select id="memberSelect" onchange="updateName()"></select><br>
+Name <input id="name" readonly><br>
+Amount <input id="amount" type="number"><br>
+Months <input id="months" type="number"><br>
+Interest % <input id="interest" type="number"><br>
 <button onclick="sendRequest()">Send Request</button>
 
 <h2>Manager Panel</h2>
@@ -31,142 +29,78 @@ Interest % <input id="interest"><br>
 
 <script>
 const URL="YOUR_SCRIPT_URL";
+let membersList=[];
 
-function sendRequest(){
-fetch(URL,{method:"POST",body:JSON.stringify({
- action:"addLoanRequest",
- MemberID:member.value,
- Amount:amount.value,
- Months:months.value,
- Interest:interest.value,
- RequestedBy:"Staff"
-})}).then(r=>r.json()).then(a=>alert("Request Sent"));
+// ---------------- Load Members ----------------
+function loadMembers(){
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
+  .then(r=>r.json())
+  .then(data=>{
+    membersList=data;
+    const sel=document.getElementById("memberSelect");
+    sel.innerHTML="<option value=''>Select Member</option>";
+    data.forEach(m=>{
+      sel.innerHTML+=`<option value="${m.MemberID}">${m.MemberID}</option>`;
+    });
+  });
 }
 
+// ---------------- Auto Fill Name ----------------
+function updateName(){
+  const id=document.getElementById("memberSelect").value;
+  const m=membersList.find(x=>x.MemberID==id);
+  document.getElementById("name").value=m?m.Name:"";
+}
+
+// ---------------- Send Loan Request ----------------
+function sendRequest(){
+  const member=document.getElementById("memberSelect").value;
+  if(!member){alert("Select Member"); return;}
+  fetch(URL,{method:"POST",body:JSON.stringify({
+    action:"addLoanRequest",
+    MemberID:member,
+    Name:document.getElementById("name").value,
+    Amount:amount.value,
+    Months:months.value,
+    Interest:interest.value,
+    RequestedBy:"Staff"
+  })}).then(r=>r.json()).then(a=>alert("Request Sent"));
+}
+
+// ---------------- Load Pending ----------------
 function loadPending(){
-fetch(URL,{method:"POST",body:JSON.stringify({action:"getPending"})})
-.then(r=>r.json())
-.then(list=>{
- let h="<tr><th>ID</th><th>Member</th><th>Amt</th><th>Action</th></tr>";
- list.forEach(x=>{
-  h+=`<tr>
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getPending"})})
+  .then(r=>r.json())
+  .then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Name</th><th>Amt</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      h+=`<tr>
 <td>${x.RequestID}</td>
 <td>${x.MemberID}</td>
+<td>${x.Name}</td>
 <td>${x.Amount}</td>
 <td>
 <button onclick="approve('${x.RequestID}')">Approve</button>
 <button onclick="reject('${x.RequestID}')">Reject</button>
 </td></tr>`;
- });
- tbl.innerHTML=h;
-});
+    });
+    tbl.innerHTML=h;
+  });
 }
 
+// ---------------- Approve / Reject ----------------
 function approve(id){
-fetch(URL,{method:"POST",body:JSON.stringify({
- action:"managerAction",
- RequestID:id,
- approve:true
-})}).then(()=>loadPending());
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"managerAction",RequestID:id,approve:true})})
+  .then(()=>loadPending());
 }
 
 function reject(id){
-fetch(URL,{method:"POST",body:JSON.stringify({
- action:"managerAction",
- RequestID:id,
- approve:false
-})}).then(()=>loadPending());
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"managerAction",RequestID:id,approve:false})})
+  .then(()=>loadPending());
 }
+
+// Load members on page load
+loadMembers();
 </script>
 </body>
 </html>
-
-
-/* ================== APPS SCRIPT ================== */
-
-function doPost(e){
- const d=JSON.parse(e.postData.contents);
-
- switch(d.action){
-  case "addLoanRequest": return json(addLoanRequest(d));
-  case "getPending": return json(getPending());
-  case "managerAction": return json(managerAction(d));
-  case "adminApprove": return json(adminApproveLoan(d));
- }
-}
-
-function addLoanRequest(d){
- const sh=ss().getSheetByName("LoanRequests");
- sh.appendRow([
-  "REQ"+Date.now(),
-  new Date(),
-  d.MemberID,
-  d.Amount,
-  d.Months,
-  d.Interest,
-  d.RequestedBy,
-  "Pending"
- ]);
- return {status:true};
-}
-
-function getPending(){
- return getSheet("LoanRequests").filter(x=>x.Status=="Pending");
-}
-
-function managerAction(d){
- const sh=ss().getSheetByName("LoanRequests");
- const data=sh.getDataRange().getValues();
- const idIdx=data[0].indexOf("RequestID");
- const statusIdx=data[0].indexOf("Status");
-
- for(let i=1;i<data.length;i++){
-  if(data[i][idIdx]==d.RequestID){
-   sh.getRange(i+1,statusIdx+1)
-    .setValue(d.approve?"ManagerApproved":"ManagerRejected");
-   return {status:true};
-  }
- }
- return {status:false};
-}
-
-function adminApproveLoan(d){
- const req=getSheet("LoanRequests")
-  .find(x=>x.RequestID==d.RequestID);
- if(!req) return {status:false};
-
- addLoan(req);
- return {status:true};
-}
-
-function addLoan(r){
- const sh=ss().getSheetByName("Loans");
- const emi=calcEMI(r.Amount,r.Interest,r.Months);
- sh.appendRow([
-  "LN"+Date.now(),
-  r.MemberID,
-  r.Amount,
-  r.Interest,
-  r.Months,
-  emi,
-  0,
-  r.Amount,
-  "Active",
-  new Date()
- ]);
-}
-
-function calcEMI(P,R,N){
- R=R/12/100;
- return Math.round(P*R*Math.pow(1+R,N)/(Math.pow(1+R,N)-1));
-}
-
-function getSheet(name){
- const sh=ss().getSheetByName(name);
- const d=sh.getDataRange().getValues();
- const h=d.shift();
- return d.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])));
-}
-
-function ss(){return SpreadsheetApp.getActive();}
-function json(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}
