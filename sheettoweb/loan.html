@@ -78,16 +78,20 @@ const URL="https://script.google.com/macros/s/AKfycbz2u6QX920V9ZGDzwoilCRNH16Kxn
 // ---------------- LOGIN ----------------
 function login(){
   const codeVal = document.getElementById("code").value.trim();
-  fetch(URL,{
-    method:"POST",
-    body:JSON.stringify({action:"login", code: codeVal})
+  
+  fetch(URL, {
+    method: "POST",
+    body: JSON.stringify({action:"login", code: codeVal})
   })
-  .then(r=>r.json())
-  .then(u=>{
-    if(!u.status) return alert("Wrong Code");
-    user=u;
-
-    // ---- Show tabs based on role ----
+  .then(r => r.json())
+  .then(u => {
+    if(!u.status){
+      alert("Wrong Code or User not found");
+      return;
+    }
+    user = u;
+    console.log("Login success:", u);
+    
     if(u.role=="Staff"){
       document.getElementById("staffTabBtn").style.display="inline-block";
       openTab('staffTab', document.getElementById("staffTabBtn"));
@@ -109,6 +113,7 @@ function login(){
     }
   });
 }
+
 
 // ---------------- STAFF REQUEST ----------------
 function requestLoan(){
