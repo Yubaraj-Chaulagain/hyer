@@ -40,7 +40,7 @@ Interest % <input id="staffInterest" type="number"><br>
 <table id="adminTbl"></table>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbz5l8W6XPzsucUi-MN0CrcpAP5JfuDs_rSRMJ9jH-XJRXuYvCAxPCCKzEcuplgeykk2cg/exec";
+const URL="https://script.google.com/macros/s/AKfycbwA10UQffLbOv-AFDz1tJPW50b0x9IbRxMgREnsXOJ6qB1KsSD8lOhGYsC5ja6Y_zok8Q/exec";
 
 // ===== STAFF FUNCTIONS =====
 function loadMembers(){
@@ -127,29 +127,41 @@ function loadManagerPending(){
  fetch(URL,{method:"POST",body:JSON.stringify({action:"getManagerPending"})})
  .then(r=>r.json())
  .then(list=>{
-   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>New Amount</th><th>Action</th></tr>";
+
    list.forEach(x=>{
      h+=`<tr>
 <td>${x.RequestID}</td>
 <td>${x.MemberID} - ${x.Name}</td>
 <td>${x.Amount}</td>
+<td><input id="amt_${x.RequestID}" value="${x.Amount}" type="number"></td>
 <td>
 <button onclick="managerAction('${x.RequestID}',true)">Approve</button>
 <button class="reject" onclick="managerAction('${x.RequestID}',false)">Reject</button>
 </td>
 </tr>`;
    });
+
    managerTbl.innerHTML=h;
  });
 }
 
+
 function managerAction(id,approve){
- fetch(URL,{method:"POST",body:JSON.stringify({
-   action:"managerAction",
-   RequestID:id,
-   approve:approve
- })}).then(()=>loadManagerPending());
+
+ const newAmount = document.getElementById("amt_"+id).value;
+
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({
+     action:"managerAction",
+     RequestID:id,
+     approve:approve,
+     Amount:newAmount
+   })
+ }).then(()=>loadManagerPending());
 }
+
 
 // ===== ADMIN FUNCTIONS =====
 function loadAdminPending(){
@@ -162,6 +174,7 @@ function loadAdminPending(){
 <td>${x.RequestID}</td>
 <td>${x.MemberID} - ${x.Name}</td>
 <td>${x.Amount}</td>
+<td><input id="admamt_${x.RequestID}" value="${x.Amount}" type="number"></td>
 <td>
 <button onclick="adminApprove('${x.RequestID}')">Approve</button>
 <button class="reject" onclick="adminReject('${x.RequestID}')">Reject</button>
