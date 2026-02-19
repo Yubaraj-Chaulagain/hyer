@@ -21,10 +21,10 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
 
 <!-- Tabs -->
 <div class="tabs">
-  <button class="tablinks active" onclick="openTab('loginTab')">Login</button>
-  <button class="tablinks" onclick="openTab('staffTab')">Staff</button>
-  <button class="tablinks" onclick="openTab('managerTab')">Manager</button>
-  <button class="tablinks" onclick="openTab('adminTab')">Admin</button>
+  <button class="tablinks active" onclick="openTab('loginTab', this)">Login</button>
+  <button class="tablinks" onclick="openTab('staffTab', this)">Staff</button>
+  <button class="tablinks" onclick="openTab('managerTab', this)">Manager</button>
+  <button class="tablinks" onclick="openTab('adminTab', this)">Admin</button>
 </div>
 
 <!-- Login -->
@@ -64,227 +64,175 @@ button.action{background:#22c55e;border:none;padding:5px 10px;margin:2px;cursor:
 <script>
 let user={};
 
-// Tab switching
-function openTab(tabName){
+// ---------------- Tab Switching ----------------
+function openTab(tabName, el){
   document.querySelectorAll(".tabcontent").forEach(tab=>tab.style.display="none");
   document.querySelectorAll(".tablinks").forEach(btn=>btn.classList.remove("active"));
   document.getElementById(tabName).style.display="block";
-  event.currentTarget.classList.add("active");
+  el.classList.add("active");
 }
 
-// Web App URL
-const URL="https://script.google.com/macros/s/AKfycbz2u6QX920V9ZGDzwoilCRNH16KxnknTHls3d5LNowfi0jMdJ-0GU4bKcv03tM6XzOWfg/exec";
+// ---------------- Web App URL ----------------
+const URL="https://script.google.com/macros/s/AKfycbz2u6QX920V9ZGDzwoilCRNH16KxnknTHls3d5LNowfi0jMdJ-0GU4bKcv03tM6XzOWfg/exec"; // replace with your deployed Apps Script URL
 
-// Login function
+// ---------------- LOGIN ----------------
 function login(){
   const codeVal = document.getElementById("code").value.trim();
-  
   fetch(URL,{
     method:"POST",
     body:JSON.stringify({action:"login", code: codeVal})
   })
   .then(r=>r.json())
   .then(u=>{
-    if(!u.status){
-      alert("Wrong Code");
-      return;
-    }
+    if(!u.status) return alert("Wrong Code");
     user=u;
 
     if(u.role=="Staff"){
-      openTab('staffTab');
-      loadMyRequests();   // auto load staff table
+      openTab('staffTab', document.querySelector('.tablinks:nth-child(2)'));
+      loadMyRequests();
     }
     if(u.role=="Manager"){
-      openTab('managerTab');
+      openTab('managerTab', document.querySelector('.tablinks:nth-child(3)'));
       loadPending();
     }
     if(u.role=="Admin"){
-      openTab('adminTab');
+      openTab('adminTab', document.querySelector('.tablinks:nth-child(4)'));
       loadManagerApproved();
       loadPending();
     }
   });
 }
 
-  
+// ---------------- STAFF REQUEST ----------------
 function requestLoan(){
-
-fetch(URL,{
-  method:"POST",
-  body:JSON.stringify({
-    action:"addLoanRequest",
-    MemberID:m.value,
-    Amount:a.value,
-    Months:mo.value,
-    Interest:i.value,
-    BranchCode:user.branch,     // ✅ ADD THIS
-    StaffCode:user.code         // ✅ ADD THIS
-  })
-})
-.then(r=>r.json())
-.then(res=>{
-  if(res.status){
-    alert("Request Sent ✅");
-    document.getElementById("requests").reset();
-  }
-});
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addLoanRequest",
+      MemberID:m.value,
+      Amount:a.value,
+      Months:mo.value,
+      Interest:i.value,
+      BranchCode:user.branch,
+      StaffCode:user.code
+    })
+  }).then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      alert("Request Sent ✅");
+      document.getElementById("requests").reset();
+      loadMyRequests();
+    }
+  });
 }
 
-function loadPending(){
-fetch(URL,{method:"POST",body:JSON.stringify({
-action:"getPending",branch:user.branch
-})}).then(r=>r.json()).then(list=>{
-
-let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Action</th></tr>";
-
-list.forEach(x=>{
-h+=`<tr>
-<td>${x.RequestID}</td>
-<td>${x.MemberID}</td>
-
-<td>
-<input id="amt_${x.RequestID}" value="${x.Amount}">
-</td>
-
-<td>
-<button onclick="updateAmount('${x.RequestID}')">Save</button>
-</td>
-
-<td>
-<button onclick="managerAction('${x.RequestID}',true)">Approve</button>
-<button onclick="managerAction('${x.RequestID}',false)">Reject</button>
-</td>
-</tr>`;
-});
-
-tbl.innerHTML=h;
-});
+// ---------------- STAFF TABLE ----------------
+function loadMyRequests(){
+  fetch(URL,{
+    method:"POST",
+    body:JSON.stringify({action:"getStaffRequests", StaffCode:user.code})
+  }).then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      let color = x.Status=="ManagerRejected" || x.Status=="AdminRejected"
+                  ? "style='color:red'"
+                  : x.Status=="AdminApproved" ? "style='color:lightgreen'" : "";
+      let actionBtn = "";
+      if(x.Status=="ManagerRejected" || x.Status=="AdminRejected"){
+        actionBtn = `<button onclick="reRequest('${x.RequestID}')">Re-Request</button>`;
+      }
+      h+=`<tr ${color}>
+        <td>${x.RequestID}</td>
+        <td>${x.MemberID}</td>
+        <td>${x.Amount}</td>
+        <td>${x.Status}</td>
+        <td>${actionBtn}</td>
+      </tr>`;
+    });
+    staffTbl.innerHTML=h;
+  });
 }
 
-function managerAction(id,a){
-fetch(URL,{method:"POST",body:JSON.stringify({
-action:"managerAction",
-RequestID:id,
-approve:a
-})}).then(()=>loadPending());
-}
-
-function loadManagerApproved(){
-fetch(URL,{method:"POST",body:JSON.stringify({
-action:"getManagerApproved"
-})}).then(r=>r.json()).then(list=>{
-
-let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Final</th></tr>";
-
-list.forEach(x=>{
-h+=`<tr>
-<td>${x.RequestID}</td>
-<td>${x.MemberID}</td>
-
-<td>
-<input id="adm_${x.RequestID}" value="${x.Amount}">
-</td>
-<td>
-<input id="reason_${x.RequestID}" placeholder="Reason">
-</td>
-<td>
-<button onclick="rejectWithReason('${x.RequestID}')">Reject</button>
-<button onclick="updateAmount('${x.RequestID}',true)">Save</button>
-</td>
-
-<td>
-<button onclick="adminApprove('${x.RequestID}')">Approve</button>
-</td>
-</tr>`;
-});
-
-tbl2.innerHTML=h;
-});
-}
-
-function updateAmount(id,admin=false){
-
-let amt = admin
-? document.getElementById("adm_"+id).value
-: document.getElementById("amt_"+id).value;
-
-fetch(URL,{
-method:"POST",
-body:JSON.stringify({
-action:"updateAmount",
-RequestID:id,
-Amount:amt
-})
-}).then(()=>alert("Amount Updated ✅"));
-}
-
- function loadMyRequests(){
-fetch(URL,{
-  method:"POST",
-  body:JSON.stringify({
-    action:"getStaffRequests",
-    StaffCode:user.code
-  })
-})
-.then(r=>r.json())
-.then(list=>{
-
-let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
-
-list.forEach(x=>{
-let color =
-x.Status=="ManagerRejected" || x.Status=="AdminRejected"
-? "style='color:red'"
-: x.Status=="AdminApproved"
-? "style='color:lightgreen'"
-: "";
-
-let actionBtn = "";
-if(x.Status=="ManagerRejected" || x.Status=="AdminRejected"){
-  actionBtn = `<button onclick="reRequest('${x.RequestID}')">Re-Request</button>`;
-}
-
-h+=`<tr ${color}>
-<td>${x.RequestID}</td>
-<td>${x.MemberID}</td>
-<td>${x.Amount}</td>
-<td>${x.Status}</td>
-<td>${actionBtn}</td>
-</tr>`;
-});
-
-staffTbl.innerHTML=h;
-});
-
-  function reRequest(id){
-  // Get amount from the table input
+// ---------------- RE-REQUEST ----------------
+function reRequest(id){
   let amtInput = document.getElementById("amt_" + id);
   let newAmount = prompt("Enter new Amount:", amtInput ? amtInput.value : "");
 
   fetch(URL,{
     method:"POST",
-    body:JSON.stringify({
-      action:"reRequest",
-      RequestID:id,
-      Amount:newAmount
-    })
+    body:JSON.stringify({action:"reRequest", RequestID:id, Amount:newAmount})
   })
   .then(r=>r.json())
   .then(res=>{
     if(res.status){
       alert("Request Re-submitted ✅");
-      loadMyRequests(); // refresh staff table
+      loadMyRequests();
     }
   });
 }
 
+// ---------------- MANAGER ----------------
+function loadPending(){
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getPending",branch:user.branch})})
+  .then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      h+=`<tr>
+        <td>${x.RequestID}</td>
+        <td>${x.MemberID}</td>
+        <td><input id="amt_${x.RequestID}" value="${x.Amount}"></td>
+        <td><button onclick="updateAmount('${x.RequestID}')">Save</button></td>
+        <td>
+          <button onclick="managerAction('${x.RequestID}',true)">Approve</button>
+          <button onclick="managerAction('${x.RequestID}',false)">Reject</button>
+        </td>
+      </tr>`;
+    });
+    tbl.innerHTML=h;
+  });
+}
+
+function managerAction(id,a){
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"managerAction", RequestID:id, approve:a})})
+  .then(()=>loadPending());
+}
+
+function updateAmount(id,admin=false){
+  let amt = admin
+    ? document.getElementById("adm_"+id).value
+    : document.getElementById("amt_"+id).value;
+
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"updateAmount", RequestID:id, Amount:amt})})
+  .then(()=>alert("Amount Updated ✅"));
+}
+
+// ---------------- ADMIN ----------------
+function loadManagerApproved(){
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"getManagerApproved"})})
+  .then(r=>r.json()).then(list=>{
+    let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Edit</th><th>Final</th></tr>";
+    list.forEach(x=>{
+      h+=`<tr>
+        <td>${x.RequestID}</td>
+        <td>${x.MemberID}</td>
+        <td><input id="adm_${x.RequestID}" value="${x.Amount}"></td>
+        <td><input id="reason_${x.RequestID}" placeholder="Reason"></td>
+        <td>
+          <button onclick="rejectWithReason('${x.RequestID}')">Reject</button>
+          <button onclick="updateAmount('${x.RequestID}',true)">Save</button>
+          <button onclick="adminApprove('${x.RequestID}')">Approve</button>
+        </td>
+      </tr>`;
+    });
+    tbl2.innerHTML=h;
+  });
+}
+
 function adminApprove(id){
-fetch(URL,{method:"POST",body:JSON.stringify({
-action:"adminApprove",
-RequestID:id
-})}).then(()=>alert("Loan Added"));
+  fetch(URL,{method:"POST",body:JSON.stringify({action:"adminApprove", RequestID:id})})
+  .then(()=>alert("Loan Added ✅"));
 }
 </script>
+
 </body>
 </html>
