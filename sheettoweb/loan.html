@@ -19,14 +19,20 @@ Code <input id="code">
 
 <div id="staff" style="display:none">
 <h2>Staff Loan Request</h2>
-  <form id="requests" >
+
+<form id="requests">
 MemberID <input id="m"><br>
 Amount <input id="a"><br>
 Months <input id="mo"><br>
 Interest <input id="i"><br>
-<button onclick="requestLoan()">Send</button>
-    </form>
+<button type="button" onclick="requestLoan()">Send</button>
+</form>
+
+<h3>My Requests</h3>
+<button onclick="loadMyRequests()">Load</button>
+<table id="staffTbl"></table>
 </div>
+
 
 <div id="manager" style="display:none">
 <h2>Manager Approval</h2>
@@ -43,7 +49,7 @@ Interest <input id="i"><br>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbyhoh9nMwmXV-E5rFwVDhkUoIex5KnOF3iVceIONIt99ZfCy-S0hYDLVjNSw3-v9LnBNA/exec";
+const URL="https://script.google.com/macros/s/AKfycbzAy3ykSFK6RVEuXLqWu7wRfzjYdoDQCZXdFdTZjeXsLnIaUxYg7ey6pJoebLmWUd0mwg/exec";
 let user={};
 
 function login(){
@@ -172,6 +178,40 @@ RequestID:id,
 Amount:amt
 })
 }).then(()=>alert("Amount Updated ✅"));
+}
+
+  function loadMyRequests(){
+fetch(URL,{
+method:"POST",
+body:JSON.stringify({
+action:"getStaffRequests",
+StaffCode:user.code
+})
+})
+.then(r=>r.json())
+.then(list=>{
+
+let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th></tr>";
+
+list.forEach(x=>{
+let color =
+x.Status=="ManagerRejected" || x.Status=="AdminRejected"
+? "style='color:red'"
+: x.Status=="AdminApproved"
+? "style='color:lightgreen'"
+: "";
+
+h+=`<tr ${color}>
+<td>${x.RequestID}</td>
+<td>${x.MemberID}</td>
+<td>${x.Amount}</td>
+<td>${x.Status}</td>
+<td>${x.RejectReason || ""}</td>
+</tr>`;
+});
+
+staffTbl.innerHTML=h;
+});
 }
 
   
