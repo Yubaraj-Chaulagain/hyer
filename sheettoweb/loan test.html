@@ -2,127 +2,32 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Loan Workflow System</title>
-<style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family: 'Segoe UI', sans-serif;
-}
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Workflow System</title>
+    <style>
+        /* Base styles (Mobile First) */
+        body { font-family: sans-serif; margin: 0; padding: 10px; }
+        .container { width: 100%; background-color: lightblue; padding: 20px; }
 
-body{
-  background:#0f172a;
-  color:#fff;
-  max-width:480px;
-  margin:auto;
-  padding:15px;
-}
+        /* Mobile Styles (< 480px) */
+        @media only screen and (max-width: 480px) {
+            body { background-color: #ffcccc; }
+            .container { font-size: 14px; }
+        }
 
-h3{
-  margin:10px 0;
-  font-size:18px;
-  color:#22c55e;
-}
+        /* Tablet Styles (481px - 768px) */
+        @media only screen and (min-width: 481px) and (max-width: 768px) {
+            body { background-color: #ccffcc; }
+            .container { font-size: 16px; }
+        }
 
-nav{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-
-nav button{
-  flex:1;
-  margin:3px;
-  padding:8px;
-  border:none;
-  border-radius:8px;
-  font-size:12px;
-  background:#1e293b;
-  color:#fff;
-}
-
-nav button:hover{
-  background:#22c55e;
-  color:#000;
-}
-
-.tab{
-  display:none;
-  margin-top:10px;
-  background:#1e293b;
-  padding:12px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.4);
-}
-
-input,select{
-  width:100%;
-  padding:8px;
-  margin:6px 0;
-  border-radius:8px;
-  border:none;
-  background:#0f172a;
-  color:#fff;
-  border:1px solid #334155;
-}
-
-button{
-  width:100%;
-  padding:10px;
-  margin-top:8px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  font-size:14px;
-  background:#22c55e;
-  color:#000;
-}
-
-button:active{
-  transform:scale(0.97);
-}
-
-.reject{
-  background:#ef4444;
-  color:#fff;
-}
-
-.reRequest{
-  background:#facc15;
-  color:#000;
-}
-
-.edit{
-  background:#3b82f6;
-  color:#fff;
-}
-
-table{
-  width:100%;
-  margin-top:10px;
-  border-collapse:collapse;
-  font-size:12px;
-}
-
-th,td{
-  border:1px solid #334155;
-  padding:6px;
-  text-align:center;
-}
-
-th{
-  background:#0f172a;
-  color:#22c55e;
-}
-
-@media(max-width:480px){
-  table{
-    font-size:11px;
-  }
-}
-</style>
+        /* Chromebook & Computer Styles (> 769px) */
+        @media only screen and (min-width: 769px) {
+            body { background-color: #ccccff; }
+            .container { width: 80%; margin: 0 auto; font-size: 18px; }
+        }
+    </style>
 </head>
 <body>
 
