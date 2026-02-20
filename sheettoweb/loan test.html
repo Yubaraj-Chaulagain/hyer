@@ -58,7 +58,7 @@ Interest % <input id="staffInterest" type="number"><br>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbylxQH9pXO3itHsmGSWiN_VZL9X9rlpbD7eQyi71q6QGTx7e-1l7jgG1f7DJDMkOC-eOg/exec";
+const URL="https://script.google.com/macros/s/AKfycbxLe_AM3mvaVJowu2WfiXpbRrl85utnRfc_xcUY-YTuvRkC0D-CP37YuC7oi01CQB375g/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -101,25 +101,27 @@ function sendRequest(){
 
 // Load rejected loans to allow Re-Request + Delete
 function loadStaffRejected(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"getRejected"})})
- .then(r=>r.json())
- .then(list=>{
-   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
-   list.forEach(x=>{
-     h+=`<tr>
-<td>${x.RequestID}</td>
-<td>${x.MemberID} - ${x.Name}</td>
-<td>${x.Amount}</td>
-<td>
-<button class="reRequest" onclick="reRequest('${x.RequestID}')">Re-Request</button>
-<button class="reject" onclick="deleteRequest('${x.RequestID}')">Delete</button>
-</td>
-</tr>`;
+ fetch(URL, {
+   method: "POST",
+   body: JSON.stringify({action:"getRejected"})
+ })
+ .then(r => r.json())
+ .then(list => {
+   let h = "<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+   list.forEach(x => {
+     h += `<tr>
+       <td>${x.RequestID}</td>
+       <td>${x.MemberID} - ${x.Name}</td>
+       <td>${x.Amount}</td>
+       <td>
+         <button class="reRequest" onclick="reRequest('${x.RequestID}')">Re-Request</button>
+         <button class="reject" onclick="deleteRequest('${x.RequestID}')">Delete</button>
+       </td>
+     </tr>`;
    });
-   staffTbl.innerHTML=h;
+   staffTbl.innerHTML = h;
  });
 }
-
 function reRequest(id){
  fetch(URL,{method:"POST",body:JSON.stringify({
    action:"reRequest",
@@ -128,10 +130,11 @@ function reRequest(id){
 }
 
 function deleteRequest(id){
- fetch(URL,{method:"POST",body:JSON.stringify({
-   action:"deleteRequest",
-   RequestID:id
- })}).then(()=>loadStaffRejected());
+ fetch(URL, {
+   method:"POST",
+   body: JSON.stringify({action:"deleteRequest", RequestID:id})
+ })
+ .then(()=>loadStaffRejected());
 }
 
 // ===== MANAGER FUNCTIONS =====
