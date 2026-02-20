@@ -4,17 +4,124 @@
 <meta charset="UTF-8">
 <title>Loan Workflow System</title>
 <style>
-body{font-family:Arial;background:#0f172a;color:#fff;text-align:center}
-input,button,select{padding:6px;margin:4px}
-table{margin:auto;border-collapse:collapse;width:90%}
-th,td{border:1px solid #fff;padding:6px;text-align:center}
-button{background:#22c55e;border:none;color:#000;font-weight:bold;cursor:pointer}
-.reject{background:#ef4444;color:#fff;}
-.reRequest{background:#facc15;color:#000;}
-.edit{background:#3b82f6;color:#fff;}
-.tab{display:none;margin-top:10px;}
-nav{margin:10px;}
-nav button{margin:2px;padding:6px;}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+  background:#0f172a;
+  color:#fff;
+  max-width:480px;
+  margin:auto;
+  padding:15px;
+}
+
+h3{
+  margin:10px 0;
+  font-size:18px;
+  color:#22c55e;
+}
+
+nav{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+nav button{
+  flex:1;
+  margin:3px;
+  padding:8px;
+  border:none;
+  border-radius:8px;
+  font-size:12px;
+  background:#1e293b;
+  color:#fff;
+}
+
+nav button:hover{
+  background:#22c55e;
+  color:#000;
+}
+
+.tab{
+  display:none;
+  margin-top:10px;
+  background:#1e293b;
+  padding:12px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+
+input,select{
+  width:100%;
+  padding:8px;
+  margin:6px 0;
+  border-radius:8px;
+  border:none;
+  background:#0f172a;
+  color:#fff;
+  border:1px solid #334155;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  font-size:14px;
+  background:#22c55e;
+  color:#000;
+}
+
+button:active{
+  transform:scale(0.97);
+}
+
+.reject{
+  background:#ef4444;
+  color:#fff;
+}
+
+.reRequest{
+  background:#facc15;
+  color:#000;
+}
+
+.edit{
+  background:#3b82f6;
+  color:#fff;
+}
+
+table{
+  width:100%;
+  margin-top:10px;
+  border-collapse:collapse;
+  font-size:12px;
+}
+
+th,td{
+  border:1px solid #334155;
+  padding:6px;
+  text-align:center;
+}
+
+th{
+  background:#0f172a;
+  color:#22c55e;
+}
+
+@media(max-width:480px){
+  table{
+    font-size:11px;
+  }
+}
 </style>
 </head>
 <body>
