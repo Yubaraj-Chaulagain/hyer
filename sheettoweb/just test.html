@@ -2,213 +2,263 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Loan Workflow System</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-body{background:#0f172a;color:#fff;font-family:Arial;}
-.container{max-width:1200px;margin:auto;padding:20px;}
-.tabs{display:flex;justify-content:center;margin-bottom:20px;}
-.tabs button{padding:10px 20px;margin:0 5px;background:#1e293b;color:#fff;border:none;cursor:pointer;}
-.tabs button.active{background:#22c55e;color:#000;}
-.tabcontent{display:none;}
-table{width:100%;color:#fff;}
-table, th, td{border:1px solid #fff;}
-th, td{padding:8px;text-align:center;}
-button.action{padding:5px 10px;margin:2px;background:#22c55e;border:none;color:#000;cursor:pointer;}
-input,select{padding:5px;margin:3px;}
-</style>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Workflow System</title>
+    <style>
+        /* Base styles (Mobile First) */
+        body { font-family: sans-serif; margin: 0; padding: 10px; }
+        .container { width: 100%; background-color: lightblue; padding: 20px; }
+
+        /* Mobile Styles (< 480px) */
+        @media only screen and (max-width: 480px) {
+            body { background-color: #ffcccc; }
+            .container { font-size: 14px; }
+        }
+
+        /* Tablet Styles (481px - 768px) */
+        @media only screen and (min-width: 481px) and (max-width: 768px) {
+            body { background-color: #ccffcc; }
+            .container { font-size: 16px; }
+        }
+
+        /* Chromebook & Computer Styles (> 769px) */
+        @media only screen and (min-width: 769px) {
+            body { background-color: #ccccff; }
+            .container { width: 80%; margin: 0 auto; font-size: 18px; }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h2 class="text-center">Loan Workflow System</h2>
 
-<div class="tabs">
-  <button class="tablinks active" onclick="openTab('loginTab')">Login</button>
-  <button class="tablinks" onclick="openTab('staffTab')">Staff</button>
-  <button class="tablinks" onclick="openTab('managerTab')">Manager</button>
-  <button class="tablinks" onclick="openTab('adminTab')">Admin</button>
-  <button class="tablinks" onclick="openTab('dashboardTab')">Dashboard</button>
+<!-- ===== TABS ===== -->
+<nav id="tabsNav">
+  <button onclick="showTab('newRequest')">New Request</button>
+<button onclick="showTab('staffApproved')">Approved Loans</button>
+  <button onclick="showTab('rejected')">Rejected / Re-Request</button>
+  <button onclick="showTab('managerTab')">Manager Panel</button>
+  <button onclick="showTab('adminTab')">Admin Panel</button>
+</nav>
+
+<!-- ===== STAFF NEW REQUEST ===== -->
+<div id="newRequest" class="tab">
+<h3>New Loan Request</h3>
+MemberID <select id="staffMember"></select><br>
+Amount <input id="staffAmount" type="number"><br>
+Months <input id="staffMonths" type="number"><br>
+Interest % <input id="staffInterest" type="number"><br>
+<button onclick="sendRequest()">Send Loan Request</button>
 </div>
 
-<!-- LOGIN -->
-<div id="loginTab" class="tabcontent" style="display:block;">
-<div class="text-center">
-  Code: <input id="code" placeholder="Code"> 
-  Pass: <input id="pass" type="password" placeholder="Password">
-  <button onclick="login()" class="action">Login</button>
+<!-- ===== STAFF REJECTED / RE-REQUEST ===== -->
+<div id="rejected" class="tab">
+<h3>Rejected / Re-Requestable Loans</h3>
+<table id="staffTbl"></table>
 </div>
-</div>
-
-<!-- STAFF -->
-<div id="staffTab" class="tabcontent">
-<h4>Staff Loan Request</h4>
-<form id="requestForm">
-MemberID <input id="member"><br>
-Amount <input id="amount"><br>
-Months <input id="months"><br>
-Interest <input id="interest"><br>
-<button type="button" onclick="addRequest()" class="action">Send Request</button>
-</form>
-
-<h5>My Requests</h5>
-<button class="action" onclick="loadStaffRequests()">Load Requests</button>
-<table id="staffTbl" class="table table-dark table-striped mt-2"></table>
+  <!-- ===== STAFF APPROVED LOANS ===== -->
+<div id="staffApproved" class="tab">
+  <h3>Approved Loans (Ready to Disburse)</h3>
+  <table id="staffApprovedTbl"></table>
 </div>
 
-<!-- MANAGER -->
-<div id="managerTab" class="tabcontent">
-<h4>Manager Approvals</h4>
-<button class="action" onclick="loadPending()">Load Pending</button>
-<table id="managerTbl" class="table table-dark table-striped mt-2"></table>
+<!-- Nav button -->
+<button onclick="showTab('staffApproved')">Approved Loans</button>
+
+<!-- ===== MANAGER PANEL ===== -->
+<div id="managerTab" class="tab">
+<h3>Manager Panel</h3>
+<button onclick="loadManagerPending()">Load Pending</button>
+<table id="managerTbl"></table>
 </div>
 
-<!-- ADMIN -->
-<div id="adminTab" class="tabcontent">
-<h4>Admin Final Approve</h4>
-<button class="action" onclick="loadManagerApproved()">Load Manager Approved</button>
-<table id="adminTbl" class="table table-dark table-striped mt-2"></table>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboardTab" class="tabcontent">
-<h4>Dashboard</h4>
-<button class="action" onclick="loadDashboard()">Load Dashboard</button>
-<div id="dashData" class="mt-3"></div>
-</div>
-
+<!-- ===== ADMIN PANEL ===== -->
+<div id="adminTab" class="tab">
+<h3>Admin Panel</h3>
+<button onclick="loadAdminPending()">Load Manager Approved</button>
+<table id="adminTbl"></table>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycby8S7R_LZNXruJoOmTW5X5uodQjPsFZqMfMNGD0DzefayIBP1wVB5onr12RfnJeUUuVaA/exec";
-let user={};
+const URL="https://script.google.com/macros/s/AKfycbwd0t2B2XLR6zzxfDF-v2kPlHzYF4gl2mpJEpMTpBwh63rLnJf4v0c5Q6OZf8S9DqaZ3Q/exec";
 
-// ===== TAB SWITCH =====
-function openTab(tab){
- document.querySelectorAll(".tabcontent").forEach(t=>t.style.display="none");
- document.querySelectorAll(".tablinks").forEach(b=>b.classList.remove("active"));
- document.getElementById(tab).style.display="block";
- event.currentTarget.classList.add("active");
+// ===== ROLE BASED VIEW =====
+function switchRole(){
+  const role = roleSelect.value;
+  const tabs = {newRequest:['staff','admin'], rejected:['staff','admin'], managerTab:['manager','admin'], adminTab:['admin']};
+  for(const tab in tabs){
+    document.getElementById(tab).style.display = tabs[tab].includes(role)?'block':'none';
+  }
 }
 
-// ===== LOGIN =====
-function login(){
- const code=document.getElementById("code").value;
- const pass=document.getElementById("pass").value;
- fetch(URL,{method:"POST",body:JSON.stringify({action:"login",code,pass})})
- .then(r=>r.json()).then(u=>{
-   if(!u.status)return alert("Invalid Code/Password");
-   user=u;
-   alert("Login Success! Role: "+u.role);
-   if(u.role=="Staff") openTab('staffTab');
-   if(u.role=="Manager") openTab('managerTab');
-   if(u.role=="Admin") openTab('adminTab');
- });
+// Show tab by clicking
+function showTab(tabId){
+  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+  document.getElementById(tabId).style.display='block';
 }
 
-// ===== STAFF REQUEST =====
-function addRequest(){
- const data={
-  action:"addRequest",
-  member:document.getElementById("member").value,
-  amount:document.getElementById("amount").value,
-  months:document.getElementById("months").value,
-  interest:document.getElementById("interest").value,
-  staff:user.code,
-  branch:user.branch
- };
- fetch(URL,{method:"POST",body:JSON.stringify(data)})
- .then(r=>r.json()).then(res=>{
-   if(res.status){
-     alert("Request Sent ✅");
-     document.getElementById("requestForm").reset();
-   }
- });
-}
-
-function loadStaffRequests(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.code})})
+// ===== STAFF FUNCTIONS =====
+function loadMembers(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getMembers"})})
  .then(r=>r.json()).then(list=>{
-   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
-   list.forEach(x=>{
-     let btn="";
-     if(x[8]=="ManagerRejected" || x[8]=="AdminRejected"){
-       btn=`<button class="action" onclick="reRequest('${x[0]}')">Re-Request</button>`;
-     }
-     h+=`<tr>
-     <td>${x[0]}</td>
-     <td>${x[2]}</td>
-     <td>${x[3]}</td>
-     <td>${x[8]}</td>
-     <td>${btn}</td>
+  staffMember.innerHTML="";
+  list.forEach(x=>{
+    staffMember.innerHTML+=`<option value="${x.MemberID}">${x.MemberID} - ${x.Name}</option>`;
+  });
+ });
+}
+
+function sendRequest(){
+ fetch(URL,{method:"POST",body:JSON.stringify({
+   action:"addLoanRequest",
+   MemberID:staffMember.value,
+   Amount:staffAmount.value,
+   Months:staffMonths.value,
+   Interest:staffInterest.value
+ })}).then(r=>r.json()).then(a=>{
+   alert("Loan Request Sent");
+   loadStaffRejected();
+ });
+}
+
+// Load rejected loans to allow Re-Request + Delete
+function loadStaffRejected(){
+ fetch(URL, {
+   method: "POST",
+   body: JSON.stringify({action:"getRejected"})
+ })
+ .then(r => r.json())
+ .then(list => {
+   let h = "<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+   list.forEach(x => {
+     h += `<tr>
+       <td>${x.RequestID}</td>
+       <td>${x.MemberID} - ${x.Name}</td>
+       <td>${x.Amount}</td>
+       <td>
+         <button class="reRequest" onclick="reRequest('${x.RequestID}')">Re-Request</button>
+         <button class="reject" onclick="deleteRequest('${x.RequestID}')">Delete</button>
+       </td>
      </tr>`;
    });
-   document.getElementById("staffTbl").innerHTML=h;
+   staffTbl.innerHTML = h;
  });
 }
-
 function reRequest(id){
- const amt=prompt("Enter new Amount:");
- fetch(URL,{method:"POST",body:JSON.stringify({action:"adminAction",id:id,approve:true})})
- .then(r=>r.json()).then(res=>{
-   if(res.status){alert("Re-Requested ✅"); loadStaffRequests();}
- });
+ fetch(URL,{method:"POST",body:JSON.stringify({
+   action:"reRequest",
+   RequestID:id
+ })}).then(()=>loadStaffRejected());
 }
 
-// ===== MANAGER =====
-function loadPending(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.branch})})
- .then(r=>r.json()).then(list=>{
-   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Approve</th><th>Reject</th></tr>";
+function deleteRequest(id){
+ fetch(URL, {
+   method:"POST",
+   body: JSON.stringify({action:"deleteRequest", RequestID:id})
+ })
+ .then(()=>loadStaffRejected());
+}
+
+  function loadStaffApproved(){
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({action:"getStaffApproved"})
+  })
+  .then(r=>r.json())
+  .then(list=>{
+    let h = "<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      h += `<tr>
+        <td>${x.RequestID}</td>
+        <td>${x.MemberID} - ${x.Name}</td>
+        <td>${x.Amount}</td>
+        <td><button onclick="disburseLoan('${x.RequestID}')">Disburse Loan</button></td>
+      </tr>`;
+    });
+    staffApprovedTbl.innerHTML = h;
+  });
+}
+  function disburseLoan(id){
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({action:"staffDisburse", RequestID:id})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      alert("Loan Disbursed Successfully!");
+      loadStaffApproved();
+    } else {
+      alert("Error!");
+    }
+  });
+}
+// ===== MANAGER FUNCTIONS =====
+function loadManagerPending(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getManagerPending"})})
+ .then(r=>r.json())
+ .then(list=>{
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
    list.forEach(x=>{
-     if(x[8]=="Pending"){
      h+=`<tr>
-     <td>${x[0]}</td>
-     <td>${x[2]}</td>
-     <td>${x[3]}</td>
-     <td><button class="action" onclick="managerAction('${x[0]}',true)">Approve</button></td>
-     <td><button class="action" onclick="managerAction('${x[0]}',false)">Reject</button></td>
-     </tr>`;}
+<td>${x.RequestID}</td>
+<td>${x.MemberID} - ${x.Name}</td>
+<td><input value="${x.Amount}" id="amt_${x.RequestID}" style="width:80px"></td>
+<td>
+<button onclick="managerAction('${x.RequestID}',true)">Approve</button>
+<button class="reject" onclick="managerAction('${x.RequestID}',false)">Reject</button>
+</td>
+</tr>`;
    });
-   document.getElementById("managerTbl").innerHTML=h;
+   managerTbl.innerHTML=h;
  });
 }
 
 function managerAction(id,approve){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"managerAction",id,approve})})
- .then(()=>loadPending());
+ const newAmt = document.getElementById(`amt_${id}`)?.value;
+ fetch(URL,{method:"POST",body:JSON.stringify({
+   action:"managerAction",
+   RequestID:id,
+   approve:approve,
+   Amount:newAmt
+ })}).then(()=>loadManagerPending());
 }
 
-// ===== ADMIN =====
-function loadManagerApproved(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.branch})})
- .then(r=>r.json()).then(list=>{
-   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Approve</th><th>Reject</th></tr>";
+// ===== ADMIN FUNCTIONS =====
+function loadAdminPending(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getAdminPending"})})
+ .then(r=>r.json())
+ .then(list=>{
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
    list.forEach(x=>{
-     if(x[8]=="ManagerApproved"){
      h+=`<tr>
-     <td>${x[0]}</td>
-     <td>${x[2]}</td>
-     <td>${x[3]}</td>
-     <td><button class="action" onclick="adminAction('${x[0]}',true)">Approve</button></td>
-     <td><button class="action" onclick="adminAction('${x[0]}',false)">Reject</button></td>
-     </tr>`;}
+<td>${x.RequestID}</td>
+<td>${x.MemberID} - ${x.Name}</td>
+<td><input value="${x.Amount}" id="admamt_${x.RequestID}" style="width:80px"></td>
+<td>
+<button onclick="adminApprove('${x.RequestID}')">Approve</button>
+<button class="reject" onclick="adminReject('${x.RequestID}')">Reject</button>
+</td>
+</tr>`;
    });
-   document.getElementById("adminTbl").innerHTML=h;
+   adminTbl.innerHTML=h;
  });
 }
 
-function adminAction(id,approve){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"adminAction",id,approve})})
- .then(()=>loadManagerApproved());
+function adminApprove(id){
+ const newAmt = document.getElementById(`admamt_${id}`)?.value;
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"adminApprove",RequestID:id,Amount:newAmt})})
+ .then(()=>loadAdminPending());
 }
 
-// ===== DASHBOARD =====
-function loadDashboard(){
- fetch(URL,{method:"POST",body:JSON.stringify({action:"dashboard"})})
- .then(r=>r.json()).then(d=>{
-   document.getElementById("dashData").innerHTML=`<b>Total Loan:</b> ${d.totalLoan} | <b>Total Paid:</b> ${d.totalPaid}`;
- });
+function adminReject(id){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"adminReject",RequestID:id})})
+ .then(()=>loadAdminPending());
 }
+
+// Init
+loadMembers();
+loadStaffRejected();
+switchRole();
 </script>
 </body>
 </html>
