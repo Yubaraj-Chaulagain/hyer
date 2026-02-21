@@ -3,100 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <title>Loan Workflow</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-body{background:#f4f6f9}
-.card{border-radius:15px}
+body{background:#f1f5f9}
+.card{border-radius:20px}
 </style>
 </head>
 
-<body class="p-3">
+<body class="p-4">
 
-<div id="loginBox" class="container">
-  <div class="card p-4 col-md-4 mx-auto">
-    <h4 class="text-center">Login</h4>
-    <input id="u" class="form-control my-2" placeholder="Username">
-    <input id="p" type="password" class="form-control my-2" placeholder="Password">
-    <button class="btn btn-primary w-100" onclick="login()">Login</button>
-  </div>
+<div class="container">
+
+<h3 class="text-center mb-3">Loan Workflow System</h3>
+
+<div id="loginBox" class="card p-3">
+<input id="code" class="form-control mb-2" placeholder="Code">
+<input id="pass" class="form-control mb-2" placeholder="Password">
+<button class="btn btn-primary w-100" onclick="login()">Login</button>
 </div>
 
-<div id="system" style="display:none">
+<div id="app" style="display:none">
 
-<ul class="nav nav-tabs" id="tabs"></ul>
+<ul class="nav nav-tabs mb-3">
+<li class="nav-item"><a class="nav-link active" onclick="show('staff')">Staff</a></li>
+<li class="nav-item"><a class="nav-link" onclick="show('manager')">Manager</a></li>
+<li class="nav-item"><a class="nav-link" onclick="show('admin')">Admin</a></li>
+</ul>
 
-<div class="p-3" id="content"></div>
+<div id="staff" class="tab">
+<h5>New Request</h5>
+<input id="m" class="form-control mb-2" placeholder="Member">
+<input id="a" class="form-control mb-2" placeholder="Amount">
+<button class="btn btn-success" onclick="send()">Send</button>
+
+<h5 class="mt-3">My Requests</h5>
+<table class="table" id="staffTbl"></table>
+  <h5 class="mt-3">Pay EMI</h5>
+<input id="loanID" class="form-control mb-2" placeholder="Loan ID">
+<button class="btn btn-warning" onclick="pay()">Pay EMI</button>
+
+</div>
+
+<div id="manager" class="tab">
+  <h5> Manager Panel</h5>
+<h3>📊 Dashboard</h3>
+<button onclick="loadDash()">Load Dashboard</button>
+<div id="dash"></div>
+
+<h3>🔎 Member Loan History</h3>
+<input id="memberSearch" placeholder="Member ID">
+<button onclick="searchMember()">Search</button>
+<table id="history"></table>
+
+<h3>💰 Loan Distributor</h3>
+<input id="loanID" placeholder="Loan ID">
+<input id="distStaff" placeholder="Staff Code">
+<button onclick="distribute()">Assign Distributor</button>
+</div>
+<div id="admin" class="tab">Admin Panel</div>
+
+</div>
 
 </div>
 
 <script>
 
-let ROLE="", BRANCH="", STAFF="";
+const API="https://script.google.com/macros/s/AKfycbxgGyVgnfaWJ5QMk8rI9YRmjRhUxKicJZMJHecByi32mx-WKllz8OfoIRFA1fF7z4qZsw/exec";
+let user={};
 
-function login(){
-  google.script.run.withSuccessHandler(r=>{
-    if(!r.status){ alert("Login Failed"); return;}
+async function login(){
+  let r=await fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"login",
+      code:code.value,
+      pass:pass.value
+    })
+  });
+  let d=await r.json();
 
-    ROLE=r.role;
-    BRANCH=r.branch;
-    STAFF=r.staff;
+  if(!d.status) return alert("Login Failed");
 
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("system").style.display="block";
-
-    loadTabs();
-  }).loginUser(
-    document.getElementById("u").value,
-    document.getElementById("p").value
-  );
+  user=d;
+  loginBox.style.display="none";
+  app.style.display="block";
 }
 
-function loadTabs(){
-
-  let tabs=document.getElementById("tabs");
-
-  if(ROLE=="Staff"){
-    tabs.innerHTML=`
-      <li class="nav-item"><a class="nav-link active" onclick="newReq()">New Request</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="myReq()">My Requests</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="disburse()">Disburse Loan</a></li>
-    `;
-  }
-
-  if(ROLE=="Manager"){
-    tabs.innerHTML=`<li class="nav-item"><a class="nav-link active" onclick="manager()">Manager Approve</a></li>`;
-  }
-
-  if(ROLE=="Admin"){
-    tabs.innerHTML=`<li class="nav-item"><a class="nav-link active" onclick="admin()">Admin Panel</a></li>`;
-  }
-}
-
-function newReq(){
-  document.getElementById("content").innerHTML=`
-  <div class="card p-3">
-    <h5>New Loan Request</h5>
-    <input id="m" class="form-control my-2" placeholder="MemberID">
-    <input id="a" class="form-control my-2" placeholder="Amount">
-    <input id="mo" class="form-control my-2" placeholder="Months">
-    <input id="i" class="form-control my-2" placeholder="Interest">
-    <button class="btn btn-success" onclick="saveReq()">Submit</button>
-  </div>`;
-}
-
-function saveReq(){
-  google.script.run.addLoanRequest({
-    MemberID:m.value,
-    Amount:a.value,
-    Months:mo.value,
-    Interest:i.value,
-    Branch:BRANCH,
-    Staff:STAFF
+async function send(){
+  await fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"addRequest",
+      member:m.value,
+      amount:a.value,
+      months:12,
+      interest:12,
+      branch:user.branch,
+      staff:user.code
+    })
   });
   alert("Request Sent");
 }
 
+function show(id){
+  document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+  document.getElementById(id).style.display="block";
+}
 </script>
+
 </body>
 </html>
