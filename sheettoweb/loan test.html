@@ -56,6 +56,7 @@ Interest % <input id="staffInterest" type="number"><br>
 <table id="staffTbl"></table>
 </div>
    <!-- ===== STAFF APPROVED LOANS ===== -->
+<!-- Staff Approved Loans tab -->
 <div id="staffApproved" class="tab">
   <h3>Approved Loans (Ready to Disburse)</h3>
   <table id="staffApprovedTbl"></table>
@@ -76,7 +77,7 @@ Interest % <input id="staffInterest" type="number"><br>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbwd0t2B2XLR6zzxfDF-v2kPlHzYF4gl2mpJEpMTpBwh63rLnJf4v0c5Q6OZf8S9DqaZ3Q/exec";
+const URL="https://script.google.com/macros/s/AKfycbzVder-zE8FphvsfQ35W2BKL9BzH5RvWXK3bTGiEE12qlaqXSlK6UJ3YmkB0HRGDMpLsQ/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -166,7 +167,7 @@ function loadStaffApproved(){
     list.forEach(x=>{
       h += `<tr>
         <td>${x.RequestID}</td>
-        <td>${x.MemberID} - ${x.Name}</td>
+        <td>${x.MemberID} - ${x.Name || ''}</td>
         <td>${x.Amount}</td>
         <td><button onclick="disburseLoan('${x.RequestID}')">Disburse Loan</button></td>
       </tr>`;
@@ -174,7 +175,7 @@ function loadStaffApproved(){
     staffApprovedTbl.innerHTML = h;
   });
 }
-    
+
 function disburseLoan(id){
   fetch(URL,{
     method:"POST",
@@ -190,7 +191,6 @@ function disburseLoan(id){
     }
   });
 }
-    
     
 // ===== MANAGER FUNCTIONS =====
 function loadManagerPending(){
