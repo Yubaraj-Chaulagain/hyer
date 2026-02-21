@@ -35,6 +35,7 @@
 <nav id="tabsNav">
   <button onclick="showTab('newRequest')">New Request</button>
   <button onclick="showTab('rejected')">Rejected / Re-Request</button>
+<button onclick="showTab('staffApproved')">Approved Loans</button>
   <button onclick="showTab('managerTab')">Manager Panel</button>
   <button onclick="showTab('adminTab')">Admin Panel</button>
 </nav>
@@ -54,6 +55,11 @@ Interest % <input id="staffInterest" type="number"><br>
 <h3>Rejected / Re-Requestable Loans</h3>
 <table id="staffTbl"></table>
 </div>
+   <!-- ===== STAFF APPROVED LOANS ===== -->
+<div id="staffApproved" class="tab">
+  <h3>Approved Loans (Ready to Disburse)</h3>
+  <table id="staffApprovedTbl"></table>
+</div>
 
 <!-- ===== MANAGER PANEL ===== -->
 <div id="managerTab" class="tab">
@@ -70,7 +76,7 @@ Interest % <input id="staffInterest" type="number"><br>
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbxLe_AM3mvaVJowu2WfiXpbRrl85utnRfc_xcUY-YTuvRkC0D-CP37YuC7oi01CQB375g/exec";
+const URL="https://script.google.com/macros/s/AKfycbwd0t2B2XLR6zzxfDF-v2kPlHzYF4gl2mpJEpMTpBwh63rLnJf4v0c5Q6OZf8S9DqaZ3Q/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -148,7 +154,44 @@ function deleteRequest(id){
  })
  .then(()=>loadStaffRejected());
 }
-
+    
+function loadStaffApproved(){
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({action:"getStaffApproved"})
+  })
+  .then(r=>r.json())
+  .then(list=>{
+    let h = "<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+    list.forEach(x=>{
+      h += `<tr>
+        <td>${x.RequestID}</td>
+        <td>${x.MemberID} - ${x.Name}</td>
+        <td>${x.Amount}</td>
+        <td><button onclick="disburseLoan('${x.RequestID}')">Disburse Loan</button></td>
+      </tr>`;
+    });
+    staffApprovedTbl.innerHTML = h;
+  });
+}
+    
+function disburseLoan(id){
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({action:"staffDisburse", RequestID:id})
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.status){
+      alert("Loan Disbursed Successfully!");
+      loadStaffApproved();
+    } else {
+      alert("Error!");
+    }
+  });
+}
+    
+    
 // ===== MANAGER FUNCTIONS =====
 function loadManagerPending(){
  fetch(URL,{method:"POST",body:JSON.stringify({action:"getManagerPending"})})
