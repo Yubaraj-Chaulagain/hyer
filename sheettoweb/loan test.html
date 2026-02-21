@@ -35,7 +35,7 @@
 <nav id="tabsNav">
   <button onclick="showTab('newRequest')">New Request</button>
   <button onclick="showTab('rejected')">Rejected / Re-Request</button>
-<button onclick="showTab('staffApproved')">Approved Loans</button>
+  <button onclick="showTab('staffApproved'); loadStaffApproved();">Approved Loans</button>
   <button onclick="showTab('managerTab')">Manager Panel</button>
   <button onclick="showTab('adminTab')">Admin Panel</button>
 </nav>
@@ -56,10 +56,9 @@ Interest % <input id="staffInterest" type="number"><br>
 <table id="staffTbl"></table>
 </div>
    <!-- ===== STAFF APPROVED LOANS ===== -->
-<!-- Staff Approved Loans tab -->
-<div id="staffApproved" class="tab">
+<div id="staffApproved" class="tab" style="display:none">
   <h3>Approved Loans (Ready to Disburse)</h3>
-  <table id="staffApprovedTbl"></table>
+  <table id="staffApprovedTbl" border="1"></table>
 </div>
 
 <!-- ===== MANAGER PANEL ===== -->
