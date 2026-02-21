@@ -2,116 +2,213 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Loan Workflow</title>
-
+<title>Loan Workflow System</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
-body{background:#f1f5f9}
-.card{border-radius:20px}
+body{background:#0f172a;color:#fff;font-family:Arial;}
+.container{max-width:1200px;margin:auto;padding:20px;}
+.tabs{display:flex;justify-content:center;margin-bottom:20px;}
+.tabs button{padding:10px 20px;margin:0 5px;background:#1e293b;color:#fff;border:none;cursor:pointer;}
+.tabs button.active{background:#22c55e;color:#000;}
+.tabcontent{display:none;}
+table{width:100%;color:#fff;}
+table, th, td{border:1px solid #fff;}
+th, td{padding:8px;text-align:center;}
+button.action{padding:5px 10px;margin:2px;background:#22c55e;border:none;color:#000;cursor:pointer;}
+input,select{padding:5px;margin:3px;}
 </style>
 </head>
-
-<body class="p-4">
-
+<body>
 <div class="container">
+<h2 class="text-center">Loan Workflow System</h2>
 
-<h3 class="text-center mb-3">Loan Workflow System</h3>
-
-<div id="loginBox" class="card p-3">
-<input id="code" class="form-control mb-2" placeholder="Code">
-<input id="pass" class="form-control mb-2" placeholder="Password">
-<button class="btn btn-primary w-100" onclick="login()">Login</button>
+<div class="tabs">
+  <button class="tablinks active" onclick="openTab('loginTab')">Login</button>
+  <button class="tablinks" onclick="openTab('staffTab')">Staff</button>
+  <button class="tablinks" onclick="openTab('managerTab')">Manager</button>
+  <button class="tablinks" onclick="openTab('adminTab')">Admin</button>
+  <button class="tablinks" onclick="openTab('dashboardTab')">Dashboard</button>
 </div>
 
-<div id="app" style="display:none">
-
-<ul class="nav nav-tabs mb-3">
-<li class="nav-item"><a class="nav-link active" onclick="show('staff')">Staff</a></li>
-<li class="nav-item"><a class="nav-link" onclick="show('manager')">Manager</a></li>
-<li class="nav-item"><a class="nav-link" onclick="show('admin')">Admin</a></li>
-</ul>
-
-<div id="staff" class="tab">
-<h5>New Request</h5>
-<input id="m" class="form-control mb-2" placeholder="Member">
-<input id="a" class="form-control mb-2" placeholder="Amount">
-<button class="btn btn-success" onclick="send()">Send</button>
-
-<h5 class="mt-3">My Requests</h5>
-<table class="table" id="staffTbl"></table>
-  <h5 class="mt-3">Pay EMI</h5>
-<input id="loanID" class="form-control mb-2" placeholder="Loan ID">
-<button class="btn btn-warning" onclick="pay()">Pay EMI</button>
-
+<!-- LOGIN -->
+<div id="loginTab" class="tabcontent" style="display:block;">
+<div class="text-center">
+  Code: <input id="code" placeholder="Code"> 
+  Pass: <input id="pass" type="password" placeholder="Password">
+  <button onclick="login()" class="action">Login</button>
+</div>
 </div>
 
-<div id="manager" class="tab">
-  <h5> Manager Panel</h5>
-<h3>📊 Dashboard</h3>
-<button onclick="loadDash()">Load Dashboard</button>
-<div id="dash"></div>
+<!-- STAFF -->
+<div id="staffTab" class="tabcontent">
+<h4>Staff Loan Request</h4>
+<form id="requestForm">
+MemberID <input id="member"><br>
+Amount <input id="amount"><br>
+Months <input id="months"><br>
+Interest <input id="interest"><br>
+<button type="button" onclick="addRequest()" class="action">Send Request</button>
+</form>
 
-<h3>🔎 Member Loan History</h3>
-<input id="memberSearch" placeholder="Member ID">
-<button onclick="searchMember()">Search</button>
-<table id="history"></table>
-
-<h3>💰 Loan Distributor</h3>
-<input id="loanID" placeholder="Loan ID">
-<input id="distStaff" placeholder="Staff Code">
-<button onclick="distribute()">Assign Distributor</button>
+<h5>My Requests</h5>
+<button class="action" onclick="loadStaffRequests()">Load Requests</button>
+<table id="staffTbl" class="table table-dark table-striped mt-2"></table>
 </div>
-<div id="admin" class="tab">Admin Panel</div>
 
+<!-- MANAGER -->
+<div id="managerTab" class="tabcontent">
+<h4>Manager Approvals</h4>
+<button class="action" onclick="loadPending()">Load Pending</button>
+<table id="managerTbl" class="table table-dark table-striped mt-2"></table>
+</div>
+
+<!-- ADMIN -->
+<div id="adminTab" class="tabcontent">
+<h4>Admin Final Approve</h4>
+<button class="action" onclick="loadManagerApproved()">Load Manager Approved</button>
+<table id="adminTbl" class="table table-dark table-striped mt-2"></table>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboardTab" class="tabcontent">
+<h4>Dashboard</h4>
+<button class="action" onclick="loadDashboard()">Load Dashboard</button>
+<div id="dashData" class="mt-3"></div>
 </div>
 
 </div>
 
 <script>
-
-const API="https://script.google.com/macros/s/AKfycbxgGyVgnfaWJ5QMk8rI9YRmjRhUxKicJZMJHecByi32mx-WKllz8OfoIRFA1fF7z4qZsw/exec";
+const URL="https://script.google.com/macros/s/AKfycbxLe_AM3mvaVJowu2WfiXpbRrl85utnRfc_xcUY-YTuvRkC0D-CP37YuC7oi01CQB375g/exec";
 let user={};
 
-async function login(){
-  let r=await fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"login",
-      code:code.value,
-      pass:pass.value
-    })
-  });
-  let d=await r.json();
-
-  if(!d.status) return alert("Login Failed");
-
-  user=d;
-  loginBox.style.display="none";
-  app.style.display="block";
+// ===== TAB SWITCH =====
+function openTab(tab){
+ document.querySelectorAll(".tabcontent").forEach(t=>t.style.display="none");
+ document.querySelectorAll(".tablinks").forEach(b=>b.classList.remove("active"));
+ document.getElementById(tab).style.display="block";
+ event.currentTarget.classList.add("active");
 }
 
-async function send(){
-  await fetch(API,{
-    method:"POST",
-    body:JSON.stringify({
-      action:"addRequest",
-      member:m.value,
-      amount:a.value,
-      months:12,
-      interest:12,
-      branch:user.branch,
-      staff:user.code
-    })
-  });
-  alert("Request Sent");
+// ===== LOGIN =====
+function login(){
+ const code=document.getElementById("code").value;
+ const pass=document.getElementById("pass").value;
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"login",code,pass})})
+ .then(r=>r.json()).then(u=>{
+   if(!u.status)return alert("Invalid Code/Password");
+   user=u;
+   alert("Login Success! Role: "+u.role);
+   if(u.role=="Staff") openTab('staffTab');
+   if(u.role=="Manager") openTab('managerTab');
+   if(u.role=="Admin") openTab('adminTab');
+ });
 }
 
-function show(id){
-  document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
-  document.getElementById(id).style.display="block";
+// ===== STAFF REQUEST =====
+function addRequest(){
+ const data={
+  action:"addRequest",
+  member:document.getElementById("member").value,
+  amount:document.getElementById("amount").value,
+  months:document.getElementById("months").value,
+  interest:document.getElementById("interest").value,
+  staff:user.code,
+  branch:user.branch
+ };
+ fetch(URL,{method:"POST",body:JSON.stringify(data)})
+ .then(r=>r.json()).then(res=>{
+   if(res.status){
+     alert("Request Sent ✅");
+     document.getElementById("requestForm").reset();
+   }
+ });
+}
+
+function loadStaffRequests(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.code})})
+ .then(r=>r.json()).then(list=>{
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Status</th><th>Action</th></tr>";
+   list.forEach(x=>{
+     let btn="";
+     if(x[8]=="ManagerRejected" || x[8]=="AdminRejected"){
+       btn=`<button class="action" onclick="reRequest('${x[0]}')">Re-Request</button>`;
+     }
+     h+=`<tr>
+     <td>${x[0]}</td>
+     <td>${x[2]}</td>
+     <td>${x[3]}</td>
+     <td>${x[8]}</td>
+     <td>${btn}</td>
+     </tr>`;
+   });
+   document.getElementById("staffTbl").innerHTML=h;
+ });
+}
+
+function reRequest(id){
+ const amt=prompt("Enter new Amount:");
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"adminAction",id:id,approve:true})})
+ .then(r=>r.json()).then(res=>{
+   if(res.status){alert("Re-Requested ✅"); loadStaffRequests();}
+ });
+}
+
+// ===== MANAGER =====
+function loadPending(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.branch})})
+ .then(r=>r.json()).then(list=>{
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Approve</th><th>Reject</th></tr>";
+   list.forEach(x=>{
+     if(x[8]=="Pending"){
+     h+=`<tr>
+     <td>${x[0]}</td>
+     <td>${x[2]}</td>
+     <td>${x[3]}</td>
+     <td><button class="action" onclick="managerAction('${x[0]}',true)">Approve</button></td>
+     <td><button class="action" onclick="managerAction('${x[0]}',false)">Reject</button></td>
+     </tr>`;}
+   });
+   document.getElementById("managerTbl").innerHTML=h;
+ });
+}
+
+function managerAction(id,approve){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"managerAction",id,approve})})
+ .then(()=>loadPending());
+}
+
+// ===== ADMIN =====
+function loadManagerApproved(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"getStaff",staff:user.branch})})
+ .then(r=>r.json()).then(list=>{
+   let h="<tr><th>ID</th><th>Member</th><th>Amount</th><th>Approve</th><th>Reject</th></tr>";
+   list.forEach(x=>{
+     if(x[8]=="ManagerApproved"){
+     h+=`<tr>
+     <td>${x[0]}</td>
+     <td>${x[2]}</td>
+     <td>${x[3]}</td>
+     <td><button class="action" onclick="adminAction('${x[0]}',true)">Approve</button></td>
+     <td><button class="action" onclick="adminAction('${x[0]}',false)">Reject</button></td>
+     </tr>`;}
+   });
+   document.getElementById("adminTbl").innerHTML=h;
+ });
+}
+
+function adminAction(id,approve){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"adminAction",id,approve})})
+ .then(()=>loadManagerApproved());
+}
+
+// ===== DASHBOARD =====
+function loadDashboard(){
+ fetch(URL,{method:"POST",body:JSON.stringify({action:"dashboard"})})
+ .then(r=>r.json()).then(d=>{
+   document.getElementById("dashData").innerHTML=`<b>Total Loan:</b> ${d.totalLoan} | <b>Total Paid:</b> ${d.totalPaid}`;
+ });
 }
 </script>
-
 </body>
 </html>
