@@ -111,7 +111,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbxvnQD7DQDK8EPGHaru8lFFEEHTJLg2Fv5Tmvsb6kF4Bvh7UpL9UlJrpDXyNWMA-jaoDw/exec";
+const URL="https://script.google.com/macros/s/AKfycbyhQjeccgq_b8qjrwTczGHnXAuw7efJHZIyFHF5qSARX76SyK1t2d5NE6MLMdFYpRGPNQ/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -303,15 +303,10 @@ function disburseLoan(id){
   })
   .then(r=>r.json())
   .then(res=>{
-    if(res.status){
-      alert("Loan Disbursed Successfully!");
-      loadStaffApproved();
-    } else {
-      alert("Error!");
-    }
+    alert(res.msg || (res.status?"Success":"Error"));
+    loadStaffApproved();
   });
 }
-    
 // ===== MANAGER FUNCTIONS =====
 function loadManagerPending(){
  fetch(URL,{method:"POST",body:JSON.stringify({action:"getManagerPending"})})
