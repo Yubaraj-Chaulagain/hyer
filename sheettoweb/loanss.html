@@ -19,40 +19,24 @@ async function loadEMI() {
 
   try {
     const res = await fetch("https://script.google.com/macros/s/AKfycbyGV_nLL8pJq0LprnIxgpp-bCJb7OfzTLbhE6XJLj1LKLCOS-KZdUL2BeCCP7f307HgOw/exec", {  // <-- यहाँ राख्नुहोस्
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getEMI", LoanID: loanID })
-    });
-
-    if (!res.ok) throw new Error("Fetch failed");
-
-    const data = await res.json();
-
-    if (!Array.isArray(data) || data.length === 0) {
-      body.innerHTML = "<tr><td colspan='20'>No EMI found for this LoanID</td></tr>";
-      return;
-    }
-
-    // Table headers from keys
-    const headers = Object.keys(data[0]);
-    head.innerHTML = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
-
-    // Table rows
-    body.innerHTML = data.map(r => {
-      return "<tr>" + headers.map(h => {
-        if (h === "DueDate") {
-          return `<td>${new Date(r[h]).toISOString().slice(0,10)}</td>`;
-        } else if (h === "Paid") {
-          return `<td><input type="checkbox" disabled ${r[h] ? "checked" : ""}></td>`;
-        } else {
-          return `<td>${r[h]}</td>`;
-        }
-      }).join("") + "</tr>";
-    }).join("");
-
-  } catch (err) {
-    console.error(err);
-    body.innerHTML = "<tr><td colspan='20'>Error loading EMI</td></tr>";
-  }
-}
+     fetch(URL,{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json"
+  },
+  body: JSON.stringify({
+    action:"getEMI",
+    LoanID: document.getElementById("emiLoan").value.trim()
+  })
+})
+.then(r=>{
+  if(!r.ok) throw new Error("Network response not ok");
+  return r.json();
+})
+.then(data=>{
+  console.log(data);  // 🔎 console check
+})
+.catch(err=>{
+  console.error("Fetch Error:", err);
+});
 </script>
