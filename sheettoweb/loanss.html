@@ -1,52 +1,63 @@
 <div id="emiTab">
   <h3>EMI Schedule</h3>
-  LoanID <input id="emiLoan" value="LN1771736702235">
+  LoanID: <input id="emiLoan" value="LN1771736702235">
   <button onclick="loadEMI()">Load</button>
   <table id="emiTbl" border="1" style="border-collapse:collapse;width:100%">
-    <tr><th>No</th><th>Due Date</th><th>EMI</th><th>Penalty</th></tr>
+    <tr>
+      <th>No</th>
+      <th>Due Date</th>
+      <th>EMI</th>
+      <th>Principal</th>
+      <th>Interest</th>
+      <th>Balance</th>
+      <th>Penalty</th>
+    </tr>
   </table>
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbz6RLAUpZL3iZ9JDeCYsm-7cbBWFj7m6bz3kz9PGdAtddpjh3n19n598ahDWkHmiCgf6A/exec"; // <== Replace
+const URL = "https://script.google.com/macros/s/AKfycbz6RLAUpZL3iZ9JDeCYsm-7cbBWFj7m6bz3kz9PGdAtddpjh3n19n598ahDWkHmiCgf6A/exec"; // <== Apps Script web app URL
 
 function loadEMI(){
   const loanID = document.getElementById("emiLoan").value.trim();
   const table = document.getElementById("emiTbl");
 
   if(!loanID){
-    table.innerHTML = "<tr><td colspan=4>Enter LoanID</td></tr>";
+    table.innerHTML = "<tr><td colspan='7'>Enter LoanID</td></tr>";
     return;
   }
 
-  table.innerHTML = "<tr><td colspan=4>Loading...</td></tr>";
+  table.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
 
   fetch(URL, {
     method: "POST",
     body: JSON.stringify({action:"getEMI", LoanID: loanID}),
-    headers: { "Content-Type":"application/json" }
+    headers: {"Content-Type":"application/json"}
   })
   .then(res => res.json())
-  .then(list => {
-    if(!list || list.length===0){
-      table.innerHTML = "<tr><td colspan=4>No EMI Found</td></tr>";
+  .then(data => {
+    if(!data || data.length===0){
+      table.innerHTML = "<tr><td colspan='7'>No EMI Found</td></tr>";
       return;
     }
 
-    let html = "<tr><th>No</th><th>Due Date</th><th>EMI</th><th>Penalty</th></tr>";
-    list.forEach(x=>{
+    let html = "<tr><th>No</th><th>Due Date</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Penalty</th></tr>";
+    data.forEach(x => {
       html += `<tr>
         <td>${x.InstallmentNo}</td>
         <td>${x.DueDate}</td>
         <td>${x.EMI}</td>
-        <td>${x.Penalty||0}</td>
+        <td>${x.Principal}</td>
+        <td>${x.Interest}</td>
+        <td>${x.Balance}</td>
+        <td>${x.Penalty}</td>
       </tr>`;
     });
     table.innerHTML = html;
   })
-  .catch(err=>{
+  .catch(err => {
     console.error(err);
-    table.innerHTML = "<tr><td colspan=4>Error Loading EMI</td></tr>";
+    table.innerHTML = "<tr><td colspan='7'>Error Loading EMI</td></tr>";
   });
 }
 </script>
