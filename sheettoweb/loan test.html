@@ -89,8 +89,9 @@ Interest % <input id="staffInterest" type="number"><br>
 <button onclick="loadAdminPending()">Load Manager Approved</button>
 <table id="adminTbl"></table>
 </div>
-<div id="emiTab" class="tab">
-    <h3>EMI Schedule</h3>
+
+   <div id="emiTab" class="tab">
+<h3>EMI Schedule</h3>
 
 LoanID:
 <input id="emiLoan" value="LN1771736702235">
@@ -109,36 +110,49 @@ async function loadEMI(){
   const loanID = document.getElementById("emiLoan").value.trim();
   if(!loanID) return alert("Enter LoanID");
 
-  const res = await fetch(CSV_URL);
-  const text = await res.text();
+  try{
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
 
-  const rows = text.split("\n").map(r=>r.split(","));
+    // CSV safe split
+    const rows = text.trim().split("\n").map(r =>
+      r.split(",").map(c => c.replace(/"/g,"").trim())
+    );
 
-  const headers = rows[0];
-  const loanIndex = headers.indexOf("LoanID");
+    const headers = rows[0].map(h=>h.trim());
 
-  const filtered = rows.slice(1).filter(r => r[loanIndex] === loanID);
+    const loanIndex = headers.findIndex(h =>
+      h.toLowerCase() === "loanid"
+    );
 
-  if(filtered.length===0){
-    alert("LoanID not found");
-    return;
+    if(loanIndex === -1){
+      alert("LoanID column not found in sheet");
+      return;
+    }
+
+    const filtered = rows.slice(1).filter(r =>
+      r[loanIndex] === loanID
+    );
+
+    if(filtered.length === 0){
+      alert("LoanID not found");
+      return;
+    }
+
+    // table head
+    document.getElementById("emiHead").innerHTML =
+      "<tr>"+headers.map(h=>`<th>${h}</th>`).join("")+"</tr>";
+
+    // table body
+    document.getElementById("emiBody").innerHTML =
+      filtered.map(r =>
+        "<tr>"+r.map(c=>`<td>${c}</td>`).join("")+"</tr>"
+      ).join("");
+
+  }catch(err){
+    alert("Error loading EMI");
+    console.log(err);
   }
-
-  // table head
-  let headHTML = "<tr>";
-  headers.forEach(h=> headHTML += `<th>${h}</th>`);
-  headHTML += "</tr>";
-  document.getElementById("emiHead").innerHTML = headHTML;
-
-  // table body
-  let bodyHTML = "";
-  filtered.forEach(r=>{
-    bodyHTML += "<tr>";
-    r.forEach(c=> bodyHTML += `<td>${c}</td>`);
-    bodyHTML += "</tr>";
-  });
-
-  document.getElementById("emiBody").innerHTML = bodyHTML;
 }
 </script>
 </div>
