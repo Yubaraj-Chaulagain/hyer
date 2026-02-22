@@ -112,7 +112,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbxaF0_94LpKuXLzaom4eh2AipSCLaImlqUOEnAWdBpaa6OnvNFszx-bPs9KW7kVyUYJUA/exec";
+const URL="https://script.google.com/macros/s/AKfycbzorKfOrvP-bkQGnaQfmXXpfiYT79rAftAu0i4BsXnpC23913A0oiBlWU8DZhdDgZQaVg/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -149,19 +149,21 @@ function loadEMI(){
  })})
  .then(r=>r.json())
  .then(list=>{
-  let h="<tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>";
-  list.forEach(x=>{
+ let h="<tr><th>No</th><th>Due</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Paid</th><th>Balance</th><th>Penalty</th></tr>";
+list.forEach(x=>{
     h+=`<tr>
      <td>${x.InstallmentNo}</td>
      <td>${x.DueDate}</td>
      <td>${x.EMI}</td>
+     <td>${x.Principal}</td>
+     <td>${x.Interest}</td>
+     <td>${x.Paid}</td>
+     <td>${x.Balance}</td>
      <td>${x.Penalty||0}</td>
     </tr>`;
-  });
-  emiTbl.innerHTML=h;
- });
-}
-
+});
+emiTbl.innerHTML=h;
+ }
 // PAYMENT
 function loadPayments(){
  fetch(URL,{method:"POST",body:JSON.stringify({
