@@ -216,15 +216,18 @@ function loadMembers(){
 }
 
 function sendRequest(){
- fetch(URL,{method:"POST",body:JSON.stringify({
-   action:"addLoanRequest",
-   MemberID:staffMember.value,
-   Amount:staffAmount.value,
-   Months:staffMonths.value,
-   Interest:staffInterest.value
- })}).then(r=>r.json()).then(a=>{
-   alert("Loan Request Sent");
-   loadStaffRejected();
+ fetch(URL,{
+   method:"POST",
+   body:JSON.stringify({
+     action:"addLoanRequest",
+     role:"staff",   // 👈 important
+     MemberID:staffMember.value,
+     Amount:staffAmount.value,
+     Months:staffMonths.value,
+     Interest:staffInterest.value
+   })
+ }).then(r=>r.json()).then(a=>{
+   alert(a.msg);
  });
 }
 
