@@ -1,0 +1,59 @@
+<!-- ===== EMI TAB ===== -->
+<div id="emiTab" class="tab" style="display:none;">
+  <h3>EMI Schedule</h3>
+  LoanID <input id="emiLoan" placeholder="Enter LoanID" value="LN1771736702235">
+  <button onclick="loadEMI()">Load</button>
+  <table id="emiTbl" border="1" style="margin-top:10px; width:100%; border-collapse:collapse;">
+    <tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>
+  </table>
+</div>
+
+<script>
+const URL = "https://script.google.com/macros/s/AKfycbx1MevexjBAizWsYeES22TQNOpwYRoag8Qc3uTMMKtjk6tBEAu7W8fxlhRApmx5_zGA4g/exec"; // Replace with your deployed web app URL
+
+function loadEMI(){
+  const loanID = document.getElementById("emiLoan").value.trim();
+  const table = document.getElementById("emiTbl");
+
+  if(!loanID){
+    table.innerHTML = "<tr><td colspan=4>Enter LoanID</td></tr>";
+    return;
+  }
+
+  // Show loading message
+  table.innerHTML = "<tr><td colspan=4>Loading...</td></tr>";
+
+  fetch(URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getEMI", LoanID: loanID })
+  })
+  .then(res => res.json())
+  .then(list => {
+    if(!list || list.length === 0){
+      table.innerHTML = "<tr><td colspan=4>No EMI Found</td></tr>";
+      return;
+    }
+
+    let html = "<tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>";
+    list.forEach(x=>{
+      html += `<tr>
+        <td>${x.InstallmentNo}</td>
+        <td>${x.DueDate}</td>
+        <td>${x.EMI}</td>
+        <td>${x.Penalty||0}</td>
+      </tr>`;
+    });
+    table.innerHTML = html;
+  })
+  .catch(err=>{
+    console.error("EMI Load Error:", err);
+    table.innerHTML = "<tr><td colspan=4>Error Loading EMI</td></tr>";
+  });
+}
+
+// Optional: show EMI tab on load
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("emiTab").style.display = "block";
+});
+</script>
