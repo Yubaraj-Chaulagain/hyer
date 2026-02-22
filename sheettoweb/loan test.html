@@ -89,19 +89,6 @@ Interest % <input id="staffInterest" type="number"><br>
 <button onclick="loadAdminPending()">Load Manager Approved</button>
 <table id="adminTbl"></table>
 </div>
-
-    <!-- EMI -->
-
-<!-- ===== EMI TAB ===== -->
-<div id="emiTab" class="tab" style="display:none;">
-  LoanID: <input id="emiLoan" value="LN1771736702235">
-<button onclick="loadEMI()">Load EMI</button>
-
-<table id="emiTbl" border="1" style="border-collapse: collapse; width: 100%;">
-  <thead id="emiTblHead"></thead>
-  <tbody id="emiTblBody"></tbody>
-</table>
-</div>
     <!-- PAYMENT -->
 <div id="paymentTab" class="tab">
 <h3>Payment History</h3>
@@ -118,7 +105,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbzyBaOakjGCo-_cHc3ysETEuU-y_cJ4vxoazsLGtxUWP_4iXyQl2pUjF3gHJ8x3jYa-xA/exec";
+const URL="https://script.google.com/macros/s/AKfycbxL6uNAu-PxHD_mmUk_MjSCuj22GjPsYGjNu-n5ktFC7jJ3UHjDIxsHtv35Ia07Lr9UuQ/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
