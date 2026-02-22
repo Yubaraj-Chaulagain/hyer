@@ -142,7 +142,47 @@ function login(){
 }
 
 // EMI
+function loadEMI(){
 
+  const id = document.getElementById("emiLoan").value;
+  if(!id){
+    alert("LoanID enter garnuhos");
+    return;
+  }
+
+  const tbody = document.querySelector("#emiTbl tbody");
+  tbody.innerHTML = "<tr><td colspan='9'>Loading...</td></tr>";
+
+  google.script.run
+    .withSuccessHandler(function(data){
+
+      tbody.innerHTML = "";
+
+      if(!data || data.length==0){
+        tbody.innerHTML = "<tr><td colspan='9'>No EMI Found</td></tr>";
+        return;
+      }
+
+      data.forEach(r=>{
+        tbody.innerHTML += `
+          <tr>
+            <td>${r.InstallmentNo}</td>
+            <td>${r.DueDate}</td>
+            <td>${r.EMI}</td>
+            <td>${r.Principal}</td>
+            <td>${r.Interest}</td>
+            <td>${r.Paid}</td>
+            <td>${r.Balance}</td>
+            <td>${r.Status || ""}</td>
+            <td>${r.Penalty}</td>
+          </tr>
+        `;
+      });
+
+    })
+    .getEMI({LoanID:id});
+}
+    
 // PAYMENT
 function loadPayments(){
  fetch(URL,{method:"POST",body:JSON.stringify({
