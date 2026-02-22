@@ -39,7 +39,7 @@
   <button onclick="showTab('managerTab')">Manager Panel</button>
   <button onclick="showTab('adminTab')">Admin Panel</button>
 <button onclick="showTab('loginTab')">Member Login</button>
-<button onclick="showTab('emiTab');loadEMI()">EMI Schedule</button>
+<button onclick="showTab('emiTab')">EMI Schedule</button>
 <button onclick="showTab('paymentTab');loadPayments()">Payment History</button>
 <button onclick="showTab('reportTab');loadBranch()">Branch Report</button>
 </nav>
@@ -90,7 +90,7 @@ Interest % <input id="staffInterest" type="number"><br>
 <table id="adminTbl"></table>
 </div>
 
-    <div>
+    <div id="emiTab" class="tab">
 <h3>Loan Schedule (CSV to Table)</h3>
 
 LoanID:
