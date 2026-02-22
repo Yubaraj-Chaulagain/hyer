@@ -111,7 +111,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbwAtVJ_X-t8hhJBNMJuFXzVPf6SBttqS2c0CGAnoEi9Q3YYf0dLeVKxpeKG1m0p-zZS_g/exec";
+const URL="https://script.google.com/macros/s/AKfycbxzm0_TScdE_YhQbK8d-Bha1IGTSjPZEaU2SiUPN6jVXq5YWMx5Ek1gUpmQ9iUneFKAgw/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -227,7 +227,13 @@ function sendRequest(){
      Interest:staffInterest.value
    })
  }).then(r=>r.json()).then(a=>{
-   alert(a.msg);
+   alert(a.msg || (a.status ? "Loan Request Sent Successfully" : "Error Sending Request"));
+   staffAmount.value = "";
+   staffMonths.value = "";
+   staffInterest.value = "";
+   staffMember.selectedIndex = 0;  // Optional: reset to first member
+
+   loadStaffRejected();   // table refresh
  });
 }
 
