@@ -1,15 +1,14 @@
-<!-- ===== EMI TAB ===== -->
-<div id="emiTab" class="tab" style="display:none;">
+<div id="emiTab">
   <h3>EMI Schedule</h3>
-  LoanID <input id="emiLoan" placeholder="Enter LoanID" value="LN1771736702235">
+  LoanID <input id="emiLoan" value="LN1771736702235">
   <button onclick="loadEMI()">Load</button>
-  <table id="emiTbl" border="1" style="margin-top:10px; width:100%; border-collapse:collapse;">
-    <tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>
+  <table id="emiTbl" border="1" style="border-collapse:collapse;width:100%">
+    <tr><th>No</th><th>Due Date</th><th>EMI</th><th>Penalty</th></tr>
   </table>
 </div>
 
 <script>
-const URL = "https://script.google.com/macros/s/AKfycbytOwZIwYp0vjVczySNGSVSFH-_RMAgeCREg567OEhBMChqHSSeSrPEGPg5Va7Clu9M3w/exec"; // Replace with your deployed web app URL
+const URL = "https://script.google.com/macros/s/AKfycbz6RLAUpZL3iZ9JDeCYsm-7cbBWFj7m6bz3kz9PGdAtddpjh3n19n598ahDWkHmiCgf6A/exec"; // <== Replace
 
 function loadEMI(){
   const loanID = document.getElementById("emiLoan").value.trim();
@@ -20,22 +19,21 @@ function loadEMI(){
     return;
   }
 
-  // Show loading message
   table.innerHTML = "<tr><td colspan=4>Loading...</td></tr>";
 
   fetch(URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getEMI", LoanID: loanID })
+    body: JSON.stringify({action:"getEMI", LoanID: loanID}),
+    headers: { "Content-Type":"application/json" }
   })
   .then(res => res.json())
   .then(list => {
-    if(!list || list.length === 0){
+    if(!list || list.length===0){
       table.innerHTML = "<tr><td colspan=4>No EMI Found</td></tr>";
       return;
     }
 
-    let html = "<tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>";
+    let html = "<tr><th>No</th><th>Due Date</th><th>EMI</th><th>Penalty</th></tr>";
     list.forEach(x=>{
       html += `<tr>
         <td>${x.InstallmentNo}</td>
@@ -47,13 +45,8 @@ function loadEMI(){
     table.innerHTML = html;
   })
   .catch(err=>{
-    console.error("EMI Load Error:", err);
+    console.error(err);
     table.innerHTML = "<tr><td colspan=4>Error Loading EMI</td></tr>";
   });
 }
-
-// Optional: show EMI tab on load
-document.addEventListener("DOMContentLoaded", ()=>{
-  document.getElementById("emiTab").style.display = "block";
-});
 </script>
