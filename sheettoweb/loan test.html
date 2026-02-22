@@ -124,11 +124,8 @@ function switchRole(){
 
 // Show tab by clicking
 function showTab(tabId){
-  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.tab').forEach(t => t.style.display='none');
   document.getElementById(tabId).style.display='block';
- document.querySelectorAll('.tab').forEach(x=>x.style.display='none');
- document.getElementById(id).style.display='block';
-
 }
     // LOGIN
 function login(){
@@ -368,10 +365,11 @@ function adminReject(id){
  .then(()=>loadAdminPending());
 }
 
-// Init
-loadMembers();
-loadStaffRejected();
-switchRole();
+window.onload = function(){
+  showTab('newRequest');   // First tab show
+  loadMembers();
+  loadStaffRejected();
+}
 </script>
 </body>
 </html>
