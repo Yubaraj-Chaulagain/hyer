@@ -142,29 +142,7 @@ function login(){
 }
 
 // EMI
-function loadEMI(){
- fetch(URL,{method:"POST",body:JSON.stringify({
-  action:"getEMI",
-  LoanID:emiLoan.value
- })})
- .then(r=>r.json())
- .then(list=>{
- let h="<tr><th>No</th><th>Due</th><th>EMI</th><th>Principal</th><th>Interest</th><th>Paid</th><th>Balance</th><th>Penalty</th></tr>";
-list.forEach(x=>{
-    h+=`<tr>
-     <td>${x.InstallmentNo}</td>
-     <td>${x.DueDate}</td>
-     <td>${x.EMI}</td>
-     <td>${x.Principal}</td>
-     <td>${x.Interest}</td>
-     <td>${x.Paid}</td>
-     <td>${x.Balance}</td>
-     <td>${x.Penalty||0}</td>
-    </tr>`;
-});
-emiTbl.innerHTML=h;
- }
-       }
+
 // PAYMENT
 function loadPayments(){
  fetch(URL,{method:"POST",body:JSON.stringify({
