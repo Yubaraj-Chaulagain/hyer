@@ -150,21 +150,55 @@ function login(){
 // EMI
 async function loadEMI() {
   const loanID = document.getElementById("emiLoan").value.trim();
-  const emiTblHead = document.getElementById("emiTblHead");
-  const emiTblBody = document.getElementById("emiTblBody");
+  const head = document.getElementById("emiTblHead");
+  const body = document.getElementById("emiTblBody");
 
-  emiTblHead.innerHTML = '';
-  emiTblBody.innerHTML = '';
+  head.innerHTML = "";
+  body.innerHTML = "";
 
-  if (!loanID) {
-    alert("Enter LoanID");
-    return;
-  }
+  if (!loanID) return alert("Enter LoanID");
 
   try {
     const res = await fetch("https://script.google.com/macros/s/AKfycbzyBaOakjGCo-_cHc3ysETEuU-y_cJ4vxoazsLGtxUWP_4iXyQl2pUjF3gHJ8x3jYa-xA/exec", {
       method: "POST",
-      body: JSON.stringify({ action: "getEMI", LoanID
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getEMI", LoanID: loanID })
+    });
+
+    if (!res.ok) throw new Error("Fetch failed");
+
+    const data = await res.json();
+
+    // Filter: only unpaid EMI
+    const filtered = data.filter(r => r.Paid === false);
+
+    if (filtered.length === 0) {
+      body.innerHTML = "<tr><td colspan='20'>No Pending EMI</td></tr>";
+      return;
+    }
+
+    // Table headers from keys
+    const headers = Object.keys(filtered[0]);
+    head.innerHTML = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+    // Table rows
+    body.innerHTML = filtered.map(r => {
+      return "<tr>" + headers.map(h => {
+        if (h === "DueDate") {
+          return `<td>${new Date(r[h]).toISOString().slice(0,10)}</td>`;
+        } else if (h === "Paid") {
+          return `<td><input type="checkbox" disabled ${r[h] ? "checked" : ""}></td>`;
+        } else {
+          return `<td>${r[h]}</td>`;
+        }
+      }).join("") + "</tr>";
+    }).join("");
+
+  } catch (err) {
+    console.error(err);
+    body.innerHTML = "<tr><td colspan='20'>Error loading EMI</td></tr>";
+  }
+}
 // PAYMENT
 function loadPayments(){
  fetch(URL,{method:"POST",body:JSON.stringify({
