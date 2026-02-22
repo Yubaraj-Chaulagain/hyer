@@ -18,7 +18,7 @@ async function loadEMI() {
   if (!loanID) return alert("Enter LoanID");
 
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbzyBaOakjGCo-_cHc3ysETEuU-y_cJ4vxoazsLGtxUWP_4iXyQl2pUjF3gHJ8x3jYa-xA/exec", {  // <-- यहाँ राख्नुहोस्
+    const res = await fetch("https://script.google.com/macros/s/AKfycbyGV_nLL8pJq0LprnIxgpp-bCJb7OfzTLbhE6XJLj1LKLCOS-KZdUL2BeCCP7f307HgOw/exec", {  // <-- यहाँ राख्नुहोस्
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "getEMI", LoanID: loanID })
