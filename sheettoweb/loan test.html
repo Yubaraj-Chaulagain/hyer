@@ -63,6 +63,7 @@ Months <input id="staffMonths" type="number"><br>
 Interest % <input id="staffInterest" type="number"><br>
 <button onclick="sendRequest()">Send Loan Request</button>
 </div>
+    
 
 <!-- ===== STAFF REJECTED / RE-REQUEST ===== -->
 <div id="rejected" class="tab">
@@ -111,7 +112,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycby2O9wN8NWsT7ByCXAPTa2qcqiyy-6-gfSYel32D-xCIzsWzlujl-8RnK_ZmKkqEJYMbg/exec";
+const URL="https://script.google.com/macros/s/AKfycbyLzWLaeT5jCs9wYqS6Poo8JzEmE2I7-pru_y5wss4HX4ee27kY31fn9WAGXDUpRfvf/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -324,6 +325,8 @@ function loadManagerPending(){
 <td>${x.RequestID}</td>
 <td>${x.MemberID} - ${x.Name}</td>
 <td><input value="${x.Amount}" id="amt_${x.RequestID}" style="width:80px"></td>
+<td><input value="${x.Months}" id="months_${x.RequestID}" style="width:50px"></td>
+<td><input value="${x.Interest}" id="int_${x.RequestID}" style="width:50px"></td>
 <td>
 <button onclick="managerAction('${x.RequestID}',true)">Approve</button>
 <button class="reject" onclick="managerAction('${x.RequestID}',false)">Reject</button>
@@ -334,14 +337,25 @@ function loadManagerPending(){
  });
 }
 
-function managerAction(id,approve){
- const newAmt = document.getElementById(`amt_${id}`)?.value;
- fetch(URL,{method:"POST",body:JSON.stringify({
-   action:"managerAction",
-   RequestID:id,
-   approve:approve,
-   Amount:newAmt
- })}).then(()=>loadManagerPending());
+function managerAction(d, approve){
+  const sh = ss().getSheetByName("LoanRequests");
+  const data = sh.getDataRange().getValues();
+  const idIdx = data[0].indexOf("RequestID");
+  const amtIdx = data[0].indexOf("Amount");
+  const monthsIdx = data[0].indexOf("Months");
+  const intIdx = data[0].indexOf("Interest");
+  const statusIdx = data[0].indexOf("Status");
+
+  for(let i=1;i<data.length;i++){
+    if(data[i][idIdx]==d.RequestID){
+      sh.getRange(i+1, amtIdx+1).setValue(Number(d.Amount));
+      sh.getRange(i+1, monthsIdx+1).setValue(Number(d.Months));
+      sh.getRange(i+1, intIdx+1).setValue(Number(d.Interest));
+      sh.getRange(i+1, statusIdx+1).setValue(approve?"ManagerApproved":"ManagerRejected");
+      return {status:true};
+    }
+  }
+  return {status:false};
 }
 
 // ===== ADMIN FUNCTIONS =====
@@ -355,6 +369,8 @@ function loadAdminPending(){
 <td>${x.RequestID}</td>
 <td>${x.MemberID} - ${x.Name}</td>
 <td><input value="${x.Amount}" id="admamt_${x.RequestID}" style="width:80px"></td>
+<td><input value="${x.Months}" id="months_${x.RequestID}" style="width:50px"></td>
+<td><input value="${x.Interest}" id="int_${x.RequestID}" style="width:50px"></td>
 <td>
 <button onclick="adminApprove('${x.RequestID}')">Approve</button>
 <button class="reject" onclick="adminReject('${x.RequestID}')">Reject</button>
