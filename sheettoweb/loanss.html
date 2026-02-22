@@ -1,13 +1,14 @@
 LoanID: <input id="emiLoan" value="LN1771736702235">
 <button onclick="loadEMI()">Load EMI</button>
 
-<table border="1" id="emiTbl" style="border-collapse: collapse; width:100%;">
+<table border="1" style="border-collapse: collapse; width:100%;">
   <thead id="emiTblHead"></thead>
   <tbody id="emiTblBody"></tbody>
 </table>
 
 <script>
 async function loadEMI() {
+
   const loanID = document.getElementById("emiLoan").value.trim();
   const head = document.getElementById("emiTblHead");
   const body = document.getElementById("emiTblBody");
@@ -15,28 +16,50 @@ async function loadEMI() {
   head.innerHTML = "";
   body.innerHTML = "";
 
-  if (!loanID) return alert("Enter LoanID");
+  if (!loanID) {
+    alert("Enter LoanID");
+    return;
+  }
 
   try {
-    const res = await fetch("https://script.google.com/macros/s/AKfycbyGV_nLL8pJq0LprnIxgpp-bCJb7OfzTLbhE6XJLj1LKLCOS-KZdUL2BeCCP7f307HgOw/exec", {  // <-- यहाँ राख्नुहोस्
-     fetch(URL,{
-  method:"POST",
-  headers:{
-    "Content-Type":"application/json"
-  },
-  body: JSON.stringify({
-    action:"getEMI",
-    LoanID: document.getElementById("emiLoan").value.trim()
-  })
-})
-.then(r=>{
-  if(!r.ok) throw new Error("Network response not ok");
-  return r.json();
-})
-.then(data=>{
-  console.log(data);  // 🔎 console check
-})
-.catch(err=>{
-  console.error("Fetch Error:", err);
-});
+
+    const res = await fetch(
+      "https://script.google.com/macros/s/AKfycbyGV_nLL8pJq0LprnIxgpp-bCJb7OfzTLbhE6XJLj1LKLCOS-KZdUL2BeCCP7f307HgOw/exec",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          action: "getEMI",
+          LoanID: loanID
+        })
+      }
+    );
+
+    if (!res.ok) throw new Error("Network response not ok");
+
+    const data = await res.json();
+
+    console.log("EMI Data:", data);
+
+    if (!Array.isArray(data) || data.length === 0) {
+      body.innerHTML = "<tr><td>No EMI found</td></tr>";
+      return;
+    }
+
+    // Create table headers
+    const headers = Object.keys(data[0]);
+    head.innerHTML = "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+    // Create table rows
+    body.innerHTML = data.map(row => {
+      return "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join("") + "</tr>";
+    }).join("");
+
+  } catch (err) {
+    console.error("Error:", err);
+    body.innerHTML = "<tr><td>Error loading EMI</td></tr>";
+  }
+}
 </script>
