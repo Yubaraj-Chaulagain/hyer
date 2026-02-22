@@ -38,7 +38,21 @@
   <button onclick="showTab('staffApproved'); loadStaffApproved();">Approved Loans</button>
   <button onclick="showTab('managerTab')">Manager Panel</button>
   <button onclick="showTab('adminTab')">Admin Panel</button>
+<button onclick="showTab('loginTab')">Member Login</button>
+<button onclick="showTab('emiTab');loadEMI()">EMI Schedule</button>
+<button onclick="showTab('paymentTab');loadPayments()">Payment History</button>
+<button onclick="showTab('reportTab');loadBranch()">Branch Report</button>
 </nav>
+
+    <!-- LOGIN -->
+<div id="loginTab" class="tab">
+<h3>Member Login</h3>
+MemberID <input id="loginID"><br>
+Password <input id="loginPass" type="password"><br>
+<button onclick="login()">Login</button>
+<div id="loginMsg"></div>
+</div>
+
 
 <!-- ===== STAFF NEW REQUEST ===== -->
 <div id="newRequest" class="tab">
@@ -75,8 +89,29 @@ Interest % <input id="staffInterest" type="number"><br>
 <table id="adminTbl"></table>
 </div>
 
+    <!-- EMI -->
+<div id="emiTab" class="tab">
+<h3>EMI Schedule</h3>
+LoanID <input id="emiLoan"><button onclick="loadEMI()">Load</button>
+<table id="emiTbl"></table>
+</div>
+    <!-- PAYMENT -->
+<div id="paymentTab" class="tab">
+<h3>Payment History</h3>
+LoanID <input id="payLoan"><button onclick="loadPayments()">Load</button>
+<table id="payTbl"></table>
+</div>
+
+<!-- REPORT -->
+<div id="reportTab" class="tab">
+<h3>Branch Report</h3>
+Branch <input id="branchName">
+<button onclick="loadBranch()">Load</button>
+<table id="branchTbl"></table>
+</div>
+
 <script>
-const URL="https://script.google.com/macros/s/AKfycbwFW7vnCUsFvkBV2lNrTQy-8r7lSmCfN3kGW82ScCj2x0ezJMBEpFfyBvuv6TUiqMqq5g/exec";
+const URL="https://script.google.com/macros/s/AKfycbxpd8iw8IVIMbg1h2TQL4FXePqBUTjXPfY5Uzg6_h3LaCQjxukiOaNW30bEfRq7rjZ9qQ/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -91,6 +126,85 @@ function switchRole(){
 function showTab(tabId){
   document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
   document.getElementById(tabId).style.display='block';
+ document.querySelectorAll('.tab').forEach(x=>x.style.display='none');
+ document.getElementById(id).style.display='block';
+
+}
+    // LOGIN
+function login(){
+ fetch(URL,{method:"POST",body:JSON.stringify({
+  action:"login",
+  id:loginID.value,
+  pass:loginPass.value
+ })})
+ .then(r=>r.json())
+ .then(a=>{
+  loginMsg.innerHTML=a.ok?"Welcome "+a.name:"Login Failed";
+ });
+}
+
+// EMI
+function loadEMI(){
+ fetch(URL,{method:"POST",body:JSON.stringify({
+  action:"getEMI",
+  LoanID:emiLoan.value
+ })})
+ .then(r=>r.json())
+ .then(list=>{
+  let h="<tr><th>No</th><th>Due</th><th>EMI</th><th>Penalty</th></tr>";
+  list.forEach(x=>{
+    h+=`<tr>
+     <td>${x.InstallmentNo}</td>
+     <td>${x.DueDate}</td>
+     <td>${x.EMI}</td>
+     <td>${x.Penalty||0}</td>
+    </tr>`;
+  });
+  emiTbl.innerHTML=h;
+ });
+}
+
+// PAYMENT
+function loadPayments(){
+ fetch(URL,{method:"POST",body:JSON.stringify({
+  action:"getPayments",
+  LoanID:payLoan.value
+ })})
+ .then(r=>r.json())
+ .then(list=>{
+  let h="<tr><th>ID</th><th>Amount</th><th>Date</th></tr>";
+  list.forEach(x=>{
+    h+=`<tr>
+     <td>${x.PaymentID}</td>
+     <td>${x.Amount}</td>
+     <td>${x.Date}</td>
+    </tr>`;
+  });
+  payTbl.innerHTML=h;
+ });
+}
+
+// BRANCH REPORT
+function loadBranch(){
+ fetch(URL,{method:"POST",body:JSON.stringify({
+  action:"branchReport",
+  Branch:branchName.value
+ })})
+ .then(r=>r.json())
+ .then(list=>{
+  let total=0;
+  let h="<tr><th>LoanID</th><th>Member</th><th>Amount</th></tr>";
+  list.forEach(x=>{
+    total+=Number(x.Amount);
+    h+=`<tr>
+     <td>${x.LoanID}</td>
+     <td>${x.MemberID}</td>
+     <td>${x.Amount}</td>
+    </tr>`;
+  });
+  h+=`<tr><th colspan=2>Total</th><th>${total}</th></tr>`;
+  branchTbl.innerHTML=h;
+ });
 }
 
 // ===== STAFF FUNCTIONS =====
