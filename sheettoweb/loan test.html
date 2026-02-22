@@ -273,19 +273,26 @@ function loadStaffApproved(){
   })
   .then(r=>r.json())
   .then(list=>{
+    console.log("Approved Loans:", list);   // 👈 check browser console
+
     let h = "<tr><th>ID</th><th>Member</th><th>Amount</th><th>Action</th></tr>";
+
+    if(!list || list.length==0){
+      h += "<tr><td colspan=4>No Approved Loans</td></tr>";
+    }
+
     list.forEach(x=>{
       h += `<tr>
         <td>${x.RequestID}</td>
-        <td>${x.MemberID} - ${x.Name || ''}</td>
+        <td>${x.MemberID}</td>
         <td>${x.Amount}</td>
-        <td><button onclick="disburseLoan('${x.RequestID}')">Disburse Loan</button></td>
+        <td><button onclick="disburseLoan('${x.RequestID}')">Disburse</button></td>
       </tr>`;
     });
+
     staffApprovedTbl.innerHTML = h;
   });
 }
-
 function disburseLoan(id){
   fetch(URL,{
     method:"POST",
