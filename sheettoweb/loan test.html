@@ -91,10 +91,30 @@ Interest % <input id="staffInterest" type="number"><br>
 </div>
 
     <!-- EMI -->
+
 <div id="emiTab" class="tab">
-<h3>EMI Schedule</h3>
-LoanID <input id="emiLoan"><button onclick="loadEMI()">Load</button>
-<table id="emiTbl"></table>
+  <h3>EMI Schedule</h3>
+
+  LoanID 
+  <input id="emiLoan">
+  <button onclick="loadEMI()">Load</button>
+
+  <table id="emiTbl" border="1">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Due Date</th>
+        <th>EMI</th>
+        <th>Principal</th>
+        <th>Interest</th>
+        <th>Paid</th>
+        <th>Balance</th>
+        <th>Status</th>
+        <th>Penalty</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
     <!-- PAYMENT -->
 <div id="paymentTab" class="tab">
