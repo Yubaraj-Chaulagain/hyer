@@ -112,7 +112,7 @@ Branch <input id="branchName">
 </div>
 
 <script>
-const URL="https://script.google.com/macros/s/AKfycbyLzWLaeT5jCs9wYqS6Poo8JzEmE2I7-pru_y5wss4HX4ee27kY31fn9WAGXDUpRfvf/exec";
+const URL="https://script.google.com/macros/s/AKfycbxaF0_94LpKuXLzaom4eh2AipSCLaImlqUOEnAWdBpaa6OnvNFszx-bPs9KW7kVyUYJUA/exec";
 
 // ===== ROLE BASED VIEW =====
 function switchRole(){
@@ -337,27 +337,28 @@ function loadManagerPending(){
  });
 }
 
-function managerAction(d, approve){
-  const sh = ss().getSheetByName("LoanRequests");
-  const data = sh.getDataRange().getValues();
-  const idIdx = data[0].indexOf("RequestID");
-  const amtIdx = data[0].indexOf("Amount");
-  const monthsIdx = data[0].indexOf("Months");
-  const intIdx = data[0].indexOf("Interest");
-  const statusIdx = data[0].indexOf("Status");
+function managerAction(id, approve){
+  const newAmt = document.getElementById(`amt_${id}`)?.value;
+  const newMonths = document.getElementById(`months_${id}`)?.value;
+  const newInterest = document.getElementById(`int_${id}`)?.value;
 
-  for(let i=1;i<data.length;i++){
-    if(data[i][idIdx]==d.RequestID){
-      sh.getRange(i+1, amtIdx+1).setValue(Number(d.Amount));
-      sh.getRange(i+1, monthsIdx+1).setValue(Number(d.Months));
-      sh.getRange(i+1, intIdx+1).setValue(Number(d.Interest));
-      sh.getRange(i+1, statusIdx+1).setValue(approve?"ManagerApproved":"ManagerRejected");
-      return {status:true};
-    }
-  }
-  return {status:false};
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"managerAction",
+      RequestID: id,
+      approve: approve,
+      Amount: newAmt,
+      Months: newMonths,
+      Interest: newInterest
+    })
+  })
+  .then(r => r.json())
+  .then(res => {
+    alert(res.msg || (res.status ? "Success" : "Error"));
+    loadManagerPending(); // refresh table
+  });
 }
-
 // ===== ADMIN FUNCTIONS =====
 function loadAdminPending(){
  fetch(URL,{method:"POST",body:JSON.stringify({action:"getAdminPending"})})
@@ -382,11 +383,21 @@ function loadAdminPending(){
 }
 
 function adminApprove(id){
- const newAmt = document.getElementById(`admamt_${id}`)?.value;
- fetch(URL,{method:"POST",body:JSON.stringify({action:"adminApprove",RequestID:id,Amount:newAmt})})
- .then(()=>loadAdminPending());
+  const newAmt = document.getElementById(`admamt_${id}`)?.value;
+  fetch(URL,{
+    method:"POST",
+    body: JSON.stringify({
+      action:"adminApprove",
+      RequestID: id,
+      Amount: newAmt
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    alert(res.msg || (res.status ? "Success" : "Error"));
+    loadAdminPending();
+  });
 }
-
 function adminReject(id){
  fetch(URL,{method:"POST",body:JSON.stringify({action:"adminReject",RequestID:id})})
  .then(()=>loadAdminPending());
