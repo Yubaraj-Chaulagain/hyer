@@ -1,17 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="ne">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yubaraj Chaulagai Calling Website</title>
 <style>
-body{font-family:Arial;background:#f2f2f2;text-align:center}
-.box{background:white;padding:20px;margin:20px;border-radius:10px}
-input,button{padding:10px;margin:5px}
-#chatbox{height:200px;overflow:auto;border:1px solid gray;padding:10px}
+body{
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+h1,h2{
+  color:#333;
+}
+.container{
+  max-width: 500px;
+  margin: 10px auto;
+  padding: 20px;
+}
+.box{
+  background:white;
+  padding:20px;
+  margin:15px 0;
+  border-radius:10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+input,button{
+  padding:12px;
+  margin:5px 0;
+  width: 90%;
+  max-width: 400px;
+  font-size:16px;
+  border-radius:5px;
+  border:1px solid #ccc;
+  box-sizing: border-box;
+}
+button{
+  background:#007bff;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+button:hover{
+  background:#0056b3;
+}
+#chatbox{
+  height:200px;
+  overflow:auto;
+  border:1px solid gray;
+  padding:10px;
+  text-align:left;
+  background:#f9f9f9;
+}
+iframe{
+  width:100%;
+  height:400px;
+  border:none;
+  border-radius:10px;
+}
+@media(max-width:480px){
+  iframe{height:300px;}
+  input,button{font-size:14px;padding:10px;}
+}
 </style>
 </head>
 <body>
 
+<div class="container">
 <h1>📞 Yubaraj Chaulagai Calling Website</h1>
 
 <div class="box">
@@ -46,7 +103,7 @@ input,button{padding:10px;margin:5px}
 <h2>🎥 Group Video Call</h2>
 <iframe
 src="https://meet.jit.si/YubarajChaulagaiRoom"
-width="100%" height="500">
+allow="camera; microphone; fullscreen;">
 </iframe>
 </div>
 
@@ -121,7 +178,7 @@ function send(){
     action:"chat",
     from:document.getElementById("lid").value,
     to:"All",
-    msg:msg
+    msg:msg.value
   })
  })
  .then(res=>res.text())
