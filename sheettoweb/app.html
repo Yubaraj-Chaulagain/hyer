@@ -11,20 +11,25 @@ input,button{padding:10px;margin:5px}
 </style>
 </head>
 <body>
-<h1>https://script.google.com/macros/s/AKfycbwC5oxFg2G4sOnX_YElEKbIaLmneVSenAnxNvAXitophPsM7RBT2JGsN4X_mjBxKIremg/exec</h1>
+
 <h1>📞 Yubaraj Chaulagai Calling Website</h1>
 
 <div class="box">
 <h2>सदस्य दर्ता</h2>
 <input id="rid" placeholder="Member ID"><br>
+<input id="rname" placeholder="नाम"><br>
+<input id="remail" placeholder="Email"><br>
 <input id="rpass" placeholder="पासवर्ड"><br>
-<button onclick="register()">दर्ता</button>
+<button onclick="register()">दर्ता गर्नुहोस्</button>
 </div>
 
 <div class="box">
 <h2>लगइन</h2>
 <input id="lid" placeholder="Member ID"><br>
 <input id="lpass" placeholder="पासवर्ड"><br>
+<input id="lemail" placeholder="Email OTP पठाउन"><br>
+<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
+<input id="otp" placeholder="OTP कोड"><br>
 <button onclick="login()">लगइन</button>
 </div>
 
@@ -48,33 +53,82 @@ width="100%" height="500">
 </div>
 
 <script>
-let users={}
+// ===== Apps Script URL =====
+const API = "https://script.google.com/macros/s/AKfycbwC5oxFg2G4sOnX_YElEKbIaLmneVSenAnxNvAXitophPsM7RBT2JGsN4X_mjBxKIremg/exec";
 
+// ===== REGISTER =====
 function register(){
- let id=rid.value
- let pass=rpass.value
- users[id]=pass
- alert("दर्ता सफल")
+ let data = new URLSearchParams({
+  action:"register",
+  id:document.getElementById("rid").value,
+  name:document.getElementById("rname").value,
+  email:document.getElementById("remail").value,
+  pass:document.getElementById("rpass").value
+ });
+ fetch(API,{method:"POST",body:data})
+ .then(res=>res.text())
+ .then(t=>alert(t));
 }
 
+// ===== SEND OTP =====
+function sendOTP(){
+ let email = document.getElementById("lemail").value;
+ fetch(API,{
+  method:"POST",
+  body:new URLSearchParams({action:"sendOTP",email:email})
+ })
+ .then(res=>res.text())
+ .then(t=>alert(t));
+}
+
+// ===== LOGIN =====
 function login(){
- let id=lid.value
- let pass=lpass.value
+ let id = document.getElementById("lid").value;
+ let pass = document.getElementById("lpass").value;
+ let otp = document.getElementById("otp").value;
+ let email = document.getElementById("lemail").value;
 
- if(users[id]==pass){
-  let otp=Math.floor(1000+Math.random()*9000)
-  let u=prompt("OTP code: "+otp)
-  if(u==otp){
-   alert("लगइन सफल")
-   dashboard.style.display="block"
-  }
- }
- else alert("गलत Member ID")
+ // Verify OTP first
+ fetch(API,{
+  method:"POST",
+  body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
+ })
+ .then(res=>res.text())
+ .then(t=>{
+   if(t=="OTP OK"){
+     // Check login
+     fetch(API,{
+       method:"POST",
+       body:new URLSearchParams({action:"login",id:id,pass:pass})
+     })
+     .then(res=>res.text())
+     .then(tt=>{
+       if(tt=="OK"){
+         alert("लगइन सफल भयो")
+         document.getElementById("dashboard").style.display="block";
+       } else alert("गलत Member ID वा पासवर्ड")
+     })
+   } else alert("गलत OTP")
+ })
 }
 
+// ===== SEND CHAT =====
 function send(){
- chatbox.innerHTML+= "<p>"+msg.value+"</p>"
- msg.value=""
+ let msg = document.getElementById("msg").value;
+ fetch(API,{
+  method:"POST",
+  body:new URLSearchParams({
+    action:"chat",
+    from:document.getElementById("lid").value,
+    to:"All",
+    msg:msg
+  })
+ })
+ .then(res=>res.text())
+ .then(t=>{
+   document.getElementById("chatbox").innerHTML += "<p>"+msg+"</p>";
+   document.getElementById("msg").value="";
+ })
 }
 </script>
 
