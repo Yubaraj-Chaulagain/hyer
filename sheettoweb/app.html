@@ -1,193 +1,51 @@
-<!DOCTYPE html>
-<html lang="ne">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yubaraj Chaulagai Calling Website</title>
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-h1,h2{
-  color:#333;
-}
-.container{
-  max-width: 500px;
-  margin: 10px auto;
-  padding: 20px;
-}
-.box{
-  background:white;
-  padding:20px;
-  margin:15px 0;
-  border-radius:10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-input,button{
-  padding:12px;
-  margin:5px 0;
-  width: 90%;
-  max-width: 400px;
-  font-size:16px;
-  border-radius:5px;
-  border:1px solid #ccc;
-  box-sizing: border-box;
-}
-button{
-  background:#007bff;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-button:hover{
-  background:#0056b3;
-}
-#chatbox{
-  height:200px;
-  overflow:auto;
-  border:1px solid gray;
-  padding:10px;
-  text-align:left;
-  background:#f9f9f9;
-}
-iframe{
-  width:100%;
-  height:400px;
-  border:none;
-  border-radius:10px;
-}
-@media(max-width:480px){
-  iframe{height:300px;}
-  input,button{font-size:14px;padding:10px;}
-}
-</style>
-</head>
-<body>
-
-<div class="container">
-<h1>📞 Yubaraj Chaulagai Calling Website</h1>
-
-<div class="box">
-<h2>सदस्य दर्ता</h2>
-<input id="rid" placeholder="Member ID"><br>
-<input id="rname" placeholder="नाम"><br>
-<input id="remail" placeholder="Email"><br>
-<input id="rpass" placeholder="पासवर्ड"><br>
-<button onclick="register()">दर्ता गर्नुहोस्</button>
-</div>
-
-<div class="box">
-<h2>लगइन</h2>
-<input id="lid" placeholder="Member ID"><br>
-<input id="lpass" placeholder="पासवर्ड"><br>
-<input id="lemail" placeholder="Email OTP पठाउन"><br>
-<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
-<input id="otp" placeholder="OTP कोड"><br>
-<button onclick="login()">लगइन</button>
-</div>
-
-<div id="dashboard" style="display:none">
-
 <div class="box">
 <h2>💬 Live Chat</h2>
-<div id="chatbox"></div>
+<div id="chatbox" style="height:300px;overflow:auto;background:#f9f9f9;padding:10px;border:1px solid gray"></div>
 <input id="msg" placeholder="Message">
 <button onclick="send()">Send</button>
-</div>
-
-<div class="box">
-<h2>🎥 Group Video Call</h2>
-<iframe
-src="https://meet.jit.si/YubarajChaulagaiRoom"
-allow="camera; microphone; fullscreen;">
-</iframe>
-</div>
-
 </div>
 
 <script>
 // ===== Apps Script URL =====
 const API = "https://script.google.com/macros/s/AKfycbwC5oxFg2G4sOnX_YElEKbIaLmneVSenAnxNvAXitophPsM7RBT2JGsN4X_mjBxKIremg/exec";
 
-// ===== REGISTER =====
-function register(){
- let data = new URLSearchParams({
-  action:"register",
-  id:document.getElementById("rid").value,
-  name:document.getElementById("rname").value,
-  email:document.getElementById("remail").value,
-  pass:document.getElementById("rpass").value
- });
- fetch(API,{method:"POST",body:data})
- .then(res=>res.text())
- .then(t=>alert(t));
-}
-
-// ===== SEND OTP =====
-function sendOTP(){
- let email = document.getElementById("lemail").value;
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"sendOTP",email:email})
- })
- .then(res=>res.text())
- .then(t=>alert(t));
-}
-
-// ===== LOGIN =====
-function login(){
- let id = document.getElementById("lid").value;
- let pass = document.getElementById("lpass").value;
- let otp = document.getElementById("otp").value;
- let email = document.getElementById("lemail").value;
-
- // Verify OTP first
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
- })
- .then(res=>res.text())
- .then(t=>{
-   if(t=="OTP OK"){
-     // Check login
-     fetch(API,{
-       method:"POST",
-       body:new URLSearchParams({action:"login",id:id,pass:pass})
-     })
-     .then(res=>res.text())
-     .then(tt=>{
-       if(tt=="OK"){
-         alert("लगइन सफल भयो")
-         document.getElementById("dashboard").style.display="block";
-       } else alert("गलत Member ID वा पासवर्ड")
-     })
-   } else alert("गलत OTP")
- })
-}
+let userName = document.getElementById("lid").value || "Guest";
 
 // ===== SEND CHAT =====
 function send(){
  let msg = document.getElementById("msg").value;
+ if(msg.trim()=="") return;
  fetch(API,{
   method:"POST",
   body:new URLSearchParams({
     action:"chat",
-    from:document.getElementById("lid").value,
+    from:userName,
     to:"All",
-    msg:msg.value
+    msg:msg
   })
  })
  .then(res=>res.text())
  .then(t=>{
-   document.getElementById("chatbox").innerHTML += "<p>"+msg+"</p>";
    document.getElementById("msg").value="";
+   getChat();
+ });
+}
+
+// ===== GET CHAT =====
+function getChat(){
+ fetch(API)
+ .then(res=>res.json())
+ .then(data=>{
+   let html = "";
+   data.forEach((row,i)=>{
+     if(i===0) return; // skip header
+     html += "<p><b>"+row[1]+":</b> "+row[3]+"</p>";
+   });
+   document.getElementById("chatbox").innerHTML = html;
+   document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
  })
 }
-</script>
 
-</body>
-</html>
+// ===== AUTO REFRESH EVERY 3 SEC =====
+setInterval(getChat,3000);
+</script>
