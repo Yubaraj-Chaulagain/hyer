@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Yubaraj Chaulagai Calling Website</title>
+<style>
+body{font-family:Arial;background:#f2f2f2;text-align:center}
+.box{background:white;padding:20px;margin:20px;border-radius:10px}
+input,button{padding:10px;margin:5px}
+#chatbox{height:200px;overflow:auto;border:1px solid gray;padding:10px}
+</style>
+</head>
+<body>
+<h1>https://script.google.com/macros/s/AKfycbwC5oxFg2G4sOnX_YElEKbIaLmneVSenAnxNvAXitophPsM7RBT2JGsN4X_mjBxKIremg/exec</h1>
+<h1>📞 Yubaraj Chaulagai Calling Website</h1>
+
+<div class="box">
+<h2>सदस्य दर्ता</h2>
+<input id="rid" placeholder="Member ID"><br>
+<input id="rpass" placeholder="पासवर्ड"><br>
+<button onclick="register()">दर्ता</button>
+</div>
+
+<div class="box">
+<h2>लगइन</h2>
+<input id="lid" placeholder="Member ID"><br>
+<input id="lpass" placeholder="पासवर्ड"><br>
+<button onclick="login()">लगइन</button>
+</div>
+
+<div id="dashboard" style="display:none">
+
+<div class="box">
+<h2>💬 Live Chat</h2>
+<div id="chatbox"></div>
+<input id="msg" placeholder="Message">
+<button onclick="send()">Send</button>
+</div>
+
+<div class="box">
+<h2>🎥 Group Video Call</h2>
+<iframe
+src="https://meet.jit.si/YubarajChaulagaiRoom"
+width="100%" height="500">
+</iframe>
+</div>
+
+</div>
+
+<script>
+let users={}
+
+function register(){
+ let id=rid.value
+ let pass=rpass.value
+ users[id]=pass
+ alert("दर्ता सफल")
+}
+
+function login(){
+ let id=lid.value
+ let pass=lpass.value
+
+ if(users[id]==pass){
+  let otp=Math.floor(1000+Math.random()*9000)
+  let u=prompt("OTP code: "+otp)
+  if(u==otp){
+   alert("लगइन सफल")
+   dashboard.style.display="block"
+  }
+ }
+ else alert("गलत Member ID")
+}
+
+function send(){
+ chatbox.innerHTML+= "<p>"+msg.value+"</p>"
+ msg.value=""
+}
+</script>
+
+</body>
+</html>
