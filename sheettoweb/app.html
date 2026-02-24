@@ -22,7 +22,8 @@ iframe{width:100%;height:400px;border:none;border-radius:10px;}
 <div class="container">
 <h1>📞 Yubaraj Chaulagai Calling Website</h1>
 
-<div class="box">
+<!-- REGISTER FORM -->
+<div id="registerForm" class="box">
 <h2>सदस्य दर्ता</h2>
 <input id="rid" placeholder="Member ID"><br>
 <input id="rname" placeholder="नाम"><br>
@@ -31,18 +32,28 @@ iframe{width:100%;height:400px;border:none;border-radius:10px;}
 <button onclick="register()">दर्ता गर्नुहोस्</button>
 </div>
 
-<div class="box">
+<!-- LOGIN FORM -->
+<div id="loginForm" class="box">
 <h2>लगइन</h2>
 <input id="lid" placeholder="Member ID"><br>
 <input id="lpass" placeholder="पासवर्ड"><br>
-<input id="lemail" placeholder="Email OTP पठाउन"><br>
-<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
-<input id="otp" placeholder="OTP कोड"><br>
 <button onclick="login()">लगइन</button>
 </div>
 
+<!-- DASHBOARD -->
 <div id="dashboard" style="display:none">
 
+<!-- PASSWORD CHANGE -->
+<div class="box">
+<h2>पासवर्ड परिवर्तन गर्नुहोस् (OTP verify)</h2>
+<input id="passemail" placeholder="Email"><br>
+<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
+<input id="otp" placeholder="OTP कोड"><br>
+<input id="newpass" placeholder="नयाँ पासवर्ड"><br>
+<button onclick="changePassword()">पासवर्ड बदल्नुहोस्</button>
+</div>
+
+<!-- LIVE CHAT -->
 <div class="box">
 <h2>💬 Live Chat</h2>
 <div id="chatbox"></div>
@@ -50,6 +61,7 @@ iframe{width:100%;height:400px;border:none;border-radius:10px;}
 <button onclick="send()">Send</button>
 </div>
 
+<!-- GROUP VIDEO CALL -->
 <div class="box">
 <h2>🎥 Group Video Call</h2>
 <iframe
@@ -62,9 +74,10 @@ allow="camera; microphone; fullscreen;">
 
 <script>
 // ===== Apps Script URL =====
-const API = "https://script.google.com/macros/s/AKfycbwC5oxFg2G4sOnX_YElEKbIaLmneVSenAnxNvAXitophPsM7RBT2JGsN4X_mjBxKIremg/exec";
+const API = "https://script.google.com/macros/s/AKfycbyIhCV-sMbudmWdsULx8u1jNX6sl7g8kC0dxzoLzNN0D085IxIf40y4Jr3wk--w9pwT-A/exec";
 
 let userName = "";
+let userID = "";
 
 // ===== REGISTER =====
 function register(){
@@ -80,9 +93,30 @@ function register(){
  .then(t=>alert(t));
 }
 
-// ===== SEND OTP =====
+// ===== LOGIN =====
+function login(){
+ userID = document.getElementById("lid").value;
+ let pass = document.getElementById("lpass").value;
+ fetch(API,{
+   method:"POST",
+   body:new URLSearchParams({action:"login",id:userID,pass:pass})
+ })
+ .then(res=>res.text())
+ .then(tt=>{
+   if(tt=="OK"){
+     userName = document.getElementById("rname").value || userID;
+     alert("लगइन सफल भयो");
+     document.getElementById("dashboard").style.display="block";
+     document.getElementById("loginForm").style.display="none";
+     document.getElementById("registerForm").style.display="none";
+     getChat();
+   } else alert("गलत Member ID वा पासवर्ड");
+ })
+}
+
+// ===== SEND OTP (password change only) =====
 function sendOTP(){
- let email = document.getElementById("lemail").value;
+ let email = document.getElementById("passemail").value;
  fetch(API,{
   method:"POST",
   body:new URLSearchParams({action:"sendOTP",email:email})
@@ -91,13 +125,13 @@ function sendOTP(){
  .then(t=>alert(t));
 }
 
-// ===== LOGIN =====
-function login(){
- let id = document.getElementById("lid").value;
- let pass = document.getElementById("lpass").value;
+// ===== CHANGE PASSWORD =====
+function changePassword(){
  let otp = document.getElementById("otp").value;
- let email = document.getElementById("lemail").value;
-
+ let email = document.getElementById("passemail").value;
+ let newpass = document.getElementById("newpass").value;
+ if(newpass.trim()==""){alert("पासवर्ड खाली छ"); return;}
+ // Verify OTP first
  fetch(API,{
   method:"POST",
   body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
@@ -106,18 +140,10 @@ function login(){
  .then(t=>{
    if(t=="OTP OK"){
      fetch(API,{
-       method:"POST",
-       body:new URLSearchParams({action:"login",id:id,pass:pass})
-     })
-     .then(res=>res.text())
-     .then(tt=>{
-       if(tt=="OK"){
-         alert("लगइन सफल भयो");
-         userName=id;
-         document.getElementById("dashboard").style.display="block";
-         getChat(); // Load initial chat
-       } else alert("गलत Member ID वा पासवर्ड");
-     })
+      method:"POST",
+      body:new URLSearchParams({action:"changePass",id:userID,newpass:newpass})
+     }).then(res=>res.text())
+     .then(tt=>alert(tt));
    } else alert("गलत OTP");
  })
 }
@@ -145,18 +171,17 @@ function getChat(){
    let html = "";
    data.forEach((row,i)=>{
      if(i===0) return; // skip header
-     html += "<p><b>"+row[1]+":</b> "+row[3]+"</p>";
+     html += "<p><b>"+row[2]+":</b> "+row[3]+"</p>"; // Name column
    });
    document.getElementById("chatbox").innerHTML = html;
    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
  })
 }
 
-// ===== AUTO REFRESH CHAT EVERY 3 SECONDS =====
+// ===== AUTO REFRESH CHAT =====
 setInterval(()=>{
  if(document.getElementById("dashboard").style.display=="block") getChat();
 },3000);
-
 </script>
 
 </body>
