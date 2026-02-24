@@ -73,13 +73,13 @@ allow="camera; microphone; fullscreen;">
 </div>
 
 <script>
-// ===== Apps Script URL =====
-const API = "https://script.google.com/macros/s/AKfycbyIhCV-sMbudmWdsULx8u1jNX6sl7g8kC0dxzoLzNN0D085IxIf40y4Jr3wk--w9pwT-A/exec";
+// Apps Script URL
+const API = "https://script.google.com/macros/s/AKfycbz8c4FpbITGiS3dBSNOVoOTzIRCWkybw2AKMLeGrNkEqKC9zrj64NOxY7s4KzdAD3_FLw/exec";
 
 let userName = "";
 let userID = "";
 
-// ===== REGISTER =====
+// REGISTER
 function register(){
  let data = new URLSearchParams({
   action:"register",
@@ -93,7 +93,7 @@ function register(){
  .then(t=>alert(t));
 }
 
-// ===== LOGIN =====
+// LOGIN
 function login(){
  userID = document.getElementById("lid").value;
  let pass = document.getElementById("lpass").value;
@@ -103,8 +103,8 @@ function login(){
  })
  .then(res=>res.text())
  .then(tt=>{
-   if(tt=="OK"){
-     userName = document.getElementById("rname").value || userID;
+   if(tt!="FAIL"){
+     userName = tt; // Apps Script returns Name
      alert("लगइन सफल भयो");
      document.getElementById("dashboard").style.display="block";
      document.getElementById("loginForm").style.display="none";
@@ -114,7 +114,7 @@ function login(){
  })
 }
 
-// ===== SEND OTP (password change only) =====
+// SEND OTP (password change only)
 function sendOTP(){
  let email = document.getElementById("passemail").value;
  fetch(API,{
@@ -125,30 +125,28 @@ function sendOTP(){
  .then(t=>alert(t));
 }
 
-// ===== CHANGE PASSWORD =====
+// CHANGE PASSWORD
 function changePassword(){
  let otp = document.getElementById("otp").value;
  let email = document.getElementById("passemail").value;
  let newpass = document.getElementById("newpass").value;
  if(newpass.trim()==""){alert("पासवर्ड खाली छ"); return;}
- // Verify OTP first
  fetch(API,{
   method:"POST",
   body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
- })
- .then(res=>res.text())
+ }).then(res=>res.text())
  .then(t=>{
    if(t=="OTP OK"){
      fetch(API,{
-      method:"POST",
-      body:new URLSearchParams({action:"changePass",id:userID,newpass:newpass})
+       method:"POST",
+       body:new URLSearchParams({action:"changePass",id:userID,newpass:newpass})
      }).then(res=>res.text())
      .then(tt=>alert(tt));
    } else alert("गलत OTP");
  })
 }
 
-// ===== SEND CHAT =====
+// SEND CHAT
 function send(){
  let msg = document.getElementById("msg").value;
  if(msg.trim()=="") return;
@@ -163,22 +161,22 @@ function send(){
  })
 }
 
-// ===== GET CHAT =====
+// GET CHAT
 function getChat(){
  fetch(API)
  .then(res=>res.json())
  .then(data=>{
    let html = "";
    data.forEach((row,i)=>{
-     if(i===0) return; // skip header
-     html += "<p><b>"+row[2]+":</b> "+row[3]+"</p>"; // Name column
+     if(i===0) return;
+     html += "<p><b>"+row[1]+":</b> "+row[3]+"</p>"; // row[1]=Name
    });
    document.getElementById("chatbox").innerHTML = html;
    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
  })
 }
 
-// ===== AUTO REFRESH CHAT =====
+// AUTO REFRESH CHAT
 setInterval(()=>{
  if(document.getElementById("dashboard").style.display=="block") getChat();
 },3000);
