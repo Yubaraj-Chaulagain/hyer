@@ -4,199 +4,220 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yubaraj Chaulagai Calling Website</title>
+
 <style>
-body{font-family:Arial,sans-serif;background:#f2f2f2;margin:0;padding:0;text-align:center}
-h1,h2{color:#333;}
-.container{max-width:500px;margin:10px auto;padding:20px;}
-.box{background:white;padding:20px;margin:15px 0;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-input,button,select{padding:12px;margin:5px;width:90%;max-width:400px;font-size:16px;border-radius:5px;border:1px solid #ccc;box-sizing:border-box;}
-button{background:#007bff;color:white;border:none;cursor:pointer;}
-button:hover{background:#0056b3;}
-#chatbox{height:300px;overflow:auto;border:1px solid gray;padding:10px;text-align:left;background:#f9f9f9;}
-iframe{width:100%;height:400px;border:none;border-radius:10px;}
-.tabs{display:flex;justify-content:space-around;margin-bottom:10px;}
-.tab-btn{flex:1;padding:10px;background:#ddd;cursor:pointer;border-radius:5px;margin:0 2px;}
-.tab-btn.active{background:#007bff;color:white;}
-@media(max-width:480px){iframe{height:300px;}input,button,select{font-size:14px;padding:10px;}}
+body{font-family:Arial;margin:0;background:#f2f4f7;text-align:center}
+.container{max-width:520px;margin:auto;padding:10px}
+.box{background:white;padding:15px;margin:10px;border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,.1)}
+input,button,select{width:95%;padding:10px;margin:5px;
+font-size:15px;border-radius:5px;border:1px solid #ccc}
+button{background:#007bff;color:white;border:none}
+button:hover{background:#0056b3}
+.tabs{display:flex}
+.tab{flex:1;background:#ddd;margin:2px;padding:10px;border-radius:5px;cursor:pointer}
+.tab.active{background:#007bff;color:white}
+#chatbox{height:260px;overflow:auto;border:1px solid #ccc;padding:5px;text-align:left}
+iframe{width:100%;height:380px;border:none;border-radius:10px}
+@media(max-width:480px){iframe{height:300px}}
 </style>
 </head>
+
 <body>
-
 <div class="container">
-<h1>📞 Yubaraj Chaulagai Calling Website</h1>
 
-<!-- REGISTER FORM -->
-<div id="registerForm" class="box">
-<h2>सदस्य दर्ता</h2>
-<input id="rid" placeholder="Member ID"><br>
-<input id="rname" placeholder="नाम"><br>
-<input id="remail" placeholder="Email"><br>
-<input id="rpass" placeholder="पासवर्ड"><br>
-<button onclick="register()">दर्ता गर्नुहोस्</button>
+<h2>📞 Yubaraj Chaulagai Calling Website</h2>
+
+<!-- REGISTER -->
+<div id="reg" class="box">
+<h3>Register</h3>
+<input id="rid" placeholder="Member ID">
+<input id="rname" placeholder="Name">
+<input id="remail" placeholder="Email">
+<input id="rpass" placeholder="Password">
+<button onclick="register()">Register</button>
 </div>
 
-<!-- LOGIN FORM -->
-<div id="loginForm" class="box">
-<h2>लगइन</h2>
-<input id="lid" placeholder="Member ID"><br>
-<input id="lpass" placeholder="पासवर्ड"><br>
-<button onclick="login()">लगइन</button>
+<!-- LOGIN -->
+<div id="log" class="box">
+<h3>Login</h3>
+<input id="lid" placeholder="Member ID">
+<input id="lpass" placeholder="Password">
+<button onclick="login()">Login</button>
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard" style="display:none">
+<div id="dash" style="display:none">
 
-<!-- Tabs -->
 <div class="tabs">
-  <div class="tab-btn active" onclick="showTab('password')">पासवर्ड परिवर्तन</div>
-  <div class="tab-btn" onclick="showTab('chat')">Live Chat</div>
-  <div class="tab-btn" onclick="showTab('call')">Voice/Video Call</div>
+<div class="tab active" onclick="openTab('chat',this)">💬 Chat</div>
+<div class="tab" onclick="openTab('pass',this)">🔑 Password</div>
+<div class="tab" onclick="openTab('call',this)">📞 Call</div>
 </div>
 
-<!-- Password Change -->
-<div id="tab-password" class="box tab-content">
-<h2>पासवर्ड परिवर्तन गर्नुहोस् (OTP verify)</h2>
-<input id="passemail" placeholder="Email"><br>
-<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
-<input id="otp" placeholder="OTP कोड"><br>
-<input id="newpass" placeholder="नयाँ पासवर्ड"><br>
-<button onclick="changePassword()">पासवर्ड बदल्नुहोस्</button>
-</div>
-
-<!-- Live Chat -->
-<div id="tab-chat" class="box tab-content" style="display:none">
-<h2>💬 Live Chat</h2>
-
+<!-- CHAT -->
+<div id="tab-chat" class="box">
 <select id="recipient">
-  <option value="All">सर्वसाधारण</option>
-  <option value="Saroj">Saroj</option>
-  <option value="Sandip">Sandip</option>
-  <!-- Add all members here -->
-</select><br>
+<option value="All">All Members</option>
+</select>
 
 <div id="chatbox"></div>
+
 <input id="msg" placeholder="Message">
-<button onclick="send()">Send</button>
+<button onclick="sendMsg()">Send</button>
 </div>
 
-<!-- Voice/Video Call -->
-<div id="tab-call" class="box tab-content" style="display:none">
-<h2>🎥 Voice/Video Call</h2>
-<iframe src="https://p2p.mirotalk.com/YubarajChaulagaiRoom#config.startWithVideoMuted=true"
-    allow="camera; microphone; fullscreen;"></iframe>
+<!-- PASSWORD -->
+<div id="tab-pass" class="box" style="display:none">
+<input id="email" placeholder="Email">
+<button onclick="sendOTP()">Send OTP</button>
+<input id="otp" placeholder="OTP">
+<input id="newpass" placeholder="New Password">
+<button onclick="changePass()">Change Password</button>
 </div>
 
-</div> <!-- dashboard -->
+<!-- CALL -->
+<div id="tab-call" class="box" style="display:none">
+<button onclick="startCall()">🎥 Start Camera</button>
+<button onclick="closeCall()">❌ Close Camera</button>
+<div id="callbox"></div>
+</div>
+
+</div>
+</div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyJFkUcmIGgTvloMzsUxGL4G8AWLtkEm3pWZXi7tYbhuNNBLxGReHiAnA5TJBNy0KgA8g/exec";
-let userName = "";
-let userID = "";
+const API="https://script.google.com/macros/s/AKfycbxDxdFOteKq4lCd9JZPTMFuzIoUTpXVYY9CdACzETBVY9KwVG-ESuQVJCCMnXt8BLFv1Q/exec"; // यहाँ Apps Script URL राख्नुहोस्
+let userName="",userID="";
 
 // TAB SWITCH
-function showTab(tab){
-  document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');
-  document.getElementById('tab-'+tab).style.display='block';
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+function openTab(tab,btn){
+document.getElementById("tab-chat").style.display="none";
+document.getElementById("tab-pass").style.display="none";
+document.getElementById("tab-call").style.display="none";
+document.getElementById("tab-"+tab).style.display="block";
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+btn.classList.add("active");
 }
 
 // REGISTER
 function register(){
- let data = new URLSearchParams({
-  action:"register",
-  id:document.getElementById("rid").value,
-  name:document.getElementById("rname").value,
-  email:document.getElementById("remail").value,
-  pass:document.getElementById("rpass").value
- });
- fetch(API,{method:"POST",body:data}).then(res=>res.text()).then(t=>alert(t));
+fetch(API,{method:"POST",
+body:new URLSearchParams({
+action:"register",
+id:rid.value,
+name:rname.value,
+email:remail.value,
+pass:rpass.value
+})}).then(r=>r.text()).then(alert);
 }
 
 // LOGIN
 function login(){
- userID = document.getElementById("lid").value;
- let pass = document.getElementById("lpass").value;
- fetch(API,{
-   method:"POST",
-   body:new URLSearchParams({action:"login",id:userID,pass:pass})
- }).then(res=>res.text())
- .then(tt=>{
-   if(tt!="FAIL"){
-     userName = tt;
-     alert("लगइन सफल भयो");
-     document.getElementById("dashboard").style.display="block";
-     document.getElementById("loginForm").style.display="none";
-     document.getElementById("registerForm").style.display="none";
-     getChat();
-   } else alert("गलत Member ID वा पासवर्ड");
- })
+userID=lid.value;
+fetch(API,{method:"POST",
+body:new URLSearchParams({
+action:"login",
+id:lid.value,
+pass:lpass.value
+})})
+.then(r=>r.text())
+.then(t=>{
+if(t!="FAIL"){
+userName=t;
+reg.style.display="none";
+log.style.display="none";
+dash.style.display="block";
+loadMembers();
+getChat();
+alert("Login Successful");
+}else alert("Wrong ID or Password");
+});
 }
 
-// SEND OTP
+// LOAD MEMBER NAMES FROM USERS SHEET
+function loadMembers(){
+fetch(API+"?action=getMembers")
+.then(r=>r.json())
+.then(list=>{
+let sel=document.getElementById("recipient");
+sel.innerHTML='<option value="All">All Members</option>';
+list.forEach(n=>{
+let o=document.createElement("option");
+o.value=n;
+o.textContent=n;
+sel.appendChild(o);
+});
+});
+}
+
+// SEND MESSAGE
+function sendMsg(){
+if(msg.value.trim()=="")return;
+fetch(API,{method:"POST",
+body:new URLSearchParams({
+action:"chat",
+from:userName,
+to:recipient.value,
+msg:msg.value
+})});
+msg.value="";
+}
+
+// GET CHAT
+function getChat(){
+fetch(API)
+.then(r=>r.json())
+.then(data=>{
+let html="";
+data.forEach((r,i)=>{
+if(i==0)return;
+if(r[2]=="All"||r[2]==userName||r[1]==userName){
+html+="<p><b>"+r[1]+" → "+r[2]+":</b> "+r[3]+"</p>";
+}
+});
+chatbox.innerHTML=html;
+chatbox.scrollTop=chatbox.scrollHeight;
+});
+}
+setInterval(()=>{if(dash.style.display=="block")getChat()},3000);
+
+// OTP
 function sendOTP(){
- let email = document.getElementById("passemail").value;
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"sendOTP",email:email})
- }).then(res=>res.text()).then(t=>alert(t));
+fetch(API,{method:"POST",
+body:new URLSearchParams({action:"sendOTP",email:email.value})
+}).then(r=>r.text()).then(alert);
 }
 
 // CHANGE PASSWORD
-function changePassword(){
- let otp = document.getElementById("otp").value;
- let email = document.getElementById("passemail").value;
- let newpass = document.getElementById("newpass").value;
- if(newpass.trim()==""){alert("पासवर्ड खाली छ"); return;}
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
- }).then(res=>res.text())
- .then(t=>{
-   if(t=="OTP OK"){
-     fetch(API,{
-       method:"POST",
-       body:new URLSearchParams({action:"changePass",id:userID,newpass:newpass})
-     }).then(res=>res.text()).then(tt=>alert(tt));
-   } else alert("गलत OTP");
- })
+function changePass(){
+fetch(API,{method:"POST",
+body:new URLSearchParams({
+action:"verifyOTP",
+email:email.value,
+otp:otp.value
+})})
+.then(r=>r.text())
+.then(t=>{
+if(t=="OTP OK"){
+fetch(API,{method:"POST",
+body:new URLSearchParams({
+action:"changePass",
+id:userID,
+newpass:newpass.value
+})}).then(r=>r.text()).then(alert);
+}else alert("Wrong OTP");
+});
 }
 
-// SEND CHAT
-function send(){
- let msg = document.getElementById("msg").value;
- if(msg.trim()=="") return;
- let to = document.getElementById("recipient").value;
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"chat",from:userName,to:to,msg:msg})
- }).then(res=>res.text()).then(t=>{
-   document.getElementById("msg").value="";
-   getChat();
- })
+// CALL
+function startCall(){
+callbox.innerHTML=
+'<iframe src="https://p2p.mirotalk.com/YubarajRoom#config.startWithVideoMuted=true" allow="camera; microphone;"></iframe>';
 }
-
-// GET CHAT (filter private)
-function getChat(){
- fetch(API)
- .then(res=>res.json())
- .then(data=>{
-   let html = "";
-   data.forEach((row,i)=>{
-     if(i===0) return;
-     if(row[2]=="All" || row[2]==userName || row[1]==userName){
-       html += "<p><b>"+row[1]+":</b> "+row[3]+"</p>";
-     }
-   });
-   document.getElementById("chatbox").innerHTML = html;
-   document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
- })
+function closeCall(){
+callbox.innerHTML="";
 }
-
-// AUTO REFRESH CHAT
-setInterval(()=>{
-  if(document.getElementById("dashboard").style.display=="block") getChat();
-},3000);
 </script>
 
 </body>
