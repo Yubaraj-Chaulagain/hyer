@@ -163,7 +163,6 @@ async function loadUsers(){
 
 // ---------------- SEND MESSAGE ----------------
   async function send(){
-  if(privateMode && member.value!="Admin") return;
   if(msg.value.trim()=="") return;
   await fetch(API, {
     method: 'post',
