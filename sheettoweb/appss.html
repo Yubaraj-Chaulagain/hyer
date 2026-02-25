@@ -1,238 +1,90 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yubaraj Chaulagai Calling Website</title>
+<title>WhatsApp Style Chat</title>
 
 <style>
-body{font-family:Arial;margin:0;background:#f2f4f7;text-align:center}
-.container{max-width:520px;margin:auto;padding:10px}
-.box{background:white;padding:15px;margin:10px;border-radius:10px;
-box-shadow:0 2px 6px rgba(0,0,0,.1)}
-input,button,select{width:95%;padding:10px;margin:5px;
-font-size:15px;border-radius:5px;border:1px solid #ccc}
-button{background:#007bff;color:white;border:none}
-button:hover{background:#0056b3}
-.tabs{display:flex}
-.tab{flex:1;background:#ddd;margin:2px;padding:10px;border-radius:5px;cursor:pointer}
-.tab.active{background:#007bff;color:white}
-#chatbox{height:260px;overflow:auto;border:1px solid #ccc;padding:5px;text-align:left}
-iframe{width:100%;height:380px;border:none;border-radius:10px}
-@media(max-width:480px){iframe{height:300px}}
+body{font-family:sans-serif;background:#ece5dd;margin:0}
+header{background:#075e54;color:white;padding:10px}
+#chat{height:400px;overflow:auto;padding:10px}
+.msg{background:white;padding:6px;margin:6px;border-radius:8px}
+.me{background:#dcf8c6;text-align:right}
+.typing{font-size:12px;color:gray}
+.online{color:lime;font-weight:bold}
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h2>📞 Yubaraj Chaulagai Calling Website</h2>
+<header>
+<select id="member"></select>
+<span id="status"></span>
+</header>
 
-<!-- REGISTER -->
-<div id="reg" class="box">
-<h3>Register</h3>
-<input id="rid" placeholder="Member ID">
-<input id="rname" placeholder="Name">
-<input id="remail" placeholder="Email">
-<input id="rpass" placeholder="Password">
-<button onclick="register()">Register</button>
-</div>
+<div id="chat"></div>
+<div class="typing" id="typing"></div>
 
-<!-- LOGIN -->
-<div id="log" class="box">
-<h3>Login</h3>
-<input id="lid" placeholder="Member ID">
-<input id="lpass" placeholder="Password">
-<button onclick="login()">Login</button>
-</div>
+<input id="msg" placeholder="Type message">
+<button onclick="send()">Send</button>
+<button onclick="voice()">🎤</button>
+<button onclick="startCam()">📹 Start</button>
+<button onclick="stopCam()">❌ Close</button>
 
-<!-- DASHBOARD -->
-<div id="dash" style="display:none">
-
-<div class="tabs">
-<div class="tab active" onclick="openTab('chat',this)">💬 Chat</div>
-<div class="tab" onclick="openTab('pass',this)">🔑 Password</div>
-<div class="tab" onclick="openTab('call',this)">📞 Call</div>
-</div>
-
-<!-- CHAT -->
-<div id="tab-chat" class="box">
-<select id="recipient">
-<option value="All">All Members</option>
-</select>
-
-<div id="chatbox"></div>
-
-<input id="msg" placeholder="Message">
-<button onclick="sendMsg()">Send</button>
-</div>
-
-<!-- PASSWORD -->
-<div id="tab-pass" class="box" style="display:none">
-<input id="email" placeholder="Email">
-<button onclick="sendOTP()">Send OTP</button>
-<input id="otp" placeholder="OTP">
-<input id="newpass" placeholder="New Password">
-<button onclick="changePass()">Change Password</button>
-</div>
-
-<!-- CALL -->
-<div id="tab-call" class="box" style="display:none">
-<button onclick="startCall()">🎥 Start Camera</button>
-<button onclick="closeCall()">❌ Close Camera</button>
-<div id="callbox"></div>
-</div>
-
-</div>
-</div>
+<video id="cam" autoplay width="200"></video>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxDxdFOteKq4lCd9JZPTMFuzIoUTpXVYY9CdACzETBVY9KwVG-ESuQVJCCMnXt8BLFv1Q/exec"; // यहाँ Apps Script URL राख्नुहोस्
-let userName="",userID="";
 
-// TAB SWITCH
-function openTab(tab,btn){
-document.getElementById("tab-chat").style.display="none";
-document.getElementById("tab-pass").style.display="none";
-document.getElementById("tab-call").style.display="none";
-document.getElementById("tab-"+tab).style.display="block";
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-btn.classList.add("active");
+const API="https://script.google.com/macros/s/AKfycbw5FehQIQh8EVIaWSgQClmWEPRDbvyvPYSE8YRQcKWYpJEVePGXXZZ2z9nfbhcV2QoryA/exec";
+const ME=prompt("Your name");
+const privateMode = true; // true
+
+async function loadUsers(){
+  let r=await fetch(API+"?action=users");
+  let users=await r.json();
+  member.innerHTML=users.map(u=>`<option>${u}</option>`).join("");
+}
+loadUsers();
+
+async function send(){
+  // ⚡ Private mode check
+  if(privateMode && member.value!="Admin") return; // यहाँ private mode छ भने public देख्दैन
+
+  await fetch(API+`?action=send&from=${ME}&to=${member.value}&msg=${msg.value}`);
+  msg.value="";
 }
 
-// REGISTER
-function register(){
-fetch(API,{method:"POST",
-body:new URLSearchParams({
-action:"register",
-id:rid.value,
-name:rname.value,
-email:remail.value,
-pass:rpass.value
-})}).then(r=>r.text()).then(alert);
+setInterval(loadMsgs,2000);
+
+async function loadMsgs(){
+  let r=await fetch(API+"?action=msgs");
+  let data=await r.json();
+  chat.innerHTML="";
+  data.slice(1).forEach(m=>{
+    if((m[1]==ME&&m[2]==member.value)||(m[1]==member.value&&m[2]==ME)){
+      chat.innerHTML+=`<div class="msg ${m[1]==ME?"me":""}">
+      ${m[3]} ${m[5]?"✓✓":""}
+      </div>`;
+    }
+  });
 }
 
-// LOGIN
-function login(){
-userID=lid.value;
-fetch(API,{method:"POST",
-body:new URLSearchParams({
-action:"login",
-id:lid.value,
-pass:lpass.value
-})})
-.then(r=>r.text())
-.then(t=>{
-if(t!="FAIL"){
-userName=t;
-reg.style.display="none";
-log.style.display="none";
-dash.style.display="block";
-loadMembers();
-getChat();
-alert("Login Successful");
-}else alert("Wrong ID or Password");
-});
+msg.oninput=()=>fetch(API+`?action=typing&name=${ME}&to=${member.value}`);
+
+async function voice(){
+  let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  alert("Voice sent (demo)");
 }
 
-// LOAD MEMBER NAMES FROM USERS SHEET
-function loadMembers(){
-fetch(API+"?action=getMembers")
-.then(r=>r.json())
-.then(list=>{
-let sel=document.getElementById("recipient");
-sel.innerHTML='<option value="All">All Members</option>';
-list.forEach(n=>{
-let o=document.createElement("option");
-o.value=n;
-o.textContent=n;
-sel.appendChild(o);
-});
-});
+let camStream;
+async function startCam(){
+  camStream=await navigator.mediaDevices.getUserMedia({video:true});
+  cam.srcObject=camStream;
+}
+function stopCam(){
+  camStream.getTracks().forEach(t=>t.stop());
 }
 
-// SEND MESSAGE
-function sendMsg(){
-if(msg.value.trim()=="")return;
-fetch(API,{method:"POST",
-body:new URLSearchParams({
-action:"chat",
-from:userName,
-to:recipient.value,
-msg:msg.value
-})});
-msg.value="";
-}
-
-// GET CHAT
-function getChat(){
-fetch(API)
-.then(r=>r.json())
-.then(data=>{
-let html="";
-
-data.forEach((row,i)=>{
-
-if(i==0) return; // skip header
-
-let from = row[1];
-let to   = row[2];
-let msg  = row[3];
-
-// PUBLIC MESSAGE
-if(to=="All"){
-html += "<p><b>"+from+" (Public):</b> "+msg+"</p>";
-}
-
-// PRIVATE MESSAGE (only sender & receiver)
-else if((from==userName && to!="All") || (to==userName)){
-html += "<p style='color:green'><b>"+from+" (Private):</b> "+msg+"</p>";
-}
-
-});
-
-chatbox.innerHTML = html;
-chatbox.scrollTop = chatbox.scrollHeight;
-
-});
-}
-  // OTP
-function sendOTP(){
-fetch(API,{method:"POST",
-body:new URLSearchParams({action:"sendOTP",email:email.value})
-}).then(r=>r.text()).then(alert);
-}
-
-// CHANGE PASSWORD
-function changePass(){
-fetch(API,{method:"POST",
-body:new URLSearchParams({
-action:"verifyOTP",
-email:email.value,
-otp:otp.value
-})})
-.then(r=>r.text())
-.then(t=>{
-if(t=="OTP OK"){
-fetch(API,{method:"POST",
-body:new URLSearchParams({
-action:"changePass",
-id:userID,
-newpass:newpass.value
-})}).then(r=>r.text()).then(alert);
-}else alert("Wrong OTP");
-});
-}
-
-// CALL
-function startCall(){
-callbox.innerHTML=
-'<iframe src="https://p2p.mirotalk.com/YubarajRoom#config.startWithVideoMuted=true" allow="camera; microphone;"></iframe>';
-}
-function closeCall(){
-callbox.innerHTML="";
-}
 </script>
-
 </body>
 </html>
