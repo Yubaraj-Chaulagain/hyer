@@ -87,7 +87,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 
 <script>
 // ---------------- GLOBAL ----------------
-const API = "https://script.google.com/macros/s/AKfycbyGqF3LxaOL6Z93QEyQmiI2s6E-25T9U4ZAtCOVG95pgcG-znsClSyjWgxvhoEpR8otBw/exec"; // Replace Apps Script URL
+const API = "https://script.google.com/macros/s/AKfycbwCegKCRqROyYDbN5Y6BLpF-r4Q5OT1OW_g8sdTHvTCRmm4OKwsSphGraGbr6i_e-JbzQ/exec"; // Replace Apps Script URL
 let ME="";
 const privateMode = true;
 
@@ -162,12 +162,19 @@ async function loadUsers(){
 }
 
 // ---------------- SEND MESSAGE ----------------
-async function send(){
+  async function send(){
   if(privateMode && member.value!="Admin") return;
   if(msg.value.trim()=="") return;
-  await fetch(API,{method:'post',body:new URLSearchParams({
-    action:'send',from:ME,to:member.value,msg:msg.value,type:'text'
-  })});
+  await fetch(API, {
+    method: 'post',
+    body: new URLSearchParams({
+      action:'send',
+      from: ME,
+      to: member.value,
+      msg: msg.value,
+      type:'text'
+    })
+  });
   msg.value="";
 }
 
