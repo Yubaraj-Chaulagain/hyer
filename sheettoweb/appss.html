@@ -3,27 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yubaraj WhatsApp Style Chat</title>
+<title>Yubaraj Chat System</title>
 <style>
 body{margin:0;font-family:sans-serif;background:#ece5dd}
 header{background:#075e54;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center}
 #member{padding:5px;font-size:16px}
 #status{font-size:14px}
-#chat{height:400px;overflow-y:auto;padding:10px;background:#e5ddd5}
+#chat{height:300px;overflow-y:auto;padding:10px;background:#e5ddd5}
 .msg{padding:8px;margin:4px;border-radius:8px;max-width:80%;word-wrap:break-word}
 .me{background:#dcf8c6;margin-left:auto;text-align:right}
 .other{background:white;margin-right:auto;text-align:left}
 .typing{font-size:12px;color:gray;margin:2px 10px}
 input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
-#controls{display:flex;justify-content:space-between;align-items:center;padding:5px;background:#fff}
+#controls{display:flex;justify-content:space-between;align-items:center;padding:5px;background:#fff;flex-wrap:wrap}
 #cam{width:150px;height:120px;border-radius:8px;margin-top:5px}
+.form-box{padding:10px;background:#fff;margin:10px;border-radius:8px}
+.hidden{display:none}
 </style>
 </head>
 <body>
 
+<div id="loginForm" class="form-box">
+<h3>Login</h3>
+<input id="loginID" placeholder="Member ID"><br>
+<input id="loginPass" placeholder="Password" type="password"><br>
+<button onclick="login()">Login</button>
+<p><a href="#" onclick="showSignup()">Signup</a> | <a href="#" onclick="showReset()">Reset Password</a></p>
+</div>
+
+<div id="signupForm" class="form-box hidden">
+<h3>Signup</h3>
+<input id="signupID" placeholder="Member ID"><br>
+<input id="signupName" placeholder="Name"><br>
+<input id="signupEmail" placeholder="Email"><br>
+<input id="signupPass" placeholder="Password" type="password"><br>
+<button onclick="signup()">Register</button>
+<p><a href="#" onclick="showLogin()">Back to Login</a></p>
+</div>
+
+<div id="resetForm" class="form-box hidden">
+<h3>Password Reset</h3>
+<input id="resetEmail" placeholder="Email"><br>
+<button onclick="sendOTP()">Send OTP</button><br>
+<input id="resetOTP" placeholder="Enter OTP"><br>
+<input id="newPass" placeholder="New Password" type="password"><br>
+<button onclick="verifyAndChangePass()">Reset Password</button>
+<p><a href="#" onclick="showLogin()">Back to Login</a></p>
+</div>
+
+<div id="chatBox" class="hidden">
 <header>
 <select id="member"></select>
 <span id="status">Offline</span>
+<button onclick="showChangePass()">Change Password</button>
 </header>
 
 <div id="chat"></div>
@@ -38,79 +70,136 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 </div>
 
 <video id="cam" autoplay></video>
+</div>
+
+<div id="changePassBox" class="form-box hidden">
+<h3>Change Password</h3>
+<input id="changeID" placeholder="Member ID"><br>
+<input id="changeNew" placeholder="New Password" type="password"><br>
+<button onclick="changePass()">Update Password</button>
+<p><a href="#" onclick="hideChangePass()">Back to Chat</a></p>
+</div>
 
 <script>
-// ================= GLOBAL VARIABLES
-const API = "https://script.google.com/macros/s/AKfycbwNf_BWROemCPz9fnFMVUrQM7sO_en1AQIylFz0oiM_w0P6jvlE4REI7axofJ5AmIxwxA/exec"; // replace with your Apps Script WebApp URL
-const ME = prompt("Enter your name:");
+// ---------------- GLOBAL ----------------
+const API = "https://script.google.com/macros/s/AKfycby8lcNecC_Blb2M9fIWNdSGeDmEs5be7DRhCxm90TZ1BfLOs_EKsQqjCTvCNJQdB3U0PQ/exec"; // Replace Apps Script URL
+let ME="";
 const privateMode = true;
 
-// ================= LOAD USERS
-async function loadUsers(){
-  let r = await fetch(API+"?action=users");
-  let users = await r.json();
-  member.innerHTML = users.map(u=>`<option>${u}</option>`).join("");
-  member.value = users[0]; // default selected
-}
-loadUsers();
+// ---------------- SHOW/HIDE FORMS ----------------
+function showSignup(){loginForm.classList.add('hidden');signupForm.classList.remove('hidden');}
+function showLogin(){loginForm.classList.remove('hidden');signupForm.classList.add('hidden');resetForm.classList.add('hidden');chatBox.classList.add('hidden');}
+function showReset(){loginForm.classList.add('hidden');resetForm.classList.remove('hidden');signupForm.classList.add('hidden');}
+function showChat(){chatBox.classList.remove('hidden');loginForm.classList.add('hidden');signupForm.classList.add('hidden');resetForm.classList.add('hidden');}
+function showChangePass(){changePassBox.classList.remove('hidden');chatBox.classList.add('hidden');}
+function hideChangePass(){changePassBox.classList.add('hidden');chatBox.classList.remove('hidden');}
 
-// ================= SEND MESSAGE
+// ---------------- LOGIN ----------------
+async function login(){
+  const id=loginID.value, pass=loginPass.value;
+  let r=await fetch(API,{method:'post',body:new URLSearchParams({action:'login',id:id,pass:pass})});
+  let txt=await r.text();
+  if(txt=="FAIL"){alert("Invalid login"); return;}
+  ME=txt;
+  showChat();
+  loadUsers();
+  setInterval(loadMsgs,2000);
+  setInterval(updateOnline,5000);
+}
+
+// ---------------- SIGNUP ----------------
+async function signup(){
+  await fetch(API,{method:'post',body:new URLSearchParams({
+    action:'register',
+    id:signupID.value,
+    name:signupName.value,
+    email:signupEmail.value,
+    pass:signupPass.value
+  })});
+  alert("Registered! Login now.");
+  showLogin();
+}
+
+// ---------------- PASSWORD RESET ----------------
+async function sendOTP(){
+  await fetch(API,{method:'post',body:new URLSearchParams({action:'sendOTP',email:resetEmail.value})});
+  alert("OTP Sent to Email");
+}
+async function verifyAndChangePass(){
+  let r1=await fetch(API,{method:'post',body:new URLSearchParams({action:'verifyOTP',email:resetEmail.value,otp:resetOTP.value})});
+  let txt1=await r1.text();
+  if(txt1=="OK"){
+    await fetch(API,{method:'post',body:new URLSearchParams({action:'changePass',id:resetEmail.value,newpass:newPass.value})});
+    alert("Password Changed! Login.");
+    showLogin();
+  } else alert("Invalid OTP");
+}
+
+// ---------------- CHANGE PASSWORD ----------------
+async function changePass(){
+  await fetch(API,{method:'post',body:new URLSearchParams({
+    action:'changePass',
+    id:changeID.value,
+    newpass:changeNew.value
+  })});
+  alert("Password Updated!");
+}
+
+// ---------------- LOAD USERS ----------------
+async function loadUsers(){
+  let r=await fetch(API+"?action=members");
+  let users=await r.json();
+  member.innerHTML=users.map(u=>`<option>${u}</option>`).join("");
+  member.value=users[0];
+}
+
+// ---------------- SEND MESSAGE ----------------
 async function send(){
-  if(privateMode && member.value!="Admin") return; // private mode
+  if(privateMode && member.value!="Admin") return;
   if(msg.value.trim()=="") return;
-  await fetch(API+`?action=send&from=${ME}&to=${member.value}&msg=${msg.value}`);
+  await fetch(API,{method:'post',body:new URLSearchParams({
+    action:'send',from:ME,to:member.value,msg:msg.value,type:'text'
+  })});
   msg.value="";
 }
 
-// ================= LOAD MESSAGES
+// ---------------- LOAD MESSAGES ----------------
 setInterval(loadMsgs,2000);
 async function loadMsgs(){
-  let r = await fetch(API+"?action=msgs");
-  let data = await r.json();
+  let r=await fetch(API+"?action=msgs");
+  let data=await r.json();
   chat.innerHTML="";
   data.slice(1).forEach(m=>{
     if((m[1]==ME && m[2]==member.value)||(m[1]==member.value && m[2]==ME)){
-      let cls = m[1]==ME?"me":"other";
-      let seen = m[5]?" ✓✓":"";
-      chat.innerHTML += `<div class="msg ${cls}">${m[3]}${seen}</div>`;
+      let cls=m[1]==ME?"me":"other";
+      let seen=m[5]?" ✓✓":"";
+      chat.innerHTML+=`<div class="msg ${cls}">${m[3]}${seen}</div>`;
     }
   });
-  chat.scrollTop = chat.scrollHeight;
+  chat.scrollTop=chat.scrollHeight;
 }
 
-// ================= TYPING INDICATOR
-msg.oninput = () => fetch(API+`?action=typing&name=${ME}&to=${member.value}`);
+// ---------------- TYPING ----------------
+msg.oninput=()=>fetch(API,{method:'post',body:new URLSearchParams({action:'typing',name:ME,to:member.value})});
 setInterval(loadTyping,1000);
 async function loadTyping(){
-  let r = await fetch(API+"?action=typing");
-  let data = await r.json();
-  let t = data.slice(1).filter(x=>x[1]==ME || x[1]==member.value);
-  typing.innerHTML = t.length>0 ? `${t[0][0]} Typing...` : "";
+  let r=await fetch(API+"?action=typing");
+  let data=await r.json();
+  let t=data.slice(1).filter(x=>x[1]==ME || x[1]==member.value);
+  typing.innerHTML=t.length>0 ? `${t[0][0]} Typing...` : "";
 }
 
-// ================= ONLINE STATUS
-setInterval(()=>{
-  fetch(API+`?action=online&name=${ME}`);
+// ---------------- ONLINE STATUS ----------------
+async function updateOnline(){
+  await fetch(API,{method:'post',body:new URLSearchParams({action:'online',name:ME})});
   status.innerHTML="🟢 Online";
-},5000);
-
-// ================= VOICE MESSAGE
-async function voice(){
-  let stream = await navigator.mediaDevices.getUserMedia({audio:true});
-  alert("Voice sent (demo)"); // actual recording upload needs server handling
 }
 
-// ================= CAMERA
+// ---------------- VOICE / CAMERA ----------------
+async function voice(){alert("Voice send demo");}
 let camStream;
-async function startCam(){
-  camStream = await navigator.mediaDevices.getUserMedia({video:true});
-  cam.srcObject = camStream;
-}
-function stopCam(){
-  if(camStream) camStream.getTracks().forEach(t=>t.stop());
-  cam.srcObject = null;
-}
-
+async function startCam(){camStream=await navigator.mediaDevices.getUserMedia({video:true});cam.srcObject=camStream;}
+function stopCam(){if(camStream) camStream.getTracks().forEach(t=>t.stop()); cam.srcObject=null;}
 </script>
 </body>
 </html>
