@@ -170,19 +170,33 @@ fetch(API)
 .then(r=>r.json())
 .then(data=>{
 let html="";
-data.forEach((r,i)=>{
-if(i==0)return;
-if(r[2]=="All"||r[2]==userName||r[1]==userName){
-html+="<p><b>"+r[1]+" → "+r[2]+":</b> "+r[3]+"</p>";
-}
-});
-chatbox.innerHTML=html;
-chatbox.scrollTop=chatbox.scrollHeight;
-});
-}
-setInterval(()=>{if(dash.style.display=="block")getChat()},3000);
 
-// OTP
+data.forEach((row,i)=>{
+
+if(i==0) return; // skip header
+
+let from = row[1];
+let to   = row[2];
+let msg  = row[3];
+
+// PUBLIC MESSAGE
+if(to=="All"){
+html += "<p><b>"+from+" (Public):</b> "+msg+"</p>";
+}
+
+// PRIVATE MESSAGE (only sender & receiver)
+else if((from==userName && to!="All") || (to==userName)){
+html += "<p style='color:green'><b>"+from+" (Private):</b> "+msg+"</p>";
+}
+
+});
+
+chatbox.innerHTML = html;
+chatbox.scrollTop = chatbox.scrollHeight;
+
+});
+}
+  // OTP
 function sendOTP(){
 fetch(API,{method:"POST",
 body:new URLSearchParams({action:"sendOTP",email:email.value})
