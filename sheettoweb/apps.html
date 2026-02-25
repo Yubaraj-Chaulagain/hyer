@@ -1,195 +1,216 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yubaraj Chaulagai Calling Website</title>
+<title>Chat System</title>
+
 <style>
-body{font-family:Arial,sans-serif;background:#f2f2f2;margin:0;padding:0;text-align:center}
-h1,h2{color:#333;}
-.container{max-width:500px;margin:10px auto;padding:20px;}
-.box{background:white;padding:20px;margin:15px 0;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-input,button{padding:12px;margin:5px;width:90%;max-width:400px;font-size:16px;border-radius:5px;border:1px solid #ccc;box-sizing:border-box;}
-button{background:#007bff;color:white;border:none;cursor:pointer;}
-button:hover{background:#0056b3;}
-#chatbox{height:300px;overflow:auto;border:1px solid gray;padding:10px;text-align:left;background:#f9f9f9;}
-iframe{width:100%;height:400px;border:none;border-radius:10px;}
-.tabs{display:flex;justify-content:space-around;margin-bottom:10px;}
-.tab-btn{flex:1;padding:10px;background:#ddd;cursor:pointer;border-radius:5px;margin:0 2px;}
-.tab-btn.active{background:#007bff;color:white;}
-@media(max-width:480px){iframe{height:300px;}input,button{font-size:14px;padding:10px;}}
+body{margin:0;font-family:Arial;background:#ece5dd}
+.box{background:#fff;padding:15px;margin:15px;border-radius:10px}
+input,button,select{padding:8px;margin:5px;font-size:14px}
+button{background:#075e54;color:white;border:none;border-radius:5px}
+#chat,#publicChat{height:300px;overflow:auto;background:#f1f1f1;padding:10px;border-radius:8px}
+.msgMe{background:#dcf8c6;padding:6px;margin:4px;border-radius:6px;text-align:right}
+.msgOther{background:#fff;padding:6px;margin:4px;border-radius:6px;text-align:left}
 </style>
 </head>
 <body>
 
-<div class="container">
-<h1>📞 Yubaraj Chaulagai Calling Website</h1>
+<!-- LOGIN -->
+<div id="loginBox" class="box">
+<h3>Login</h3>
+<input id="loginID" placeholder="Member ID"><br>
+<input id="loginPass" type="password" placeholder="Password"><br>
+<button onclick="login()">Login</button>
+<p>
+<a href="#" onclick="showSignup()">Signup</a> |
+<a href="#" onclick="showReset()">Forgot?</a>
+</p>
+</div>
 
-<!-- REGISTER FORM -->
-<div id="registerForm" class="box">
-<h2>सदस्य दर्ता</h2>
-<input id="rid" placeholder="Member ID"><br>
-<input id="rname" placeholder="नाम"><br>
+<!-- SIGNUP -->
+<div id="signupBox" class="box" style="display:none">
+<h3>Signup</h3>
+<input id="sid" placeholder="Member ID"><br>
+<input id="sname" placeholder="Name"><br>
+<input id="semail" placeholder="Email"><br>
+<input id="spass" type="password" placeholder="Password"><br>
+<button onclick="signup()">Register</button>
+<p><a href="#" onclick="showLogin()">Back</a></p>
+</div>
+
+<!-- RESET -->
+<div id="resetBox" class="box" style="display:none">
+<h3>Reset Password</h3>
 <input id="remail" placeholder="Email"><br>
-<input id="rpass" placeholder="पासवर्ड"><br>
-<button onclick="register()">दर्ता गर्नुहोस्</button>
+<button onclick="sendOTP()">Send OTP</button><br>
+<input id="rotp" placeholder="Enter OTP"><br>
+<input id="rnew" type="password" placeholder="New Password"><br>
+<button onclick="verifyReset()">Reset</button>
+<p><a href="#" onclick="showLogin()">Back</a></p>
 </div>
 
-<!-- LOGIN FORM -->
-<div id="loginForm" class="box">
-<h2>लगइन</h2>
-<input id="lid" placeholder="Member ID"><br>
-<input id="lpass" placeholder="पासवर्ड"><br>
-<button onclick="login()">लगइन</button>
-</div>
+<!-- CHAT AREA -->
+<div id="chatArea" class="box" style="display:none">
 
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none">
+<button onclick="showPrivate()">🔒 Private</button>
+<button onclick="showPublic()">🌍 Public</button>
+<button onclick="showChange()">⚙ Change Password</button>
 
-<!-- Tabs -->
-<div class="tabs">
-  <div class="tab-btn active" onclick="showTab('password')">पासवर्ड परिवर्तन</div>
-  <div class="tab-btn" onclick="showTab('chat')">Live Chat</div>
-  <div class="tab-btn" onclick="showTab('call')">Video & Audio Call</div>
-</div>
+<hr>
 
-<!-- Password Change -->
-<div id="tab-password" class="box tab-content">
-<h2>पासवर्ड परिवर्तन गर्नुहोस् (OTP verify)</h2>
-<input id="passemail" placeholder="Email"><br>
-<button onclick="sendOTP()">OTP पठाउनुहोस्</button><br>
-<input id="otp" placeholder="OTP कोड"><br>
-<input id="newpass" placeholder="नयाँ पासवर्ड"><br>
-<button onclick="changePassword()">पासवर्ड बदल्नुहोस्</button>
-</div>
+<!-- PRIVATE -->
+<div id="privateDiv">
+<select id="member"></select>
 
-<!-- Live Chat -->
-<div id="tab-chat" class="box tab-content" style="display:none">
-<h2>💬 Live Chat</h2>
-<div id="chatbox"></div>
+<div id="chat"></div>
+
 <input id="msg" placeholder="Message">
-<button onclick="send()">Send</button>
+<button onclick="sendPrivate()">Send</button>
 </div>
 
-<!-- Video & Audio Call -->
-<div id="tab-call" class="box tab-content" style="display:none">
-<h2>🎥 Group Video Call</h2>
-<iframe src="https://p2p.mirotalk.com/YubarajChaulagaiRoom" allow="camera; microphone; fullscreen;"></iframe>
+<!-- PUBLIC -->
+<div id="publicDiv" style="display:none">
+<div id="publicChat"></div>
+
+<input id="publicMsg" placeholder="Public Message">
+<button onclick="sendPublic()">Send</button>
 </div>
 
-</div> <!-- dashboard -->
+<!-- CHANGE PASSWORD -->
+<div id="changeDiv" style="display:none">
+<h4>Change Password</h4>
+<input id="cemail" placeholder="Your Email"><br>
+<input id="cnew" type="password" placeholder="New Password"><br>
+<button onclick="changePass()">Update</button>
+</div>
+
+</div>
 
 <script>
-// Tabs logic
-function showTab(tab){
-  document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');
-  document.getElementById('tab-'+tab).style.display='block';
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+
+const API="https://script.google.com/macros/s/AKfycbxZ3mOTBQHznRdyE0RIcM_NxPbPIHWrQF3ITscqBLl711vcvDjHQVyXCBiTaDSU9KCLYQ/exec";
+let ME="";
+
+// ---------- FORM SHOW ----------
+function showSignup(){loginBox.style.display="none";signupBox.style.display="block";}
+function showLogin(){loginBox.style.display="block";signupBox.style.display="none";resetBox.style.display="none";}
+function showReset(){loginBox.style.display="none";resetBox.style.display="block";}
+function showPrivate(){privateDiv.style.display="block";publicDiv.style.display="none";changeDiv.style.display="none";}
+function showPublic(){privateDiv.style.display="none";publicDiv.style.display="block";changeDiv.style.display="none";}
+function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
+
+// ---------- LOGIN ----------
+async function login(){
+let r=await fetch(API,{method:'post',
+body:new URLSearchParams({action:'login',id:loginID.value,pass:loginPass.value})});
+let t=await r.text();
+if(t=="FAIL"){alert("Wrong Login");return;}
+ME=t;
+loginBox.style.display="none";
+chatArea.style.display="block";
+loadMembers();
+setInterval(loadMessages,2000);
 }
 
-// Variables
-const API = "https://script.google.com/macros/s/AKfycbz8c4FpbITGiS3dBSNOVoOTzIRCWkybw2AKMLeGrNkEqKC9zrj64NOxY7s4KzdAD3_FLw/exec";
-let userName = "";
-let userID = "";
-
-// REGISTER
-function register(){
- let data = new URLSearchParams({
-  action:"register",
-  id:document.getElementById("rid").value,
-  name:document.getElementById("rname").value,
-  email:document.getElementById("remail").value,
-  pass:document.getElementById("rpass").value
- });
- fetch(API,{method:"POST",body:data}).then(res=>res.text()).then(t=>alert(t));
+// ---------- SIGNUP ----------
+async function signup(){
+await fetch(API,{method:'post',
+body:new URLSearchParams({
+action:'register',
+id:sid.value,
+name:sname.value,
+email:semail.value,
+pass:spass.value
+})});
+alert("Registered");
+showLogin();
 }
 
-// LOGIN
-function login(){
- userID = document.getElementById("lid").value;
- let pass = document.getElementById("lpass").value;
- fetch(API,{
-   method:"POST",
-   body:new URLSearchParams({action:"login",id:userID,pass:pass})
- })
- .then(res=>res.text())
- .then(tt=>{
-   if(tt!="FAIL"){
-     userName = tt;
-     alert("लगइन सफल भयो");
-     document.getElementById("dashboard").style.display="block";
-     document.getElementById("loginForm").style.display="none";
-     document.getElementById("registerForm").style.display="none";
-     getChat();
-   } else alert("गलत Member ID वा पासवर्ड");
- })
+// ---------- PRIVATE SEND ----------
+async function sendPrivate(){
+if(msg.value=="") return;
+await fetch(API,{method:'post',
+body:new URLSearchParams({
+action:'send',
+from:ME,
+to:member.value,
+msg:msg.value
+})});
+msg.value="";
 }
 
-// SEND OTP (password change only)
-function sendOTP(){
- let email = document.getElementById("passemail").value;
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"sendOTP",email:email})
- }).then(res=>res.text()).then(t=>alert(t));
+// ---------- PUBLIC SEND ----------
+async function sendPublic(){
+if(publicMsg.value=="") return;
+await fetch(API,{method:'post',
+body:new URLSearchParams({
+action:'public',
+from:ME,
+msg:publicMsg.value
+})});
+publicMsg.value="";
 }
 
-// CHANGE PASSWORD
-function changePassword(){
- let otp = document.getElementById("otp").value;
- let email = document.getElementById("passemail").value;
- let newpass = document.getElementById("newpass").value;
- if(newpass.trim()==""){alert("पासवर्ड खाली छ"); return;}
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"verifyOTP",email:email,otp:otp})
- }).then(res=>res.text())
- .then(t=>{
-   if(t=="OTP OK"){
-     fetch(API,{
-       method:"POST",
-       body:new URLSearchParams({action:"changePass",id:userID,newpass:newpass})
-     }).then(res=>res.text())
-     .then(tt=>alert(tt));
-   } else alert("गलत OTP");
- })
+// ---------- LOAD ----------
+async function loadMessages(){
+let r=await fetch(API+"?action=msgs");
+let d=await r.json();
+
+chat.innerHTML="";
+publicChat.innerHTML="";
+
+d.slice(1).forEach(row=>{
+if(row[2]=="ALL"){
+publicChat.innerHTML+="<div><b>"+row[1]+":</b> "+row[3]+"</div>";
+}
+else if((row[1]==ME && row[2]==member.value) ||
+(row[1]==member.value && row[2]==ME)){
+let cls=row[1]==ME?"msgMe":"msgOther";
+chat.innerHTML+="<div class='"+cls+"'>"+row[3]+"</div>";
+}
+});
+
+chat.scrollTop=chat.scrollHeight;
+publicChat.scrollTop=publicChat.scrollHeight;
 }
 
-// SEND CHAT
-function send(){
- let msg = document.getElementById("msg").value;
- if(msg.trim()=="") return;
- fetch(API,{
-  method:"POST",
-  body:new URLSearchParams({action:"chat",from:userName,to:"All",msg:msg})
- }).then(res=>res.text()).then(t=>{
-   document.getElementById("msg").value="";
-   getChat();
- })
+// ---------- MEMBERS ----------
+async function loadMembers(){
+let r=await fetch(API+"?action=members");
+let list=await r.json();
+member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");
 }
 
-// GET CHAT
-function getChat(){
- fetch(API)
- .then(res=>res.json())
- .then(data=>{
-   let html = "";
-   data.forEach((row,i)=>{
-     if(i===0) return;
-     html += "<p><b>"+row[1]+":</b> "+row[3]+"</p>";
-   });
-   document.getElementById("chatbox").innerHTML = html;
-   document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
- })
+// ---------- RESET ----------
+async function sendOTP(){
+await fetch(API,{method:'post',
+body:new URLSearchParams({action:'sendOTP',email:remail.value})});
+alert("OTP Sent");
 }
 
-// AUTO REFRESH CHAT
-setInterval(()=>{
- if(document.getElementById("dashboard").style.display=="block") getChat();
-},3000);
+async function verifyReset(){
+let r1=await fetch(API,{method:'post',
+body:new URLSearchParams({action:'verifyOTP',email:remail.value,otp:rotp.value})});
+let t=await r1.text();
+if(t=="ok"){
+await fetch(API,{method:'post',
+body:new URLSearchParams({action:'changePass',email:remail.value,newpass:rnew.value})});
+alert("Password Changed");
+showLogin();
+}else alert("Wrong OTP");
+}
+
+// ---------- CHANGE ----------
+async function changePass(){
+await fetch(API,{method:'post',
+body:new URLSearchParams({action:'changePass',email:cemail.value,newpass:cnew.value})});
+alert("Updated");
+showPrivate();
+}
+
 </script>
 
 </body>
 </html>
-
