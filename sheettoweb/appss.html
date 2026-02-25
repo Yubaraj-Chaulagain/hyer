@@ -23,6 +23,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 </head>
 <body>
 
+<!-- LOGIN FORM -->
 <div id="loginForm" class="form-box">
 <h3>Login</h3>
 <input id="loginID" placeholder="Member ID"><br>
@@ -31,6 +32,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 <p><a href="#" onclick="showSignup()">Signup</a> | <a href="#" onclick="showReset()">Reset Password</a></p>
 </div>
 
+<!-- SIGNUP FORM -->
 <div id="signupForm" class="form-box hidden">
 <h3>Signup</h3>
 <input id="signupID" placeholder="Member ID"><br>
@@ -41,6 +43,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 <p><a href="#" onclick="showLogin()">Back to Login</a></p>
 </div>
 
+<!-- RESET PASSWORD -->
 <div id="resetForm" class="form-box hidden">
 <h3>Password Reset</h3>
 <input id="resetEmail" placeholder="Email"><br>
@@ -51,6 +54,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 <p><a href="#" onclick="showLogin()">Back to Login</a></p>
 </div>
 
+<!-- CHAT BOX -->
 <div id="chatBox" class="hidden">
 <header>
 <select id="member"></select>
@@ -72,6 +76,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 <video id="cam" autoplay></video>
 </div>
 
+<!-- CHANGE PASSWORD -->
 <div id="changePassBox" class="form-box hidden">
 <h3>Change Password</h3>
 <input id="changeID" placeholder="Member ID"><br>
@@ -82,7 +87,7 @@ input,button{padding:10px;margin:5px;font-size:15px;border-radius:5px}
 
 <script>
 // ---------------- GLOBAL ----------------
-const API = "https://script.google.com/macros/s/AKfycby8lcNecC_Blb2M9fIWNdSGeDmEs5be7DRhCxm90TZ1BfLOs_EKsQqjCTvCNJQdB3U0PQ/exec"; // Replace Apps Script URL
+const API = "https://script.google.com/macros/s/AKfycbyGqF3LxaOL6Z93QEyQmiI2s6E-25T9U4ZAtCOVG95pgcG-znsClSyjWgxvhoEpR8otBw/exec"; // Replace Apps Script URL
 let ME="";
 const privateMode = true;
 
@@ -129,9 +134,12 @@ async function verifyAndChangePass(){
   let r1=await fetch(API,{method:'post',body:new URLSearchParams({action:'verifyOTP',email:resetEmail.value,otp:resetOTP.value})});
   let txt1=await r1.text();
   if(txt1=="OK"){
-    await fetch(API,{method:'post',body:new URLSearchParams({action:'changePass',id:resetEmail.value,newpass:newPass.value})});
-    alert("Password Changed! Login.");
-    showLogin();
+    let r2=await fetch(API,{method:'post',body:new URLSearchParams({action:'changePass',email:resetEmail.value,newpass:newPass.value})});
+    let txt2=await r2.text();
+    if(txt2=="PASSWORD CHANGED"){
+      alert("Password Changed! Please login again.");
+      showLogin();
+    } else alert("Failed to update password");
   } else alert("Invalid OTP");
 }
 
