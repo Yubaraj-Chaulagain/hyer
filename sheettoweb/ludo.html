@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Ludo Ultimate</title>
+<style>
+body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center}
+h2{margin:10px}
+#top{padding:10px}
+input,button{padding:8px;margin:5px;border-radius:6px;border:none}
+button{background:#22c55e;color:white;font-weight:bold}
+#board{display:grid;grid-template-columns:repeat(15,1fr);width:95vw;max-width:600px;margin:10px auto;gap:2px}
+.cell{aspect-ratio:1;background:#e5e7eb;border-radius:4px;position:relative}
+.safe{background:#cbd5e1}
+.token{width:60%;height:60%;border-radius:50%;position:absolute;top:20%;left:20%}
+.red{background:red}.green{background:green}.yellow{background:gold}.blue{background:blue}
+#chatBox{width:95vw;max-width:600px;margin:auto;background:#1e293b;padding:10px;border-radius:8px}
+#messages{height:120px;overflow-y:auto;text-align:left;margin-bottom:5px}
+</style>
+</head>
+<body>
+<h2>Online Ludo Ultimate</h2>
+<div id="top">
+<input id="name" placeholder="Your Name">
+<input id="room" placeholder="Room Code">
+<select id="color">
+<option value="red">Red</option>
+<option value="green">Green</option>
+<option value="yellow">Yellow</option>
+<option value="blue">Blue</option>
+</select>
+<button onclick="joinRoom()">Join Room</button>
+<h3>Dice: <span id="dice">0</span></h3>
+<button onclick="rollDice()">Roll Dice</button>
+<h3 id="leaderboard"></h3>
+</div>
+<div id="board"></div>
+<div id="chatBox">
+<div id="messages"></div>
+<input id="msg" placeholder="Type message">
+<button onclick="sendChat()">Send</button>
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyBTVJE_RxoDfinPpCmVvyGzn-DTjn5-CzAJKHZBXxCDTT26r_hTsdWrznuDakH-tOXOw/exec"; // Paste Apps Script URL here
+let player="";
+let room="";
+let color="";
+let gameState={tokens:{},leader:""};
+const pathLength=52;
+const safe=[0,8,13,21,26,34,39,47];
+
+function createBoard(){
+ const board=document.getElementById("board");
+ board.innerHTML="";
+ for(let i=0;i<pathLength;i++){
+  let cell=document.createElement("div");
+  cell.className="cell"+(safe.includes(i)?" safe":"");
+  cell.id="cell"+i;
+  board.appendChild(cell);
+ }
+}
+createBoard();
+
+function joinRoom(){
+ player=document.getElementById("name").value;
+ room=document.getElementById("room").value;
+ color=document.getElementById("color").value;
+ if(!player||!room) return alert("Enter name and room");
+ fetch(`${API}?action=join&room=${room}&name=${player}&color=${color}`);
+}
+
+function rollDice(){
+ let dice=Math.floor(Math.random()*6)+1;
+ document.getElementById("dice").innerText=dice;
+ fetch(`${API}?action=move&room=${room}&name=${player}&dice=${dice}`);
+}
+
+function drawTokens(){
+ document.querySelectorAll(".token").forEach(t=>t.remove());
+ for(let p in gameState.tokens){
+  let pos=gameState.tokens[p].pos;
+  let col=gameState.tokens[p].color;
+  if(pos>=0){
+   let token=document.createElement("div");
+   token.className="token "+col;
+   document.getElementById("cell"+pos)?.appendChild(token);
+  }
+ }
+}
+
+function loadGame(){
+ if(!room) return;
+ fetch(`${API}?action=status&room=${room}`)
+ .then(r=>r.json())
+ .then(data=>{
+   gameState=data;
+   document.getElementById("leaderboard").innerText="Leader: "+(data.leader||"");
+   document.getElementById("messages").innerHTML=data.chat.map(c=>`<div>${c}</div>`).join('');
+   drawTokens();
+ });
+}
+setInterval(loadGame,2000);
+
+function sendChat(){
+ let text=document.getElementById("msg").value;
+ if(!text) return;
+ fetch(`${API}?action=chat&room=${room}&name=${player}&msg=${encodeURIComponent(text)}`);
+ document.getElementById("msg").value="";
+}
+</script>
+</body>
+</html>
