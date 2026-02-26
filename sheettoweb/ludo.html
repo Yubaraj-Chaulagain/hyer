@@ -1,114 +1,240 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Online Ludo Ultimate</title>
+<title>Ultimate Ludo King Clone</title>
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center}
-h2{margin:10px}
-#top{padding:10px}
-input,button{padding:8px;margin:5px;border-radius:6px;border:none}
-button{background:#22c55e;color:white;font-weight:bold}
-#board{display:grid;grid-template-columns:repeat(15,1fr);width:95vw;max-width:600px;margin:10px auto;gap:2px}
-.cell{aspect-ratio:1;background:#e5e7eb;border-radius:4px;position:relative}
-.safe{background:#cbd5e1}
-.token{width:60%;height:60%;border-radius:50%;position:absolute;top:20%;left:20%}
-.red{background:red}.green{background:green}.yellow{background:gold}.blue{background:blue}
-#chatBox{width:95vw;max-width:600px;margin:auto;background:#1e293b;padding:10px;border-radius:8px}
-#messages{height:120px;overflow-y:auto;text-align:left;margin-bottom:5px}
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+  text-align:center;
+}
+h2 {margin:10px;}
+#top {padding:10px;}
+input, button, select {
+  padding:8px;
+  margin:5px;
+  border-radius:6px;
+  border:none;
+}
+button {background:#22c55e; color:white; font-weight:bold; cursor:pointer;}
+#board {
+  display:grid;
+  grid-template-columns:repeat(15,1fr);
+  width:95vw;
+  max-width:600px;
+  margin:20px auto;
+  gap:2px;
+}
+.cell {
+  aspect-ratio:1;
+  background:#e5e7eb;
+  border-radius:4px;
+  position:relative;
+}
+.safe {background:#cbd5e1;}
+.token {
+  width:60%;
+  height:60%;
+  border-radius:50%;
+  position:absolute;
+  top:20%;
+  left:20%;
+}
+.red{background:red;}
+.green{background:green;}
+.yellow{background:gold;}
+.blue{background:blue;}
+#chatBox {
+  width:95vw;
+  max-width:600px;
+  margin:10px auto;
+  background:#1e293b;
+  padding:10px;
+  border-radius:8px;
+}
+#messages {
+  height:120px;
+  overflow-y:auto;
+  text-align:left;
+  margin-bottom:5px;
+}
 </style>
 </head>
 <body>
-<h2>Online Ludo Ultimate</h2>
+
+<h2>Ultimate Ludo King Clone</h2>
+
 <div id="top">
-<input id="name" placeholder="Your Name">
-<input id="room" placeholder="Room Code">
-<select id="color">
-<option value="red">Red</option>
-<option value="green">Green</option>
-<option value="yellow">Yellow</option>
-<option value="blue">Blue</option>
-</select>
-<button onclick="joinRoom()">Join Room</button>
-<h3>Dice: <span id="dice">0</span></h3>
-<button onclick="rollDice()">Roll Dice</button>
-<h3 id="leaderboard"></h3>
+  <input id="name" placeholder="Your Name">
+  <input id="memberID" placeholder="Member ID">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="registerUser()">Register</button>
+  <button onclick="loginUser()">Login</button>
+  <br>
+  <input id="room" placeholder="Room Code">
+  <select id="color">
+    <option value="red">Red</option>
+    <option value="green">Green</option>
+    <option value="yellow">Yellow</option>
+    <option value="blue">Blue</option>
+  </select>
+  <button onclick="joinRoom()">Join Room</button>
+  <h3>Dice: <span id="dice">0</span></h3>
+  <button onclick="rollDice()">Roll Dice</button>
+  <h3 id="leaderboard"></h3>
 </div>
+
 <div id="board"></div>
+
 <div id="chatBox">
-<div id="messages"></div>
-<input id="msg" placeholder="Type message">
-<button onclick="sendChat()">Send</button>
+  <div id="messages"></div>
+  <input id="msg" placeholder="Type message">
+  <button onclick="sendChat()">Send</button>
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyBTVJE_RxoDfinPpCmVvyGzn-DTjn5-CzAJKHZBXxCDTT26r_hTsdWrznuDakH-tOXOw/exec"; // Paste Apps Script URL here
-let player="";
-let room="";
-let color="";
-let gameState={tokens:{},leader:""};
-const pathLength=52;
-const safe=[0,8,13,21,26,34,39,47];
+// ---------------- CONFIG ----------------
+const API = "https://script.google.com/macros/s/AKfycbw4YaQhbh09xOK76glbx6EmEbokFGjGilTCO2CI8jnbl4RzXhmB2X0CO6bTlgOg8qPZ-g/exec";
 
+// ---------------- VARIABLES ----------------
+let player = "";
+let memberID = "";
+let room = "";
+let color = "";
+let tokens = {};
+let safeCells = [0,8,13,21,26,34,39,47];
+let homeEntry = 57;
+
+// ---------------- BOARD ----------------
 function createBoard(){
- const board=document.getElementById("board");
- board.innerHTML="";
- for(let i=0;i<pathLength;i++){
-  let cell=document.createElement("div");
-  cell.className="cell"+(safe.includes(i)?" safe":"");
-  cell.id="cell"+i;
-  board.appendChild(cell);
- }
+  const board = document.getElementById("board");
+  board.innerHTML="";
+  for(let i=0;i<15*15;i++){
+    const cell = document.createElement("div");
+    cell.className="cell";
+    cell.id="cell"+i;
+    board.appendChild(cell);
+  }
 }
 createBoard();
 
+// ---------------- USER AUTH ----------------
+function registerUser(){
+  const id = document.getElementById("memberID").value;
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+  if(!id||!name||!email||!pass) return alert("Fill all fields");
+  fetch(API,{method:"POST",body:new URLSearchParams({
+    action:"register", id:id, name:name, email:email, pass:pass
+  })}).then(r=>r.text()).then(alert);
+}
+
+function loginUser(){
+  memberID = document.getElementById("memberID").value;
+  const pass = document.getElementById("password").value;
+  fetch(API,{method:"POST",body:new URLSearchParams({
+    action:"login", id:memberID, pass:pass
+  })}).then(r=>r.text()).then(res=>{
+    if(res=="FAIL") alert("Login Failed");
+    else {player=res; alert("Welcome "+res);}
+  });
+}
+
+// ---------------- JOIN ROOM ----------------
 function joinRoom(){
- player=document.getElementById("name").value;
- room=document.getElementById("room").value;
- color=document.getElementById("color").value;
- if(!player||!room) return alert("Enter name and room");
- fetch(`${API}?action=join&room=${room}&name=${player}&color=${color}`);
+  player = document.getElementById("name").value;
+  room = document.getElementById("room").value;
+  color = document.getElementById("color").value;
+  if(!player||!room) return alert("Enter name & room");
+  fetch(`${API}?action=join&room=${room}&name=${player}&color=${color}`);
 }
 
+// ---------------- DICE ----------------
 function rollDice(){
- let dice=Math.floor(Math.random()*6)+1;
- document.getElementById("dice").innerText=dice;
- fetch(`${API}?action=move&room=${room}&name=${player}&dice=${dice}`);
+  let i=0;
+  const diceEl = document.getElementById("dice");
+  const anim = setInterval(()=>{
+    diceEl.innerText = Math.floor(Math.random()*6)+1;
+    if(i++>10){
+      clearInterval(anim);
+      const d = Math.floor(Math.random()*6)+1;
+      diceEl.innerText = d;
+      moveToken(d);
+    }
+  },100);
 }
 
-function drawTokens(){
- document.querySelectorAll(".token").forEach(t=>t.remove());
- for(let p in gameState.tokens){
-  let pos=gameState.tokens[p].pos;
-  let col=gameState.tokens[p].color;
-  if(pos>=0){
-   let token=document.createElement("div");
-   token.className="token "+col;
-   document.getElementById("cell"+pos)?.appendChild(token);
+// ---------------- TOKEN MOVEMENT ----------------
+function moveToken(d){
+  const t = tokens[player] || {pos:-1,color:color};
+  if(t.pos==-1 && d!=6) return; // can't move
+  if(t.pos==-1 && d==6){ t.pos=0; tokens[player]=t; drawTokens(); return; } // enter
+  if(t.pos + d > homeEntry) return; // exact home rule
+  t.pos += d;
+  if(t.pos == homeEntry) { t.pos=-2; checkWinner(); }
+  tokens[player]=t;
+  handleKill(t.pos);
+  drawTokens();
+}
+
+// ---------------- KILL ----------------
+function handleKill(pos){
+  for(let p in tokens){
+    if(p!=player && tokens[p].pos==pos && !safeCells.includes(pos)){
+      tokens[p].pos=-1;
+    }
   }
- }
 }
 
-function loadGame(){
- if(!room) return;
- fetch(`${API}?action=status&room=${room}`)
- .then(r=>r.json())
- .then(data=>{
-   gameState=data;
-   document.getElementById("leaderboard").innerText="Leader: "+(data.leader||"");
-   document.getElementById("messages").innerHTML=data.chat.map(c=>`<div>${c}</div>`).join('');
-   drawTokens();
- });
+// ---------------- WINNER ----------------
+function checkWinner(){
+  const playerTokens = Object.values(tokens).filter(t=>t.color==color);
+  if(playerTokens.every(t=>t.pos==-2)){
+    alert(player+" wins!");
+  }
 }
-setInterval(loadGame,2000);
 
+// ---------------- DRAW TOKENS ----------------
+function drawTokens(){
+  document.querySelectorAll(".token").forEach(t=>t.remove());
+  for(let p in tokens){
+    const t = tokens[p];
+    if(t.pos>=0){
+      const el = document.createElement("div");
+      el.className = "token "+t.color;
+      document.getElementById("cell"+t.pos).appendChild(el);
+    }
+  }
+}
+
+// ---------------- CHAT ----------------
 function sendChat(){
- let text=document.getElementById("msg").value;
- if(!text) return;
- fetch(`${API}?action=chat&room=${room}&name=${player}&msg=${encodeURIComponent(text)}`);
- document.getElementById("msg").value="";
+  const text = document.getElementById("msg").value;
+  if(!text) return;
+  fetch(`${API}?action=chat&room=${room}&name=${player}&msg=${encodeURIComponent(text)}`);
+  document.getElementById("msg").value="";
 }
+
+// ---------------- SYNC ----------------
+function loadGame(){
+  if(!room) return;
+  fetch(`${API}?action=status&room=${room}`)
+    .then(r=>r.json())
+    .then(data=>{
+      tokens=data.tokens;
+      document.getElementById("leaderboard").innerText="Leader: "+(data.leader||"");
+      const chatEl=document.getElementById("messages");
+      chatEl.innerHTML=data.chat.map(c=>`<div><b>${c.name}</b>: ${c.msg}</div>`).join("");
+      drawTokens();
+    });
+}
+setInterval(loadGame,1500);
 </script>
 </body>
 </html>
