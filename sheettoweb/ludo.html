@@ -3,157 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Classic Ludo 2-4 Players</title>
+<title>Ultimate Ludo King Clone</title>
 <style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#f0f0f0;
-  text-align:center;
-}
-h2 {margin:10px;}
-#board {
-  display:grid;
-  grid-template-columns:repeat(15,30px);
-  grid-template-rows:repeat(15,30px);
-  margin:20px auto;
-  gap:1px;
-}
-.cell {
-  width:30px;
-  height:30px;
-  background:#ddd;
-  border:1px solid #aaa;
-  position:relative;
-}
-.safe {background:#a8dadc;}
-.token {
-  width:60%;
-  height:60%;
-  border-radius:50%;
-  position:absolute;
-  top:20%;
-  left:20%;
-}
-.red{background:red;}
-.green{background:green;}
-.yellow{background:gold;}
-.blue{background:blue;}
-#diceBtn {margin:10px;padding:10px 20px;}
-#info {margin:10px;font-weight:bold;}
+  body { margin:0; font-family: Arial; background:#0f172a; color:white; text-align:center; }
+#board { display:grid; grid-template-columns:repeat(15,1fr); width:95vw; max-width:600px; margin:20px auto; gap:2px; }
+.cell { aspect-ratio:1; background:#e5e7eb; border-radius:4px; position:relative; }
+.safe { background:#cbd5e1; }
+.red-home{background:#f87171;} .green-home{background:#34d399;}
+.yellow-home{background:#facc15;} .blue-home{background:#60a5fa;}
+.token { width:60%; height:60%; border-radius:50%; position:absolute; top:20%; left:20%; }
+.red{background:red;} .green{background:green;} .yellow{background:gold;} .blue{background:blue;}
+#chatBox { width:95vw; max-width:600px; margin:10px auto; background:#1e293b; padding:10px; border-radius:8px; }
+#messages { height:120px; overflow-y:auto; text-align:left; margin-bottom:5px; }
 </style>
 </head>
 <body>
+<h2>Ultimate Ludo King Clone</h2>
 
-<h2>Classic Ludo 2-4 Players</h2>
-<div id="info"></div>
-<button id="diceBtn">Roll Dice</button>
-<span id="diceVal">0</span>
+<div id="top">
+  <input id="name" placeholder="Your Name">
+  <input id="memberID" placeholder="Member ID">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="registerUser()">Register</button>
+  <button onclick="loginUser()">Login</button>
+  <br>
+  <input id="room" placeholder="Room Code">
+  <select id="color">
+    <option value="red">Red</option>
+    <option value="green">Green</option>
+    <option value="yellow">Yellow</option>
+    <option value="blue">Blue</option>
+  </select>
+  <button onclick="joinRoom()">Join Room</button>
+  <h3>Dice: <span id="dice">0</span></h3>
+  <button onclick="rollDice()">Roll Dice</button>
+  <h3 id="leaderboard"></h3>
+</div>
 
 <div id="board"></div>
 
-<script>
-// ---------------- BOARD SETUP ----------------
-const boardSize = 15;
-const safeCells = [0,8,13,21,26,34,39,47];
-const homeEntry = 57;
-const boardEl = document.getElementById("board");
-let cells = [];
-for(let i=0;i<boardSize*boardSize;i++){
-  const c=document.createElement("div");
-  c.className="cell";
-  c.id="cell"+i;
-  boardEl.appendChild(c);
-  cells.push(c);
-}
+<div id="chatBox">
+  <div id="messages"></div>
+  <input id="msg" placeholder="Type message">
+  <button onclick="sendChat()">Send</button>
+</div>
 
-// ---------------- PLAYERS ----------------
-let players = [
-  {name:"Red", color:"red", tokens:[-1,-1,-1,-1]},
-  {name:"Green", color:"green", tokens:[-1,-1,-1,-1]},
-  {name:"Yellow", color:"yellow", tokens:[-1,-1,-1,-1]},
-  {name:"Blue", color:"blue", tokens:[-1,-1,-1,-1]}
-];
-let currentPlayer = 0;
-
-// ---------------- DICE ----------------
-const diceBtn = document.getElementById("diceBtn");
-const diceVal = document.getElementById("diceVal");
-const infoEl = document.getElementById("info");
-
-function updateInfo(){
-  infoEl.innerText=`Current Player: ${players[currentPlayer].name}`;
-}
-updateInfo();
-
-diceBtn.onclick=function(){
-  let d = Math.floor(Math.random()*6)+1;
-  diceVal.innerText=d;
-  moveToken(d);
-}
-
-// ---------------- MOVE TOKEN ----------------
-function moveToken(d){
-  let player = players[currentPlayer];
-  let tokenIndex = player.tokens.findIndex(pos=>pos>=0||pos==-1); // find first movable
-  if(tokenIndex==-1 && d!=6) { nextTurn(); return; } 
-  if(player.tokens[tokenIndex]==-1 && d==6) player.tokens[tokenIndex]=0;
-  else if(player.tokens[tokenIndex]>=0){
-    if(player.tokens[tokenIndex]+d>homeEntry){ nextTurn(); return; }
-    player.tokens[tokenIndex]+=d;
-    if(player.tokens[tokenIndex]==homeEntry) player.tokens[tokenIndex]=-2; // finished
-  }
-  handleKill(player.color);
-  drawTokens();
-  checkWinner(player);
-  if(d!=6) nextTurn();
-}
-
-// ---------------- HANDLE KILL ----------------
-function handleKill(color){
-  let player = players[currentPlayer];
-  let posArr = player.tokens.filter(p=>p>=0);
-  for(let i=0;i<players.length;i++){
-    if(i==currentPlayer) continue;
-    let opp = players[i];
-    for(let t=0;t<opp.tokens.length;t++){
-      if(posArr.includes(opp.tokens[t]) && !safeCells.includes(opp.tokens[t])){
-        opp.tokens[t]=-1; // send back home
-      }
-    }
-  }
-}
-
-// ---------------- DRAW TOKENS ----------------
-function drawTokens(){
-  // clear
-  cells.forEach(c=>c.innerHTML="");
-  players.forEach(pl=>{
-    pl.tokens.forEach(pos=>{
-      if(pos>=0){
-        const tok = document.createElement("div");
-        tok.className="token "+pl.color;
-        cells[pos].appendChild(tok);
-      }
-    });
-  });
-}
-
-// ---------------- NEXT TURN ----------------
-function nextTurn(){
-  currentPlayer = (currentPlayer+1)%players.length;
-  updateInfo();
-}
-
-// ---------------- CHECK WINNER ----------------
-function checkWinner(player){
-  if(player.tokens.every(t=>t==-2)){
-    alert(`${player.name} Wins!`);
-    diceBtn.disabled=true;
-  }
-}
-
-drawTokens();
-</script>
+<script src="ludo.js"></script>
 </body>
 </html>
