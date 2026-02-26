@@ -3,39 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Ludo King Clone</title>
+<title>Classic Ludo 2-4 Players</title>
 <style>
 body {
   margin:0;
   font-family: Arial, sans-serif;
-  background:#0f172a;
-  color:white;
+  background:#f0f0f0;
   text-align:center;
 }
 h2 {margin:10px;}
-#top {padding:10px;}
-input, button, select {
-  padding:8px;
-  margin:5px;
-  border-radius:6px;
-  border:none;
-}
-button {background:#22c55e; color:white; font-weight:bold; cursor:pointer;}
 #board {
   display:grid;
-  grid-template-columns:repeat(15,1fr);
-  width:95vw;
-  max-width:600px;
+  grid-template-columns:repeat(15,30px);
+  grid-template-rows:repeat(15,30px);
   margin:20px auto;
-  gap:2px;
+  gap:1px;
 }
 .cell {
-  aspect-ratio:1;
-  background:#e5e7eb;
-  border-radius:4px;
+  width:30px;
+  height:30px;
+  background:#ddd;
+  border:1px solid #aaa;
   position:relative;
 }
-.safe {background:#cbd5e1;}
+.safe {background:#a8dadc;}
 .token {
   width:60%;
   height:60%;
@@ -48,193 +39,121 @@ button {background:#22c55e; color:white; font-weight:bold; cursor:pointer;}
 .green{background:green;}
 .yellow{background:gold;}
 .blue{background:blue;}
-#chatBox {
-  width:95vw;
-  max-width:600px;
-  margin:10px auto;
-  background:#1e293b;
-  padding:10px;
-  border-radius:8px;
-}
-#messages {
-  height:120px;
-  overflow-y:auto;
-  text-align:left;
-  margin-bottom:5px;
-}
+#diceBtn {margin:10px;padding:10px 20px;}
+#info {margin:10px;font-weight:bold;}
 </style>
 </head>
 <body>
 
-<h2>Ultimate Ludo King Clone</h2>
-
-<div id="top">
-  <input id="name" placeholder="Your Name">
-  <input id="memberID" placeholder="Member ID">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <button onclick="loginUser()">Login</button>
-  <br>
-  <input id="room" placeholder="Room Code">
-  <select id="color">
-    <option value="red">Red</option>
-    <option value="green">Green</option>
-    <option value="yellow">Yellow</option>
-    <option value="blue">Blue</option>
-  </select>
-  <button onclick="joinRoom()">Join Room</button>
-  <h3>Dice: <span id="dice">0</span></h3>
-  <button onclick="rollDice()">Roll Dice</button>
-  <h3 id="leaderboard"></h3>
-</div>
+<h2>Classic Ludo 2-4 Players</h2>
+<div id="info"></div>
+<button id="diceBtn">Roll Dice</button>
+<span id="diceVal">0</span>
 
 <div id="board"></div>
 
-<div id="chatBox">
-  <div id="messages"></div>
-  <input id="msg" placeholder="Type message">
-  <button onclick="sendChat()">Send</button>
-</div>
-
 <script>
-// ---------------- CONFIG ----------------
-const API = "https://script.google.com/macros/s/AKfycbw4YaQhbh09xOK76glbx6EmEbokFGjGilTCO2CI8jnbl4RzXhmB2X0CO6bTlgOg8qPZ-g/exec";
-
-// ---------------- VARIABLES ----------------
-let player = "";
-let memberID = "";
-let room = "";
-let color = "";
-let tokens = {};
-let safeCells = [0,8,13,21,26,34,39,47];
-let homeEntry = 57;
-
-// ---------------- BOARD ----------------
-function createBoard(){
-  const board = document.getElementById("board");
-  board.innerHTML="";
-  for(let i=0;i<15*15;i++){
-    const cell = document.createElement("div");
-    cell.className="cell";
-    cell.id="cell"+i;
-    board.appendChild(cell);
-  }
-}
-createBoard();
-
-// ---------------- USER AUTH ----------------
-function registerUser(){
-  const id = document.getElementById("memberID").value;
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("password").value;
-  if(!id||!name||!email||!pass) return alert("Fill all fields");
-  fetch(API,{method:"POST",body:new URLSearchParams({
-    action:"register", id:id, name:name, email:email, pass:pass
-  })}).then(r=>r.text()).then(alert);
+// ---------------- BOARD SETUP ----------------
+const boardSize = 15;
+const safeCells = [0,8,13,21,26,34,39,47];
+const homeEntry = 57;
+const boardEl = document.getElementById("board");
+let cells = [];
+for(let i=0;i<boardSize*boardSize;i++){
+  const c=document.createElement("div");
+  c.className="cell";
+  c.id="cell"+i;
+  boardEl.appendChild(c);
+  cells.push(c);
 }
 
-function loginUser(){
-  memberID = document.getElementById("memberID").value;
-  const pass = document.getElementById("password").value;
-  fetch(API,{method:"POST",body:new URLSearchParams({
-    action:"login", id:memberID, pass:pass
-  })}).then(r=>r.text()).then(res=>{
-    if(res=="FAIL") alert("Login Failed");
-    else {player=res; alert("Welcome "+res);}
-  });
-}
-
-// ---------------- JOIN ROOM ----------------
-function joinRoom(){
-  player = document.getElementById("name").value;
-  room = document.getElementById("room").value;
-  color = document.getElementById("color").value;
-  if(!player||!room) return alert("Enter name & room");
-  fetch(`${API}?action=join&room=${room}&name=${player}&color=${color}`);
-}
+// ---------------- PLAYERS ----------------
+let players = [
+  {name:"Red", color:"red", tokens:[-1,-1,-1,-1]},
+  {name:"Green", color:"green", tokens:[-1,-1,-1,-1]},
+  {name:"Yellow", color:"yellow", tokens:[-1,-1,-1,-1]},
+  {name:"Blue", color:"blue", tokens:[-1,-1,-1,-1]}
+];
+let currentPlayer = 0;
 
 // ---------------- DICE ----------------
-function rollDice(){
-  let i=0;
-  const diceEl = document.getElementById("dice");
-  const anim = setInterval(()=>{
-    diceEl.innerText = Math.floor(Math.random()*6)+1;
-    if(i++>10){
-      clearInterval(anim);
-      const d = Math.floor(Math.random()*6)+1;
-      diceEl.innerText = d;
-      moveToken(d);
-    }
-  },100);
+const diceBtn = document.getElementById("diceBtn");
+const diceVal = document.getElementById("diceVal");
+const infoEl = document.getElementById("info");
+
+function updateInfo(){
+  infoEl.innerText=`Current Player: ${players[currentPlayer].name}`;
+}
+updateInfo();
+
+diceBtn.onclick=function(){
+  let d = Math.floor(Math.random()*6)+1;
+  diceVal.innerText=d;
+  moveToken(d);
 }
 
-// ---------------- TOKEN MOVEMENT ----------------
+// ---------------- MOVE TOKEN ----------------
 function moveToken(d){
-  const t = tokens[player] || {pos:-1,color:color};
-  if(t.pos==-1 && d!=6) return; // can't move
-  if(t.pos==-1 && d==6){ t.pos=0; tokens[player]=t; drawTokens(); return; } // enter
-  if(t.pos + d > homeEntry) return; // exact home rule
-  t.pos += d;
-  if(t.pos == homeEntry) { t.pos=-2; checkWinner(); }
-  tokens[player]=t;
-  handleKill(t.pos);
-  drawTokens();
-}
-
-// ---------------- KILL ----------------
-function handleKill(pos){
-  for(let p in tokens){
-    if(p!=player && tokens[p].pos==pos && !safeCells.includes(pos)){
-      tokens[p].pos=-1;
-    }
+  let player = players[currentPlayer];
+  let tokenIndex = player.tokens.findIndex(pos=>pos>=0||pos==-1); // find first movable
+  if(tokenIndex==-1 && d!=6) { nextTurn(); return; } 
+  if(player.tokens[tokenIndex]==-1 && d==6) player.tokens[tokenIndex]=0;
+  else if(player.tokens[tokenIndex]>=0){
+    if(player.tokens[tokenIndex]+d>homeEntry){ nextTurn(); return; }
+    player.tokens[tokenIndex]+=d;
+    if(player.tokens[tokenIndex]==homeEntry) player.tokens[tokenIndex]=-2; // finished
   }
+  handleKill(player.color);
+  drawTokens();
+  checkWinner(player);
+  if(d!=6) nextTurn();
 }
 
-// ---------------- WINNER ----------------
-function checkWinner(){
-  const playerTokens = Object.values(tokens).filter(t=>t.color==color);
-  if(playerTokens.every(t=>t.pos==-2)){
-    alert(player+" wins!");
+// ---------------- HANDLE KILL ----------------
+function handleKill(color){
+  let player = players[currentPlayer];
+  let posArr = player.tokens.filter(p=>p>=0);
+  for(let i=0;i<players.length;i++){
+    if(i==currentPlayer) continue;
+    let opp = players[i];
+    for(let t=0;t<opp.tokens.length;t++){
+      if(posArr.includes(opp.tokens[t]) && !safeCells.includes(opp.tokens[t])){
+        opp.tokens[t]=-1; // send back home
+      }
+    }
   }
 }
 
 // ---------------- DRAW TOKENS ----------------
 function drawTokens(){
-  document.querySelectorAll(".token").forEach(t=>t.remove());
-  for(let p in tokens){
-    const t = tokens[p];
-    if(t.pos>=0){
-      const el = document.createElement("div");
-      el.className = "token "+t.color;
-      document.getElementById("cell"+t.pos).appendChild(el);
-    }
+  // clear
+  cells.forEach(c=>c.innerHTML="");
+  players.forEach(pl=>{
+    pl.tokens.forEach(pos=>{
+      if(pos>=0){
+        const tok = document.createElement("div");
+        tok.className="token "+pl.color;
+        cells[pos].appendChild(tok);
+      }
+    });
+  });
+}
+
+// ---------------- NEXT TURN ----------------
+function nextTurn(){
+  currentPlayer = (currentPlayer+1)%players.length;
+  updateInfo();
+}
+
+// ---------------- CHECK WINNER ----------------
+function checkWinner(player){
+  if(player.tokens.every(t=>t==-2)){
+    alert(`${player.name} Wins!`);
+    diceBtn.disabled=true;
   }
 }
 
-// ---------------- CHAT ----------------
-function sendChat(){
-  const text = document.getElementById("msg").value;
-  if(!text) return;
-  fetch(`${API}?action=chat&room=${room}&name=${player}&msg=${encodeURIComponent(text)}`);
-  document.getElementById("msg").value="";
-}
-
-// ---------------- SYNC ----------------
-function loadGame(){
-  if(!room) return;
-  fetch(`${API}?action=status&room=${room}`)
-    .then(r=>r.json())
-    .then(data=>{
-      tokens=data.tokens;
-      document.getElementById("leaderboard").innerText="Leader: "+(data.leader||"");
-      const chatEl=document.getElementById("messages");
-      chatEl.innerHTML=data.chat.map(c=>`<div><b>${c.name}</b>: ${c.msg}</div>`).join("");
-      drawTokens();
-    });
-}
-setInterval(loadGame,1500);
+drawTokens();
 </script>
 </body>
 </html>
