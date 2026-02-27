@@ -1,54 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultimate Ludo King Clone</title>
+<title>Professional Ludo V2</title>
 <style>
-  body { margin:0; font-family: Arial; background:#0f172a; color:white; text-align:center; }
-#board { display:grid; grid-template-columns:repeat(15,1fr); width:95vw; max-width:600px; margin:20px auto; gap:2px; }
-.cell { aspect-ratio:1; background:#e5e7eb; border-radius:4px; position:relative; }
-.safe { background:#cbd5e1; }
-.red-home{background:#f87171;} .green-home{background:#34d399;}
-.yellow-home{background:#facc15;} .blue-home{background:#60a5fa;}
-.token { width:60%; height:60%; border-radius:50%; position:absolute; top:20%; left:20%; }
-.red{background:red;} .green{background:green;} .yellow{background:gold;} .blue{background:blue;}
-#chatBox { width:95vw; max-width:600px; margin:10px auto; background:#1e293b; padding:10px; border-radius:8px; }
-#messages { height:120px; overflow-y:auto; text-align:left; margin-bottom:5px; }
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+    text-align:center;
+}
+
+h1{margin-top:10px;}
+
+.board{
+    display:grid;
+    grid-template-columns:repeat(15,1fr);
+    grid-template-rows:repeat(15,1fr);
+    width:90vmin;
+    height:90vmin;
+    margin:auto;
+    margin-top:10px;
+}
+
+.cell{
+    border:1px solid #222;
+    position:relative;
+}
+
+.safe{ background:#334155; }
+
+.home-red{background:#7f1d1d;}
+.home-green{background:#14532d;}
+.home-yellow{background:#78350f;}
+.home-blue{background:#1e3a8a;}
+
+.token{
+    width:60%;
+    height:60%;
+    border-radius:50%;
+    position:absolute;
+    top:20%;
+    left:20%;
+    transition:0.3s;
+}
+
+.red{background:red;}
+.green{background:lime;}
+.yellow{background:gold;}
+.blue{background:cyan;}
+
+button{
+    padding:10px 20px;
+    font-size:18px;
+    margin:10px;
+}
+
+@media(max-width:600px){
+    .board{
+        width:95vmin;
+        height:95vmin;
+    }
+}
 </style>
 </head>
 <body>
-<h2>Ultimate Ludo King Clone</h2>
 
-<div id="top">
-  <input id="name" placeholder="Your Name">
-  <input id="memberID" placeholder="Member ID">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="registerUser()">Register</button>
-  <button onclick="loginUser()">Login</button>
-  <br>
-  <input id="room" placeholder="Room Code">
-  <select id="color">
-    <option value="red">Red</option>
-    <option value="green">Green</option>
-    <option value="yellow">Yellow</option>
-    <option value="blue">Blue</option>
-  </select>
-  <button onclick="joinRoom()">Join Room</button>
-  <h3>Dice: <span id="dice">0</span></h3>
-  <button onclick="rollDice()">Roll Dice</button>
-  <h3 id="leaderboard"></h3>
-</div>
+<h1>🎲 Professional Ludo V2</h1>
+<h2 id="turn">Turn: Red</h2>
+<h2 id="diceResult">Roll Dice</h2>
+<button onclick="rollDice()">Roll Dice</button>
 
-<div id="board"></div>
+<div class="board" id="board"></div>
 
-<div id="chatBox">
-  <div id="messages"></div>
-  <input id="msg" placeholder="Type message">
-  <button onclick="sendChat()">Send</button>
-</div>
+<audio id="diceSound" src="https://www.soundjay.com/dice/sounds/dice-1.mp3"></audio>
 
-<script src="ludo.js"></script>
+<script>
+
+const board = document.getElementById("board");
+const turnDisplay = document.getElementById("turn");
+const diceResult = document.getElementById("diceResult");
+const diceSound = document.getElementById("diceSound");
+
+let players = ["Red","Green","Yellow","Blue"];
+let colors = ["red","green","yellow","blue"];
+let currentPlayer = 0;
+let dice = 0;
+
+let path = [];
+for(let i=0;i<225;i++){ path.push(i); }
+
+let safeSpots = [0,8,13,21,26,34,39,47,52,60,65,73];
+
+for(let i=0;i<225;i++){
+    let cell=document.createElement("div");
+    cell.classList.add("cell");
+    if(safeSpots.includes(i)) cell.classList.add("safe");
+    board.appendChild(cell);
+}
+
+let tokens = [];
+
+for(let p=0;p<4;p++){
+    for(let t=0;t<4;t++){
+        tokens.push({
+            player:p,
+            position:-1,
+            color:colors[p],
+            finished:false
+        });
+    }
+}
+
+function render(){
+    document.querySelectorAll(".cell").forEach(c=>c.innerHTML="");
+
+    tokens.forEach(token=>{
+        if(token.position >= 0 && !token.finished){
+            let div=document.createElement("div");
+            div.classList.add("token",token.color);
+            document.getElementsByClassName("cell")[path[token.position]].appendChild(div);
+        }
+    });
+}
+
+function rollDice(){
+    dice = Math.floor(Math.random()*6)+1;
+    diceResult.innerText="Dice: "+dice;
+    diceSound.play();
+    moveToken();
+}
+
+function moveToken(){
+    let playerTokens = tokens.filter(t=>t.player===currentPlayer && !t.finished);
+    let token = playerTokens[0];
+
+    if(token.position===-1){
+        if(dice===6){
+            token.position=0;
+        }else{
+            nextTurn();
+            return;
+        }
+    }else{
+        token.position+=dice;
+        if(token.position>=path.length){
+            token.finished=true;
+            checkWin(currentPlayer);
+        }
+    }
+
+    checkKill(token);
+    render();
+
+    if(dice!==6) nextTurn();
+}
+
+function checkKill(token){
+    tokens.forEach(op=>{
+        if(op.player!==token.player &&
+           op.position===token.position &&
+           !safeSpots.includes(path[token.position])){
+               op.position=-1;
+        }
+    });
+}
+
+function checkWin(player){
+    let playerTokens=tokens.filter(t=>t.player===player);
+    if(playerTokens.every(t=>t.finished)){
+        alert(players[player]+" Wins 🏆");
+        location.reload();
+    }
+}
+
+function nextTurn(){
+    currentPlayer=(currentPlayer+1)%4;
+    turnDisplay.innerText="Turn: "+players[currentPlayer];
+}
+
+render();
+
+</script>
 </body>
 </html>
