@@ -30,16 +30,17 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 </p>
 </div>
 
-<!-- SIGNUP -->
+<!-- Signup Form -->
 <div id="signupBox" class="box" style="display:none">
-<h3>Signup</h3>
-<input id="sid" placeholder="Member ID"><br>
-<input id="sname" placeholder="Name"><br>
-<input id="semail" placeholder="Email"><br>
-<input type="file" id="sphoto" accept="image/*"><br>
-<input id="spass" type="password" placeholder="Password"><br>
-<button onclick="signup()">Register</button>
-<p><a href="#" onclick="showLogin()">Back</a></p>
+  <h3>Signup</h3>
+  <input id="sid" placeholder="Member ID"><br>
+  <input id="sname" placeholder="Name"><br>
+  <input id="semail" placeholder="Email"><br>
+  <input type="file" id="sphoto" accept="image/*"><br>
+  <input id="spass" type="password" placeholder="Password"><br>
+  <input id="photoURL" type="text" placeholder="Photo URL" readonly><br> <!-- Photo URL input field -->
+  <button onclick="signup()">Register</button>
+  <p><a href="#" onclick="showLogin()">Back</a></p>
 </div>
 
 <!-- RESET -->
@@ -100,7 +101,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbwoDo8GNyJJxvus2J7nSoMEhhhGTDf8LWMzzGCI5kH1ghs0WsmnhMD-x8j0wS5muA7S/exec";
+const API="https://script.google.com/macros/s/AKfycbypzwxYga88Pvno4VGfcMM3ul32bm2nsh1w5HVCEhu8nwJrCJPQv5Qi5ECJhQ7s1dy2Ew/exec";
 let ME="";
 
 // ---------- FORM SHOW ----------
@@ -112,79 +113,90 @@ function showPublic(){privateDiv.style.display="none";publicDiv.style.display="b
 function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
 
 // ---------- LOGIN ----------
-async function login(){
-
-let r = await fetch(API,{
-  method:'post',
-  body:new URLSearchParams({
-    action:'login',
-    id:loginID.value,
-    pass:loginPass.value
-  })
-});
-
-let t = await r.text();
-
-if(t=="FAIL"){
-  alert("Wrong Login");
-  return;
-}
-
-// JSON parse
-let data = JSON.parse(t);
-
-// global variable
-ME = data.name;
-
-// Name show
-myName.innerText = data.name;
-
-// Photo fallback system
-if(data.photo && data.photo.trim() !== ""){
-  myPhoto.src = data.photo;
-}else{
-  myPhoto.src = "https://ui-avatars.com/api/?name="
-                + encodeURIComponent(data.name)
-                + "&background=075e54&color=fff";
-}
-
-// Show chat area
-loginBox.style.display="none";
-chatArea.style.display="block";
-
-// Load data
-loadMembers();
-setInterval(loadMessages,2000);
-
-}
-
-async function signup(){
-
-  if(!sid.value || !sname.value || !semail.value || !spass.value){
-    alert("All fields required");
-    return;
-  }
-
-  let r = await fetch(API,{
-    method:'post',
-    body:new URLSearchParams({
-      action:'register',
-      id:sid.value,
-      name:sname.value,
-      email:semail.value,
-      pass:spass.value
+async function login() {
+  let r = await fetch(API, {
+    method: 'post',
+    body: new URLSearchParams({
+      action: 'login',
+      id: loginID.value,
+      pass: loginPass.value
     })
   });
 
   let t = await r.text();
 
-  if(t=="REGISTERED"){
-    alert("Registered Successfully");
-    showLogin();
-  }else{
-    alert("Signup Failed");
+  if (t == "FAIL") {
+    alert("गलत Login");
+    return;
   }
 
+  // JSON parse
+  let data = JSON.parse(t);
+
+  // Name show
+  myName.innerText = data.name;
+
+  // Photo fallback system
+  if (data.photo && data.photo.trim() !== "") {
+    myPhoto.src = data.photo;
+  } else {
+    myPhoto.src = "https://ui-avatars.com/api/?name="
+      + encodeURIComponent(data.name)
+      + "&background=075e54&color=fff";
+  }
+
+  // Show chat area
+  loginBox.style.display = "none";
+  chatArea.style.display = "block";
+
+  // Load data
+  loadMembers();
+  setInterval(loadMessages, 2000);
+}
+  
+async function signup() {
+  // Check if all fields are filled
+  if (!sid.value || !sname.value || !semail.value || !spass.value) {
+    alert("सबै fields भर्नुहोस्");
+    return;
+  }
+
+  let photoURL = "";
+  let deleteURL = "";
+
+  // Check if a photo is selected
+  if (sphoto.files.length > 0) {
+    // Upload the photo to IMGBB and get the URL
+    let data = await uploadToImgbb(sphoto.files[0]);
+    photoURL = data.url;
+    deleteURL = data.delete_url;
+
+    // Auto-fill the photo URL input field
+    document.getElementById("photoURL").value = photoURL; // Fill photo URL in the input field
+  }
+
+  // Send the registration data to the server (Apps Script)
+  let r = await fetch(API, {
+    method: 'post',
+    body: new URLSearchParams({
+      action: 'register',
+      id: sid.value,
+      name: sname.value,
+      email: semail.value,
+      pass: spass.value,
+      photo: photoURL,
+      deleteurl: deleteURL
+    })
+  });
+
+  let t = await r.text();
+
+  if (t == "REGISTERED") {
+    alert("सफलतापूर्वक रजिष्टर भयो");
+    showLogin();
+  } else {
+    alert("रजिष्टर गर्न सकिएन");
+  }
 }
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){
@@ -268,28 +280,27 @@ alert("Updated");
 showPrivate();
 }
 
-async function uploadToImgbb(file){
+  async function uploadToImgbb(file) {
+  let base64 = await toBase64(file); // Convert file to base64
 
-let base64 = await toBase64(file);
+  let r = await fetch(API, {
+    method: 'post',
+    body: new URLSearchParams({
+      action: 'uploadPhoto',
+      image: base64
+    })
+  });
 
-let r = await fetch(API,{
-  method:'post',
-  body:new URLSearchParams({
-    action:'uploadPhoto',
-    image:base64
-  })
-});
-
-return await r.json();
+  return await r.json(); // Returns photo URL and delete URL
 }
 
-function toBase64(file){
-return new Promise((resolve,reject)=>{
-let reader=new FileReader();
-reader.readAsDataURL(file);
-reader.onload=()=>resolve(reader.result);
-reader.onerror=error=>reject(error);
-});
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);  // Convert file to Base64
+    reader.onload = () => resolve(reader.result);  // Success
+    reader.onerror = error => reject(error);  // Error handling
+  });
 }
 
 </script>
