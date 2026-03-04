@@ -155,7 +155,6 @@ async function login() {
 }
   
 async function signup() {
-  // Check if all fields are filled
   if (!sid.value || !sname.value || !semail.value || !spass.value) {
     alert("सबै fields भर्नुहोस्");
     return;
@@ -164,40 +163,52 @@ async function signup() {
   let photoURL = "";
   let deleteURL = "";
 
-  // Check if a photo is selected
   if (sphoto.files.length > 0) {
-    // Upload the photo to IMGBB and get the URL
-    let data = await uploadToImgbb(sphoto.files[0]);
-    photoURL = data.url;
-    deleteURL = data.delete_url;
-
-    // Auto-fill the photo URL input field
-    document.getElementById("photoURL").value = photoURL; // Fill photo URL in the input field
+    try {
+      let data = await uploadToImgbb(sphoto.files[0]);
+      photoURL = data.url;
+      deleteURL = data.delete_url;
+      document.getElementById("photoURL").value = photoURL;
+    } catch(err) {
+      console.error("Photo upload failed:", err);
+      alert("Photo upload failed");
+      return;
+    }
   }
 
-  // Send the registration data to the server (Apps Script)
-  let r = await fetch(API, {
-    method: 'post',
-    body: new URLSearchParams({
-      action: 'register',
-      id: sid.value,
-      name: sname.value,
-      email: semail.value,
-      pass: spass.value,
-      photo: photoURL,
-      deleteurl: deleteURL
-    })
-  });
+  try {
+    let r = await fetch(API, {
+      method: 'post',
+      body: new URLSearchParams({
+        action: 'register',
+        id: sid.value,
+        name: sname.value,
+        email: semail.value,
+        pass: spass.value,
+        photo: photoURL,
+        deleteurl: deleteURL
+      })
+    });
 
-  let t = await r.text();
+    let t = await r.text();
 
-  if (t == "REGISTERED") {
-    alert("सफलतापूर्वक रजिष्टर भयो");
-    showLogin();
-  } else {
-    alert("रजिष्टर गर्न सकिएन");
+    if (t == "REGISTERED") {
+      alert("सफलतापूर्वक रजिष्टर भयो");
+
+      // ✅ Auto login after signup
+      loginID.value = sid.value;
+      loginPass.value = spass.value;
+      showLogin();  // show login box first
+      await login(); // call login function to set ME, load members/messages
+    } else {
+      alert("रजिष्टर गर्न सकिएन");
+    }
+  } catch(err) {
+    console.error("Signup failed:", err);
+    alert("Signup failed, check console");
   }
 }
+  
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){
 if(msg.value=="") return;
