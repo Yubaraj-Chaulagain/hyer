@@ -36,6 +36,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <input id="sid" placeholder="Member ID"><br>
 <input id="sname" placeholder="Name"><br>
 <input id="semail" placeholder="Email"><br>
+<input type="file" id="sphoto" accept="image/*"><br>
 <input id="spass" type="password" placeholder="Password"><br>
 <button onclick="signup()">Register</button>
 <p><a href="#" onclick="showLogin()">Back</a></p>
@@ -99,7 +100,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbxZ3mOTBQHznRdyE0RIcM_NxPbPIHWrQF3ITscqBLl711vcvDjHQVyXCBiTaDSU9KCLYQ/exec";
+const API="https://script.google.com/macros/s/AKfycbxM83xNzaUQzNxd3pygkhnFkD9KROLDP_X77oE0tSEJEpvz1TZ4M-ZJgLlZg79uRkkJlg/exec";
 let ME="";
 
 // ---------- FORM SHOW ----------
@@ -112,36 +113,80 @@ function showChange(){privateDiv.style.display="none";publicDiv.style.display="n
 
 // ---------- LOGIN ----------
 async function login(){
-let r=await fetch(API,{method:'post',
-body:new URLSearchParams({action:'login',id:loginID.value,pass:loginPass.value})});
-let t=await r.text();
-if(t=="FAIL"){alert("Wrong Login");return;}
 
-ME=t;
+let r = await fetch(API,{
+  method:'post',
+  body:new URLSearchParams({
+    action:'login',
+    id:loginID.value,
+    pass:loginPass.value
+  })
+});
 
-myName.innerText = ME;
-myPhoto.src = "https://ui-avatars.com/api/?name=" + ME + "&background=075e54&color=fff";
+let t = await r.text();
 
+if(t=="FAIL"){
+  alert("Wrong Login");
+  return;
+}
+
+// JSON parse
+let data = JSON.parse(t);
+
+// global variable
+ME = data.name;
+
+// Name show
+myName.innerText = data.name;
+
+// Photo fallback system
+if(data.photo && data.photo.trim() !== ""){
+  myPhoto.src = data.photo;
+}else{
+  myPhoto.src = "https://ui-avatars.com/api/?name="
+                + encodeURIComponent(data.name)
+                + "&background=075e54&color=fff";
+}
+
+// Show chat area
 loginBox.style.display="none";
 chatArea.style.display="block";
+
+// Load data
 loadMembers();
 setInterval(loadMessages,2000);
+
 }
 
 // ---------- SIGNUP ----------
 async function signup(){
-await fetch(API,{method:'post',
-body:new URLSearchParams({
-action:'register',
-id:sid.value,
-name:sname.value,
-email:semail.value,
-pass:spass.value
-})});
+
+let photoURL="";
+let deleteURL="";
+
+if(sphoto.files.length>0){
+
+  let data = await uploadToImgbb(sphoto.files[0]);
+  photoURL = data.url;
+  deleteURL = data.delete_url;
+}
+
+await fetch(API,{
+  method:'post',
+  body:new URLSearchParams({
+    action:'register',
+    id:sid.value,
+    name:sname.value,
+    email:semail.value,
+    pass:spass.value,
+    photo:photoURL,
+    deleteurl:deleteURL
+  })
+});
+
 alert("Registered");
 showLogin();
 }
-
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){
 if(msg.value=="") return;
@@ -222,6 +267,30 @@ await fetch(API,{method:'post',
 body:new URLSearchParams({action:'changePass',email:cemail.value,newpass:cnew.value})});
 alert("Updated");
 showPrivate();
+}
+
+async function uploadToImgbb(file){
+
+let base64 = await toBase64(file);
+
+let r = await fetch(API,{
+  method:'post',
+  body:new URLSearchParams({
+    action:'uploadPhoto',
+    image:base64
+  })
+});
+
+return await r.json();
+}
+
+function toBase64(file){
+return new Promise((resolve,reject)=>{
+let reader=new FileReader();
+reader.readAsDataURL(file);
+reader.onload=()=>resolve(reader.result);
+reader.onerror=error=>reject(error);
+});
 }
 
 </script>
