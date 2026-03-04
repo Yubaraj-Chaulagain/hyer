@@ -19,18 +19,17 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
 <!-- LOGIN -->
 <div id="loginBox" class="box">
-<h3>Login</h3>
-<h3>yubaraj Chaulagain </h3>
-<input id="loginID" placeholder="Member ID"><br>
-<input id="loginPass" type="password" placeholder="Password"><br>
-<button onclick="login()">Login</button>
-<p>
-<a href="#" onclick="showSignup()">Signup</a> |
-<a href="#" onclick="showReset()">Forgot?</a>
-</p>
+  <h3>Login</h3>
+  <input id="loginID" placeholder="Member ID"><br>
+  <input id="loginPass" type="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+  <p>
+    <a href="#" onclick="showSignup()">Signup</a> |
+    <a href="#" onclick="showReset()">Forgot?</a>
+  </p>
 </div>
 
-<!-- Signup Form -->
+<!-- SIGNUP -->
 <div id="signupBox" class="box" style="display:none">
   <h3>Signup</h3>
   <input id="sid" placeholder="Member ID"><br>
@@ -38,73 +37,72 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
   <input id="semail" placeholder="Email"><br>
   <input type="file" id="sphoto" accept="image/*"><br>
   <input id="spass" type="password" placeholder="Password"><br>
-  <input id="photoURL" type="text" placeholder="Photo URL" readonly><br> <!-- Photo URL input field -->
   <button onclick="signup()">Register</button>
   <p><a href="#" onclick="showLogin()">Back</a></p>
 </div>
 
-<!-- RESET -->
+<!-- RESET PASSWORD -->
 <div id="resetBox" class="box" style="display:none">
-<h3>Reset Password</h3>
-<input id="remail" placeholder="Email"><br>
-<button onclick="sendOTP()">Send OTP</button><br>
-<input id="rotp" placeholder="Enter OTP"><br>
-<input id="rnew" type="password" placeholder="New Password"><br>
-<button onclick="verifyReset()">Reset</button>
-<p><a href="#" onclick="showLogin()">Back</a></p>
+  <h3>Reset Password</h3>
+  <input id="remail" placeholder="Email"><br>
+  <button onclick="sendOTP()">Send OTP</button><br>
+  <input id="rotp" placeholder="Enter OTP"><br>
+  <input id="rnew" type="password" placeholder="New Password"><br>
+  <button onclick="verifyReset()">Reset</button>
+  <p><a href="#" onclick="showLogin()">Back</a></p>
 </div>
 
 <!-- CHAT AREA -->
 <div id="chatArea" class="box" style="display:none">
+
   <!-- PROFILE HEADER -->
-<div id="profileBar" style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;">
-  <div style="text-align:right;margin-right:10px;">
-    <div id="myName" style="font-weight:bold;"></div>
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;">
+    <div style="text-align:right;margin-right:10px;">
+      <div id="myName" style="font-weight:bold;"></div>
+    </div>
+    <img id="myPhoto" src="https://ui-avatars.com/api/?name=User&background=075e54&color=fff"
+         style="width:40px;height:40px;border-radius:50%;">
   </div>
-  <img id="myPhoto" src="https://ui-avatars.com/api/?name=User&background=075e54&color=fff"
-       style="width:40px;height:40px;border-radius:50%;">
-</div>
 
-<button onclick="showPrivate()">🔒 Private</button>
-<button onclick="showPublic()">🌍 Public</button>
-<button onclick="showChange()">⚙ Change Password</button>
+  <button onclick="showPrivate()">🔒 Private</button>
+  <button onclick="showPublic()">🌍 Public</button>
+  <button onclick="showChange()">⚙ Change Password</button>
+  <hr>
 
-<hr>
+  <!-- PRIVATE -->
+  <div id="privateDiv">
+    <select id="member"></select>
+    <div id="chat"></div>
+    <input id="msg" placeholder="Message">
+    <button onclick="sendPrivate()">Send</button>
+  </div>
 
-<!-- PRIVATE -->
-<div id="privateDiv">
-<select id="member"></select>
+  <!-- PUBLIC -->
+  <div id="publicDiv" style="display:none">
+    <div id="publicChat"></div>
+    <input id="publicMsg" placeholder="Public Message">
+    <button onclick="sendPublic()">Send</button>
+  </div>
 
-<div id="chat"></div>
-
-<input id="msg" placeholder="Message">
-<button onclick="sendPrivate()">Send</button>
-</div>
-
-<!-- PUBLIC -->
-<div id="publicDiv" style="display:none">
-<div id="publicChat"></div>
-
-<input id="publicMsg" placeholder="Public Message">
-<button onclick="sendPublic()">Send</button>
-</div>
-
-<!-- CHANGE PASSWORD -->
-<div id="changeDiv" style="display:none">
-<h4>Change Password</h4>
-<input id="cemail" placeholder="Your Email"><br>
-<input id="cnew" type="password" placeholder="New Password"><br>
-<button onclick="changePass()">Update</button>
-</div>
+  <!-- CHANGE PASSWORD -->
+  <div id="changeDiv" style="display:none">
+    <h4>Change Password</h4>
+    <input id="cemail" placeholder="Your Email"><br>
+    <input id="cnew" type="password" placeholder="New Password"><br>
+    <button onclick="changePass()">Update</button>
+  </div>
 
 </div>
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbypzwxYga88Pvno4VGfcMM3ul32bm2nsh1w5HVCEhu8nwJrCJPQv5Qi5ECJhQ7s1dy2Ew/exec";
-let ME="";
+// ✨ Enter your Apps Script Web App URL here
+const API="https://script.google.com/macros/s/AKfycbyBZ-3MKOATtTU1za-6cw8iMo9c5VeX408ISijDYw6387WaVV1mWy5TONVo4vDNoIgUTw/exec";
 
-// ---------- FORM SHOW ----------
+let ME=""; // Logged-in username
+
+// ---------- UI SHOW ----------
+
 function showSignup(){loginBox.style.display="none";signupBox.style.display="block";}
 function showLogin(){loginBox.style.display="block";signupBox.style.display="none";resetBox.style.display="none";}
 function showReset(){loginBox.style.display="none";resetBox.style.display="block";}
@@ -113,204 +111,206 @@ function showPublic(){privateDiv.style.display="none";publicDiv.style.display="b
 function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
 
 // ---------- LOGIN ----------
-async function login() {
-  let r = await fetch(API, {
-    method: 'post',
-    body: new URLSearchParams({
-      action: 'login',
-      id: loginID.value,
-      pass: loginPass.value
+
+async function login(){
+  let r=await fetch(API,{
+    method:'post',
+    body:new URLSearchParams({
+      action:'login',
+      id:loginID.value,
+      pass:loginPass.value
+    })
+  });
+  let t=await r.text();
+
+  if(t=="FAIL"){alert("Wrong Login"); return;}
+
+  let data=JSON.parse(t);
+  ME = data.name;
+
+  myName.innerText = data.name;
+  if(data.photo && data.photo.trim()!=""){
+    myPhoto.src=data.photo;
+  }else{
+    myPhoto.src="https://ui-avatars.com/api/?name="+encodeURIComponent(data.name)+"&background=075e54&color=fff";
+  }
+
+  loginBox.style.display="none";
+  chatArea.style.display="block";
+
+  loadMembers();
+  setInterval(loadMessages,2000);
+}
+
+// ---------- SIGNUP ----------
+
+async function signup(){
+
+  if(!sid.value || !sname.value || !semail.value || !spass.value){
+    alert("Fill all");
+    return;
+  }
+
+  let photoURL="";
+  let deleteURL="";
+
+  if(sphoto.files.length>0){
+    let imgData = await uploadToImgbb(sphoto.files[0]);
+    photoURL = imgData.url;
+    deleteURL = imgData.delete_url;
+  }
+
+  let r=await fetch(API,{
+    method:'post',
+    body:new URLSearchParams({
+      action:'register',
+      id:sid.value,
+      name:sname.value,
+      email:semail.value,
+      pass:spass.value,
+      photo:photoURL,
+      deleteurl:deleteURL
     })
   });
 
-  let t = await r.text();
-
-  if (t == "FAIL") {
-    alert("गलत Login");
-    return;
-  }
-
-  // JSON parse
-  let data = JSON.parse(t);
-
-  // Name show
-  myName.innerText = data.name;
-
-  // Photo fallback system
-  if (data.photo && data.photo.trim() !== "") {
-    myPhoto.src = data.photo;
-  } else {
-    myPhoto.src = "https://ui-avatars.com/api/?name="
-      + encodeURIComponent(data.name)
-      + "&background=075e54&color=fff";
-  }
-
-  // Show chat area
-  loginBox.style.display = "none";
-  chatArea.style.display = "block";
-
-  // Load data
-  loadMembers();
-  setInterval(loadMessages, 2000);
-}
-  
-async function signup() {
-  if (!sid.value || !sname.value || !semail.value || !spass.value) {
-    alert("सबै fields भर्नुहोस्");
-    return;
-  }
-
-  let photoURL = "";
-  let deleteURL = "";
-
-  if (sphoto.files.length > 0) {
-    try {
-      let data = await uploadToImgbb(sphoto.files[0]);
-      photoURL = data.url;
-      deleteURL = data.delete_url;
-      document.getElementById("photoURL").value = photoURL;
-    } catch(err) {
-      console.error("Photo upload failed:", err);
-      alert("Photo upload failed");
-      return;
-    }
-  }
-
-  try {
-    let r = await fetch(API, {
-      method: 'post',
-      body: new URLSearchParams({
-        action: 'register',
-        id: sid.value,
-        name: sname.value,
-        email: semail.value,
-        pass: spass.value,
-        photo: photoURL,
-        deleteurl: deleteURL
-      })
-    });
-
-    let t = await r.text();
-
-    if (t == "REGISTERED") {
-      alert("सफलतापूर्वक रजिष्टर भयो");
-
-      // ✅ Auto login after signup
-      loginID.value = sid.value;
-      loginPass.value = spass.value;
-      showLogin();  // show login box first
-      await login(); // call login function to set ME, load members/messages
-    } else {
-      alert("रजिष्टर गर्न सकिएन");
-    }
-  } catch(err) {
-    console.error("Signup failed:", err);
-    alert("Signup failed, check console");
+  let t=await r.text();
+  if(t=="REGISTERED"){
+    alert("Registered Successfully");
+    showLogin();
+  }else{
+    alert("Signup Failed");
   }
 }
-  
+
 // ---------- PRIVATE SEND ----------
+
 async function sendPrivate(){
-if(msg.value=="") return;
-await fetch(API,{method:'post',
-body:new URLSearchParams({
-action:'send',
-from:ME,
-to:member.value,
-msg:msg.value
-})});
-msg.value="";
+  if(!msg.value) return;
+  await fetch(API,{method:'post',
+    body:new URLSearchParams({
+      action:'send',
+      from:ME,
+      to:member.value,
+      msg:msg.value
+    })
+  });
+  msg.value="";
 }
 
 // ---------- PUBLIC SEND ----------
+
 async function sendPublic(){
-if(publicMsg.value=="") return;
-await fetch(API,{method:'post',
-body:new URLSearchParams({
-action:'public',
-from:ME,
-msg:publicMsg.value
-})});
-publicMsg.value="";
+  if(!publicMsg.value) return;
+  await fetch(API,{method:'post',
+    body:new URLSearchParams({
+      action:'public',
+      from:ME,
+      msg:publicMsg.value
+    })
+  });
+  publicMsg.value="";
 }
 
-// ---------- LOAD ----------
+// ---------- LOAD MESSAGES ----------
+
 async function loadMessages(){
-let r=await fetch(API+"?action=msgs");
-let d=await r.json();
+  let r=await fetch(API+"?action=msgs");
+  let d=await r.json();
 
-chat.innerHTML="";
-publicChat.innerHTML="";
+  chat.innerHTML="";
+  publicChat.innerHTML="";
 
-d.slice(1).forEach(row=>{
-if(row[2]=="ALL"){
-publicChat.innerHTML+="<div><b>"+row[1]+":</b> "+row[3]+"</div>";
-}
-else if((row[1]==ME && row[2]==member.value) ||
-(row[1]==member.value && row[2]==ME)){
-let cls=row[1]==ME?"msgMe":"msgOther";
-chat.innerHTML+="<div class='"+cls+"'>"+row[3]+"</div>";
-}
-});
+  d.slice(1).forEach(row=>{
 
-chat.scrollTop=chat.scrollHeight;
-publicChat.scrollTop=publicChat.scrollHeight;
+    let from=row[1], to=row[2], message=row[3];
+
+    // PUBLIC
+    if(to=="ALL"){
+      publicChat.innerHTML+="<div><b>"+from+":</b> "+message+"</div>";
+    }
+
+    // PRIVATE
+    else if((from==ME && to==member.value) || (from==member.value && to==ME)){
+      let cls = (from==ME)?"msgMe":"msgOther";
+      chat.innerHTML+="<div class='"+cls+"'>"+message+"</div>";
+    }
+
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+  publicChat.scrollTop = publicChat.scrollHeight;
 }
 
 // ---------- MEMBERS ----------
+
 async function loadMembers(){
-let r=await fetch(API+"?action=members");
-let list=await r.json();
-member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");
+  let r=await fetch(API+"?action=members");
+  let list=await r.json();
+  member.innerHTML = list.map(x => "<option>"+x+"</option>").join("");
 }
 
-// ---------- RESET ----------
+// ---------- PASSWORD RESET ----------
+
 async function sendOTP(){
-await fetch(API,{method:'post',
-body:new URLSearchParams({action:'sendOTP',email:remail.value})});
-alert("OTP Sent");
+  await fetch(API,{method:'post',
+    body:new URLSearchParams({action:'sendOTP',email:remail.value})
+  });
+  alert("OTP sent");
 }
 
 async function verifyReset(){
-let r1=await fetch(API,{method:'post',
-body:new URLSearchParams({action:'verifyOTP',email:remail.value,otp:rotp.value})});
-let t=await r1.text();
-if(t=="ok"){
-await fetch(API,{method:'post',
-body:new URLSearchParams({action:'changePass',email:remail.value,newpass:rnew.value})});
-alert("Password Changed");
-showLogin();
-}else alert("Wrong OTP");
-}
-
-// ---------- CHANGE ----------
-async function changePass(){
-await fetch(API,{method:'post',
-body:new URLSearchParams({action:'changePass',email:cemail.value,newpass:cnew.value})});
-alert("Updated");
-showPrivate();
-}
-
-  async function uploadToImgbb(file) {
-  let base64 = await toBase64(file); // Convert file to base64
-
-  let r = await fetch(API, {
-    method: 'post',
-    body: new URLSearchParams({
-      action: 'uploadPhoto',
-      image: base64
+  let r=await fetch(API,{method:'post',
+    body:new URLSearchParams({
+      action:'verifyOTP',
+      email:remail.value,
+      otp:rotp.value
     })
   });
-
-  return await r.json(); // Returns photo URL and delete URL
+  let t=await r.text();
+  if(t=="ok"){
+    await fetch(API,{method:'post',
+      body:new URLSearchParams({
+        action:'changePass',
+        email:remail.value,
+        newpass:rnew.value
+      })
+    });
+    alert("Password Changed");
+    showLogin();
+  }else alert("Wrong OTP");
 }
 
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    let reader = new FileReader();
-    reader.readAsDataURL(file);  // Convert file to Base64
-    reader.onload = () => resolve(reader.result);  // Success
-    reader.onerror = error => reject(error);  // Error handling
+async function changePass(){
+  await fetch(API,{method:'post',
+    body:new URLSearchParams({
+      action:'changePass',
+      email:cemail.value,
+      newpass:cnew.value
+    })
+  });
+  alert("Updated");
+  showPrivate();
+}
+
+// ---------- IMGBB UPLOAD ----------
+
+async function uploadToImgbb(file){
+  let base64 = await toBase64(file);
+  let r=await fetch(API,{method:'post',
+    body:new URLSearchParams({
+      action:'uploadPhoto',
+      image:base64
+    })
+  });
+  return await r.json();
+}
+
+function toBase64(file){
+  return new Promise((resolve,reject)=>{
+    let reader=new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=error=>reject(error);
   });
 }
 
