@@ -54,6 +54,14 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
 <!-- CHAT AREA -->
 <div id="chatArea" class="box" style="display:none">
+  <!-- PROFILE HEADER -->
+<div id="profileBar" style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;">
+  <div style="text-align:right;margin-right:10px;">
+    <div id="myName" style="font-weight:bold;"></div>
+  </div>
+  <img id="myPhoto" src="https://ui-avatars.com/api/?name=User&background=075e54&color=fff"
+       style="width:40px;height:40px;border-radius:50%;">
+</div>
 
 <button onclick="showPrivate()">🔒 Private</button>
 <button onclick="showPublic()">🌍 Public</button>
@@ -108,7 +116,12 @@ let r=await fetch(API,{method:'post',
 body:new URLSearchParams({action:'login',id:loginID.value,pass:loginPass.value})});
 let t=await r.text();
 if(t=="FAIL"){alert("Wrong Login");return;}
+
 ME=t;
+
+myName.innerText = ME;
+myPhoto.src = "https://ui-avatars.com/api/?name=" + ME + "&background=075e54&color=fff";
+
 loginBox.style.display="none";
 chatArea.style.display="block";
 loadMembers();
