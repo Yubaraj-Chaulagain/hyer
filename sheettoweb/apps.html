@@ -158,16 +158,34 @@ setInterval(loadMessages,2000);
 
 }
 
-// ---------- SIGNUP ----------
 async function signup(){
-await fetch(API,{method:'post',
-body:new URLSearchParams({
-action:'register',
-id:sid.value,
-name:sname.value,
-email:semail.value,
-pass:spass.value
-})});
+
+  if(!sid.value || !sname.value || !semail.value || !spass.value){
+    alert("All fields required");
+    return;
+  }
+
+  let r = await fetch(API,{
+    method:'post',
+    body:new URLSearchParams({
+      action:'register',
+      id:sid.value,
+      name:sname.value,
+      email:semail.value,
+      pass:spass.value
+    })
+  });
+
+  let t = await r.text();
+
+  if(t=="REGISTERED"){
+    alert("Registered Successfully");
+    showLogin();
+  }else{
+    alert("Signup Failed");
+  }
+
+}
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){
 if(msg.value=="") return;
