@@ -154,16 +154,11 @@ async function signup(){
     return;
   }
 
-  let photoURL="";
-  let deleteURL="";
+  // Already uploaded URL use गर्ने
+  let photoURL = document.getElementById("photoURL").value;
+  let deleteURL = "";
 
-  if(sphoto.files.length>0){
-    let imgData = await uploadToImgbb(sphoto.files[0]);
-    photoURL = imgData.url;
-    deleteURL = imgData.delete_url;
-  }
-
-  let r=await fetch(API,{
+  let r = await fetch(API,{
     method:'post',
     body:new URLSearchParams({
       action:'register',
@@ -176,7 +171,8 @@ async function signup(){
     })
   });
 
-  let t=await r.text();
+  let t = await r.text();
+
   if(t=="REGISTERED"){
     alert("Registered Successfully");
     showLogin();
@@ -184,7 +180,6 @@ async function signup(){
     alert("Signup Failed");
   }
 }
-
 // ---------- PRIVATE SEND ----------
 
 async function sendPrivate(){
