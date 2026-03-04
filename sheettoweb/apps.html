@@ -35,9 +35,11 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
   <input id="sid" placeholder="Member ID"><br>
   <input id="sname" placeholder="Name"><br>
   <input id="semail" placeholder="Email"><br>
-  <input type="file" id="sphoto" accept="image/*">
-<input type="text" id="photoURL" placeholder="Photo URL will appear here">
-  <input id="spass" type="password" placeholder="Password"><br>
+
+<input type="file" id="sphoto" accept="image/*">
+  <input type="text" id="photoURL" placeholder="Photo URL will appear here" readonly>
+  <button id="uploadBtn">Upload Now</button>
+<input id="spass" type="password" placeholder="Password"><br>
   <button onclick="signup()">Register</button>
   <p><a href="#" onclick="showLogin()">Back</a></p>
 </div>
@@ -293,49 +295,62 @@ async function changePass(){
   showPrivate();
 }
 
-const sphotoInput = document.getElementById("sphoto");
+<script>
+const IMGBB_API_KEY = "eb9922f45870bd5c8911298a5581773b"; // यहाँ आफ्नो Imgbb API key राख्नुहोस्
+
+const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
+const uploadBtn = document.getElementById("uploadBtn");
 
-// जब file select हुन्छ
-sphotoInput.addEventListener("change", async function() {
-  if(this.files.length === 0) return;
-
-  const file = this.files[0];
-  photoURLInput.value = "Uploading..."; // user feedback
-
-  try {
-    const imgData = await uploadToImgbb(file);
-    photoURLInput.value = imgData.url; // auto-fill URL
-    console.log("Image uploaded:", imgData.url);
-  } catch(err) {
-    console.error("Image upload failed:", err);
-    photoURLInput.value = "";
-    alert("Image upload failed!");
-  }
-});
-
-// function to upload to Imgbb via Apps Script API
-async function uploadToImgbb(file){
-  const base64 = await toBase64(file);
-  const r = await fetch(API, {
-    method:'post',
-    body: new URLSearchParams({
-      action:'uploadPhoto',
-      image: base64
-    })
-  });
-  return await r.json(); // expects {url, delete_url}
-}
-
-// helper: file to base64
+// Function: Convert file to base64
 function toBase64(file){
   return new Promise((resolve,reject)=>{
     const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = ()=>resolve(reader.result);
+    reader.onload = ()=>resolve(reader.result.split(",")[1]); // remove data:image/...;base64,
     reader.onerror = error => reject(error);
   });
 }
+
+// Upload button click
+uploadBtn.addEventListener("click", async ()=>{
+  if(photoInput.files.length === 0){
+    alert("Please select a photo first!");
+    return;
+  }
+
+  const file = photoInput.files[0];
+  photoURLInput.value = "Uploading...";
+
+  try{
+    const base64 = await toBase64(file);
+
+    const formData = new FormData();
+    formData.append("key", IMGBB_API_KEY);
+    formData.append("image", base64);
+
+    const res = await fetch("https://api.imgbb.com/1/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+      photoURLInput.value = data.data.url; // auto-fill
+      alert("Upload successful!");
+    } else {
+      photoURLInput.value = "";
+      alert("Upload failed!");
+      console.error(data);
+    }
+
+  } catch(err){
+    console.error("Upload error:", err);
+    alert("Upload error, check console");
+    photoURLInput.value = "";
+  }
+});
 </script>
 
 </body>
