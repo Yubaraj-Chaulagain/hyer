@@ -160,33 +160,14 @@ setInterval(loadMessages,2000);
 
 // ---------- SIGNUP ----------
 async function signup(){
-
-let photoURL="";
-let deleteURL="";
-
-if(sphoto.files.length>0){
-
-  let data = await uploadToImgbb(sphoto.files[0]);
-  photoURL = data.url;
-  deleteURL = data.delete_url;
-}
-
-await fetch(API,{
-  method:'post',
-  body:new URLSearchParams({
-    action:'register',
-    id:sid.value,
-    name:sname.value,
-    email:semail.value,
-    pass:spass.value,
-    photo:photoURL,
-    deleteurl:deleteURL
-  })
-});
-
-alert("Registered");
-showLogin();
-}
+await fetch(API,{method:'post',
+body:new URLSearchParams({
+action:'register',
+id:sid.value,
+name:sname.value,
+email:semail.value,
+pass:spass.value
+})});
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){
 if(msg.value=="") return;
