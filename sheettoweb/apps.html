@@ -100,7 +100,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <script>
 
 // ✨ Enter your Apps Script Web App URL here
-const API="https://script.google.com/macros/s/AKfycbxO0r52lg75x9W5qQhjjOvKoFQEuYtF_11-K3-TC2eFvfDNg09YybYZTJaXrInKQOpm_A/exec";
+const API="https://script.google.com/macros/s/AKfycbw7Wi9je-KI72tLU2h1PP8lgtdMxa-QCwzg9txBnDPVZuP1vo5TSC0cyzqh7dLIkqS3iw/exec";
 
 let ME=""; // Logged-in username
 
@@ -290,60 +290,38 @@ async function changePass(){
   showPrivate();
 }
   
-const IMGBB_API_KEY = "eb9922f45870bd5c8911298a5581773b"; // यहाँ आफ्नो Imgbb API key राख्नुहोस्
-
 const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
 const uploadBtn = document.getElementById("uploadBtn");
 
-// Function: Convert file to base64
-function toBase64(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = ()=>resolve(reader.result.split(",")[1]); // remove data:image/...;base64,
-    reader.onerror = error => reject(error);
-  });
-}
-
-// Upload button click
 uploadBtn.addEventListener("click", async ()=>{
+
   if(photoInput.files.length === 0){
-    alert("Please select a photo first!");
+    alert("Select photo first!");
     return;
   }
 
   const file = photoInput.files[0];
   photoURLInput.value = "Uploading...";
 
-  try{
-    const base64 = await toBase64(file);
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
 
-    const formData = new FormData();
-    formData.append("key", IMGBB_API_KEY);
-    formData.append("image", base64);
+  reader.onload = async function(){
 
-    const res = await fetch("https://api.imgbb.com/1/upload", {
-      method: "POST",
-      body: formData
+    const res = await fetch(API,{
+      method:'post',
+      body:new URLSearchParams({
+        action:'uploadPhoto',
+        image: reader.result
+      })
     });
 
     const data = await res.json();
+    photoURLInput.value = data.url;
+    alert("Upload Successful!");
+  };
 
-    if(data.success){
-      photoURLInput.value = data.data.url; // auto-fill
-      alert("Upload successful!");
-    } else {
-      photoURLInput.value = "";
-      alert("Upload failed!");
-      console.error(data);
-    }
-
-  } catch(err){
-    console.error("Upload error:", err);
-    alert("Upload error, check console");
-    photoURLInput.value = "";
-  }
 });
 </script>
 
