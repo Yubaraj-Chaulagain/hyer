@@ -35,7 +35,8 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
   <input id="sid" placeholder="Member ID"><br>
   <input id="sname" placeholder="Name"><br>
   <input id="semail" placeholder="Email"><br>
-  <input type="file" id="sphoto" accept="image/*"><br>
+  <input type="file" id="sphoto" accept="image/*">
+<input type="text" id="photoURL" placeholder="Photo URL will appear here">
   <input id="spass" type="password" placeholder="Password"><br>
   <button onclick="signup()">Register</button>
   <p><a href="#" onclick="showLogin()">Back</a></p>
@@ -292,28 +293,49 @@ async function changePass(){
   showPrivate();
 }
 
-// ---------- IMGBB UPLOAD ----------
+const sphotoInput = document.getElementById("sphoto");
+const photoURLInput = document.getElementById("photoURL");
 
+// जब file select हुन्छ
+sphotoInput.addEventListener("change", async function() {
+  if(this.files.length === 0) return;
+
+  const file = this.files[0];
+  photoURLInput.value = "Uploading..."; // user feedback
+
+  try {
+    const imgData = await uploadToImgbb(file);
+    photoURLInput.value = imgData.url; // auto-fill URL
+    console.log("Image uploaded:", imgData.url);
+  } catch(err) {
+    console.error("Image upload failed:", err);
+    photoURLInput.value = "";
+    alert("Image upload failed!");
+  }
+});
+
+// function to upload to Imgbb via Apps Script API
 async function uploadToImgbb(file){
-  let base64 = await toBase64(file);
-  let r=await fetch(API,{method:'post',
-    body:new URLSearchParams({
+  const base64 = await toBase64(file);
+  const r = await fetch(API, {
+    method:'post',
+    body: new URLSearchParams({
       action:'uploadPhoto',
-      image:base64
+      image: base64
     })
   });
-  return await r.json();
+  return await r.json(); // expects {url, delete_url}
 }
 
+// helper: file to base64
 function toBase64(file){
   return new Promise((resolve,reject)=>{
-    let reader=new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload=()=>resolve(reader.result);
-    reader.onerror=error=>reject(error);
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = error => reject(error);
   });
 }
-
 </script>
 
 </body>
