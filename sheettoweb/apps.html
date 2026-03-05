@@ -100,7 +100,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <script>
 
 // ✨ Enter your Apps Script Web App URL here
-const API="https://script.google.com/macros/s/AKfycbw7Wi9je-KI72tLU2h1PP8lgtdMxa-QCwzg9txBnDPVZuP1vo5TSC0cyzqh7dLIkqS3iw/exec";
+const API="https://script.google.com/macros/s/AKfycbwD1NkhNCiZwmPgiy_gUw7K5D1BBfsopTv_fjg8nqGvc3ZBF6PrncusRfJRXvyKu_fApg/exec";
 
 let ME=""; // Logged-in username
 
@@ -290,37 +290,62 @@ async function changePass(){
   showPrivate();
 }
   
+// photo input elements
 const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
 const uploadBtn = document.getElementById("uploadBtn");
 
-uploadBtn.addEventListener("click", async ()=>{
+// Upload button click
+uploadBtn.addEventListener("click", async function(){
 
+  // check file selected
   if(photoInput.files.length === 0){
-    alert("Select photo first!");
+    alert("Please select a photo first!");
     return;
   }
 
   const file = photoInput.files[0];
   photoURLInput.value = "Uploading...";
 
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
+  try{
 
-  reader.onload = async function(){
+    // convert file to base64
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
 
-    const res = await fetch(API,{
-      method:'post',
-      body:new URLSearchParams({
-        action:'uploadPhoto',
-        image: reader.result
-      })
-    });
+    reader.onload = async function(){
 
-    const data = await res.json();
-    photoURLInput.value = data.url;
-    alert("Upload Successful!");
-  };
+      const base64Image = reader.result;
+
+      // send to Apps Script
+      const response = await fetch(API,{
+        method:'POST',
+        body:new URLSearchParams({
+          action:'uploadPhoto',
+          image: base64Image
+        })
+      });
+
+      const data = await response.json();
+
+      // show uploaded image url
+      photoURLInput.value = data.url;
+
+      alert("Photo uploaded successfully!");
+
+    };
+
+    reader.onerror = function(){
+      alert("File reading failed!");
+      photoURLInput.value="";
+    };
+
+  }
+  catch(error){
+    console.error(error);
+    alert("Upload error!");
+    photoURLInput.value="";
+  }
 
 });
 </script>
