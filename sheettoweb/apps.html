@@ -294,11 +294,9 @@ async function changePass(){
 const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
 const uploadBtn = document.getElementById("uploadBtn");
-
-// Upload button click
+  
 uploadBtn.addEventListener("click", async function(){
 
-  // check file selected
   if(photoInput.files.length === 0){
     alert("Please select a photo first!");
     return;
@@ -307,17 +305,15 @@ uploadBtn.addEventListener("click", async function(){
   const file = photoInput.files[0];
   photoURLInput.value = "Uploading...";
 
-  try{
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
 
-    // convert file to base64
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
+  reader.onload = async function(){
 
-    reader.onload = async function(){
+    try{
 
       const base64Image = reader.result;
 
-      // send to Apps Script
       const response = await fetch(API,{
         method:'POST',
         body:new URLSearchParams({
@@ -326,26 +322,28 @@ uploadBtn.addEventListener("click", async function(){
         })
       });
 
-      const data = await response.json();
+      const text = await response.text();
 
-      // show uploaded image url
-      photoURLInput.value = data.url;
+      console.log("SERVER RESPONSE:", text);
 
-      alert("Photo uploaded successfully!");
+      const data = JSON.parse(text);
 
-    };
+      if(data.url){
+        photoURLInput.value = data.url;
+        alert("Upload successful!");
+      }else{
+        alert("Upload failed!");
+        photoURLInput.value="";
+      }
 
-    reader.onerror = function(){
-      alert("File reading failed!");
+    }
+    catch(err){
+      console.error(err);
+      alert("Upload error!");
       photoURLInput.value="";
-    };
+    }
 
-  }
-  catch(error){
-    console.error(error);
-    alert("Upload error!");
-    photoURLInput.value="";
-  }
+  };
 
 });
 </script>
