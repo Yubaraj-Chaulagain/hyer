@@ -100,7 +100,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <script>
 
 // ✨ Enter your Apps Script Web App URL here
-const API="https://script.google.com/macros/s/AKfycbzDjU7uHwiBLN7tTh4hURy5SJYvBryO24zOHHcs7Bwm9E3w9S_hVEZCVJTtmHyfb7TCuA/exec";
+const API="https://script.google.com/macros/s/AKfycbwVMahrmH8rVwe2b8SppwOXhWkC6jcutVV03kQl--M5gnSy5rjAraMZ-A4c1JhI0nt6uw/exec";
 
 let ME=""; // Logged-in username
 
@@ -294,11 +294,10 @@ async function changePass(){
 const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
 const uploadBtn = document.getElementById("uploadBtn");
-  
 uploadBtn.addEventListener("click", async function(){
 
   if(photoInput.files.length === 0){
-    alert("Please select a photo first!");
+    alert("Select photo first!");
     return;
   }
 
@@ -323,23 +322,21 @@ uploadBtn.addEventListener("click", async function(){
       });
 
       const text = await response.text();
-
-      console.log("SERVER RESPONSE:", text);
+      console.log("SERVER:", text);
 
       const data = JSON.parse(text);
 
       if(data.url){
         photoURLInput.value = data.url;
-        alert("Upload successful!");
+        alert("Upload success");
       }else{
-        alert("Upload failed!");
+        alert("Server error");
         photoURLInput.value="";
       }
 
-    }
-    catch(err){
+    }catch(err){
       console.error(err);
-      alert("Upload error!");
+      alert("Upload error");
       photoURLInput.value="";
     }
 
