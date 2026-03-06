@@ -100,7 +100,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <script>
 
 // ✨ Enter your Apps Script Web App URL here
-const API="https://script.google.com/macros/s/AKfycbzXZ5jVWoWZk3p7eJLDPQKUQbEAHBYjFxk5jnysX1IPgeoHHzXU8-LHX8ysFNEcWLkQ0g/exec";
+const API="https://script.google.com/macros/s/AKfycbxPfwke4-zjsCtCyMSz9HnUj0364oNZU9AM7PQCzwBEuI8sm-hUnSdJYtAYkIoV7J1Daw/exec";
 const uploadBtn = document.getElementById("uploadBtn");
 const photoInput = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
@@ -295,62 +295,43 @@ async function changePass(){
   
 // photo input elements
 
-  uploadBtn.addEventListener("click", async () => {
+ uploadBtn.addEventListener("click", async ()=>{
 
-  if (photoInput.files.length === 0) {
-    alert("Select photo first!");
+  if(sphoto.files.length===0){
+    alert("Select photo");
     return;
   }
 
-  const file = photoInput.files[0];
-  photoURLInput.value = "Uploading...";
+  const file = sphoto.files[0];
+  photoURL.value="Uploading...";
 
-  try {
+  const reader = new FileReader();
 
-    const reader = new FileReader();
+  reader.onload = async function(){
 
-    reader.onload = async function () {
+    const base64 = reader.result;
 
-      try {
+    const res = await fetch(API,{
+      method:"POST",
+      body:new URLSearchParams({
+        action:"uploadPhoto",
+        image:base64
+      })
+    });
 
-        const base64 = reader.result;
+    const data = await res.json();
 
-        const res = await fetch(API, {
-          method: "POST",
-          body: new URLSearchParams({
-            action: "uploadPhoto",
-            image: base64
-          })
-        });
+    if(data.url){
+      photoURL.value=data.url;
+      alert("Uploaded");
+    }else{
+      photoURL.value="";
+      alert("Upload failed");
+    }
 
-        const text = await res.text();
-        console.log(text);
+  };
 
-        const data = JSON.parse(text);
-
-        if (data.url) {
-          photoURLInput.value = data.url;
-          alert("Upload Successful!");
-        } else {
-          photoURLInput.value = "";
-          alert("Upload failed!");
-        }
-
-      } catch (err) {
-        console.error(err);
-        photoURLInput.value = "";
-        alert("Upload Error");
-      }
-
-    };
-
-    reader.readAsDataURL(file);
-
-  } catch (err) {
-    console.error(err);
-    photoURLInput.value = "";
-    alert("Upload Failed");
-  }
+  reader.readAsDataURL(file);
 
 });
 </script>
