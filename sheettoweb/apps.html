@@ -98,6 +98,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 const API="https://script.google.com/macros/s/AKfycbyLLAsa402ZzfWLbI1HSFDJJE4iQVDZd0mtDCeelrROlI5I9ALh6q5qSRRwi7QOkyNABQ/exec";
 const IMG_API_KEY="8cd7b6025719a1b842b0779939b5db60"; // HTML मा राखिएको
 const uploadBtn = document.getElementById("sphoto");
+const photoURLInput = document.getElementById("photoURL");
 let ME="";
 
 // ---------- UI ----------
@@ -321,39 +322,32 @@ async function changeProfilePhoto(){
 
 // ---------- SIGNUP AUTO UPLOAD ----------
 // profile photo click
-spPhoto.addEventListener("click", async ()=>{
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-
-  fileInput.onchange = async ()=>{
-    if(fileInput.files.length==0) return;
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    reader.onload = async ()=>{
-      const base64 = reader.result;
-
-      const res = await fetch(API,{
-        method:"POST",
-        body: new URLSearchParams({
-          action:"updatePhoto",
-          id:ME,      // login भएको member ID
-          image:base64
-        })
+uploadBtn.addEventListener("change", async () => {
+  if (uploadBtn.files.length === 0) return;
+  const file = uploadBtn.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = async () => {
+    const base64 = reader.result.split(",")[1]; // data:image/... हटाउने
+    try {
+      const res = await fetch("https://api.imgbb.com/1/upload?key=" + IMG_API_KEY, {
+        method: "POST",
+        body: new URLSearchParams({ image: base64 })
       });
-
       const data = await res.json();
-      if(data.url){
-        myPhoto.src = data.url;
-        alert("Profile photo updated!");
-      }else{
-        alert("Upload failed: "+data.error);
+      if (data.success) {
+        photoURLInput.value = data.data.url; // photoURL मा URL set गरियो
+        alert("फोटो सफलतापूर्वक upload भयो!");
+      } else {
+        alert("Upload failed");
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error(err);
+      alert("Upload error");
+    }
   };
 
-  fileInput.click();
+  reader.readAsDataURL(file);
 });
 </script>
 </body>
