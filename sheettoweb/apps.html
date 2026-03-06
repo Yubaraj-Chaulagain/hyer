@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chats System</title>
-
+<title>Chat System</title>
 <style>
 body{margin:0;font-family:Arial;background:#ece5dd}
 .box{background:#fff;padding:15px;margin:15px;border-radius:10px}
@@ -35,10 +34,8 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
   <input id="sid" placeholder="Member ID"><br>
   <input id="sname" placeholder="Name"><br>
   <input id="semail" placeholder="Email"><br>
-
-<input type="file" id="sphoto" accept="image/*"><br>
-  <button id="uploadBtn">Upload Now</button><br>
-  <input type="text" id="photoURL" placeholder="Photo URL will appear here" readonly><br>
+  <input type="file" id="sphoto" accept="image/*"><br>
+  <input type="text" id="photoURL" placeholder="Photo URL" readonly><br>
   <input id="spass" type="password" placeholder="Password"><br>
   <button onclick="signup()">Register</button>
   <p><a href="#" onclick="showLogin()">Back</a></p>
@@ -47,29 +44,30 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <!-- RESET PASSWORD -->
 <div id="resetBox" class="box" style="display:none">
   <h3>Reset Password</h3>
-  <input id="remail" placeholder="Email"><br>
-  <button onclick="sendOTP()">Send OTP</button><br>
-  <input id="rotp" placeholder="Enter OTP"><br>
-  <input id="rnew" type="password" placeholder="New Password"><br>
-  <button onclick="verifyReset()">Reset</button>
+  <input id="fMemberID" placeholder="Member ID"><br>
+  <button onclick="sendForgetOTP()">Send OTP</button><br>
+  <input id="fOTP" placeholder="Enter OTP"><br>
+  <input id="fNew" type="password" placeholder="New Password"><br>
+  <input id="fNew2" type="password" placeholder="Retype New Password"><br>
+  <button onclick="verifyForgetOTP()">Reset Password</button>
   <p><a href="#" onclick="showLogin()">Back</a></p>
+  <p id="resetMsg" style="color:red;"></p>
 </div>
 
 <!-- CHAT AREA -->
 <div id="chatArea" class="box" style="display:none">
-
-  <!-- PROFILE HEADER -->
   <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;">
     <div style="text-align:right;margin-right:10px;">
       <div id="myName" style="font-weight:bold;"></div>
     </div>
     <img id="myPhoto" src="https://ui-avatars.com/api/?name=User&background=075e54&color=fff"
-         style="width:40px;height:40px;border-radius:50%;">
+         style="width:40px;height:40px;border-radius:50%;cursor:pointer" onclick="changeProfilePhoto()">
   </div>
 
   <button onclick="showPrivate()">🔒 Private</button>
   <button onclick="showPublic()">🌍 Public</button>
   <button onclick="showChange()">⚙ Change Password</button>
+  <button onclick="logout()">🚪 Logout</button>
   <hr>
 
   <!-- PRIVATE -->
@@ -89,26 +87,20 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
   <!-- CHANGE PASSWORD -->
   <div id="changeDiv" style="display:none">
-    <h4>Change Password</h4>
-    <input id="cemail" placeholder="Your Email"><br>
-    <input id="cnew" type="password" placeholder="New Password "><br>
-    <button onclick="changePass()">Updates</button>
-  </div>
-
+<h4>Change Password</h4>
+<input id="cold" type="password" placeholder="Current Password"><br>
+<input id="cnew" type="password" placeholder="New Password"><br>
+<input id="cretype" type="password" placeholder="Retype New Password"><br>
+<button onclick="changePass()">Update Password</button>
 </div>
 
 <script>
+const API="https://script.google.com/macros/s/AKfycbyLLAsa402ZzfWLbI1HSFDJJE4iQVDZd0mtDCeelrROlI5I9ALh6q5qSRRwi7QOkyNABQ/exec";
+const IMG_API_KEY="8cd7b6025719a1b842b0779939b5db60"; // HTML मा राखिएको
+const uploadBtn = document.getElementById("sphoto");
+let ME="";
 
-// ✨ Enter your Apps Script Web App URL here
-const API="https://script.google.com/macros/s/AKfycbwzoo-GMgGXdUi-JDzEKbb60C3CJuYWEJduViyCg39P9BVkdHUeZffb23zsADHC0T5w2g/exec";
-const uploadBtn = document.getElementById("uploadBtn");
-const photoInput = document.getElementById("sphoto");
-const photoURLInput = document.getElementById("photoURL");
-
-let ME=""; // Logged-in username
-
-// ---------- UI SHOW ----------
-
+// ---------- UI ----------
 function showSignup(){loginBox.style.display="none";signupBox.style.display="block";}
 function showLogin(){loginBox.style.display="block";signupBox.style.display="none";resetBox.style.display="none";}
 function showReset(){loginBox.style.display="none";resetBox.style.display="block";}
@@ -117,51 +109,32 @@ function showPublic(){privateDiv.style.display="none";publicDiv.style.display="b
 function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
 
 // ---------- LOGIN ----------
-
 async function login(){
-  let r=await fetch(API,{
-    method:'post',
-    body:new URLSearchParams({
-      action:'login',
-      id:loginID.value,
-      pass:loginPass.value
-    })
-  });
+  if(!loginID.value||!loginPass.value){alert("Fill all");return;}
+  let r=await fetch(API,{method:'post',body:new URLSearchParams({action:'login',id:loginID.value,pass:loginPass.value})});
   let t=await r.text();
-
-  if(t=="FAIL"){alert("Wrong Login"); return;}
-
+  if(t=="FAIL"){alert("Wrong Login");return;}
   let data=JSON.parse(t);
-  ME = data.name;
-
-  myName.innerText = data.name;
-  if(data.photo && data.photo.trim()!=""){
-    myPhoto.src=data.photo;
-  }else{
-    myPhoto.src="https://ui-avatars.com/api/?name="+encodeURIComponent(data.name)+"&background=075e54&color=fff";
-  }
-
-  loginBox.style.display="none";
-  chatArea.style.display="block";
-
-  loadMembers();
-  setInterval(loadMessages,2000);
+  ME=data.name;
+  myName.innerText=data.name;
+  myPhoto.src = data.photo && data.photo.trim()!=""
+ ? data.photo
+ : "https://ui-avatars.com/api/?name="+encodeURIComponent(data.name)+"&background=075e54&color=fff";
+  loginBox.style.display="none"; chatArea.style.display="block";
+  loadMembers(); setInterval(loadMessages,2000);
 }
 
 // ---------- SIGNUP ----------
-
 async function signup(){
-
   if(!sid.value || !sname.value || !semail.value || !spass.value){
     alert("Fill all");
     return;
   }
 
-  // Already uploaded URL use गर्ने
   let photoURL = document.getElementById("photoURL").value;
   let deleteURL = "";
 
-  let r = await fetch(API,{
+  const r = await fetch(API,{
     method:'post',
     body:new URLSearchParams({
       action:'register',
@@ -174,167 +147,214 @@ async function signup(){
     })
   });
 
-  let t = await r.text();
+  const t = await r.json(); // JSON parse
 
-  if(t=="REGISTERED"){
+  if(t.error){
+    alert(t.error); // "Member ID already exists"
+  } else {
     alert("Registered Successfully");
     showLogin();
-  }else{
-    alert("Signup Failed");
   }
 }
-// ---------- PRIVATE SEND ----------
+    
 
-async function sendPrivate(){
-  if(!msg.value) return;
-  await fetch(API,{method:'post',
-    body:new URLSearchParams({
-      action:'send',
-      from:ME,
-      to:member.value,
-      msg:msg.value
-    })
-  });
-  msg.value="";
-}
+// ---------- LOGOUT ----------
+function logout(){ME="";chatArea.style.display="none";loginBox.style.display="block";}
+
+// ---------- PRIVATE SEND ----------
+async function sendPrivate(){if(!msg.value) return; await fetch(API,{method:'post',body:new URLSearchParams({action:'send',from:ME,to:member.value,msg:msg.value})}); msg.value="";}
 
 // ---------- PUBLIC SEND ----------
-
-async function sendPublic(){
-  if(!publicMsg.value) return;
-  await fetch(API,{method:'post',
-    body:new URLSearchParams({
-      action:'public',
-      from:ME,
-      msg:publicMsg.value
-    })
-  });
-  publicMsg.value="";
-}
+async function sendPublic(){if(!publicMsg.value) return; await fetch(API,{method:'post',body:new URLSearchParams({action:'public',from:ME,msg:publicMsg.value})}); publicMsg.value="";}
 
 // ---------- LOAD MESSAGES ----------
-
 async function loadMessages(){
   let r=await fetch(API+"?action=msgs");
   let d=await r.json();
-
-  chat.innerHTML="";
-  publicChat.innerHTML="";
-
+  chat.innerHTML=""; publicChat.innerHTML="";
   d.slice(1).forEach(row=>{
-
-    let from=row[1], to=row[2], message=row[3];
-
-    // PUBLIC
-    if(to=="ALL"){
-      publicChat.innerHTML+="<div><b>"+from+":</b> "+message+"</div>";
-    }
-
-    // PRIVATE
-    else if((from==ME && to==member.value) || (from==member.value && to==ME)){
-      let cls = (from==ME)?"msgMe":"msgOther";
-      chat.innerHTML+="<div class='"+cls+"'>"+message+"</div>";
-    }
-
+    let from=row[1],to=row[2],message=row[3];
+    if(to=="ALL"){publicChat.innerHTML+="<div><b>"+from+":</b> "+message+"</div>";}
+    else if((from==ME && to==member.value)||(from==member.value && to==ME)){chat.innerHTML+="<div class='"+(from==ME?"msgMe":"msgOther")+"'>"+message+"</div>";}
   });
-
-  chat.scrollTop = chat.scrollHeight;
-  publicChat.scrollTop = publicChat.scrollHeight;
+  chat.scrollTop=chat.scrollHeight; publicChat.scrollTop=publicChat.scrollHeight;
 }
 
 // ---------- MEMBERS ----------
-
-async function loadMembers(){
-  let r=await fetch(API+"?action=members");
-  let list=await r.json();
-  member.innerHTML = list.map(x => "<option>"+x+"</option>").join("");
-}
+async function loadMembers(){let r=await fetch(API+"?action=members"); let list=await r.json(); member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");}
 
 // ---------- PASSWORD RESET ----------
+// SEND OTP
+async function sendForgetOTP(){
+  const memberId = fMemberID.value.trim();
+  if(!memberId){ resetMsg.innerText="Enter Member ID"; return; }
 
-async function sendOTP(){
-  await fetch(API,{method:'post',
-    body:new URLSearchParams({action:'sendOTP',email:remail.value})
-  });
-  alert("OTP sent");
-}
-
-async function verifyReset(){
-  let r=await fetch(API,{method:'post',
-    body:new URLSearchParams({
-      action:'verifyOTP',
-      email:remail.value,
-      otp:rotp.value
+  const res = await fetch(API, {
+    method:'POST',
+    body: new URLSearchParams({
+      action:'sendOTP',
+      memberId: memberId
     })
   });
-  let t=await r.text();
-  if(t=="ok"){
-    await fetch(API,{method:'post',
-      body:new URLSearchParams({
-        action:'changePass',
-        email:remail.value,
-        newpass:rnew.value
-      })
-    });
-    alert("Password Changed");
-    showLogin();
-  }else alert("Wrong OTP");
-}
+  const data = await res.json();
 
-async function changePass(){
-  await fetch(API,{method:'post',
-    body:new URLSearchParams({
-      action:'changePass',
-      email:cemail.value,
-      newpass:cnew.value
-    })
-  });
-  alert("Updated");
-  showPrivate();
-}
-  
-// photo input elements
-
- uploadBtn.addEventListener("click", async ()=>{
-
-  if(sphoto.files.length===0){
-    alert("Select photo");
-    return;
+  if(data.error){
+    resetMsg.innerText = data.error;
+  } else {
+    resetMsg.innerText = "OTP sent to your registered email.";
   }
+}
 
-  const file = sphoto.files[0];
-  photoURL.value="Uploading...";
+async function verifyForgetOTP(){
+  const memberId = fMemberID.value.trim();
+  const otp = fOTP.value.trim();
+  const pass1 = fNew.value.trim();
+  const pass2 = fNew2.value.trim();
 
-  const reader = new FileReader();
+  if(!memberId || !otp || !pass1 || !pass2){ resetMsg.innerText="Fill all fields"; return; }
+  if(pass1 !== pass2){ resetMsg.innerText="Passwords do not match"; return; }
 
-  reader.onload = async function(){
+  const res = await fetch(API, {
+    method:'POST',
+    body: new URLSearchParams({
+      action:'verifyOTP',
+      memberId: memberId,
+      otp: otp,
+      newpass: pass1
+    })
+  });
 
-    const base64 = reader.result;
+  const data = await res.json();
+  if(data.error){ resetMsg.innerText = data.error; }
+  else { resetMsg.innerText = "Password changed successfully."; showLogin(); }
+}
+    
+// VERIFY + CHANGE PASSWORD
+async function resetPass(){
 
-    const res = await fetch(API,{
-      method:"POST",
-      body:new URLSearchParams({
-        action:"uploadPhoto",
-        image:base64
-      })
-    });
+if(!fotp.value || !fnew.value){
+alert("Enter OTP and new password");
+return;
+}
 
-    const data = await res.json();
+let r = await fetch(API,{
+method:'post',
+body:new URLSearchParams({
+action:'resetPass',
+id:fid.value,
+otp:fotp.value,
+newpass:fnew.value
+})
+});
 
-    if(data.url){
-      photoURL.value=data.url;
-      alert("Uploaded");
-    }else{
-      photoURL.value="";
-      alert("Upload failed");
-    }
+let t = await r.text();
 
+if(t=="changed"){
+alert("Password Changed Successfully");
+showLogin();
+}
+else{
+alert("Wrong OTP");
+}
+
+}
+    
+async function changePass(){
+
+if(!cold.value || !cnew.value || !cretype.value){
+alert("Fill all fields");
+return;
+}
+
+if(cnew.value != cretype.value){
+alert("New password not match");
+return;
+}
+
+let r = await fetch(API,{
+method:'post',
+body:new URLSearchParams({
+action:'changePass',
+id:ME,
+oldpass:cold.value,
+newpass:cnew.value
+})
+});
+
+let t = await r.text();
+
+if(t=="changed"){
+alert("Password Changed. Check Gmail.");
+cold.value="";
+cnew.value="";
+cretype.value="";
+showPrivate();
+}
+else{
+alert("Current password wrong");
+}
+
+}
+// ---------- PHOTO UPLOAD ----------
+async function changeProfilePhoto(){
+  const fileInput = document.createElement("input");
+  fileInput.type="file"; fileInput.accept="image/*"; fileInput.click();
+  fileInput.onchange = async ()=>{ 
+    const file=fileInput.files[0]; if(!file)return;
+    const reader = new FileReader();
+    reader.onload=async ()=>{
+      let base64=reader.result.split(",")[1];
+      let res=await fetch("https://api.imgbb.com/1/upload?key="+IMG_API_KEY,{
+        method:"POST",
+        body:new URLSearchParams({image:base64})
+      });
+      let data=await res.json();
+      if(data.success){ 
+        myPhoto.src=data.data.url;
+        if(ME){ await fetch(API,{method:'post',body:new URLSearchParams({action:'updatePhoto',id:ME,photo:data.data.url})}); }
+        alert("Photo Updated"); 
+      }else alert("Upload Failed");
+    };
+    reader.readAsDataURL(file);
+  };
+}
+
+// ---------- SIGNUP AUTO UPLOAD ----------
+// profile photo click
+spPhoto.addEventListener("click", async ()=>{
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.accept = "image/*";
+
+  fileInput.onchange = async ()=>{
+    if(fileInput.files.length==0) return;
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = async ()=>{
+      const base64 = reader.result;
+
+      const res = await fetch(API,{
+        method:"POST",
+        body: new URLSearchParams({
+          action:"updatePhoto",
+          id:ME,      // login भएको member ID
+          image:base64
+        })
+      });
+
+      const data = await res.json();
+      if(data.url){
+        myPhoto.src = data.url;
+        alert("Profile photo updated!");
+      }else{
+        alert("Upload failed: "+data.error);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  reader.readAsDataURL(file);
-
+  fileInput.click();
 });
 </script>
-
 </body>
-</html>
+</html> 
