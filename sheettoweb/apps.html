@@ -101,6 +101,9 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 
 // ✨ Enter your Apps Script Web App URL here
 const API="https://script.google.com/macros/s/AKfycbzXZ5jVWoWZk3p7eJLDPQKUQbEAHBYjFxk5jnysX1IPgeoHHzXU8-LHX8ysFNEcWLkQ0g/exec";
+const uploadBtn = document.getElementById("uploadBtn");
+const photoInput = document.getElementById("photoInput");
+const photoURLInput = document.getElementById("photoURL");
 
 let ME=""; // Logged-in username
 
@@ -291,12 +294,10 @@ async function changePass(){
 }
   
 // photo input elements
-const photoInput = document.getElementById("sphoto");
-const photoURLInput = document.getElementById("photoURL");
-const uploadBtn = document.getElementById("uploadBtn");
-uploadBtn.addEventListener("click", async function(){
 
-  if(photoInput.files.length === 0){
+  uploadBtn.addEventListener("click", async () => {
+
+  if (photoInput.files.length === 0) {
     alert("Select photo first!");
     return;
   }
@@ -304,43 +305,52 @@ uploadBtn.addEventListener("click", async function(){
   const file = photoInput.files[0];
   photoURLInput.value = "Uploading...";
 
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
+  try {
 
-  reader.onload = async function(){
+    const reader = new FileReader();
 
-    try{
+    reader.onload = async function () {
 
-      const base64Image = reader.result;
+      try {
 
-      const response = await fetch(API,{
-        method:'POST',
-        body:new URLSearchParams({
-          action:'uploadPhoto',
-          image: base64Image
-        })
-      });
+        const base64 = reader.result;
 
-      const text = await response.text();
-      console.log("SERVER:", text);
+        const res = await fetch(API, {
+          method: "POST",
+          body: new URLSearchParams({
+            action: "uploadPhoto",
+            image: base64
+          })
+        });
 
-      const data = JSON.parse(text);
+        const text = await res.text();
+        console.log(text);
 
-      if(data.url){
-        photoURLInput.value = data.url;
-        alert("Upload success");
-      }else{
-        alert("Server error");
-        photoURLInput.value="";
+        const data = JSON.parse(text);
+
+        if (data.url) {
+          photoURLInput.value = data.url;
+          alert("Upload Successful!");
+        } else {
+          photoURLInput.value = "";
+          alert("Upload failed!");
+        }
+
+      } catch (err) {
+        console.error(err);
+        photoURLInput.value = "";
+        alert("Upload Error");
       }
 
-    }catch(err){
-      console.error(err);
-      alert("Upload error");
-      photoURLInput.value="";
-    }
+    };
 
-  };
+    reader.readAsDataURL(file);
+
+  } catch (err) {
+    console.error(err);
+    photoURLInput.value = "";
+    alert("Upload Failed");
+  }
 
 });
 </script>
