@@ -95,10 +95,11 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyLLAsa402ZzfWLbI1HSFDJJE4iQVDZd0mtDCeelrROlI5I9ALh6q5qSRRwi7QOkyNABQ/exec";
+const API="https://script.google.com/macros/s/AKfycby_kA2uQHuyAUseo9ALJAYhVxslkJE2TE1ecDQu4IopdXZdfw1kM2UHOwzJpKvZ4fC1GA/exec";
 const IMG_API_KEY="8cd7b6025719a1b842b0779939b5db60"; // HTML मा राखिएको
 const uploadBtn = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
+let lastMsgCount = 0;
 let ME="";
 
 // ---------- UI ----------
@@ -110,19 +111,62 @@ function showPublic(){privateDiv.style.display="none";publicDiv.style.display="b
 function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
 
 // ---------- LOGIN ----------
-async function login(){
-  if(!loginID.value||!loginPass.value){alert("Fill all");return;}
-  let r=await fetch(API,{method:'post',body:new URLSearchParams({action:'login',id:loginID.value,pass:loginPass.value})});
-  let t=await r.text();
-  if(t=="FAIL"){alert("Wrong Login");return;}
-  let data=JSON.parse(t);
-  ME=data.name;
-  myName.innerText=data.name;
-  myPhoto.src = data.photo && data.photo.trim()!=""
- ? data.photo
- : "https://ui-avatars.com/api/?name="+encodeURIComponent(data.name)+"&background=075e54&color=fff";
-  loginBox.style.display="none"; chatArea.style.display="block";
-  loadMembers(); setInterval(loadMessages,2000);
+// ---------- LOGIN ----------
+async function login() {
+
+  // Notification permission request
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+// /////////////
+  // Check fields
+  if (!loginID.value || !loginPass.value) {
+    alert("Fill all fields");
+    return;
+  }
+
+  // Call Google Apps Script API
+  let r = await fetch(API, {
+    method: 'POST',
+    body: new URLSearchParams({
+      action: 'login',
+      id: loginID.value,
+      pass: loginPass.value
+    })
+  });
+
+  let t = await r.text();
+
+  if (t === "FAIL") {
+    alert("Wrong Login");
+    return;
+  }
+
+  // Parse returned JSON
+  let data = JSON.parse(t);
+
+  // Set current user
+  ME = data.name;
+
+  // Display user name and photo
+  myName.innerText = data.name;
+  myPhoto.src = data.photo && data.photo.trim() !== ""
+    ? data.photo
+    : "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.name) + "&background=075e54&color=fff";
+
+  // Show chat area
+  loginBox.style.display = "none";
+  chatArea.style.display = "block";
+
+  // Load members in dropdown
+  loadMembers();
+
+  // Start loading messages every 2 sec
+  setInterval(loadMessages, 2000);
+
+  // Initialize lastMsgCount for notifications
+  lastMsgCount = 0;
+
 }
 
 // ---------- SIGNUP ----------
@@ -170,17 +214,56 @@ async function sendPublic(){if(!publicMsg.value) return; await fetch(API,{method
 
 // ---------- LOAD MESSAGES ----------
 async function loadMessages(){
-  let r=await fetch(API+"?action=msgs");
-  let d=await r.json();
-  chat.innerHTML=""; publicChat.innerHTML="";
-  d.slice(1).forEach(row=>{
-    let from=row[1],to=row[2],message=row[3];
-    if(to=="ALL"){publicChat.innerHTML+="<div><b>"+from+":</b> "+message+"</div>";}
-    else if((from==ME && to==member.value)||(from==member.value && to==ME)){chat.innerHTML+="<div class='"+(from==ME?"msgMe":"msgOther")+"'>"+message+"</div>";}
-  });
-  chat.scrollTop=chat.scrollHeight; publicChat.scrollTop=publicChat.scrollHeight;
+
+let r=await fetch(API+"?action=msgs");
+let d=await r.json();
+
+if(d.length > lastMsgCount){
+
+let last = d[d.length-1];
+
+if(last[1] != ME){
+
+// sound
+new Audio("https://notificationsounds.com/storage/sounds/file-sounds-1150-pristine.mp3").play();
+
+// browser popup
+if(Notification.permission === "granted"){
+new Notification("New Message from "+last[1],{
+body:last[3],
+icon:myPhoto.src
+});
 }
 
+}
+
+}
+
+lastMsgCount = d.length;
+
+chat.innerHTML="";
+publicChat.innerHTML="";
+
+d.slice(1).forEach(row=>{
+
+let from=row[1];
+let to=row[2];
+let message=row[3];
+
+if(to=="ALL"){
+publicChat.innerHTML+="<div><b>"+from+":</b> "+message+"</div>";
+}
+
+else if((from==ME && to==member.value)||(from==member.value && to==ME)){
+chat.innerHTML+="<div class='"+(from==ME?"msgMe":"msgOther")+"'>"+message+"</div>";
+}
+
+});
+
+chat.scrollTop=chat.scrollHeight;
+publicChat.scrollTop=publicChat.scrollHeight;
+
+}
 // ---------- MEMBERS ----------
 async function loadMembers(){let r=await fetch(API+"?action=members"); let list=await r.json(); member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");}
 
