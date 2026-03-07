@@ -432,6 +432,47 @@ uploadBtn.addEventListener("change", async () => {
 
   reader.readAsDataURL(file);
 });
+
+  // Example: Send photo/file/audio/video
+async function sendFileMessage(file){
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    const base64 = reader.result;
+    const filename = file.name;
+
+    // 1️⃣ Upload to Litterbox
+    const uploadRes = await fetch(API, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "uploadTempFile",
+        file: base64,
+        name: filename
+      })
+    });
+    const data = await uploadRes.json();
+    if(!data.url){ alert("Upload failed"); return; }
+
+    // 2️⃣ Send message with file URL
+    await fetch(API, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "send",
+        from: ME,
+        to: member.value,
+        msg: "",
+        type: file.type.split("/")[0],
+        fileURL: data.url
+      })
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// Usage: file input
+const fileInput = document.createElement("input");
+fileInput.type = "file";
+fileInput.onchange = ()=> sendFileMessage(fileInput.files[0]);
+fileInput.click();
 </script>
 </body>
 </html> 
