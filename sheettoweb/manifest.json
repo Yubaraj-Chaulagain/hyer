@@ -1,7 +1,7 @@
 {
   "name": "My Chat App",
   "short_name": "ChatApp",
-  "start_url": "sheettoweb/apps.html",
+  "start_url": "https://fulkumari.com.np/sheettoweb/apps",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
