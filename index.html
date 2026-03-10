@@ -1015,12 +1015,11 @@ const myChart2 = new Chart(ctx2, {
     responsive: true,
   },
 });
-    </script>
-    <script>
+        <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(() => {
-      console.log('Service Worker Registered');
-    });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(() => {
+      console.log('Service Worker Registered'); });
   }
 </script>
 
@@ -1031,6 +1030,7 @@ const myChart2 = new Chart(ctx2, {
 </body>
 
 </html>
+
 
 
 
