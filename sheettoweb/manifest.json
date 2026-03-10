@@ -1,7 +1,7 @@
 {
   "name": "My Chat App",
   "short_name": "ChatApp",
-  "start_url": "index.html",
+  "start_url": "sheettoweb/apps.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
