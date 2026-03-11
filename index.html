@@ -3,8 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
+    <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS (iPhone/iPad) को लागि विशेष कोड -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ChatApp">
+<link rel="apple-touch-icon" href="https://via.placeholder.com">
+
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1030,6 +1037,7 @@ const myChart2 = new Chart(ctx2, {
 </body>
 
 </html>
+
 
 
 
