@@ -3,6 +3,7 @@
   "short_name": "ChatApp",
   "start_url": "apps.html",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
   "icons": [
