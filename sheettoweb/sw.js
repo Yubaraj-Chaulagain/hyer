@@ -1,5 +1,5 @@
 const cacheName = 'chat-v1';
-const assets = ['./', './index.html', './chatnp.json'];
+const assets = ['./', './sheettoweb/apps.html', './chatnp.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(cacheName).then(cache => cache.addAll(assets)));
