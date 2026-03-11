@@ -15,6 +15,24 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ChatApp">
 <link rel="apple-touch-icon" href="https://via.placeholder.com">
+      <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(() => {
+      console.log('Service Worker Registered'); });
+  }
+</script>
+    <script>
+    window.addEventListener('load', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+            splash.style.display = 'none';
+        }, 500); // हराउन लाग्ने समय
+    }, 3000); // ३ सेकेन्ड सम्म देखाउने
+});
+    </script>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1072,24 +1090,6 @@ const myChart2 = new Chart(ctx2, {
     responsive: true,
   },
 });
-        <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(() => {
-      console.log('Service Worker Registered'); });
-  }
-</script>
-    <script>
-    window.addEventListener('load', () => {
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => {
-            splash.style.display = 'none';
-        }, 500); // हराउन लाग्ने समय
-    }, 3000); // ३ सेकेन्ड सम्म देखाउने
-});
-    </script>
 
 
     <!-- ====== ionicons ======= -->
@@ -1098,6 +1098,7 @@ const myChart2 = new Chart(ctx2, {
 </body>
 
 </html>
+
 
 
 
