@@ -1,7 +1,7 @@
 {
   "name": "New Free Chat Marin",
   "short_name": "ChatApp",
-  "start_url": "sheettoweb/apps.html",
+  "start_url": "apps.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
