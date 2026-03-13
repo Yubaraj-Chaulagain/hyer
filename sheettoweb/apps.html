@@ -190,7 +190,6 @@ function showPublic(){privateDiv.style.display="none";publicDiv.style.display="b
 function showChange(){privateDiv.style.display="none";publicDiv.style.display="none";changeDiv.style.display="block";}
 
 // ---------- LOGIN ----------
-// ---------- LOGIN ----------
 async function login() {
 
   // Notification permission request
@@ -239,12 +238,11 @@ async function login() {
 
   // Load members in dropdown
   loadMembers();
-
-  // Start loading messages every 1 sec
-  setInterval(loadMessages, 1000);
-
-  // Initialize lastMsgCount for notifications
+// Initialize lastMsgCount for notifications
   lastMsgCount = 0;
+  loadMessages();
+// Start loading messages every 1 sec
+  setInterval(loadMessages, 1000);
 
 }
 
