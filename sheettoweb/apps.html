@@ -233,16 +233,15 @@ async function login() {
     : "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.name) + "&background=075e54&color=fff";
 
   // Show chat area
-  loginBox.style.display = "none";
-  chatArea.style.display = "block";
+ loginBox.style.display = "none";
+chatArea.style.display = "block";
 
-  // Load members in dropdown
-  loadMembers();
-// Initialize lastMsgCount for notifications
-  lastMsgCount = 0;
-  loadMessages();
-// Start loading messages every 1 sec
-  setInterval(loadMessages, 1000);
+showPrivate();
+
+loadMembers();
+lastMsgCount = 0;
+loadMessages();
+setInterval(loadMessages, 1000);
 
 }
 
@@ -343,12 +342,18 @@ publicChat.scrollTop=publicChat.scrollHeight;
 }
 // ---------- MEMBERS ----------
 async function loadMembers(){
-  let r=await fetch(API+"?action=members");
-  let list=await r.json();
-  member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");
-  // important
-member.onchange = loadMessages;
-} 
+  let r = await fetch(API+"?action=members");
+  let list = await r.json();
+
+  member.innerHTML = list.map(x=>"<option>"+x+"</option>").join("");
+
+  // default select first member
+  if(list.length > 0){
+    member.value = list[0];
+  }
+
+  member.onchange = loadMessages;
+}
 
 // ---------- PASSWORD RESET ----------
 // SEND OTP
