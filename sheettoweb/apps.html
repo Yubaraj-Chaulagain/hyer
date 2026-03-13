@@ -18,10 +18,12 @@
 <link rel="apple-touch-icon" href="https://via.placeholder.com">
       <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(() => {
-      console.log('Service Worker Registered'); });
-  }
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(() => {
+      console.log('Service Worker Registered');
+    });
+  });
+}
 </script>
     <script>
     window.addEventListener('load', () => {
@@ -238,8 +240,8 @@ async function login() {
   // Load members in dropdown
   loadMembers();
 
-  // Start loading messages every 2 sec
-  setInterval(loadMessages, 2000);
+  // Start loading messages every 1 sec
+  setInterval(loadMessages, 1000);
 
   // Initialize lastMsgCount for notifications
   lastMsgCount = 0;
@@ -342,7 +344,13 @@ publicChat.scrollTop=publicChat.scrollHeight;
 
 }
 // ---------- MEMBERS ----------
-async function loadMembers(){let r=await fetch(API+"?action=members"); let list=await r.json(); member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");}
+async function loadMembers(){
+  let r=await fetch(API+"?action=members");
+  let list=await r.json();
+  member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");
+  // important
+member.onchange = loadMessages;
+} 
 
 // ---------- PASSWORD RESET ----------
 // SEND OTP
