@@ -359,13 +359,24 @@ publicChat.scrollTop=publicChat.scrollHeight;
 }
 // ---------- MEMBERS ----------
 async function loadMembers(){
-  let r=await fetch(API+"?action=members");
-  let list=await r.json();
-  member.innerHTML=list.map(x=>"<option>"+x+"</option>").join("");
-  // important
-member.onchange = loadMessages;
-} 
 
+  let current = member.value; // अहिले select भएको member save
+
+  let r = await fetch(API+"?action=members");
+  let list = await r.json();
+
+  member.innerHTML =
+    "<option value=''>Select Member</option>" +
+    list.map(x => "<option value='"+x+"'>"+x+"</option>").join("");
+
+  // पुरानो member अझै online छ भने same select राख्ने
+  if(current && list.includes(current)){
+    member.value = current;
+  }
+
+  member.onchange = loadMessages;
+
+}
 // ---------- PASSWORD RESET ----------
 // SEND OTP
 async function sendForgetOTP(){
