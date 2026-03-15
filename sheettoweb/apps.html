@@ -192,62 +192,65 @@ function showChange(){privateDiv.style.display="none";publicDiv.style.display="n
 // ---------- LOGIN ----------
 // ---------- LOGIN ----------
 async function login() {
+  const loginID = document.getElementById("loginID");
+  const loginPass = document.getElementById("loginPass");
+  const myName = document.getElementById("myName");
+  const myPhoto = document.getElementById("myPhoto");
+  const loginBox = document.getElementById("loginBox");
+  const chatArea = document.getElementById("chatArea");
 
-  // Notification permission request
+  // Notification permission
   if (Notification.permission !== "granted") {
     Notification.requestPermission();
   }
-// /////////////
-  // Check fields
+
+  // Check empty
   if (!loginID.value || !loginPass.value) {
     alert("Fill all fields");
     return;
   }
 
-  // Call Google Apps Script API
-  let r = await fetch(API, {
-    method: 'POST',
-    body: new URLSearchParams({
-      action: 'login',
-      id: loginID.value,
-      pass: loginPass.value
-    })
-  });
+  try {
+    let res = await fetch(API, {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'login',
+        id: loginID.value,
+        pass: loginPass.value
+      })
+    });
 
-  let t = await r.text();
+    let text = await res.text();
 
-  if (t === "FAIL") {
-    alert("Wrong Login");
-    return;
+    if (text === "FAIL") {
+      alert("Wrong Login");
+      return;
+    }
+
+    const data = JSON.parse(text);
+
+    // Save current user
+    ME = data.name;
+
+    // Show name and photo
+    myName.innerText = data.name;
+    myPhoto.src = data.photo && data.photo.trim() !== ""
+      ? data.photo
+      : "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.name) + "&background=075e54&color=fff";
+
+    // Show chat
+    loginBox.style.display = "none";
+    chatArea.style.display = "block";
+
+    // Load members and messages
+    loadMembers();
+    setInterval(loadMessages, 1000);
+
+  } catch (err) {
+    console.error(err);
+    alert("Login failed. Check network or API URL.");
   }
-
-  // Parse returned JSON
-  let data = JSON.parse(t);
-
-  // Set current user
-  ME = data.name;
-
-  // Display user name and photo
-  myName.innerText = data.name;
-  myPhoto.src = data.photo && data.photo.trim() !== ""
-    ? data.photo
-    : "https://ui-avatars.com/api/?name=" + encodeURIComponent(data.name) + "&background=075e54&color=fff";
-
-  // Show chat area
-  loginBox.style.display = "none";
-  chatArea.style.display = "block";
-
-  // Load members in dropdown
-  loadMembers();
-
-  // Start loading messages every 1 sec
-  setInterval(loadMessages, 1000);
-
-  // Initialize lastMsgCount for notifications
-  lastMsgCount = 0;
-
 }
-
 // ---------- SIGNUP ----------
 async function signup(){
   if(!sid.value || !sname.value || !semail.value || !spass.value){
