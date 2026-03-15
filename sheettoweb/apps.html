@@ -323,7 +323,7 @@ async function loadMessages() {
       publicChat.innerHTML += "<div><b>" + from + ":</b> " + message + "</div>";
     }
 
-    // Private message
+    // Private message: only if a member is selected
     else if (member.value && ((from == ME && to == member.value) || (from == member.value && to == ME))) {
       chat.innerHTML += "<div class='" + (from == ME ? "msgMe" : "msgOther") + "'>" + message + "</div>";
     }
@@ -332,16 +332,13 @@ async function loadMessages() {
   chat.scrollTop = chat.scrollHeight;
   publicChat.scrollTop = publicChat.scrollHeight;
 }
-// ---------- MEMBERS ----------
+// ---------- LOAD MEMBERS ----------
 async function loadMembers() {
-  // अहिले select भएको member save
-  let current = member.value;
+  let current = member.value; // अहिले select भएको member
 
-  // API बाट online members मात्र ल्याउनु
   let r = await fetch(API + "?action=members");
-  let list = await r.json();
+  let list = await r.json(); // online members मात्र
 
-  // member select box update
   member.innerHTML =
     "<option value=''>Select Member</option>" +
     list.map(x => "<option value='" + x + "'>" + x + "</option>").join("");
@@ -352,13 +349,6 @@ async function loadMembers() {
   } else {
     member.value = ""; // old member offline भए empty
   }
-
-  // chat update गर्दा empty select check
-  loadMessages();
-
-  // onchange event
-  member.onchange = loadMessages;
-}
 // ---------- PASSWORD RESET ----------
 // SEND OTP
 async function sendForgetOTP(){
