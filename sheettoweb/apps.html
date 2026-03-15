@@ -174,7 +174,7 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwNkT-lJePgZrJPvE_k12tIwDgGQcv4RFhbxCAt_VXM55BtUrYWzSNqa-JIJmLoDy28Ow/exec";
+const API="https://script.google.com/macros/s/AKfycby1w9VNdNL7oaKqaw1toaxaiSm1xcAEyqB3vS0VWLy9JJ3QOstToTUYh4iyWBW9rRlhGQ/exec";
 const IMG_API_KEY="8cd7b6025719a1b842b0779939b5db60"; // HTML मा राखिएको
 const uploadBtn = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
@@ -283,7 +283,21 @@ async function signup(){
     
 
 // ---------- LOGOUT ----------
-function logout(){ME="";chatArea.style.display="none";loginBox.style.display="block";}
+async function logout(){
+
+await fetch(API,{
+method:'post',
+body:new URLSearchParams({
+action:'logout',
+id:loginID.value
+})
+});
+
+ME="";
+chatArea.style.display="none";
+loginBox.style.display="block";
+
+}
 
 // ---------- PRIVATE SEND ----------
 async function sendPrivate(){if(!msg.value) return; await fetch(API,{method:'post',body:new URLSearchParams({action:'send',from:ME,to:member.value,msg:msg.value})}); msg.value="";}
