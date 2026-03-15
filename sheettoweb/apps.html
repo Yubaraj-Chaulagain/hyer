@@ -365,6 +365,7 @@ async function loadMembers(){
   let r = await fetch(API+"?action=members");
   let list = await r.json();
 
+  // online members matra show
   member.innerHTML =
     "<option value=''>Select Member</option>" +
     list.map(x => "<option value='"+x+"'>"+x+"</option>").join("");
@@ -372,10 +373,14 @@ async function loadMembers(){
   // पुरानो member अझै online छ भने same select राख्ने
   if(current && list.includes(current)){
     member.value = current;
+  } else {
+    member.value = ""; // old member offline भैसक्यो भने empty select
   }
 
-  member.onchange = loadMessages;
+  // **chat update गर्दा empty select check गर्नुहोस्**
+  loadMessages();
 
+  member.onchange = loadMessages;
 }
 // ---------- PASSWORD RESET ----------
 // SEND OTP
