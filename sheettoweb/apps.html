@@ -7,7 +7,7 @@
 <!-- PWA chatnp -->
 <link rel="manifest" href="chatnp.json">
 <!-- iPhone को लागि आइकन -->
-<link rel="apple-touch-icon" href="https://i.ibb.co">
+<link rel="apple-touch-icon" href="https://i.ibb.co/C5YhXsr4/m2i8-H7-G6b1-K9b1-G6.png">
 
 <!-- एन्ड्रोइड र अरुको लागि -->
 <link rel="icon" type="image/png" href="https://i.ibb.co/C5YhXsr4/m2i8-H7-G6b1-K9b1-G6.png">
@@ -43,7 +43,7 @@ body{margin:0;font-family:Arial;background:#ece5dd}
 .box{background:#fff;padding:15px;margin:15px;border-radius:10px}
 input,button,select{padding:8px;margin:5px;font-size:14px}
 button{background:#075e54;color:white;border:none;border-radius:5px}
-#chat,#publicChat{height:300px;overflow:auto;background:#f1f1f1;padding:10px;border-radius:8px}
+#chat,#publicChat{height:50vh;overflow:auto;background:#f1f1f1;padding:10px;border-radius:8px}
 .msgMe{background:#dcf8c6;padding:6px;margin:4px;border-radius:6px;text-align:right}
 .msgOther{background:#fff;padding:6px;margin:4px;border-radius:6px;text-align:left}
 </style>
@@ -113,7 +113,9 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
   <input id="sid" placeholder="Member ID"><br>
   <input id="sname" placeholder="Name"><br>
   <input id="semail" placeholder="Email"><br>
-  <input type="file" id="sphoto" accept="image/*"><br>
+  <input type="file" id="sphoto" accept="image/*">
+<button onclick="openFile()">📎 Send File</button>
+<br>
   <input type="text" id="photoURL" placeholder="Photo URL" readonly><br>
   <input id="spass" type="password" placeholder="Password"><br>
   <button onclick="signup()">Register</button>
@@ -176,7 +178,6 @@ button{background:#075e54;color:white;border:none;border-radius:5px}
 <script>
 const API="https://script.google.com/macros/s/AKfycbwalMCiAaQ8CL7uutvNOJgmqecukye8ij7lK-1G2a0gy8Cz4H1srEQrPccipQVf050EfA/exec";
 const IMG_API_KEY="8cd7b6025719a1b842b0779939b5db60"; // HTML मा राखिएको
-const uploadBtn = document.getElementById("sphoto");
 const photoURLInput = document.getElementById("photoURL");
 let lastMsgCount = 0;
 let ME="";
@@ -555,10 +556,15 @@ async function sendFileMessage(file){
 }
 
 // Usage: file input
-const fileInput = document.createElement("input");
-fileInput.type = "file";
-fileInput.onchange = ()=> sendFileMessage(fileInput.files[0]);
-fileInput.click();
+function openFile(){
+  const fileInput = document.createElement("input");
+  fileInput.type = "file";
+  fileInput.onchange = ()=> sendFileMessage(fileInput.files[0]);
+  fileInput.click();
+}
+window.onload = () => {
+  const uploadBtn = document.getElementById("sphoto");
+};
 </script>
 </body>
 </html> 
