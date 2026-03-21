@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chat System</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#ece5dd}
+.box{background:#fff;padding:15px;margin:15px;border-radius:10px}
+input,button,select{padding:8px;margin:5px;font-size:14px}
+button{background:#075e54;color:white;border:none;border-radius:5px}
+#chat,#publicChat{
+  height:50vh;
+  overflow:auto;
+  background:#f1f1f1;
+  padding:10px;
+  border-radius:8px
+}
+.msgMe{background:#dcf8c6;padding:6px;margin:4px;border-radius:6px;text-align:right}
+.msgOther{background:#fff;padding:6px;margin:4px;border-radius:6px;text-align:left}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginBox" class="box">
+  <h3>Login</h3>
+  <input id="loginID" placeholder="Member ID"><br>
+  <input id="loginPass" type="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- CHAT -->
+<div id="chatArea" class="box" style="display:none">
+  <h3 id="myName"></h3>
+
+  <button onclick="showPrivate()">Private</button>
+  <button onclick="showPublic()">Public</button>
+  <button onclick="logout()">Logout</button>
+
+  <hr>
+
+  <!-- PRIVATE -->
+  <div id="privateDiv">
+    <select id="member"></select>
+    <div id="chat"></div>
+    <input id="msg" placeholder="Message">
+    <button onclick="sendPrivate()">Send</button>
+  </div>
+
+  <!-- PUBLIC -->
+  <div id="publicDiv" style="display:none">
+    <div id="publicChat"></div>
+    <input id="publicMsg" placeholder="Message">
+    <button onclick="sendPublic()">Send</button>
+  </div>
+
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbwalMCiAaQ8CL7uutvNOJgmqecukye8ij7lK-1G2a0gy8Cz4H1srEQrPccipQVf050EfA/exec";
+
+let ME="";
+
+// ---------- UI ----------
+function showPrivate(){
+  privateDiv.style.display="block";
+  publicDiv.style.display="none";
+}
+function showPublic(){
+  privateDiv.style.display="none";
+  publicDiv.style.display="block";
+}
+
+// ---------- LOGIN ----------
+async function login(){
+  if(!loginID.value || !loginPass.value){
+    alert("Fill all fields");
+    return;
+  }
+
+  let res = await fetch(API,{
+    method:'POST',
+    body:new URLSearchParams({
+      action:'login',
+      id:loginID.value,
+      pass:loginPass.value
+    })
+  });
+
+  let text = await res.text();
+
+  if(text==="FAIL"){
+    alert("Wrong Login");
+    return;
+  }
+
+  let data = JSON.parse(text);
+
+  ME = data.name;
+  myName.innerText = "Welcome: " + data.name;
+
+  loginBox.style.display="none";
+  chatArea.style.display="block";
+
+  loadMembers();
+  setInterval(loadMessages,2000);
+}
+
+// ---------- LOGOUT ----------
+function logout(){
+  ME="";
+  chatArea.style.display="none";
+  loginBox.style.display="block";
+}
+
+// ---------- SEND ----------
+async function sendPrivate(){
+  if(!msg.value) return;
+
+  await fetch(API,{
+    method:'POST',
+    body:new URLSearchParams({
+      action:'send',
+      from:ME,
+      to:member.value,
+      msg:msg.value
+    })
+  });
+
+  msg.value="";
+}
+
+async function sendPublic(){
+  if(!publicMsg.value) return;
+
+  await fetch(API,{
+    method:'POST',
+    body:new URLSearchParams({
+      action:'public',
+      from:ME,
+      msg:publicMsg.value
+    })
+  });
+
+  publicMsg.value="";
+}
+
+// ---------- LOAD ----------
+async function loadMessages(){
+  let r = await fetch(API+"?action=msgs");
+  let d = await r.json();
+
+  chat.innerHTML="";
+  publicChat.innerHTML="";
+
+  d.slice(1).forEach(row=>{
+    let from=row[1];
+    let to=row[2];
+    let message=row[3];
+
+    if(to=="ALL"){
+      publicChat.innerHTML += `<div><b>${from}:</b> ${message}</div>`;
+    }
+
+    else if(member.value && ((from==ME && to==member.value)||(from==member.value && to==ME))){
+      chat.innerHTML += `<div class="${from==ME?'msgMe':'msgOther'}">${message}</div>`;
+    }
+  });
+
+  chat.scrollTop = chat.scrollHeight;
+  publicChat.scrollTop = publicChat.scrollHeight;
+}
+
+// ---------- MEMBERS ----------
+async function loadMembers(){
+  let r = await fetch(API+"?action=members");
+  let list = await r.json();
+
+  member.innerHTML =
+    "<option value=''>Select Member</option>" +
+    list.map(x=>`<option value="${x}">${x}</option>`).join("");
+}
+
+// ---------- FILE SEND FIX ----------
+function openFile(){
+  const input = document.createElement("input");
+  input.type="file";
+  input.onchange=()=> alert("File selected (extend later)");
+  input.click();
+}
+</script>
+
+</body>
+</html>
