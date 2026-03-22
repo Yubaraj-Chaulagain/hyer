@@ -1,81 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-body {
-  font-family: Arial;
-}
+<input type="text" id="searchInput" placeholder="Search Name..." oninput="handleInput()">
 
-/* Search box */
-#searchInput {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-}
-
-/* Table style */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-th {
-  background-color: black;
-  color: white;
-}
-
-/* Hover */
-tr:hover {
-  background-color: #f1f1f1;
-}
-</style>
-</head>
-
-<body>
-
-<input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
-
-<table id="myTable">
+<table id="myTable" border="1">
   <tr>
     <th>Name</th>
     <th>Age</th>
-    <th>Country</th>
+  </tr>
+  <tr>
+    <td>Saroj</td>
+    <td>22</td>
   </tr>
   <tr>
     <td>Ram</td>
-    <td>22</td>
-    <td>Nepal</td>
+    <td>25</td>
   </tr>
   <tr>
     <td>Shyam</td>
-    <td>25</td>
-    <td>India</td>
-  </tr>
-  <tr>
-    <td>Hari</td>
     <td>30</td>
-    <td>USA</td>
   </tr>
 </table>
 
 <script>
-function searchTable() {
-  let input = document.getElementById("searchInput").value.toLowerCase();
-  let table = document.getElementById("myTable");
-  let tr = table.getElementsByTagName("tr");
+function handleInput() {
+  let input = document.getElementById("searchInput");
+
+  // ✅ Auto Capitalize
+  let words = input.value.toLowerCase().split(" ");
+  for (let i = 0; i < words.length; i++) {
+    if (words[i]) {
+      words[i] = words[i][0].toUpperCase() + words[i].slice(1);
+    }
+  }
+  input.value = words.join(" ");
+
+  // 🔍 Search Function
+  let filter = input.value.toLowerCase();
+  let tr = document.querySelectorAll("#myTable tr");
 
   for (let i = 1; i < tr.length; i++) {
-    let rowText = tr[i].innerText.toLowerCase();
-    tr[i].style.display = rowText.includes(input) ? "" : "none";
+    let td = tr[i].getElementsByTagName("td")[0]; // Name column
+
+    if (td) {
+      let text = td.textContent.toLowerCase();
+      tr[i].style.display = text.includes(filter) ? "" : "none";
+    }
   }
 }
 </script>
-
-</body>
-</html>
