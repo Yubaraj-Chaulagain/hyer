@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  font-family: Arial;
+}
+
+/* Search box */
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Table style */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: black;
+  color: white;
+}
+
+/* Hover */
+tr:hover {
+  background-color: #f1f1f1;
+}
+</style>
+</head>
+
+<body>
+
+<input type="text" id="searchInput" placeholder="Search..." onkeyup="searchTable()">
+
+<table id="myTable">
+  <tr>
+    <th>Name</th>
+    <th>Age</th>
+    <th>Country</th>
+  </tr>
+  <tr>
+    <td>Ram</td>
+    <td>22</td>
+    <td>Nepal</td>
+  </tr>
+  <tr>
+    <td>Shyam</td>
+    <td>25</td>
+    <td>India</td>
+  </tr>
+  <tr>
+    <td>Hari</td>
+    <td>30</td>
+    <td>USA</td>
+  </tr>
+</table>
+
+<script>
+function searchTable() {
+  let input = document.getElementById("searchInput").value.toLowerCase();
+  let table = document.getElementById("myTable");
+  let tr = table.getElementsByTagName("tr");
+
+  for (let i = 1; i < tr.length; i++) {
+    let rowText = tr[i].innerText.toLowerCase();
+    tr[i].style.display = rowText.includes(input) ? "" : "none";
+  }
+}
+</script>
+
+</body>
+</html>
