@@ -22,7 +22,11 @@ document.getElementById('savePost').addEventListener('click', function(){
   if(!content){ alert("Enter content!"); return; }
   fetch(SCRIPT_URL + "?content=" + encodeURIComponent(content))
     .then(res=>res.text())
-    .then(msg=>{ alert(msg); loadPending(); });
+    .then(msg=>{
+      alert(msg);
+      document.getElementById('newPost').value = ""; // Clear textarea after saving
+      loadPending();
+    });
 });
 
 // Load pending posts
