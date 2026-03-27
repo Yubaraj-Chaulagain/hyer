@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pending Facebook Posts</title>
+</head>
+<body>
+
+<h3>Add New Post</h3>
+<textarea id="newPost" rows="4" cols="50" placeholder="Type new post here..."></textarea><br>
+<button id="savePost">Save to Sheet</button>
+
+<h3>Pending Posts</h3>
+<div id="pendingPosts"></div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+// Save new post
+document.getElementById('savePost').addEventListener('click', function(){
+  let content = document.getElementById('newPost').value.trim();
+  if(!content){ alert("Enter content!"); return; }
+  fetch(SCRIPT_URL + "?content=" + encodeURIComponent(content))
+    .then(res=>res.text())
+    .then(msg=>{ alert(msg); loadPending(); });
+});
+
+// Load pending posts
+function loadPending(){
+  fetch(SCRIPT_URL)
+    .then(res=>res.json())
+    .then(data=>{
+      const container = document.getElementById('pendingPosts');
+      container.innerHTML = "";
+      data.forEach(post=>{
+        let div = document.createElement('div');
+        div.style.border = "1px solid #ccc"; div.style.margin = "5px"; div.style.padding = "5px";
+        div.innerHTML = `
+          <textarea id="post_${post.row}" rows="2" cols="50">${post.content}</textarea><br>
+          <button onclick="copyAndSend(${post.row})">Copy & Mark Sent</button>
+        `;
+        container.appendChild(div);
+      });
+    });
+}
+
+// Copy content & mark Sent
+function copyAndSend(row){
+  let textarea = document.getElementById("post_" + row);
+  textarea.select();
+  document.execCommand('copy');
+
+  // Update status to Sent
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: new URLSearchParams({row: row})
+  }).then(res=>res.text()).then(msg=>{
+    alert("Copied & " + msg);
+    loadPending();
+  });
+}
+
+// Initial load
+loadPending();
+</script>
+
+</body>
+</html>
