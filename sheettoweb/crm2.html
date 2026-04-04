@@ -49,8 +49,55 @@
         <div class="loader"></div>
     </div>
 </div>
+<!-- SIDE NAV -->
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+
+  <a href="#" onclick="showTab('MembersSection')">Members</a>
+  <a href="#" onclick="showTab('transactionSection')">Transactions</a>
+  <a href="#" onclick="showTab('loanSection')">Loans</a>
+
+  <!-- External Links -->
+  <a href="https://google.com" target="_blank">🌐 Google</a>
+  <a href="https://youtube.com" target="_blank">▶️ YouTube</a>
+
+</div>
+
+<!-- Open Button -->
+<button class="btn btn-dark mb-2" onclick="openNav()">☰ Menu</button>
 
 <style>
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: 0.3s;
+  padding-top: 60px;
+  z-index: 10000;
+}
+
+.sidebar a {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: white;
+  display: block;
+  transition: 0.2s;
+}
+
+.sidebar a:hover {
+  background: #575757;
+}
+
+.sidebar .closebtn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 25px;
+}
 /* Splash Screen CSS */
 #splash-screen {
     position: fixed;
@@ -2017,6 +2064,13 @@ function startMemberResultAutoRefresh(){
     loadMemberResults();
     console.log("Member Result auto refreshed");
   }, 60000); // 60000 ms = 1 minute
+}
+function openNav() {
+  document.getElementById("sidebar").style.width = "250px";
+}
+
+function closeNav() {
+  document.getElementById("sidebar").style.width = "0";
 }
 </script>
 </body>
