@@ -2,134 +2,208 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cashbook PRO</title>
+<title>Finance Dashboard Pro</title>
 
 <style>
-body { font-family: Arial; padding:20px; max-width:600px; margin:auto; }
-input, button { width:100%; padding:10px; margin:5px 0; }
-table { width:100%; border-collapse:collapse; margin-top:15px; }
-th, td { border:1px solid #ccc; padding:8px; text-align:center; }
-.online { color:green; }
-.offline { color:red; }
+body{font-family:Arial;max-width:900px;margin:auto;padding:15px}
+input,button,select{width:100%;padding:8px;margin:5px 0}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #ccc;padding:6px;text-align:center}
+.card{padding:10px;border-radius:8px;color:#fff;margin:5px 0}
+.green{background:#28a745}
+.red{background:#dc3545}
+.blue{background:#007bff}
+.orange{background:#fd7e14}
+.online{color:green}
+.offline{color:red}
 </style>
 </head>
 
 <body>
 
-<h2>💰 Cashbook (Offline + Sync)</h2>
-Status: <b id="status"></b>
+<h2>📊 Finance Dashboard</h2>
+<p>Status: <span id="status"></span></p>
 
+<!-- DASHBOARD -->
+<div class="card green">Income: <span id="income">0</span></div>
+<div class="card red">Expense: <span id="expense">0</span></div>
+<div class="card blue">Balance: <span id="balance">0</span></div>
+
+<!-- INPUT -->
+<input id="member" placeholder="Member ID">
 <input type="date" id="date">
 <input type="number" id="amount" placeholder="Amount">
-<input type="text" id="desc" placeholder="Description">
-<button onclick="add()">➕ Add</button>
+<select id="type">
+<option>Deposit</option>
+<option>Withdraw</option>
+<option>Transfer Received</option>
+<option>Transfer Sent</option>
+<option>Buy</option>
+<option>Sell</option>
+</select>
+<input id="desc" placeholder="Description">
 
+<button onclick="add()">➕ Add Transaction</button>
+
+<!-- FILTER -->
+<select id="memberFilter"></select>
+<button onclick="filterMember()">👤 Filter</button>
+<button onclick="today()">📅 Today</button>
+<button onclick="monthly()">📊 Month</button>
+<button onclick="exportCSV()">📥 Export Excel</button>
+
+<!-- TABLE -->
 <table>
 <thead>
-<tr><th>Date</th><th>Amount</th><th>Description</th></tr>
+<tr>
+<th>Member</th>
+<th>Date</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Note</th>
+</tr>
 </thead>
 <tbody id="tbl"></tbody>
 </table>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyOlLVFxH34xR5tndDGpAN-l88XMnb8oXZRvgdvfBwDPZtplrneFBOuJHEDMYwJ5Nan/exec";
+const KEY="finance_data";
+const API="https://script.google.com/macros/s/AKfycbw5KkkWS3EwZykT4INB-etYUmYuWGuoLXha6_4lYRK6wI2KL8C2e3yRtEWbAETChyEM/exec";
 
-const KEY = "cashbook_offline";
+let data=[];
 
-function getData(){
-  return JSON.parse(localStorage.getItem(KEY)||"[]");
-}
-
-function setData(d){
-  localStorage.setItem(KEY, JSON.stringify(d));
-}
-
-function draw(){
-  const d = getData();
-  tbl.innerHTML = "";
-  d.forEach(x=>{
-    tbl.innerHTML += `<tr>
-      <td>${x.date}</td>
-      <td>${x.amount}</td>
-      <td>${x.description}</td>
-    </tr>`;
-  });
-}
-
-function add(){
-  if(!date.value || !amount.value) return alert("Fill data");
-
-  let d = getData();
-  d.push({
-    date: date.value,
-    amount: amount.value,
-    description: desc.value || "",
-    synced: false
-  });
-
-  setData(d);
-  date.value=""; amount.value=""; desc.value="";
-  draw();
-  sync(); // try immediately
-}
-
-// 🔥 MAIN SYNC ENGINE
-async function sync(){
-  if(!navigator.onLine){
-    status.innerHTML = "OFFLINE";
-    status.className = "offline";
-    return;
-  }
-
-  status.innerHTML = "SYNCING...";
-  status.className = "online";
-
-  let data = getData();
-  let unsynced = data.filter(x=>!x.synced);
-
-  if(unsynced.length===0){
-    status.innerHTML = "✅ Up to date";
-    return;
-  }
-
-  try{
-    const res = await fetch(API,{
-      method:"POST",
-      body: JSON.stringify({entries: unsynced})
-    });
-
-    const txt = await res.text();
-    console.log("SERVER:", txt);
-
-    let json = JSON.parse(txt);
-
-    if(json.success){
-      // mark synced
-      data = data.map(x=>({...x, synced:true}));
-      setData(data);
-
-      status.innerHTML = "✅ Synced "+unsynced.length+" items";
-      draw();
-    }else{
-      status.innerHTML = "❌ Server error";
-    }
-
-  }catch(e){
-    console.log("ERROR:", e);
-    status.innerHTML = "❌ Retry later";
-  }
-}
-
-// AUTO EVENTS
-window.addEventListener("online", sync);
-window.addEventListener("load", ()=>{
-  draw();
+// STATUS
+function statusCheck(){
+ if(navigator.onLine){
+  status.innerText="Online";
+  status.className="online";
   sync();
-});
+ }else{
+  status.innerText="Offline";
+  status.className="offline";
+ }
+}
 
-// 🔁 AUTO RETRY EVERY 10 sec
-setInterval(sync, 10000);
+// LOAD
+function load(){
+ data=JSON.parse(localStorage.getItem(KEY)||"[]");
+ draw(data);
+ dashboard();
+ loadMembers();
+}
 
+// DRAW TABLE
+function draw(arr){
+ tbl.innerHTML="";
+ arr.forEach(e=>{
+  tbl.innerHTML+=`
+  <tr>
+  <td>${e.member}</td>
+  <td>${e.date}</td>
+  <td>${e.type}</td>
+  <td>${e.amount}</td>
+  <td>${e.desc}</td>
+  </tr>`;
+ });
+}
+
+// ADD
+function add(){
+ const e={
+  member:member.value,
+  date:date.value,
+  type:type.value,
+  amount:Number(amount.value),
+  desc:desc.value,
+  synced:false
+ };
+
+ if(!e.member||!e.date||!e.amount) return alert("Fill all");
+
+ data.push(e);
+ localStorage.setItem(KEY,JSON.stringify(data));
+
+ member.value="";amount.value="";desc.value="";
+ load();
+}
+
+// DASHBOARD
+function dashboard(){
+ let inc=0,exp=0;
+
+ data.forEach(t=>{
+  if(["Deposit","Transfer Received","Sell"].includes(t.type)) inc+=t.amount;
+  if(["Withdraw","Transfer Sent","Buy"].includes(t.type)) exp+=t.amount;
+ });
+
+ income.innerText=inc;
+ expense.innerText=exp;
+ balance.innerText=inc-exp;
+}
+
+// MEMBER FILTER
+function loadMembers(){
+ let m=[...new Set(data.map(x=>x.member))];
+ memberFilter.innerHTML="<option value=''>All</option>";
+ m.forEach(x=>memberFilter.innerHTML+=`<option>${x}</option>`);
+}
+
+function filterMember(){
+ let m=memberFilter.value;
+ if(!m) return draw(data);
+ draw(data.filter(x=>x.member===m));
+}
+
+// TODAY
+function today(){
+ let t=new Date().toISOString().split("T")[0];
+ draw(data.filter(x=>x.date===t));
+}
+
+// MONTH
+function monthly(){
+ let m=new Date().toISOString().slice(0,7);
+ draw(data.filter(x=>x.date.startsWith(m)));
+}
+
+// EXPORT
+function exportCSV(){
+ let csv="Member,Date,Type,Amount,Note\n";
+ data.forEach(e=>{
+  csv+=`${e.member},${e.date},${e.type},${e.amount},${e.desc}\n`;
+ });
+
+ let blob=new Blob([csv]);
+ let a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="finance.csv";
+ a.click();
+}
+
+// SYNC
+async function sync(){
+ let unsynced=data.filter(x=>!x.synced);
+ if(!unsynced.length) return;
+
+ try{
+  let res=await fetch(API,{
+   method:"POST",
+   body:JSON.stringify({data:unsynced})
+  });
+
+  let r=await res.json();
+  if(r.success){
+    data.forEach(x=>x.synced=true);
+    localStorage.setItem(KEY,JSON.stringify(data));
+  }
+ }catch(e){console.log(e);}
+}
+
+window.addEventListener("online",statusCheck);
+window.addEventListener("offline",statusCheck);
+
+statusCheck();
+load();
 </script>
 
 </body>
