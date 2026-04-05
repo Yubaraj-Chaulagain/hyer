@@ -1,159 +1,152 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Offline Cashbook</title>
+<title>Cashbook PRO</title>
+
 <style>
-body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
-h1 { text-align: center; }
-input, button { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-.offline { color: red; }
-.online { color: green; }
+body { font-family: Arial; padding:20px; max-width:700px; margin:auto; }
+input, button { width:100%; padding:10px; margin:5px 0; }
+table { width:100%; border-collapse:collapse; margin-top:15px; }
+th, td { border:1px solid #ccc; padding:8px; text-align:center; }
+.online { color:green; }
+.offline { color:red; }
+.edit-btn { cursor:pointer; color:blue; }
 </style>
 </head>
+
 <body>
 
-<h1>Offline Cashbook</h1>
-<p>Status: <span id="status"></span></p>
+<h2>💰 Cashbook (Offline + Sync)</h2>
+Status: <b id="status"></b>
 
-<input type="date" id="date" placeholder="Date">
+<input type="date" id="date">
 <input type="text" id="memberId" placeholder="Member ID">
 <input type="number" id="receivedAmt" placeholder="Received Amount">
 <input type="number" id="bankiAmt" placeholder="Banki Amount">
-<input type="text" id="description" placeholder="Description">
-<button onclick="addEntry()">Add Entry</button>
-
-<hr>
-<h3>Search / Filter</h3>
-<input type="date" id="searchDate" placeholder="Search by date">
-<button onclick="filterEntries()">Search</button>
-<button onclick="loadEntries()">Show All</button>
+<input type="text" id="desc" placeholder="Description">
+<button onclick="add()">➕ Add</button>
 
 <table>
 <thead>
 <tr>
 <th>Date</th>
 <th>Member ID</th>
-<th>Received Amt</th>
-<th>Banki Amt</th>
+<th>Received</th>
+<th>Banki</th>
 <th>Description</th>
+<th>Action</th>
 </tr>
 </thead>
-<tbody id="entries"></tbody>
+<tbody id="tbl"></tbody>
 </table>
 
 <script>
-const STORAGE_KEY = 'offlineCashbook';
-const entriesEl = document.getElementById('entries');
-const statusEl = document.getElementById('status');
+const API = "https://script.google.com/macros/s/AKfycbwtNNpt8tdOXJm6IbWM8FSlNSx0MU--yMNejtWzfRgykQyip_c6zhzdyK3v1nIXmZO7/exec"; // replace with your Apps Script URL
+const KEY = "cashbook_offline";
 
-// Replace with your Apps Script Web App URL
-const WEB_APP_URL = 'YOUR_WEB_APP_URL_HERE';
+// Set this to true for admin edit/update
+const isAdmin = true;
 
-// Update online/offline status
-function updateStatus() {
-  if (navigator.onLine) {
-    statusEl.textContent = 'Online';
-    statusEl.className = 'online';
-    syncDataToGoogleSheet();
-  } else {
-    statusEl.textContent = 'Offline';
-    statusEl.className = 'offline';
-  }
-}
+// LocalStorage helpers
+function getData(){ return JSON.parse(localStorage.getItem(KEY)||"[]"); }
+function setData(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
 
-// Load all entries from localStorage
-function loadEntries() {
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  displayEntries(data);
-}
-
-// Display filtered or all entries
-function displayEntries(data) {
-  entriesEl.innerHTML = '';
-  data.forEach(entry => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${entry.date}</td>
-      <td>${entry.memberId}</td>
-      <td>${entry.receivedAmt}</td>
-      <td>${entry.bankiAmt}</td>
-      <td>${entry.description}</td>
-    `;
-    entriesEl.appendChild(tr);
+// Draw table
+function draw(){
+  const d = getData();
+  tbl.innerHTML = "";
+  d.forEach((x,i)=>{
+    tbl.innerHTML += `<tr>
+      <td>${x.date}</td>
+      <td>${x.memberId || ""}</td>
+      <td>${x.receivedAmt || 0}</td>
+      <td>${x.bankiAmt || 0}</td>
+      <td>${x.description || ""}</td>
+      <td>${isAdmin ? `<span class="edit-btn" onclick="edit(${i})">Edit</span>` : ""}</td>
+    </tr>`;
   });
 }
 
-// Add a new entry
-function addEntry() {
-  const date = document.getElementById('date').value;
-  const memberId = document.getElementById('memberId').value;
-  const receivedAmt = document.getElementById('receivedAmt').value;
-  const bankiAmt = document.getElementById('bankiAmt').value;
-  const description = document.getElementById('description').value;
+// Add new entry
+function add(){
+  if(!date.value || !memberId.value) return alert("Fill Date and Member ID");
 
-  if (!date || !memberId || !receivedAmt || !bankiAmt || !description) {
-    alert('Please fill all fields'); return;
+  let d = getData();
+  d.push({
+    date: date.value,
+    memberId: memberId.value,
+    receivedAmt: receivedAmt.value || 0,
+    bankiAmt: bankiAmt.value || 0,
+    description: desc.value || "",
+    synced: false
+  });
+
+  setData(d);
+  date.value=""; memberId.value=""; receivedAmt.value=""; bankiAmt.value=""; desc.value="";
+  draw();
+  sync(); // try immediately
+}
+
+// Edit an entry (Admin only)
+function edit(idx){
+  const d = getData();
+  const e = d[idx];
+  // Fill inputs for editing
+  date.value = e.date;
+  memberId.value = e.memberId;
+  receivedAmt.value = e.receivedAmt;
+  bankiAmt.value = e.bankiAmt;
+  desc.value = e.description;
+
+  // Remove old entry before update
+  d.splice(idx,1);
+  setData(d);
+  draw();
+}
+
+// 🔥 SYNC
+async function sync(){
+  if(!navigator.onLine){
+    status.innerHTML = "OFFLINE"; status.className="offline"; return;
   }
 
-  const newEntry = { date, memberId, receivedAmt, bankiAmt, description };
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  data.push(newEntry);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  status.innerHTML="SYNCING..."; status.className="online";
 
-  document.getElementById('date').value = '';
-  document.getElementById('memberId').value = '';
-  document.getElementById('receivedAmt').value = '';
-  document.getElementById('bankiAmt').value = '';
-  document.getElementById('description').value = '';
+  let data = getData();
+  let unsynced = data.filter(x=>!x.synced);
+  if(unsynced.length===0){ status.innerHTML="✅ Up to date"; return; }
 
-  loadEntries();
-  if (navigator.onLine) syncDataToGoogleSheet();
-}
-
-// Filter entries by date
-function filterEntries() {
-  const searchDate = document.getElementById('searchDate').value;
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  const filtered = data.filter(e => e.date === searchDate);
-  displayEntries(filtered);
-}
-
-// Sync local data to Google Sheet
-async function syncDataToGoogleSheet() {
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  if (data.length === 0) return;
-
-  try {
-    const response = await fetch(WEB_APP_URL, {
-      method: 'POST',
-      body: JSON.stringify({ entries: data }),
-      headers: { "Content-Type": "application/json" }
+  try{
+    const res = await fetch(API,{
+      method:"POST",
+      body: JSON.stringify({entries: unsynced})
     });
-    const result = await response.json();
-    if (result.success) {
-      localStorage.removeItem(STORAGE_KEY);
-      loadEntries();
-      console.log('Data synced to Google Sheet!');
+    const txt = await res.text();
+    let json = JSON.parse(txt);
+
+    if(json.success){
+      data = data.map(x=>({...x,synced:true}));
+      setData(data);
+      status.innerHTML = `✅ Synced ${unsynced.length} items`;
+      draw();
     } else {
-      console.log('Sync failed:', result.error);
+      status.innerHTML = "❌ Server error";
     }
-  } catch (err) {
-    console.log('Sync error:', err);
+
+  }catch(e){
+    console.log("ERROR:",e);
+    status.innerHTML="❌ Retry later";
   }
 }
 
-// Detect online/offline
-window.addEventListener('online', updateStatus);
-window.addEventListener('offline', updateStatus);
+// AUTO EVENTS
+window.addEventListener("online", sync);
+window.addEventListener("load", ()=>{
+  draw(); sync();
+});
+setInterval(sync, 10000);
 
-// Initial load
-updateStatus();
-loadEntries();
 </script>
-
 </body>
 </html>
