@@ -4,27 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Offline Cashbook</title>
-<style>
-body { font-family: Arial; padding:20px; max-width:600px; margin:auto; }
-h1{text-align:center;}
-input,button{padding:8px;margin:5px 0;width:100%;box-sizing:border-box;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{border:1px solid #ccc;padding:8px;text-align:center;}
-.offline{color:red;}
-.online{color:green;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>Offline Cashbook</h1>
 <p>Status: <span id="status">Checking...</span></p>
 
-<input type="date" id="date" placeholder="Date"/>
+<input type="date" id="date"/>
 <input type="text" id="memberId" placeholder="Member ID"/>
 <input type="number" id="receivedAmt" placeholder="Received Amount"/>
 <input type="number" id="bankiAmt" placeholder="Banki Amount"/>
 <input type="text" id="description" placeholder="Description"/>
 <button onclick="addEntry()">Add Entry</button>
+
+<select id="memberFilter" onchange="filterMember()">
+  <option value="">All Members</option>
+</select>
+
+<button onclick="exportExcel()">Export to Excel</button>
+
+<h3>Daily Totals</h3>
+<p>Income: <span id="totalIncome">0</span> | Expense: <span id="totalExpense">0</span></p>
 
 <table>
 <thead>
@@ -36,9 +37,12 @@ th,td{border:1px solid #ccc;padding:8px;text-align:center;}
 <script>
 const statusEl = document.getElementById('status');
 const entriesEl = document.getElementById('entries');
+const memberFilterEl = document.getElementById('memberFilter');
+const totalIncomeEl = document.getElementById('totalIncome');
+const totalExpenseEl = document.getElementById('totalExpense');
+
 const STORAGE_KEY = 'offlineCashbook';
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKzhxhwrduWv4dkF-gzsmemMTbbFSjn6kq_qFVyirqr66NBuxY4oPJNT0j3ISUycZR/exec
-";
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzKzhxhwrduWv4dkF-gzsmemMTbbFSjn6kq_qFVyirqr66NBuxY4oPJNT0j3ISUycZR/exec'; // Replace with deployed web app URL
 
 function updateStatus(){
   if(navigator.onLine){
@@ -54,7 +58,32 @@ function updateStatus(){
 function loadEntries(){
   const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   entriesEl.innerHTML='';
+
+  const memberSet = new Set();
+  let totalIncome=0, totalExpense=0;
+
   data.forEach(entry=>{
+    memberSet.add(entry.memberId);
+    totalIncome += parseFloat(entry.receivedAmt);
+    totalExpense += parseFloat(entry.bankiAmt);
+  });
+
+  totalIncomeEl.textContent = totalIncome;
+  totalExpenseEl.textContent = totalExpense;
+
+  memberFilterEl.innerHTML = '<option value="">All Members</option>';
+  memberSet.forEach(m=>{memberFilterEl.innerHTML += `<option value="${m}">${m}</option>`});
+
+  displayEntries(data);
+}
+
+function displayEntries(data){
+  const filter = memberFilterEl.value;
+  const today = new Date().toISOString().slice(0,10);
+  const filtered = data.filter(entry => (entry.date === today) && (filter === "" || entry.memberId === filter));
+
+  entriesEl.innerHTML='';
+  filtered.forEach(entry=>{
     const tr = document.createElement('tr');
     tr.innerHTML=`<td>${entry.date}</td><td>${entry.memberId}</td><td>${entry.receivedAmt}</td><td>${entry.bankiAmt}</td><td>${entry.description}</td>`;
     entriesEl.appendChild(tr);
@@ -73,7 +102,7 @@ function addEntry(){
   }
 
   const newEntry={date, memberId, receivedAmt, bankiAmt, description};
-  const data=JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
   data.push(newEntry);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
@@ -85,6 +114,10 @@ function addEntry(){
 
   loadEntries();
   if(navigator.onLine) syncDataToGoogleSheet();
+}
+
+function filterMember(){
+  loadEntries();
 }
 
 async function syncDataToGoogleSheet(){
@@ -108,6 +141,27 @@ async function syncDataToGoogleSheet(){
   } catch(err){
     console.log('Sync error', err);
   }
+}
+
+function exportExcel(){
+  const data = [];
+  const rows = document.querySelectorAll('#entries tr');
+  rows.forEach(row=>{
+    const rowData = [];
+    row.querySelectorAll('td').forEach(td=>rowData.push(td.textContent));
+    data.push(rowData);
+  });
+
+  let csvContent = "data:text/csv;charset=utf-8," 
+    + data.map(e=>e.join(",")).join("\n");
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", "cashbook_today.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 window.addEventListener('online',updateStatus);
