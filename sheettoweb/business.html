@@ -1,209 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finance Dashboard Pro</title>
-
+<title>Offline Cashbook</title>
 <style>
-body{font-family:Arial;max-width:900px;margin:auto;padding:15px}
-input,button,select{width:100%;padding:8px;margin:5px 0}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #ccc;padding:6px;text-align:center}
-.card{padding:10px;border-radius:8px;color:#fff;margin:5px 0}
-.green{background:#28a745}
-.red{background:#dc3545}
-.blue{background:#007bff}
-.orange{background:#fd7e14}
-.online{color:green}
-.offline{color:red}
+body { font-family: Arial; padding:20px; max-width:600px; margin:auto; }
+h1{text-align:center;}
+input,button{padding:8px;margin:5px 0;width:100%;box-sizing:border-box;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{border:1px solid #ccc;padding:8px;text-align:center;}
+.offline{color:red;}
+.online{color:green;}
 </style>
 </head>
-
 <body>
 
-<h2>📊 Finance Dashboard</h2>
-<p>Status: <span id="status"></span></p>
+<h1>Offline Cashbook</h1>
+<p>Status: <span id="status">Checking...</span></p>
 
-<!-- DASHBOARD -->
-<div class="card green">Income: <span id="income">0</span></div>
-<div class="card red">Expense: <span id="expense">0</span></div>
-<div class="card blue">Balance: <span id="balance">0</span></div>
+<input type="date" id="date" placeholder="Date"/>
+<input type="text" id="memberId" placeholder="Member ID"/>
+<input type="number" id="receivedAmt" placeholder="Received Amount"/>
+<input type="number" id="bankiAmt" placeholder="Banki Amount"/>
+<input type="text" id="description" placeholder="Description"/>
+<button onclick="addEntry()">Add Entry</button>
 
-<!-- INPUT -->
-<input id="member" placeholder="Member ID">
-<input type="date" id="date">
-<input type="number" id="amount" placeholder="Amount">
-<select id="type">
-<option>Deposit</option>
-<option>Withdraw</option>
-<option>Transfer Received</option>
-<option>Transfer Sent</option>
-<option>Buy</option>
-<option>Sell</option>
-</select>
-<input id="desc" placeholder="Description">
-
-<button onclick="add()">➕ Add Transaction</button>
-
-<!-- FILTER -->
-<select id="memberFilter"></select>
-<button onclick="filterMember()">👤 Filter</button>
-<button onclick="today()">📅 Today</button>
-<button onclick="monthly()">📊 Month</button>
-<button onclick="exportCSV()">📥 Export Excel</button>
-
-<!-- TABLE -->
 <table>
 <thead>
-<tr>
-<th>Member</th>
-<th>Date</th>
-<th>Type</th>
-<th>Amount</th>
-<th>Note</th>
-</tr>
+<tr><th>Date</th><th>Member ID</th><th>Received</th><th>Banki</th><th>Description</th></tr>
 </thead>
-<tbody id="tbl"></tbody>
+<tbody id="entries"></tbody>
 </table>
 
 <script>
-const KEY="finance_data";
-const API="https://script.google.com/macros/s/AKfycbw5KkkWS3EwZykT4INB-etYUmYuWGuoLXha6_4lYRK6wI2KL8C2e3yRtEWbAETChyEM/exec";
+const statusEl = document.getElementById('status');
+const entriesEl = document.getElementById('entries');
+const STORAGE_KEY = 'offlineCashbook';
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKzhxhwrduWv4dkF-gzsmemMTbbFSjn6kq_qFVyirqr66NBuxY4oPJNT0j3ISUycZR/exec
+";
 
-let data=[];
-
-// STATUS
-function statusCheck(){
- if(navigator.onLine){
-  status.innerText="Online";
-  status.className="online";
-  sync();
- }else{
-  status.innerText="Offline";
-  status.className="offline";
- }
-}
-
-// LOAD
-function load(){
- data=JSON.parse(localStorage.getItem(KEY)||"[]");
- draw(data);
- dashboard();
- loadMembers();
-}
-
-// DRAW TABLE
-function draw(arr){
- tbl.innerHTML="";
- arr.forEach(e=>{
-  tbl.innerHTML+=`
-  <tr>
-  <td>${e.member}</td>
-  <td>${e.date}</td>
-  <td>${e.type}</td>
-  <td>${e.amount}</td>
-  <td>${e.desc}</td>
-  </tr>`;
- });
-}
-
-// ADD
-function add(){
- const e={
-  member:member.value,
-  date:date.value,
-  type:type.value,
-  amount:Number(amount.value),
-  desc:desc.value,
-  synced:false
- };
-
- if(!e.member||!e.date||!e.amount) return alert("Fill all");
-
- data.push(e);
- localStorage.setItem(KEY,JSON.stringify(data));
-
- member.value="";amount.value="";desc.value="";
- load();
-}
-
-// DASHBOARD
-function dashboard(){
- let inc=0,exp=0;
-
- data.forEach(t=>{
-  if(["Deposit","Transfer Received","Sell"].includes(t.type)) inc+=t.amount;
-  if(["Withdraw","Transfer Sent","Buy"].includes(t.type)) exp+=t.amount;
- });
-
- income.innerText=inc;
- expense.innerText=exp;
- balance.innerText=inc-exp;
-}
-
-// MEMBER FILTER
-function loadMembers(){
- let m=[...new Set(data.map(x=>x.member))];
- memberFilter.innerHTML="<option value=''>All</option>";
- m.forEach(x=>memberFilter.innerHTML+=`<option>${x}</option>`);
-}
-
-function filterMember(){
- let m=memberFilter.value;
- if(!m) return draw(data);
- draw(data.filter(x=>x.member===m));
-}
-
-// TODAY
-function today(){
- let t=new Date().toISOString().split("T")[0];
- draw(data.filter(x=>x.date===t));
-}
-
-// MONTH
-function monthly(){
- let m=new Date().toISOString().slice(0,7);
- draw(data.filter(x=>x.date.startsWith(m)));
-}
-
-// EXPORT
-function exportCSV(){
- let csv="Member,Date,Type,Amount,Note\n";
- data.forEach(e=>{
-  csv+=`${e.member},${e.date},${e.type},${e.amount},${e.desc}\n`;
- });
-
- let blob=new Blob([csv]);
- let a=document.createElement("a");
- a.href=URL.createObjectURL(blob);
- a.download="finance.csv";
- a.click();
-}
-
-// SYNC
-async function sync(){
- let unsynced=data.filter(x=>!x.synced);
- if(!unsynced.length) return;
-
- try{
-  let res=await fetch(API,{
-   method:"POST",
-   body:JSON.stringify({data:unsynced})
-  });
-
-  let r=await res.json();
-  if(r.success){
-    data.forEach(x=>x.synced=true);
-    localStorage.setItem(KEY,JSON.stringify(data));
+function updateStatus(){
+  if(navigator.onLine){
+    statusEl.textContent='Online';
+    statusEl.className='online';
+    syncDataToGoogleSheet();
+  } else {
+    statusEl.textContent='Offline';
+    statusEl.className='offline';
   }
- }catch(e){console.log(e);}
 }
 
-window.addEventListener("online",statusCheck);
-window.addEventListener("offline",statusCheck);
+function loadEntries(){
+  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  entriesEl.innerHTML='';
+  data.forEach(entry=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`<td>${entry.date}</td><td>${entry.memberId}</td><td>${entry.receivedAmt}</td><td>${entry.bankiAmt}</td><td>${entry.description}</td>`;
+    entriesEl.appendChild(tr);
+  });
+}
 
-statusCheck();
-load();
+function addEntry(){
+  const date=document.getElementById('date').value;
+  const memberId=document.getElementById('memberId').value;
+  const receivedAmt=document.getElementById('receivedAmt').value;
+  const bankiAmt=document.getElementById('bankiAmt').value;
+  const description=document.getElementById('description').value;
+
+  if(!date || !memberId || !receivedAmt || !bankiAmt || !description){
+    alert('Fill all fields'); return;
+  }
+
+  const newEntry={date, memberId, receivedAmt, bankiAmt, description};
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  data.push(newEntry);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  document.getElementById('date').value='';
+  document.getElementById('memberId').value='';
+  document.getElementById('receivedAmt').value='';
+  document.getElementById('bankiAmt').value='';
+  document.getElementById('description').value='';
+
+  loadEntries();
+  if(navigator.onLine) syncDataToGoogleSheet();
+}
+
+async function syncDataToGoogleSheet(){
+  const data=JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if(data.length===0) return;
+
+  try{
+    const response = await fetch(WEB_APP_URL,{
+      method:'POST',
+      body:JSON.stringify({entries:data}),
+      headers:{"Content-Type":"application/json"}
+    });
+    const result=await response.json();
+    if(result.success){
+      localStorage.removeItem(STORAGE_KEY);
+      loadEntries();
+      console.log('Data synced!');
+    } else {
+      console.log('Sync failed:', result.error);
+    }
+  } catch(err){
+    console.log('Sync error', err);
+  }
+}
+
+window.addEventListener('online',updateStatus);
+window.addEventListener('offline',updateStatus);
+
+updateStatus();
+loadEntries();
 </script>
 
 </body>
