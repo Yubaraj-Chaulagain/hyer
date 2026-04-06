@@ -157,8 +157,9 @@ async function sync(){
   method:"POST",
   body: JSON.stringify({entries: unsynced}),
   headers: {
-    "Content-Type": "application/json"
-  }
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  redirect: "follow"
 });
     const txt=await res.text();
     const json=JSON.parse(txt);
