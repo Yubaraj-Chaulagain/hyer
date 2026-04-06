@@ -47,7 +47,7 @@ Status: <b id="status"></b>
 </table>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzd9wEl0_pKdyf3Pvv486iBSggBXitl7KlctS3JEZU8IG_E4kN_Ma6lvRUWNc0-Mwo/exec";
+const API = "https://script.google.com/macros/s/AKfycbwex51gjZ57cOvwj13okT9uIWqdsk0qs8itu1C-8GBfgd7nZc-XlDwHtYgWPsLJA4cA/exec";
 const KEY = "cashbook_offline";
 let editIndex = null; // Track edit row
 
@@ -153,11 +153,13 @@ async function sync(){
   if(unsynced.length===0){ statusEl.innerHTML="✅ Up to date"; return; }
 
   try{
-    const res=await fetch(API,{
-      method:"POST",
-      body: JSON.stringify({entries:unsynced}),
-      headers: {"Content-Type":"application/json"}
-    });
+    const res = await fetch(API,{
+  method:"POST",
+  body: JSON.stringify({entries: unsynced}),
+  headers: {
+    "Content-Type": "application/json"
+  }
+});
     const txt=await res.text();
     const json=JSON.parse(txt);
 
