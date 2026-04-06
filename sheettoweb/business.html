@@ -47,7 +47,7 @@ Status: <b id="status"></b>
 </table>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwex51gjZ57cOvwj13okT9uIWqdsk0qs8itu1C-8GBfgd7nZc-XlDwHtYgWPsLJA4cA/exec";
+const API = "https://script.google.com/macros/s/AKfycbyzK205qARsTxx9Bx6V6yeWwqcTCzvzKzeX1GrSYGC090uaCM_YZVeJL8UxkdO9lIi8/exec";
 const KEY = "cashbook_offline";
 let editIndex = null; // Track edit row
 
@@ -83,7 +83,9 @@ function add(){
   if(!date.value) return alert("Date required");
 
   let d = getData();
+
   const entry = {
+    id: Date.now(), // 🔥 UNIQUE ID
     date: date.value,
     memberId: memberId.value || "",
     receivedAmt: receivedAmt.value || 0,
@@ -92,11 +94,15 @@ function add(){
     synced: false
   };
 
-  if(editIndex!==null){ d[editIndex]=entry; editIndex=null; }
-  else { d.push(entry); }
+  if(editIndex!==null){
+    entry.id = d[editIndex].id; // keep same ID
+    d[editIndex]=entry;
+    editIndex=null;
+  } else {
+    d.push(entry);
+  }
 
   setData(d);
-  date.value = memberId.value = receivedAmt.value = bankiAmt.value = desc.value = "";
   draw();
   sync();
 }
@@ -112,10 +118,14 @@ function editEntry(i){
   editIndex=i;
 }
 
-// Delete
 function deleteEntry(i){
   if(confirm("Delete this entry?")){
-    let d=getData(); d.splice(i,1); setData(d); draw(); sync();
+    let d=getData();
+    d[i].deleted = true; // 🔥 mark delete
+    d[i].synced = false;
+    setData(d);
+    draw();
+    sync();
   }
 }
 
