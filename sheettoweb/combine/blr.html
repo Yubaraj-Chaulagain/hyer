@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cashbook Ultimate</title>
+
+<style>
+body { font-family: Arial; max-width: 900px; margin:auto; padding:10px; background:#f5f5f5;}
+input, select, button { width:100%; padding:10px; margin:5px 0;}
+button { background:#007bff; color:#fff; border:none;}
+table { width:100%; background:#fff; border-collapse:collapse; margin-top:10px;}
+td,th { border:1px solid #ddd; padding:6px; font-size:12px;}
+h2{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<h2>📒 Cashbook Ultimate</h2>
+
+<!-- INSTALL BUTTON -->
+<button id="installBtn">📲 Install App</button>
+
+<!-- FORM -->
+<form id="form">
+<input type="date" id="date" required>
+<input type="text" id="name" placeholder="Name" required>
+<input type="number" id="qty" placeholder="Quantity">
+<input type="text" id="details" placeholder="Details">
+<input type="number" id="rate" placeholder="Rate">
+<input type="number" id="prev" placeholder="Previous Balance">
+
+<select id="type">
+<option value="credit">Credit</option>
+<option value="debit">Debit</option>
+</select>
+
+<button type="submit">Save</button>
+</form>
+
+<!-- DASHBOARD -->
+<input type="text" id="search" placeholder="Search name">
+<button onclick="filterData()">🔍 Filter</button>
+<button onclick="downloadCSV()">📥 Excel</button>
+<button onclick="printData()">🧾 Print</button>
+<h3 id="total">Total: 0</h3>
+
+<!-- TABLE -->
+<table>
+<thead>
+<tr><th>Date</th><th>Name</th><th>Total</th><th>Type</th></tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<!-- CHART -->
+<canvas id="chart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// ================= DATABASE =================
+let db;
+let req = indexedDB.open("db",1);
+
+req.onupgradeneeded = e=>{
+ db=e.target.result;
+ db.createObjectStore("data",{keyPath:"id"});
+};
+
+req.onsuccess = e=>{
+ db=e.target.result;
+ load();
+ drawChart();
+};
+
+// SAVE
+function save(d){
+ let tx=db.transaction("data","readwrite");
+ tx.objectStore("data").put(d);
+}
+
+// GET
+function getAll(cb){
+ let tx=db.transaction("data","readonly");
+ let req=tx.objectStore("data").getAll();
+ req.onsuccess=()=>cb(req.result);
+}
+
+// ================= FORM =================
+form.onsubmit=e=>{
+ e.preventDefault();
+
+ let qty=+qty.value||0;
+ let rate=+rate.value||0;
+ let prev=+prev.value||0;
+
+ let trans=qty*rate;
+ let grand= type.value==="credit"? prev+trans : prev-trans;
+
+ let data={
+  id:Date.now(),
+  date:date.value,
+  name:name.value,
+  quantity:qty,
+  details:details.value,
+  rate:rate,
+  previous_balance:prev,
+  transaction_balance:trans,
+  grand_total:grand,
+  transaction_type:type.value
+ };
+
+ save(data);
+ form.reset();
+ load();
+ drawChart();
+};
+
+// ================= TABLE =================
+function load(){
+ getAll(data=>{
+  render(data);
+  totalCalc(data);
+ });
+}
+
+function render(data){
+ let html="";
+ data.reverse().forEach(d=>{
+  html+=`<tr>
+  <td>${d.date}</td>
+  <td>${d.name}</td>
+  <td>${d.grand_total}</td>
+  <td>${d.transaction_type}</td></tr>`;
+ });
+ table.innerHTML=html;
+}
+
+// ================= TOTAL =================
+function totalCalc(data){
+ let t=0;
+ data.forEach(d=> t+=Number(d.grand_total||0));
+ total.innerText="Total: "+t;
+}
+
+// ================= FILTER =================
+function filterData(){
+ let s=search.value.toLowerCase();
+ getAll(data=>{
+  let f=data.filter(d=>d.name.toLowerCase().includes(s));
+  render(f);
+  totalCalc(f);
+ });
+}
+
+// ================= CSV =================
+function downloadCSV(){
+ getAll(data=>{
+  let csv="DATE,NAME,TOTAL\n";
+  data.forEach(d=>{
+   csv+=`${d.date},${d.name},${d.grand_total}\n`;
+  });
+  let blob=new Blob([csv]);
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="cashbook.csv";
+  a.click();
+ });
+}
+
+// ================= PRINT =================
+function printData(){
+ let w=window.open("");
+ w.document.write(document.body.innerHTML);
+ w.print();
+}
+
+// ================= CHART =================
+function drawChart(){
+ getAll(data=>{
+  let c=0,d=0;
+  data.forEach(x=>{
+   if(x.transaction_type==="credit") c+=x.transaction_balance;
+   else d+=x.transaction_balance;
+  });
+
+  new Chart(chart,{
+   type:"bar",
+   data:{
+    labels:["Credit","Debit"],
+    datasets:[{data:[c,d]}]
+   }
+  });
+ });
+}
+
+// ================= NOTIFICATION =================
+if("Notification" in window){
+ Notification.requestPermission();
+}
+
+setInterval(()=>{
+ let h=new Date().getHours();
+ if(h===20){
+  new Notification("📒 Reminder",{body:"Add today's entry"});
+ }
+},3600000);
+
+// ================= INSTALL =================
+let promptEvent;
+window.addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault();
+ promptEvent=e;
+});
+
+installBtn.onclick=()=>{
+ if(promptEvent){
+  promptEvent.prompt();
+ }
+};
+
+</script>
+
+</body>
+</html>
