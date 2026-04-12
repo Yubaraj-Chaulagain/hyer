@@ -59,11 +59,11 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 
 <div class="section">
 <h3>Buy/Sell</h3>
-<select id="bs_member"></select>
+<<select id="bs_member"></select>
 <select id="bs_item"></select>
 <select id="bs_type">
-<option value="buy">Buy</option>
-<option value="sell">Sell</option>
+  <option value="buy">Buy</option>
+  <option value="sell">Sell</option>
 </select>
 
 <input id="bs_qty" placeholder="Qty">
@@ -228,13 +228,39 @@ function loadAll(){
 }
 
 // ---------- MEMBERS TABLE ----------
-function loadMembers(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  let html=e.target.result.map(m=>
-   `<tr><td>${m.name}</td><td>${m.balance}</td></tr>`
-  ).join("");
-  memberTable.innerHTML=html;
+function loadDropdowns(){
+
+ // MEMBERS DROPDOWN
+ let tx1 = db.transaction("members","readonly");
+ let store1 = tx1.objectStore("members");
+
+ store1.getAll().onsuccess = e=>{
+  let members = e.target.result;
+
+  let opt = `<option value="">Select Member</option>`;
+  members.forEach(m=>{
+   opt += `<option value="${m.id}">${m.name}</option>`;
+  });
+
+  bs_member.innerHTML = opt;
+  b_member.innerHTML = opt;
+  t_from.innerHTML = opt;
+  t_to.innerHTML = opt;
+ };
+
+ // STOCK DROPDOWN
+ let tx2 = db.transaction("stock","readonly");
+ let store2 = tx2.objectStore("stock");
+
+ store2.getAll().onsuccess = e=>{
+  let items = e.target.result;
+
+  let opt = `<option value="">Select Item</option>`;
+  items.forEach(s=>{
+   opt += `<option value="${s.id}">${s.name}</option>`;
+  });
+
+  bs_item.innerHTML = opt;
  };
 }
 
