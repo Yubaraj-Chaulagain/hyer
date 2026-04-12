@@ -43,7 +43,7 @@ function loadMembers(){
    <td>${m.name}</td>
    <td>${m.phone}</td>
    <td>
-     <button onclick='editMember(${JSON.stringify(m)})'>✏️</button>
+     <button onclick='editMember(${m.id})'>Edits</button>
      <button onclick='deleteMember(${m.id})'>🗑️</button>
    </td></tr>`;
   });
@@ -211,5 +211,49 @@ function deleteStock(id){
   loadStock();
  }
 }
+</script>
+
+<script>
+const m_name = document.getElementById("m_name");
+const m_phone = document.getElementById("m_phone");
+
+const t_member = document.getElementById("t_member");
+const t_amount = document.getElementById("t_amount");
+const t_type = document.getElementById("t_type");
+
+const s_name = document.getElementById("s_name");
+const s_qty = document.getElementById("s_qty");
+
+const memberTable = document.getElementById("memberTable");
+const transTable = document.getElementById("transTable");
+const stockTable = document.getElementById("stockTable");
+</script>
+
+<script>
+let db;
+
+let req = indexedDB.open("ERP_DB", 1);
+
+req.onupgradeneeded = e => {
+  db = e.target.result;
+
+  if(!db.objectStoreNames.contains("members"))
+    db.createObjectStore("members",{keyPath:"id"});
+
+  if(!db.objectStoreNames.contains("transactions"))
+    db.createObjectStore("transactions",{keyPath:"id"});
+
+  if(!db.objectStoreNames.contains("stock"))
+    db.createObjectStore("stock",{keyPath:"id"});
+};
+
+req.onsuccess = e => {
+  db = e.target.result;
+
+  // LOAD ALL DATA
+  loadMembers();
+  loadTransactions();
+  loadStock();
+};
 </script>
 
