@@ -48,14 +48,7 @@ h2{text-align:center;}
 <!-- 🔄 TYPE -->
 <select id="t_type">
  <option value="deposit">Deposit</option>
- <option value="withdraw">Withdraw</option>
- <option value="loan">Loan</option>
-<option value="transfer">Transfer</option>
-</select>
-
-<select id="t_receiver">
-<option value="">Select Receiver</option>
-</select>
+ <option value="withdraw">Withdraw</option></select>
 
 <!-- 💵 AMOUNT -->
 <input id="t_amount" placeholder="Amount">
@@ -75,6 +68,161 @@ h2{text-align:center;}
 <tbody id="transactionTable"></tbody>
 </table>
 </div>
+<div class="section">
+<h3>💸 ABBS Transfer</h3>
+
+<select id="from_member"></select>
+<select id="to_member"></select>
+
+<input id="transfer_amount" placeholder="Amount">
+
+<button onclick="transferMoney()">Transfer</button>
+</div>
+<script>
+function transferMoney(){
+
+ let fromId = from_member.value;
+ let toId = to_member.value;
+ let amt = Number(transfer_amount.value);
+
+ if(!fromId || !toId) return alert("Select members");
+ if(fromId===toId) return alert("Same not allowed");
+ if(!amt || amt<=0) return alert("Invalid amount");
+
+ let store = db.transaction("members","readwrite").objectStore("members");
+
+ store.getAll().onsuccess = e=>{
+  let members = e.target.result;
+
+  let from = members.find(x=>x.id===fromId);
+  let to = members.find(x=>x.id===toId);
+
+  if(from.balance < amt) return alert("Insufficient ❌");
+
+  from.balance -= amt;
+  to.balance += amt;
+
+  store.put(from);
+  store.put(to);
+
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({
+   id:crypto.randomUUID(),
+   type:"transfer",
+   from:from.name,
+   to:to.name,
+   amount:amt,
+   time:Date.now()
+  });
+
+  loadAll();
+ };
+}
+</script>
+<div class="section">
+<h3>🏦 Loan</h3>
+
+<input id="loan_member">
+<input id="loan_amount">
+<button onclick="createLoan()">Create Loan</button>
+
+<input id="pay_loan">
+<button onclick="payLoan()">Pay</button>
+</div>
+<div class="section">
+<h3>📦 Stock / Equipment</h3>
+
+<input id="item_name" placeholder="Item Name">
+<input id="item_qty" placeholder="Quantity">
+
+<button onclick="addStock()">Add Stock</button>
+
+<table>
+<thead>
+<tr><th>Item</th><th>Qty</th></tr>
+</thead>
+<tbody id="stockTable"></tbody>
+</table>
+</div>
+
+<div class="section">
+<h3>🛒 Buy / Sell</h3>
+
+<select id="stock_item"></select>
+
+<select id="bs_type">
+<option value="buy">Buying</option>
+<option value="sell">Selling</option>
+</select>
+
+<input id="bs_qty" placeholder="Quantity">
+
+<button onclick="handleStock()">Submit</button>
+</div>
+<script>
+function addStock(){
+
+ let item = item_name.value.trim();
+ let qty = Number(item_qty.value);
+
+ if(!item || !qty) return alert("Fill");
+
+ db.transaction("stock","readwrite")
+ .objectStore("stock")
+ .put({
+  id:crypto.randomUUID(),
+  name:item,
+  qty:qty
+ });
+
+ loadStock();
+}
+
+function handleStock(){
+
+ let itemId = stock_item.value;
+ let type = bs_type.value;
+ let qty = Number(bs_qty.value);
+
+ let store = db.transaction("stock","readwrite").objectStore("stock");
+
+ store.get(itemId).onsuccess = e=>{
+  let item = e.target.result;
+
+  if(type==="buy"){
+   item.qty += qty;
+  }
+
+  else if(type==="sell"){
+   if(item.qty < qty) return alert("Out of stock ❌");
+   item.qty -= qty;
+  }
+
+  store.put(item);
+
+  loadStock();
+ };
+}
+
+function loadStock(){
+
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess = e=>{
+
+  stockTable.innerHTML = e.target.result.map(s=>`
+   <tr>
+    <td>${s.name}</td>
+    <td>${s.qty}</td>
+   </tr>
+  `).join("");
+
+ };
+}
+
+db.createObjectStore("stock",{keyPath:"id"});
+
+</script>
 
 <!-- 📊 DASHBOARD -->
 <div class="section">
