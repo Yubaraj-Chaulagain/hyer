@@ -254,13 +254,17 @@ req.onupgradeneeded = e => {
     db.createObjectStore("stock",{keyPath:"id"});
 };
 
-req.onsuccess = e => {
-  db = e.target.result;
+if(!m_name.value){
+ alert("Enter name");
+ return;
+}
 
-  // LOAD ALL DATA
-  loadMembers();
-  loadTransactions();
-  loadStock();
+req.onsuccess = e => {
+ db = e.target.result;
+
+ loadMembers();
+ loadTransactions();
+ loadStock();
 };
 </script>
 
