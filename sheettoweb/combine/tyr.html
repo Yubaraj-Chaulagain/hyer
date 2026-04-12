@@ -172,9 +172,12 @@ function bank(){
 
 // ================= TRANSFER =================
 function transfer(){
- let f = t_from.value;
- let t = t_to.value;
+
+ let f = from.value;
+ let t = to.value;
  let amt = +t_amt.value;
+
+ if(!f || !t || amt<=0) return alert("Invalid");
 
  let store = db.transaction("members","readwrite").objectStore("members");
 
@@ -185,19 +188,19 @@ function transfer(){
   let B = data.find(x=>x.id===t);
 
   if(!A || !B) return;
-  if(A.balance < amt) return alert("Insufficient");
+  if(A.balance < amt) return alert("Low balance");
 
-  A.balance -= amt;
-  B.balance += amt;
+  // save 2 transactions
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({id:crypto.randomUUID(),memberId:f,type:"withdraw",amount:amt});
 
-  store.put(A);
-  store.put(B);
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({id:crypto.randomUUID(),memberId:t,type:"deposit",amount:amt});
 
-  db.transaction("transfer","readwrite")
-  .objectStore("transfer")
-  .put({id:crypto.randomUUID(),from:A.name,to:B.name,amount:amt});
-
-  loadAll();
+  recalcBalance(f);
+  recalcBalance(t);
  };
 }
 
@@ -326,9 +329,8 @@ function searchMember(){
 }
 
 function recalcMemberBalance(memberId){
- let store = db.transaction("members","readwrite").objectStore("members");
-
- let tx = db.transaction("transactions").objectStore("transactions");
+  let tx = db.transaction("transactions").objectStore("transactions");
+ let mem = db.transaction("members","readwrite").objectStore("members");
 
  tx.getAll().onsuccess = e=>{
   let all = e.target.result;
@@ -342,41 +344,44 @@ function recalcMemberBalance(memberId){
    }
   });
 
-  store.get(memberId).onsuccess = e2=>{
+  mem.get(memberId).onsuccess = e2=>{
    let m = e2.target.result;
    if(!m) return;
 
    m.balance = balance;
-   store.put(m);
+   mem.put(m);
+
+   loadAll(); // UI refresh
   };
  };
 }
 
 function banking(){
- let id=b_member.value;
- let type=b_type.value;
- let amt=+b_amount.value;
+ let id = b_member.value;
+ let type = b_type.value;
+ let amt = +b_amount.value;
 
- let store=db.transaction("members","readwrite").objectStore("members");
+ if(!id || amt<=0) return alert("Invalid input");
 
- store.get(id).onsuccess=e=>{
-  let m=e.target.result;
+ let store = db.transaction("members","readwrite").objectStore("members");
+
+ store.get(id).onsuccess = e=>{
+  let m = e.target.result;
   if(!m) return;
 
+  // save transaction FIRST
   db.transaction("transactions","readwrite")
   .objectStore("transactions")
   .put({
-   id:crypto.randomUUID(),
-   memberId:id,
-   type,
-   amount:amt,
-   date:new Date().toLocaleString()
+   id: crypto.randomUUID(),
+   memberId: id,
+   type: type,
+   amount: amt,
+   date: new Date().toLocaleString()
   });
 
-  // 🔥 AUTO RECALCULATE
-  setTimeout(()=>recalcMemberBalance(id),100);
-
-  loadAll();
+  // then recalc balance
+  recalcBalance(id);
  };
 }
 
