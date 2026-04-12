@@ -91,15 +91,43 @@ req.onsuccess=e=>{
 
 // ---------- MEMBER ----------
 function saveMember(){
- let obj={
-  id:crypto.randomUUID(),
-  name:m_name.value,
-  balance:0
+
+ let name = m_name.value.trim();
+ if(!name) return alert("Enter name");
+
+ let obj = {
+  id: crypto.randomUUID(),
+  name,
+  balance: 0
  };
 
- db.transaction("members","readwrite").objectStore("members").put(obj);
- loadAll();
+ let tx = db.transaction("members","readwrite");
+ let store = tx.objectStore("members");
+
+ store.put(obj);
+
+ tx.oncomplete = ()=>{
+  m_name.value = "";
+  loadAll();   // ✅ refresh after save
+ };
 }
+
+function loadMembers(){
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = e=>{
+
+  memberTable.innerHTML = e.target.result.map(m=>`
+   <tr>
+    <td>${m.name}</td>
+    <td>${m.balance}</td>
+   </tr>
+  `).join("");
+
+ };
+}
+
 
 // ---------- BANK (AUTO BALANCE FIX) ----------
 function bank(){
