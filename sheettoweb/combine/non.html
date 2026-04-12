@@ -174,36 +174,45 @@ function showTab(id){
 // MEMBERS
 function saveMember(){
 
- let name = m_name.value.trim();
- let phone = m_phone.value.trim();
+ let name = document.getElementById("m_name").value.trim();
+ let phone = document.getElementById("m_phone").value.trim();
 
  if(!name) return alert("Enter name");
 
+ let tx = db.transaction("members","readwrite");
+ let store = tx.objectStore("members");
+
  if(editId){
-  // UPDATE (balance safe)
-  db.transaction("members","readwrite").objectStore("members")
-  .get(editId).onsuccess=e=>{
-   let m=e.target.result;
-   m.name=name;
-   m.phone=phone;
 
-   db.transaction("members","readwrite").objectStore("members").put(m);
-   resetForm();
-   loadAll();
+  store.get(editId).onsuccess = e=>{
+   let m = e.target.result;
+   if(!m) return alert("Member not found");
+
+   m.name = name;
+   m.phone = phone;
+
+   store.put(m);
   };
- }else{
-  // NEW
-  db.transaction("members","readwrite").objectStore("members")
-  .put({
-   id:crypto.randomUUID(),
-   name,
-   phone,
-   balance:0
-  });
 
+ }else{
+
+  store.put({
+   id: crypto.randomUUID(),
+   name: name,
+   phone: phone,
+   balance: 0
+  });
+ }
+
+ // ✅ KEY FIX — wait for complete
+ tx.oncomplete = ()=>{
   resetForm();
   loadAll();
- }
+ };
+
+ tx.onerror = ()=>{
+  alert("Save failed");
+ };
 }
 
 function resetForm(){
