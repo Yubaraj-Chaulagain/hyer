@@ -205,26 +205,32 @@ function exportExcel(){
 
  let wb = XLSX.utils.book_new();
 
- // ---------- MEMBERS ----------
- db.transaction("members").objectStore("members")
- .getAll().onsuccess = e=>{
-  let members = e.target.result;
+ // helper function
+ function addSheet(storeName, sheetName, cb){
+  return new Promise(resolve=>{
+   db.transaction(storeName).objectStore(storeName)
+   .getAll().onsuccess = e=>{
+    let data = e.target.result;
+    let ws = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    resolve();
+    if(cb) cb(data);
+   };
+  });
+ }
 
-  let ws1 = XLSX.utils.json_to_sheet(members);
-  XLSX.utils.book_append_sheet(wb, ws1, "Members");
+ // run all exports in order
+ Promise.all([
+  addSheet("members","Members"),
+  addSheet("stock","Stock"),
+  addSheet("bank","Bank"),
+  addSheet("transfer","Transfer"),
+  addSheet("buysell","BuySell")
+ ]).then(()=>{
 
-  // ---------- STOCK ----------
-  db.transaction("stock").objectStore("stock")
-  .getAll().onsuccess = e2=>{
-   let stock = e2.target.result;
+  XLSX.writeFile(wb,"ERP_FULL_REPORT.xlsx");
 
-   let ws2 = XLSX.utils.json_to_sheet(stock);
-   XLSX.utils.book_append_sheet(wb, ws2, "Stock");
-
-   // ---------- DOWNLOAD ----------
-   XLSX.writeFile(wb, "ERP_REPORT.xlsx");
-  };
- };
+ });
 
 }
 
