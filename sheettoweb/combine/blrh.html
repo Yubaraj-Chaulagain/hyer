@@ -2,322 +2,249 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bank ERP 4.0 AI</title>
+<title>Bank ERP Final Master</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:#f4f6f9;max-width:1000px;margin:auto;padding:10px;}
-.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;box-shadow:0 0 5px #ddd;}
+body{font-family:Arial;background:#f5f6fa;max-width:1000px;margin:auto;padding:10px;}
+.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
 input,select,button{width:100%;padding:10px;margin:5px 0;}
-button{background:#007bff;color:#fff;border:none;border-radius:6px;}
+button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
-.hidden{display:none;}
-.bad{color:red;font-weight:bold;}
-.good{color:green;font-weight:bold;}
+h2{text-align:center;}
 </style>
 </head>
 
 <body>
 
-<h2>🏦 BANK ERP 4.0 ULTRA AI</h2>
+<h2>🏦 BANK ERP FINAL MASTER SYSTEM</h2>
 
-<!-- LOGIN -->
-<div class="section" id="loginBox">
-<h3>🔐 Login</h3>
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-<button onclick="login()">Login</button>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
-<!-- CUSTOMER -->
+<!-- 👤 MEMBERS -->
 <div class="section">
-<h3>👤 Customer</h3>
-<input id="name">
-<input id="phone">
-<button onclick="addCustomer()">Add</button>
-<table>
-<tbody id="customerTable"></tbody>
-</table>
-</div>
+<h3>👤 Members</h3>
 
-<!-- TRANSACTION -->
-<div class="section">
-<h3>💰 Transaction</h3>
-<select id="type">
-<option value="deposit">Deposit</option>
-<option value="withdraw">Withdraw</option>
-<option value="loanpay">Loan Pay</option>
-</select>
+<input id="m_name" placeholder="Name">
+<input id="m_phone" placeholder="Phone">
 
-<input id="t_member">
-<input id="amount">
-<button onclick="transaction()">Submit</button>
-</div>
-<div class="section">
-<h3>💰 Transaction Table</h3>
+<button onclick="saveMember()">Save Member</button>
 
 <table>
 <thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Type</th>
-<th>Amount</th>
-<th>Time</th>
-</tr>
+<tr><th>Name</th><th>Phone</th><th>Action</th></tr>
 </thead>
+<tbody id="memberTable"></tbody>
+</table>
+</div>
 
+<!-- 💰 TRANSACTIONS -->
+<div class="section">
+<h3>💰 Transactions</h3>
+
+<select id="t_type">
+<option value="deposit">Deposit</option>
+<option value="withdraw">Withdraw</option>
+<option value="loan">Loan</option>
+</select>
+
+<input id="t_name" placeholder="Member Name">
+<input id="t_amount" placeholder="Amount">
+
+<button onclick="saveTransaction()">Save Transaction</button>
+
+<table>
+<thead>
+<tr><th>Name</th><th>Type</th><th>Amount</th><th>Action</th></tr>
+</thead>
 <tbody id="transactionTable"></tbody>
 </table>
 </div>
 
-<!-- LOAN -->
+<!-- 📊 DASHBOARD -->
 <div class="section">
-<h3>🏦 Loan System</h3>
-
-<input id="loan_member">
-<input id="loan_amount">
-<input id="loan_months">
-<button onclick="createLoan()">Create Loan</button>
-
-<table>
-<tbody id="loanTable"></tbody>
-</table>
-</div>
-
-<!-- AI PANEL -->
-<div class="section">
-<h3>🧠 AI Risk Engine</h3>
-<div id="aiPanel"></div>
-</div>
-
-<!-- CHART -->
-<div class="section">
+<h3>📊 Dashboard</h3>
 <canvas id="chart"></canvas>
 </div>
 
-</div>
-
 <script>
+
 let db;
 let chart;
-
-// ---------------- LOGIN ----------------
-function login(){
- if(user.value==="admin" && pass.value==="1234"){
-  loginBox.classList.add("hidden");
-  app.classList.remove("hidden");
-  initDB();
- } else alert("Wrong login");
-}
+let editMemberId = null;
+let editTxnId = null;
 
 // ---------------- DB ----------------
-function initDB(){
- let req = indexedDB.open("BANK4",1);
+let req = indexedDB.open("BANK_FINAL",1);
 
- req.onupgradeneeded=e=>{
-  db=e.target.result;
+req.onupgradeneeded = e=>{
+ db = e.target.result;
+ db.createObjectStore("members",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+};
 
-  db.createObjectStore("customers",{keyPath:"id"});
-  db.createObjectStore("transactions",{keyPath:"id"});
-  db.createObjectStore("loans",{keyPath:"id"});
+req.onsuccess = e=>{
+ db = e.target.result;
+ loadAll();
+};
+
+// ---------------- MEMBERS ----------------
+function saveMember(){
+
+ let name = document.getElementById("m_name").value.trim();
+ let phone = document.getElementById("m_phone").value.trim();
+
+ if(!name) return alert("Name required");
+
+ let obj = {
+  id: editMemberId || crypto.randomUUID(),
+  name,
+  phone
  };
 
- req.onsuccess=e=>{
-  db=e.target.result;
-  loadAll();
-  setInterval(aiEngine,5000);
- };
-}
+ db.transaction("members","readwrite")
+ .objectStore("members")
+ .put(obj);
 
-// ---------------- CUSTOMER ----------------
-function addCustomer(){
- let nameVal = document.getElementById("name").value.trim();
- let phoneVal = document.getElementById("phone").value.trim();
+ editMemberId = null;
 
- if(!nameVal){
-  alert("Name required");
-  return;
- }
-
- let customer = {
-  id: crypto.randomUUID(),
-  name: nameVal,
-  phone: phoneVal || "-",
-  balance: 0
- };
-
- db.transaction("customers","readwrite")
- .objectStore("customers")
- .put(customer);
-
- document.getElementById("name").value = "";
- document.getElementById("phone").value = "";
+ document.getElementById("m_name").value="";
+ document.getElementById("m_phone").value="";
 
  loadAll();
 }
 
-// ---------------- TRANSACTION ----------------
-function transaction(){
+function editMember(id){
+ db.transaction("members").objectStore("members")
+ .get(id).onsuccess = e=>{
+  let m = e.target.result;
+  document.getElementById("m_name").value = m.name;
+  document.getElementById("m_phone").value = m.phone;
+  editMemberId = m.id;
+ };
+}
 
- if(!db){
-  alert("DB not ready");
-  return;
- }
+function deleteMember(id){
+ db.transaction("members","readwrite")
+ .objectStore("members")
+ .delete(id);
 
- let t = {
-  id: crypto.randomUUID(),
-  name: document.getElementById("t_member").value.trim(),
-  type: document.getElementById("type").value,
-  amount: Number(document.getElementById("amount").value),
-  time: Date.now()
+ loadAll();
+}
+
+// ---------------- TRANSACTIONS ----------------
+function saveTransaction(){
+
+ let obj = {
+  id: editTxnId || crypto.randomUUID(),
+  name: document.getElementById("t_name").value.trim(),
+  type: document.getElementById("t_type").value,
+  amount: Number(document.getElementById("t_amount").value)
  };
 
- if(!t.name || !t.amount){
+ if(!obj.name || !obj.amount){
   alert("Fill all fields");
   return;
  }
 
- let store = db.transaction("transactions","readwrite")
- .objectStore("transactions");
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .put(obj);
 
- let req = store.put(t);
+ editTxnId = null;
 
- req.onsuccess = ()=>{
-  alert("Transaction saved ✅");
-  loadAll();
- };
+ document.getElementById("t_name").value="";
+ document.getElementById("t_amount").value="";
 
- req.onerror = ()=>{
-  alert("Transaction failed ❌");
-  console.log(req.error);
- };
-}
-
-// ---------------- LOAN ----------------
-function createLoan(){
- let loan={
-  id:crypto.randomUUID(),
-  name:loan_member.value,
-  amount:+loan_amount.value,
-  months:+loan_months.value,
-  paid:0,
-  created:Date.now()
- };
-
- db.transaction("loans","readwrite").objectStore("loans").put(loan);
  loadAll();
 }
 
-// ---------------- AI ENGINE ----------------
-function aiEngine(){
- let tx=db.transaction("transactions").objectStore("transactions");
+function editTransaction(id){
+ db.transaction("transactions").objectStore("transactions")
+ .get(id).onsuccess = e=>{
+  let t = e.target.result;
 
- tx.getAll().onsuccess=e=>{
-  let data=e.target.result;
+  document.getElementById("t_name").value = t.name;
+  document.getElementById("t_type").value = t.type;
+  document.getElementById("t_amount").value = t.amount;
 
-  let riskMap={};
-
-  data.forEach(t=>{
-   if(!riskMap[t.name]) riskMap[t.name]=0;
-
-   if(t.type==="withdraw" && t.amount>5000) riskMap[t.name]+=2;
-   if(t.amount>10000) riskMap[t.name]+=3;
-  });
-
-  let html="";
-
-  for(let k in riskMap){
-   let score=riskMap[k];
-
-   let status = score>=5
-   ? `<span class="bad">HIGH RISK</span>`
-   : score>=3
-   ? `<span style="color:orange">MEDIUM</span>`
-   : `<span class="good">LOW</span>`;
-
-   html+=`<p>${k} → Risk Score: ${score} ${status}</p>`;
-  }
-
-  aiPanel.innerHTML = html || "No risk detected";
+  editTxnId = t.id;
  };
+}
+
+function deleteTransaction(id){
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .delete(id);
+
+ loadAll();
 }
 
 // ---------------- LOAD ----------------
-function loadAll(){
- loadCustomers();
- loadLoans();
- loadTransactions();
- drawChart();
-}
-
-function loadCustomers(){
- db.transaction("customers").objectStore("customers")
- .getAll().onsuccess = e => {
-
-  customerTable.innerHTML = e.target.result.map(c => `
+function loadMembers(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess = e=>{
+  memberTable.innerHTML = e.target.result.map(m=>`
    <tr>
-     <td>${c.name ?? "N/A"}</td>
-     <td>${c.phone ?? "-"}</td>
-     <td>${c.balance ?? 0}</td>
+    <td>${m.name}</td>
+    <td>${m.phone}</td>
+    <td>
+     <button onclick="editMember('${m.id}')">Edit</button>
+     <button onclick="deleteMember('${m.id}')">Delete</button>
+    </td>
    </tr>
   `).join("");
-
  };
 }
 
-function loadLoans(){
- db.transaction("loans").objectStore("loans")
- .getAll().onsuccess=e=>{
-  loanTable.innerHTML=e.target.result.map(l=>
-   `<tr><td>${l.name}</td><td>${l.amount}</td><td>${l.months}</td><td>${l.paid}</td></tr>`
-  ).join("");
+function loadTransactions(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess = e=>{
+  transactionTable.innerHTML = e.target.result.map(t=>`
+   <tr>
+    <td>${t.name}</td>
+    <td>${t.type}</td>
+    <td>${t.amount}</td>
+    <td>
+     <button onclick="editTransaction('${t.id}')">Edit</button>
+     <button onclick="deleteTransaction('${t.id}')">Delete</button>
+    </td>
+   </tr>
+  `).join("");
  };
 }
 
 // ---------------- CHART ----------------
 function drawChart(){
- db.transaction("transactions").objectStore("transactions")
- .getAll().onsuccess=e=>{
 
-  let income=0,expense=0;
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess = e=>{
+
+  let income=0, expense=0;
 
   e.target.result.forEach(t=>{
-   if(t.type==="deposit") income+=t.amount;
-   else expense+=t.amount;
+   if(t.type==="deposit") income += t.amount;
+   else expense += t.amount;
   });
 
   if(chart) chart.destroy();
 
-  chart=new Chart(document.getElementById("chart"),{
+  chart = new Chart(document.getElementById("chart"),{
    type:"bar",
-   data:{labels:["Income","Expense"],datasets:[{data:[income,expense]}]}
+   data:{
+    labels:["Income","Expense"],
+    datasets:[{data:[income,expense]}]
+   }
   });
+
  };
 }
 
-function loadTransactions(){
-
- db.transaction("transactions")
- .objectStore("transactions")
- .getAll().onsuccess = e => {
-
-  transactionTable.innerHTML = e.target.result.map(t => `
-   <tr>
-     <td>${t.id ? t.id.slice(0,6) : "N/A"}</td>
-     <td>${t.name ?? "Unknown"}</td>
-     <td>${t.type ?? "-"}</td>
-     <td>${t.amount ?? 0}</td>
-     <td>${new Date(t.time).toLocaleString()}</td>
-   </tr>
-  `).join("");
-
- };
+// ---------------- MAIN ----------------
+function loadAll(){
+ loadMembers();
+ loadTransactions();
+ drawChart();
 }
 
 </script>
