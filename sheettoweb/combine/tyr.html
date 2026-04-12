@@ -178,19 +178,34 @@ function bank(){
  let id = b_member.value;
  let amt = +b_amount.value;
 
- let tx = db.transaction("members","readwrite");
- let store = tx.objectStore("members");
+ if(!id || !amt) return alert("Select member + amount");
 
- store.get(id).onsuccess = e=>{
+ let tx = db.transaction(["members","bank"],"readwrite");
+
+ let mStore = tx.objectStore("members");
+ let bStore = tx.objectStore("bank");
+
+ mStore.get(id).onsuccess = e=>{
   let m = e.target.result;
 
-  if(b_type.value==="deposit") m.balance += amt;
-  else{
+  if(b_type.value==="deposit"){
+   m.balance += amt;
+  } else {
    if(m.balance < amt) return alert("Low balance");
    m.balance -= amt;
   }
 
-  store.put(m);
+  mStore.put(m);
+
+  // ✅ SAVE BANK HISTORY
+  bStore.put({
+   id: crypto.randomUUID(),
+   name: m.name,
+   type: b_type.value,
+   amount: amt,
+   date: new Date().toLocaleString()
+  });
+
   tx.oncomplete = loadAll;
  };
 }
@@ -201,8 +216,12 @@ function transfer(){
  let b = t_to.value;
  let amt = +t_amt.value;
 
- let tx = db.transaction("members","readwrite");
+ if(!a || !b || !amt) return alert("Fill all");
+
+ let tx = db.transaction(["members","transfer"],"readwrite");
+
  let store = tx.objectStore("members");
+ let tStore = tx.objectStore("transfer");
 
  store.getAll().onsuccess = e=>{
   let list = e.target.result;
@@ -218,6 +237,15 @@ function transfer(){
 
   store.put(A);
   store.put(B);
+
+  // ✅ SAVE TRANSFER HISTORY
+  tStore.put({
+   id: crypto.randomUUID(),
+   from: A.name,
+   to: B.name,
+   amount: amt,
+   date: new Date().toLocaleString()
+  });
 
   tx.oncomplete = loadAll;
  };
