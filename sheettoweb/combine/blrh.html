@@ -40,22 +40,31 @@ h2{text-align:center;}
 
 <!-- 💰 TRANSACTIONS -->
 <div class="section">
-<h3>💰 Transactions</h3>
+<h3>💰 Transaction</h3>
 
+<!-- 👤 MEMBER SELECT -->
+<select id="t_member"></select>
+
+<!-- 🔄 TYPE -->
 <select id="t_type">
-<option value="deposit">Deposit</option>
-<option value="withdraw">Withdraw</option>
-<option value="loan">Loan</option>
+ <option value="deposit">Deposit</option>
+ <option value="withdraw">Withdraw</option>
+ <option value="loan">Loan</option>
 </select>
 
-<input id="t_name" placeholder="Member Name">
+<!-- 💵 AMOUNT -->
 <input id="t_amount" placeholder="Amount">
 
-<button onclick="saveTransaction()">Save Transaction</button>
+<button onclick="saveTransaction()">Submit</button>
 
 <table>
 <thead>
-<tr><th>Name</th><th>Type</th><th>Amount</th><th>Action</th></tr>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Action</th>
+</tr>
 </thead>
 <tbody id="transactionTable"></tbody>
 </table>
@@ -135,25 +144,32 @@ function deleteMember(id){
 // ---------------- TRANSACTIONS ----------------
 function saveTransaction(){
 
- let obj = {
-  id: editTxnId || crypto.randomUUID(),
-  name: document.getElementById("t_name").value.trim(),
-  type: document.getElementById("t_type").value,
-  amount: Number(document.getElementById("t_amount").value)
- };
+ let member = document.getElementById("t_member").value;
+ let type = document.getElementById("t_type").value;
+ let amount = Number(document.getElementById("t_amount").value);
 
- if(!obj.name || !obj.amount){
-  alert("Fill all fields");
+ if(!member){
+  alert("Select member");
   return;
  }
+
+ if(!amount || amount<=0){
+  alert("Enter valid amount");
+  return;
+ }
+
+ let obj = {
+  id: crypto.randomUUID(),
+  name: member,
+  type: type,
+  amount: amount,
+  time: Date.now()
+ };
 
  db.transaction("transactions","readwrite")
  .objectStore("transactions")
  .put(obj);
 
- editTxnId = null;
-
- document.getElementById("t_name").value="";
  document.getElementById("t_amount").value="";
 
  loadAll();
@@ -214,6 +230,21 @@ function loadTransactions(){
  };
 }
 
+function loadMemberDropdown(){
+
+ let store = db.transaction("members").objectStore("members");
+
+ store.getAll().onsuccess = e=>{
+  let options = `<option value="">Select Member</option>`;
+
+  e.target.result.forEach(m=>{
+   options += `<option value="${m.name}">${m.name}</option>`;
+  });
+
+  document.getElementById("t_member").innerHTML = options;
+ };
+}
+
 // ---------------- CHART ----------------
 function drawChart(){
 
@@ -244,6 +275,7 @@ function drawChart(){
 function loadAll(){
  loadMembers();
  loadTransactions();
+ loadMemberDropdown(); // ⭐ ADD THIS
  drawChart();
 }
 
