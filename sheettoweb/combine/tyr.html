@@ -27,11 +27,12 @@ th{
 <button onclick="exportExcel()">📤 Export Excel</button>
 
 <!-- MEMBERS -->
-<div class="section">
+<div id="members" class="section tab-section active">
+<div>
 <h3>Members</h3>
 <input id="m_name" placeholder="Name">
-<button onclick="saveMember()">Save</button>
-
+<button onclick="saveMember()">Save</button></div>
+<div>
 <h3>👤 Members Table</h3>
 <table>
 <thead>
@@ -43,9 +44,11 @@ th{
 <tbody id="memberTable"></tbody>
 </table>
 </div>
+</div>
+
 
 <!-- BANK -->
-<div class="section">
+<div id="bank" class="section tab-section">
 <div>
 <h3>Bank</h3>
 <select id="b_member"></select>
@@ -74,7 +77,7 @@ th{
 
 
 <!-- TRANSFER -->
-<div class="section">
+<div id="transfer" class="section tab-section">
 <div>
 <h3>Transfer</h3>
 <select id="t_from"></select>
@@ -100,12 +103,14 @@ th{
 </div>
 
 <!-- STOCK -->
-<div class="section">
+<div id="stock" class="section tab-section">
+<div>
 <h3>Stock</h3>
 <input id="item" placeholder="Item">
 <input id="qty" placeholder="Qty">
 <button onclick="addStock()">Add</button>
-
+</div>
+<div>
 <h3>📦 Stock Table</h3>
 <table>
 <thead>
@@ -117,9 +122,10 @@ th{
 <tbody id="stockTable"></tbody>
 </table>
 </div>
+</div>
 
 <!-- BUY SELL -->
-<div class="section">
+<div id="buysell" class="section tab-section">
 <div>
 <h3>Buy / Sell</h3>
 
@@ -154,7 +160,7 @@ th{
 <tbody id="bsTable"></tbody>
 </table>
 </div>
-
+</div>
 <script>
 
 let db;
