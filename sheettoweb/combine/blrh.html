@@ -1,4 +1,4 @@
-q<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -103,20 +103,26 @@ req.onsuccess=e=>{
 
 // ---------------- CUSTOMER ----------------
 function addCustomer(){
+ let nameVal = document.getElementById("name").value.trim();
+ let phoneVal = document.getElementById("phone").value.trim();
+
+ if(!nameVal) return alert("Name required");
+
  let obj={
   id:Date.now(),
-  name: (name.value || "").trim(),
-  phone: phone.value || "",
+  name: nameVal,
+  phone: phoneVal,
   balance: 0
  };
-
- if(!obj.name) return alert("Name required");
 
  db.transaction("customers","readwrite")
  .objectStore("customers")
  .put(obj);
 
  loadCustomers();
+
+ document.getElementById("name").value="";
+ document.getElementById("phone").value="";
 }
 
 // ---------------- TRANSACTION ----------------
