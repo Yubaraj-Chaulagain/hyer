@@ -2,28 +2,30 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bank ERP 3.0</title>
+<title>Bank ERP 4.0 AI</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:#f4f4f4;max-width:1000px;margin:auto;padding:10px;}
-.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
+body{font-family:Arial;background:#f4f6f9;max-width:1000px;margin:auto;padding:10px;}
+.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;box-shadow:0 0 5px #ddd;}
 input,select,button{width:100%;padding:10px;margin:5px 0;}
 button{background:#007bff;color:#fff;border:none;border-radius:6px;}
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 .hidden{display:none;}
+.bad{color:red;font-weight:bold;}
+.good{color:green;font-weight:bold;}
 </style>
 </head>
 
 <body>
 
-<h2>🏦 BANK ERP 3.0 SUPER ADVANCE</h2>
+<h2>🏦 BANK ERP 4.0 ULTRA AI</h2>
 
 <!-- LOGIN -->
 <div class="section" id="loginBox">
-<h3>🔐 Admin Login</h3>
+<h3>🔐 Login</h3>
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
@@ -46,12 +48,10 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 <!-- TRANSACTION -->
 <div class="section">
 <h3>💰 Transaction</h3>
-
 <select id="type">
 <option value="deposit">Deposit</option>
 <option value="withdraw">Withdraw</option>
-<option value="loan">Loan Payment</option>
-<option value="saving">Saving</option>
+<option value="loanpay">Loan Pay</option>
 </select>
 
 <input id="t_member">
@@ -73,16 +73,10 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 </table>
 </div>
 
-<!-- EMI -->
+<!-- AI PANEL -->
 <div class="section">
-<h3>📅 EMI</h3>
-
-<input id="loan_id">
-<button onclick="payEMI()">Pay EMI</button>
-
-<table>
-<tbody id="emiTable"></tbody>
-</table>
+<h3>🧠 AI Risk Engine</h3>
+<div id="aiPanel"></div>
 </div>
 
 <!-- CHART -->
@@ -95,14 +89,10 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 <script>
 let db;
 let chart;
-let queue = JSON.parse(localStorage.getItem("queue")||"[]");
 
 // ---------------- LOGIN ----------------
 function login(){
- let u = user.value;
- let p = pass.value;
-
- if(u==="admin" && p==="1234"){
+ if(user.value==="admin" && pass.value==="1234"){
   loginBox.classList.add("hidden");
   app.classList.remove("hidden");
   initDB();
@@ -111,41 +101,37 @@ function login(){
 
 // ---------------- DB ----------------
 function initDB(){
- let req = indexedDB.open("BANK3",1);
+ let req = indexedDB.open("BANK4",1);
 
  req.onupgradeneeded=e=>{
   db=e.target.result;
+
   db.createObjectStore("customers",{keyPath:"id"});
   db.createObjectStore("transactions",{keyPath:"id"});
   db.createObjectStore("loans",{keyPath:"id"});
-  db.createObjectStore("emis",{keyPath:"id"});
-  db.createObjectStore("audit",{keyPath:"id"});
  };
 
  req.onsuccess=e=>{
   db=e.target.result;
   loadAll();
-  syncQueue();
-  setInterval(checkOverdue,10000);
+  setInterval(aiEngine,5000);
  };
 }
 
 // ---------------- CUSTOMER ----------------
 function addCustomer(){
- let obj={
+ let c={
   id:crypto.randomUUID(),
   name:name.value,
   phone:phone.value,
   balance:0
  };
 
- db.transaction("customers","readwrite")
- .objectStore("customers").put(obj);
-
+ db.transaction("customers","readwrite").objectStore("customers").put(c);
  loadAll();
 }
 
-// ---------------- TRANSACTION (OFFLINE QUEUE) ----------------
+// ---------------- TRANSACTION ----------------
 function transaction(){
  let t={
   id:crypto.randomUUID(),
@@ -155,27 +141,7 @@ function transaction(){
   time:Date.now()
  };
 
- queue.push(t);
- localStorage.setItem("queue",JSON.stringify(queue));
-
- processQueue();
-}
-
-// ---------------- SYNC ENGINE ----------------
-function processQueue(){
- let tx=db.transaction("transactions","readwrite").objectStore("transactions");
-
- queue.forEach(q=>{
-  tx.put(q);
-
-  db.transaction("audit","readwrite")
-  .objectStore("audit")
-  .put({id:q.id,action:"sync",data:q});
- });
-
- queue=[];
- localStorage.removeItem("queue");
-
+ db.transaction("transactions","readwrite").objectStore("transactions").put(t);
  loadAll();
 }
 
@@ -186,44 +152,45 @@ function createLoan(){
   name:loan_member.value,
   amount:+loan_amount.value,
   months:+loan_months.value,
-  interest:18
+  paid:0,
+  created:Date.now()
  };
 
  db.transaction("loans","readwrite").objectStore("loans").put(loan);
  loadAll();
 }
 
-// ---------------- EMI ----------------
-function payEMI(){
- let id = loan_id.value;
+// ---------------- AI ENGINE ----------------
+function aiEngine(){
+ let tx=db.transaction("transactions").objectStore("transactions");
 
- let store = db.transaction("loans","readwrite").objectStore("loans");
+ tx.getAll().onsuccess=e=>{
+  let data=e.target.result;
 
- store.getAll().onsuccess=e=>{
-  let loan = e.target.result.find(l=>l.id===id);
-  if(!loan) return alert("Not found");
+  let riskMap={};
 
-  loan.paid = (loan.paid||0)+1;
-  store.put(loan);
+  data.forEach(t=>{
+   if(!riskMap[t.name]) riskMap[t.name]=0;
 
-  db.transaction("audit","readwrite")
-  .objectStore("audit")
-  .put({id:crypto.randomUUID(),action:"emi",loan:id});
-
-  loadAll();
- };
-}
-
-// ---------------- OVERDUE ----------------
-function checkOverdue(){
- let store = db.transaction("loans").objectStore("loans");
-
- store.getAll().onsuccess=e=>{
-  e.target.result.forEach(l=>{
-   if(l.paid && l.paid < l.months){
-    console.log("OVERDUE:",l.name);
-   }
+   if(t.type==="withdraw" && t.amount>5000) riskMap[t.name]+=2;
+   if(t.amount>10000) riskMap[t.name]+=3;
   });
+
+  let html="";
+
+  for(let k in riskMap){
+   let score=riskMap[k];
+
+   let status = score>=5
+   ? `<span class="bad">HIGH RISK</span>`
+   : score>=3
+   ? `<span style="color:orange">MEDIUM</span>`
+   : `<span class="good">LOW</span>`;
+
+   html+=`<p>${k} → Risk Score: ${score} ${status}</p>`;
+  }
+
+  aiPanel.innerHTML = html || "No risk detected";
  };
 }
 
@@ -231,7 +198,6 @@ function checkOverdue(){
 function loadAll(){
  loadCustomers();
  loadLoans();
- loadEMI();
  drawChart();
 }
 
@@ -248,13 +214,9 @@ function loadLoans(){
  db.transaction("loans").objectStore("loans")
  .getAll().onsuccess=e=>{
   loanTable.innerHTML=e.target.result.map(l=>
-   `<tr><td>${l.name}</td><td>${l.amount}</td><td>${l.months}</td><td>${l.paid||0}</td></tr>`
+   `<tr><td>${l.name}</td><td>${l.amount}</td><td>${l.months}</td><td>${l.paid}</td></tr>`
   ).join("");
  };
-}
-
-function loadEMI(){
- loanTable.innerHTML = loanTable.innerHTML;
 }
 
 // ---------------- CHART ----------------
@@ -271,7 +233,7 @@ function drawChart(){
 
   if(chart) chart.destroy();
 
-  chart = new Chart(chartCanvas,{
+  chart=new Chart(document.getElementById("chart"),{
    type:"bar",
    data:{labels:["Income","Expense"],datasets:[{data:[income,expense]}]}
   });
