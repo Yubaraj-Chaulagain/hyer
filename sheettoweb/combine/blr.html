@@ -1,268 +1,284 @@
-<div class="section">
-<h3>👤 Members</h3>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business ERP Ultimate</title>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#f5f5f5;padding:10px;max-width:1000px;margin:auto;}
+input,select,button{width:100%;padding:10px;margin:5px 0;}
+button{background:#007bff;color:white;border:none;}
+table{width:100%;background:white;border-collapse:collapse;margin-top:10px;}
+td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
+h2{text-align:center;}
+.section{background:white;padding:10px;margin-top:10px;border-radius:10px;}
+</style>
+</head>
+
+<body>
+
+<h2>📒 Business ERP Ultimate</h2>
+
+<!-- INSTALL -->
+<button id="installBtn">📲 Install App</button>
+
+<!-- MEMBER -->
+<div class="section">
+<h3>👤 Member</h3>
 <input id="m_name" placeholder="Name">
 <input id="m_phone" placeholder="Phone">
-<button onclick="saveMember()">Save / Update</button>
-
-<table>
-<thead><tr><th>Name</th><th>Phone</th><th>Action</th></tr></thead>
-<tbody id="memberTable"></tbody>
-</table>
+<button onclick="addMember()">Add Member</button>
 </div>
 
-<script>
-let editMemberId = null;
-
-function saveMember(){
- let data = {
-  id: editMemberId || Date.now(),
-  name: m_name.value,
-  phone: m_phone.value
- };
-
- db.transaction("members","readwrite")
-   .objectStore("members")
-   .put(data);
-
- editMemberId = null;
- m_name.value = "";
- m_phone.value = "";
-
- loadMembers();
-}
-
-// LOAD
-function loadMembers(){
- db.transaction("members","readonly")
- .objectStore("members")
- .getAll().onsuccess = e=>{
-  let html="";
-  e.target.result.forEach(m=>{
-   html += `<tr>
-   <td>${m.name}</td>
-   <td>${m.phone}</td>
-   <td>
-     <button onclick='editMember(${m.id})'>Edits</button>
-     <button onclick='deleteMember(${m.id})'>🗑️</button>
-   </td></tr>`;
-  });
-  memberTable.innerHTML = html;
- };
-}
-</script>
-<script>
-function editMember(id){
- let tx = db.transaction("members","readonly");
- let store = tx.objectStore("members");
-
- store.get(id).onsuccess = e=>{
-  let m = e.target.result;
-  editMemberId = m.id;
-  m_name.value = m.name;
-  m_phone.value = m.phone;
- };
-}
-</script>
-<script>
-function deleteMember(id){
- if(confirm("Delete member?")){
-  db.transaction("members","readwrite")
-    .objectStore("members")
-    .delete(id);
-  loadMembers();
- }
-}
-</script>
-
+<!-- TRANSACTION -->
 <div class="section">
-<h3>💰 Transactions</h3>
-
-<input id="t_member" placeholder="Member">
+<h3>💰 Transaction</h3>
+<input id="t_member" placeholder="Member Name">
 <input id="t_amount" placeholder="Amount">
 <select id="t_type">
 <option value="credit">Credit</option>
 <option value="debit">Debit</option>
 </select>
-
-<button onclick="saveTransaction()">Save / Update</button>
-
-<table>
-<thead><tr><th>Member</th><th>Amount</th><th>Type</th><th>Action</th></tr></thead>
-<tbody id="transTable"></tbody>
-</table>
+<button onclick="addTransaction()">Save</button>
 </div>
 
-<script>
-let editTransId = null;
-
-function saveTransaction(){
- let data = {
-  id: editTransId || Date.now(),
-  member: t_member.value,
-  amount: +t_amount.value,
-  type: t_type.value
- };
-
- db.transaction("transactions","readwrite")
-   .objectStore("transactions")
-   .put(data);
-
- editTransId = null;
- t_member.value="";
- t_amount.value="";
-
- loadTransactions();
-}
-
-function loadTransactions(){
- db.transaction("transactions","readonly")
- .objectStore("transactions")
- .getAll().onsuccess = e=>{
-  let html="";
-  e.target.result.forEach(t=>{
-   html+=`<tr>
-   <td>${t.member}</td>
-   <td>${t.amount}</td>
-   <td>${t.type}</td>
-   <td>
-     onclick='editTransaction(${t.id})'>✏️</button>
-     <button onclick='deleteTransaction(${t.id})'>🗑️</button>
-   </td></tr>`;
-  });
-  transTable.innerHTML=html;
- };
-}
-
-function editTransaction(t){
- editTransId = t.id;
- t_member.value = t.member;
- t_amount.value = t.amount;
- t_type.value = t.type;
-}
-
-function deleteTransaction(id){
- if(confirm("Delete transaction?")){
-  db.transaction("transactions","readwrite")
-    .objectStore("transactions")
-    .delete(id);
-  loadTransactions();
- }
-}
-</script>
-
+<!-- STOCK -->
 <div class="section">
 <h3>📦 Stock</h3>
-
 <input id="s_name" placeholder="Item">
-<input id="s_qty" placeholder="Quantity">
-<button onclick="saveStock()">Save / Update</button>
+<input id="s_qty" placeholder="Qty">
+<button onclick="addStock()">Add Stock</button>
 
-<table>
-<thead><tr><th>Item</th><th>Qty</th><th>Action</th></tr></thead>
-<tbody id="stockTable"></tbody>
-</table>
+<input id="sell_item" placeholder="Sell Item">
+<input id="sell_qty" placeholder="Qty">
+<input id="sell_price" placeholder="Price">
+<button onclick="sellItem()">Sell</button>
 </div>
 
+<!-- LOW STOCK -->
+<div class="section">
+<h3>⚠️ Low Stock</h3>
+<input id="low_limit" placeholder="Limit (5)">
+<button onclick="checkLowStock()">Check</button>
+<ul id="lowList"></ul>
+</div>
+
+<!-- REPORT -->
+<div class="section">
+<button onclick="downloadExcel()">📥 Excel</button>
+<button onclick="backup()">📦 Backup</button>
+<input type="file" onchange="restore(event)">
+<button onclick="printData()">🧾 Print</button>
+<h3 id="total">Total: 0</h3>
+</div>
+
+<canvas id="chart"></canvas>
+
 <script>
-let editStockId = null;
+// EMAIL INIT
+(function(){ emailjs.init("YOUR_PUBLIC_KEY"); })();
 
-function saveStock(){
- let data = {
-  id: editStockId || Date.now(),
-  name: s_name.value,
-  qty: +s_qty.value
- };
+// DB
+let db;
+let req=indexedDB.open("ERP",1);
 
- db.transaction("stock","readwrite")
-   .objectStore("stock")
-   .put(data);
+req.onupgradeneeded=e=>{
+ db=e.target.result;
+ db.createObjectStore("members",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("stock",{keyPath:"id"});
+};
 
- editStockId = null;
- s_name.value="";
- s_qty.value="";
+req.onsuccess=e=>{
+ db=e.target.result;
+ drawChart();
+};
 
- loadStock();
+// MEMBER
+function addMember(){
+ db.transaction("members","readwrite")
+ .objectStore("members")
+ .put({id:Date.now(),name:m_name.value,phone:m_phone.value});
+ alert("Member Added");
 }
 
-function loadStock(){
+// TRANSACTION
+function addTransaction(){
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .put({
+  id:Date.now(),
+  member:t_member.value,
+  amount:+t_amount.value,
+  type:t_type.value
+ });
+ alert("Saved");
+}
+
+// STOCK
+function addStock(){
+ db.transaction("stock","readwrite")
+ .objectStore("stock")
+ .put({id:Date.now(),name:s_name.value,qty:+s_qty.value});
+ alert("Stock Added");
+}
+
+// SELL
+function sellItem(){
+ let total=sell_qty.value*sell_price.value;
+
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .put({
+  id:Date.now(),
+  item:sell_item.value,
+  qty:sell_qty.value,
+  total:total
+ });
+
+ reduceStock(sell_item.value,+sell_qty.value);
+
+ alert("Sold");
+}
+
+// REDUCE STOCK
+function reduceStock(name,qty){
+ let tx=db.transaction("stock","readwrite");
+ let store=tx.objectStore("stock");
+
+ store.getAll().onsuccess=e=>{
+  e.target.result.forEach(i=>{
+   if(i.name===name){
+    i.qty-=qty;
+    store.put(i);
+   }
+  });
+ };
+}
+
+// LOW STOCK
+function checkLowStock(){
+ let limit=+low_limit.value||5;
+
  db.transaction("stock","readonly")
  .objectStore("stock")
- .getAll().onsuccess = e=>{
-  let html="";
-  e.target.result.forEach(s=>{
-   html+=`<tr>
-   <td>${s.name}</td>
-   <td>${s.qty}</td>
-   <td>onclick='editStock(${s.id})'>✏️</button>
-     <button onclick='deleteStock(${s.id})'>🗑️</button>
-   </td></tr>`;
-  });
-  stockTable.innerHTML=html;
+ .getAll().onsuccess=e=>{
+
+  let low=e.target.result.filter(i=>i.qty<=limit);
+
+  lowList.innerHTML=low.map(i=>`<li>${i.name} (${i.qty})</li>`).join("");
+
+  if(low.length){
+   notify("Low stock alert");
+   sendEmail("Low Stock",JSON.stringify(low));
+  }
  };
 }
 
-function editStock(s){
- editStockId = s.id;
- s_name.value = s.name;
- s_qty.value = s.qty;
-}
+// NOTIFICATION
+if("Notification" in window) Notification.requestPermission();
 
-function deleteStock(id){
- if(confirm("Delete stock?")){
-  db.transaction("stock","readwrite")
-    .objectStore("stock")
-    .delete(id);
-  loadStock();
+function notify(msg){
+ if(Notification.permission==="granted"){
+  new Notification("Alert",{body:msg});
  }
 }
-</script>
 
-<script>
-const m_name = document.getElementById("m_name");
-const m_phone = document.getElementById("m_phone");
-
-const t_member = document.getElementById("t_member");
-const t_amount = document.getElementById("t_amount");
-const t_type = document.getElementById("t_type");
-
-const s_name = document.getElementById("s_name");
-const s_qty = document.getElementById("s_qty");
-
-const memberTable = document.getElementById("memberTable");
-const transTable = document.getElementById("transTable");
-const stockTable = document.getElementById("stockTable");
-</script>
-
-<script>
-let db;
-
-let req = indexedDB.open("ERP_DB", 1);
-
-req.onupgradeneeded = e => {
-  db = e.target.result;
-
-  if(!db.objectStoreNames.contains("members"))
-    db.createObjectStore("members",{keyPath:"id"});
-
-  if(!db.objectStoreNames.contains("transactions"))
-    db.createObjectStore("transactions",{keyPath:"id"});
-
-  if(!db.objectStoreNames.contains("stock"))
-    db.createObjectStore("stock",{keyPath:"id"});
-};
-
-if(!m_name.value){
- alert("Enter name");
- return;
+// EMAIL
+function sendEmail(sub,msg){
+ emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+  subject:sub,message:msg
+ });
 }
 
-req.onsuccess = e => {
- db = e.target.result;
+// EXCEL
+function downloadExcel(){
+ let tx=db.transaction("transactions","readonly");
+ tx.objectStore("transactions").getAll().onsuccess=e=>{
+  let ws=XLSX.utils.json_to_sheet(e.target.result);
+  let wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Data");
+  XLSX.writeFile(wb,"ERP.xlsx");
+ };
+}
 
- loadMembers();
- loadTransactions();
- loadStock();
-};
+// BACKUP
+function backup(){
+ let tx=db.transaction(["members","transactions","stock"],"readonly");
+ let data={};
+
+ tx.objectStore("members").getAll().onsuccess=e=>data.members=e.target.result;
+ tx.objectStore("transactions").getAll().onsuccess=e=>data.transactions=e.target.result;
+ tx.objectStore("stock").getAll().onsuccess=e=>{
+  data.stock=e.target.result;
+
+  let blob=new Blob([JSON.stringify(data)]);
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="backup.json";
+  a.click();
+ };
+}
+
+// RESTORE
+function restore(e){
+ let file=e.target.files[0];
+ let reader=new FileReader();
+
+ reader.onload=()=>{
+  let d=JSON.parse(reader.result);
+
+  let tx=db.transaction(["members","transactions","stock"],"readwrite");
+
+  d.members.forEach(x=>tx.objectStore("members").put(x));
+  d.transactions.forEach(x=>tx.objectStore("transactions").put(x));
+  d.stock.forEach(x=>tx.objectStore("stock").put(x));
+
+  alert("Restored");
+ };
+
+ reader.readAsText(file);
+}
+
+// PRINT
+function printData(){
+ let w=window.open();
+ w.document.write("<h2>ERP Report</h2>");
+ w.print();
+}
+
+// CHART
+function drawChart(){
+ db.transaction("transactions","readonly")
+ .objectStore("transactions").getAll().onsuccess=e=>{
+
+  let c=0,d=0;
+  e.target.result.forEach(x=>{
+   if(x.type==="credit") c+=x.amount||0;
+   else d+=x.amount||0;
+  });
+
+  new Chart(chart,{
+   type:"bar",
+   data:{labels:["Credit","Debit"],datasets:[{data:[c,d]}]}
+  });
+ };
+}
+
+// INSTALL
+let promptEvent;
+window.addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault();
+ promptEvent=e;
+});
+
+installBtn.onclick=()=>promptEvent && promptEvent.prompt();
+
 </script>
 
+</body>
+</html>
