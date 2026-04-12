@@ -174,51 +174,34 @@ function showTab(id){
 // MEMBERS
 function saveMember(){
 
- let name = document.getElementById("m_name").value.trim();
- let phone = document.getElementById("m_phone").value.trim();
+  let name = m_name.value.trim();
+  let phone = m_phone.value.trim();
 
- if(!name) return alert("Enter name");
+  if(!name) return alert("Enter name");
 
- let tx = db.transaction("members","readwrite");
- let store = tx.objectStore("members");
+  let tx = db.transaction("members","readwrite");
+  let store = tx.objectStore("members");
 
- if(editId){
-
-  store.get(editId).onsuccess = e=>{
-   let m = e.target.result;
-   if(!m) return alert("Member not found");
-
-   m.name = name;
-   m.phone = phone;
-
-   store.put(m);
+  let data = {
+    id: crypto.randomUUID(),
+    name,
+    phone,
+    balance: 0
   };
 
- }else{
+  store.put(data);
 
-  store.put({
-   id: crypto.randomUUID(),
-   name: name,
-   phone: phone,
-   balance: 0
-  });
- }
+  // ✅ THIS IS THE CORRECT PLACE
+  tx.oncomplete = ()=>{
+    console.log("Member saved successfully");
+    m_name.value = "";
+    m_phone.value = "";
+    loadAll();   // refresh table + dropdown
+  };
 
- // ✅ KEY FIX — wait for complete
- tx.oncomplete = ()=>{
-  resetForm();
-  loadAll();
- };
-
- tx.onerror = ()=>{
-  alert("Save failed");
- };
-}
-
-function resetForm(){
- editId=null;
- m_name.value="";
- m_phone.value="";
+  tx.onerror = ()=>{
+    alert("Error saving member");
+  };
 }
 
 function editMember(id){
