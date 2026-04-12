@@ -406,20 +406,46 @@ function loadAll(){
  drawChart();
 }
 
-function loadMembers(){
- db.transaction("members").objectStore("members").getAll().onsuccess=e=>{
-  let data=e.target.result;
-  memberTable.innerHTML=data.map(m=>`
-   <tr>
-    <td>${m.name}</td>
-    <td>${m.phone}</td>
-    <td>${m.balance}</td>
-    <td>
-     <button onclick="editMember('${m.id}')">Edit</button>
-     <button onclick="deleteMember('${m.id}')">Delete</button>
-    </td>
-   </tr>
-  `).join("");
+function loadDropdown(){
+
+ let memberStore = db.transaction("members").objectStore("members");
+
+ memberStore.getAll().onsuccess = e=>{
+  let list = e.target.result;
+
+  let b = document.getElementById("b_member");
+  let f = document.getElementById("t_from");
+  let t = document.getElementById("t_to");
+
+  if(!b || !f || !t) return; // 🔥 important safety
+
+  let options = `<option value="" disabled selected>Select Member</option>`;
+
+  list.forEach(m=>{
+   options += `<option value="${m.id}">${m.name}</option>`;
+  });
+
+  b.innerHTML = options;
+  f.innerHTML = options;
+  t.innerHTML = options;
+ };
+
+ // STOCK
+ let stockStore = db.transaction("stock").objectStore("stock");
+
+ stockStore.getAll().onsuccess = e=>{
+  let list = e.target.result;
+
+  let s = document.getElementById("bs_item");
+  if(!s) return;
+
+  let options = `<option value="" disabled selected>Select Item</option>`;
+
+  list.forEach(i=>{
+   options += `<option value="${i.id}">${i.name}</option>`;
+  });
+
+  s.innerHTML = options;
  };
 }
 
