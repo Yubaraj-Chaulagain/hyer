@@ -50,6 +50,11 @@ h2{text-align:center;}
  <option value="deposit">Deposit</option>
  <option value="withdraw">Withdraw</option>
  <option value="loan">Loan</option>
+<option value="transfer">Transfer</option>
+</select>
+
+<select id="t_receiver">
+<option value="">Select Receiver</option>
 </select>
 
 <!-- 💵 AMOUNT -->
@@ -60,9 +65,10 @@ h2{text-align:center;}
 <table>
 <thead>
 <tr>
-<th>Member</th>
+<th>From</th>
 <th>Type</th>
 <th>Amount</th>
+<th>To</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -106,10 +112,11 @@ function saveMember(){
  if(!name) return alert("Name required");
 
  let obj = {
-  id: editMemberId || crypto.randomUUID(),
-  name,
-  phone
- };
+ id: editMemberId || crypto.randomUUID(),
+ name,
+ phone,
+ balance: 0 // ⭐ ADD THIS
+};
 
  db.transaction("members","readwrite")
  .objectStore("members")
@@ -144,35 +151,60 @@ function deleteMember(id){
 // ---------------- TRANSACTIONS ----------------
 function saveTransaction(){
 
- let member = document.getElementById("t_member").value;
+ let senderId = document.getElementById("t_member").value;
+ let receiverId = document.getElementById("t_receiver").value;
  let type = document.getElementById("t_type").value;
  let amount = Number(document.getElementById("t_amount").value);
 
- if(!member){
-  alert("Select member");
-  return;
- }
+ if(!senderId) return alert("Select member");
+ if(!amount || amount<=0) return alert("Invalid amount");
 
- if(!amount || amount<=0){
-  alert("Enter valid amount");
-  return;
- }
+ let memberStore = db.transaction("members","readwrite").objectStore("members");
 
- let obj = {
-  id: crypto.randomUUID(),
-  name: member,
-  type: type,
-  amount: amount,
-  time: Date.now()
+ memberStore.getAll().onsuccess = e=>{
+  let members = e.target.result;
+
+  let sender = members.find(m=>m.id===senderId);
+  let receiver = members.find(m=>m.id===receiverId);
+
+  if(type==="deposit"){
+    sender.balance += amount;
+  }
+
+  else if(type==="withdraw"){
+    if(sender.balance < amount) return alert("Insufficient Balance ❌");
+    sender.balance -= amount;
+  }
+
+  else if(type==="transfer"){
+    if(!receiverId) return alert("Select receiver");
+    if(senderId === receiverId) return alert("Same member not allowed");
+    if(sender.balance < amount) return alert("Insufficient Balance ❌");
+
+    sender.balance -= amount;
+    receiver.balance += amount;
+
+    memberStore.put(receiver);
+  }
+
+  memberStore.put(sender);
+
+  // save transaction
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({
+    id: crypto.randomUUID(),
+    name: sender.name,
+    to: receiver ? receiver.name : "",
+    type,
+    amount,
+    time: Date.now()
+  });
+
+  document.getElementById("t_amount").value="";
+
+  loadAll();
  };
-
- db.transaction("transactions","readwrite")
- .objectStore("transactions")
- .put(obj);
-
- document.getElementById("t_amount").value="";
-
- loadAll();
 }
 
 function editTransaction(id){
@@ -221,8 +253,8 @@ function loadTransactions(){
     <td>${t.name}</td>
     <td>${t.type}</td>
     <td>${t.amount}</td>
+    <td>${t.to || "-"}</td>
     <td>
-     <button onclick="editTransaction('${t.id}')">Edit</button>
      <button onclick="deleteTransaction('${t.id}')">Delete</button>
     </td>
    </tr>
@@ -235,13 +267,16 @@ function loadMemberDropdown(){
  let store = db.transaction("members").objectStore("members");
 
  store.getAll().onsuccess = e=>{
-  let options = `<option value="">Select Member</option>`;
+  let sender = `<option value="">Select Sender</option>`;
+  let receiver = `<option value="">Select Receiver</option>`;
 
   e.target.result.forEach(m=>{
-   options += `<option value="${m.name}">${m.name}</option>`;
+   sender += `<option value="${m.id}">${m.name}</option>`;
+   receiver += `<option value="${m.id}">${m.name}</option>`;
   });
 
-  document.getElementById("t_member").innerHTML = options;
+  document.getElementById("t_member").innerHTML = sender;
+  document.getElementById("t_receiver").innerHTML = receiver;
  };
 }
 
