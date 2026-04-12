@@ -216,22 +216,27 @@ function addStock(){
 
 // ================= BUY SELL =================
 function buySell(){
+
  let id = stock_item.value;
  let qty = +bs_qty.value;
 
- let store = db.transaction("stock","readwrite").objectStore("stock");
+ db.transaction("buysell","readwrite")
+ .objectStore("buysell")
+ .put({
+  id:crypto.randomUUID(),
+  stockId:id,
+  type:bs_type.value,
+  qty,
+  date:new Date().toLocaleString()
+ });
 
- store.get(id).onsuccess = e=>{
-  let s = e.target.result;
+ if(bs_type.value==="buy"){
+  updateStockQty(id, qty);
+ }else{
+  updateStockQty(id, -qty);
+ }
 
-  if(bs_type.value==="sell" && s.qty < qty)
-   return alert("No stock");
-
-  s.qty += (bs_type.value==="buy"?qty:-qty);
-
-  store.put(s);
-  loadAll();
- };
+ loadAll();
 }
 
 // ================= LOAD =================
@@ -319,6 +324,80 @@ function searchMember(){
   r.style.display = r.innerText.toLowerCase().includes(v) ? "" : "none";
  });
 }
+
+function recalcMemberBalance(memberId){
+ let store = db.transaction("members","readwrite").objectStore("members");
+
+ let tx = db.transaction("transactions").objectStore("transactions");
+
+ tx.getAll().onsuccess = e=>{
+  let all = e.target.result;
+
+  let balance = 0;
+
+  all.forEach(t=>{
+   if(t.memberId === memberId){
+    if(t.type === "deposit") balance += t.amount;
+    if(t.type === "withdraw") balance -= t.amount;
+   }
+  });
+
+  store.get(memberId).onsuccess = e2=>{
+   let m = e2.target.result;
+   if(!m) return;
+
+   m.balance = balance;
+   store.put(m);
+  };
+ };
+}
+
+function banking(){
+ let id=b_member.value;
+ let type=b_type.value;
+ let amt=+b_amount.value;
+
+ let store=db.transaction("members","readwrite").objectStore("members");
+
+ store.get(id).onsuccess=e=>{
+  let m=e.target.result;
+  if(!m) return;
+
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({
+   id:crypto.randomUUID(),
+   memberId:id,
+   type,
+   amount:amt,
+   date:new Date().toLocaleString()
+  });
+
+  // 🔥 AUTO RECALCULATE
+  setTimeout(()=>recalcMemberBalance(id),100);
+
+  loadAll();
+ };
+}
+
+function updateStockQty(stockId, qtyChange){
+ let store=db.transaction("stock","readwrite").objectStore("stock");
+
+ store.get(stockId).onsuccess=e=>{
+  let s=e.target.result;
+  if(!s) return;
+
+  s.qty += qtyChange;
+
+  if(s.qty < 0) s.qty = 0;
+
+  store.put(s);
+ };
+}
+
+
+
+
 
 // ================= PROFIT =================
 function calcProfit(){
