@@ -2,516 +2,270 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ERP SAAS ALL IN ONE</title>
+<title>ERP PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:#eef2f7;max-width:1100px;margin:auto;padding:10px;}
-.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
-input,select,button{width:100%;padding:10px;margin:5px 0;}
-button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
+body{font-family:Arial;background:#eef2f7;margin:0;}
+.tabs{display:flex;background:#2563eb;color:#fff;}
+.tabs button{flex:1;padding:10px;border:none;background:#2563eb;color:#fff;}
+.tabs button:hover{background:#1e40af;}
+.section{display:none;padding:10px;}
+.active{display:block;}
+input,select,button{width:100%;padding:8px;margin:5px 0;}
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
-h2{text-align:center;}
 </style>
 </head>
 
 <body>
 
-<h2>🚀 ERP SAAS ALL IN ONE SYSTEM</h2>
+<h2 style="text-align:center">🚀 ERP PRO MAX SYSTEM</h2>
 
-<!-- 🌍 BRANCH -->
-<div class="section">
-<h3>🌍 Branch</h3>
-<select id="branch" onchange="switchBranch(this.value)">
- <option>Dubai</option>
- <option>Nepal</option>
- <option>India</option>
-</select>
-</div>
-
-<!-- 👤 USERS -->
-<div class="section">
-<h3>👤 Users</h3>
-<input id="u_name" placeholder="Username">
-<input id="u_pass" placeholder="Password">
-<select id="u_role">
- <option>admin</option>
- <option>staff</option>
-</select>
-<button onclick="saveUser()">Save User</button>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Username</th>
-<th>Password</th>
-<th>Role</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="userTable"></tbody>
-</table>
-</div>
-<!-- LOGIN -->
-<div class="section">
-<h3>🔐 Login</h3>
-<input id="l_user" placeholder="User">
-<input id="l_pass" placeholder="Pass">
-<button onclick="login()">Login</button>
+<div class="tabs">
+<button onclick="showTab('members')">Members</button>
+<button onclick="showTab('bank')">Bank</button>
+<button onclick="showTab('stock')">Stock</button>
+<button onclick="showTab('report')">Report</button>
 </div>
 
 <!-- MEMBERS -->
-<div class="section">
-<h3>👤 Members</h3>
+<div id="members" class="section active">
+<h3>Members</h3>
+
+<input id="searchMember" placeholder="Search..." onkeyup="filterMembers()">
+
 <input id="m_name" placeholder="Name">
 <input id="m_phone" placeholder="Phone">
 <button onclick="saveMember()">Save</button>
+
 <table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Phone</th>
-<th>Balance</th>
-<th>Branch</th>
-<th>Action</th>
-</tr>
-</thead>
+<thead><tr>
+<th>Name</th><th>Phone</th><th>Balance</th><th>Action</th>
+</tr></thead>
 <tbody id="memberTable"></tbody>
 </table>
 </div>
 
-<!-- BANKING -->
-<div class="section">
-<h3>💰 Banking</h3>
+<!-- BANK -->
+<div id="bank" class="section">
+<h3>Bank</h3>
+
 <select id="b_member"></select>
-<select id="b_type">
-<option>deposit</option>
-<option>withdraw</option>
-</select>
+<select id="b_type"><option>deposit</option><option>withdraw</option></select>
 <input id="b_amount" placeholder="Amount">
 <button onclick="bank()">Submit</button>
+
 <table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Type</th>
-<th>Amount</th>
-<th>Balance After</th>
-<th>Date</th>
-</tr>
-</thead>
+<thead><tr>
+<th>Name</th><th>Type</th><th>Amount</th><th>Date</th>
+</tr></thead>
 <tbody id="bankTable"></tbody>
 </table>
 </div>
 
-<!-- TRANSFER -->
-<div class="section">
-<h3>💸 Transfer</h3>
-<select id="from"></select>
-<select id="to"></select>
-<input id="t_amt" placeholder="Amount">
-<button onclick="transfer()">Send</button>
-<table>
-<thead>
-<tr>
-<th>From</th>
-<th>To</th>
-<th>Amount</th>
-<th>Branch</th>
-<th>Date</th>
-</tr>
-</thead>
-<tbody id="transferTable"></tbody>
-</table>
-</div>
-
 <!-- STOCK -->
-<div class="section">
-<h3>📦 Stock</h3>
+<div id="stock" class="section">
+<h3>Stock</h3>
+
 <input id="item" placeholder="Item">
 <input id="qty" placeholder="Qty">
 <button onclick="addStock()">Add</button>
+
 <table>
-<thead>
-<tr>
-<th>Item ID</th>
-<th>Item Name</th>
-<th>Quantity</th>
-<th>Branch</th>
-<th>Action</th>
-</tr>
-</thead>
+<thead><tr>
+<th>Item</th><th>Qty</th><th>Action</th>
+</tr></thead>
 <tbody id="stockTable"></tbody>
 </table>
 </div>
 
-<!-- BUY SELL -->
-<div class="section">
-<h3>🛒 Buy/Sell</h3>
-<select id="stock_item"></select>
-<select id="bs_type"><option>buy</option><option>sell</option></select>
-<input id="bs_qty">
-<button onclick="stockAction()">Go</button>
-<table>
-<thead>
-<tr>
-<th>Item</th>
-<th>Type</th>
-<th>Qty</th>
-<th>Price</th>
-<th>Total</th>
-<th>Date</th>
-</tr>
-</thead>
-<tbody id="bsTable"></tbody>
-</table>
-
-</div>
-
-<!-- DASHBOARD -->
-<div class="section">
-<h3>📊 Dashboard</h3>
+<!-- REPORT -->
+<div id="report" class="section">
+<h3>Report</h3>
+<button onclick="exportExcel()">Export Excel</button>
 <canvas id="chart"></canvas>
-<button onclick="predict()">AI Predict Profit</button>
 </div>
 
 <script>
 
-let db, chart, currentBranch="Dubai";
+let db, chart, editId=null;
 
 // DB
-let req=indexedDB.open("ERP_SAAS",1);
+let req=indexedDB.open("ERP_PRO",1);
 
 req.onupgradeneeded=e=>{
  db=e.target.result;
- db.createObjectStore("users",{keyPath:"id"});
  db.createObjectStore("members",{keyPath:"id"});
- db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("bank",{keyPath:"id"});
  db.createObjectStore("stock",{keyPath:"id"});
 };
-db.createObjectStore("bank",{keyPath:"id"});
-db.createObjectStore("transfer",{keyPath:"id"});
-db.createObjectStore("buysell",{keyPath:"id"});
 
 req.onsuccess=e=>{
  db=e.target.result;
  loadAll();
- enableNotification();
 };
 
-// 🌍 BRANCH
-function switchBranch(b){
- currentBranch=b;
+// TAB
+function showTab(id){
+ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+// MEMBERS
+function saveMember(){
+
+ let obj={
+  id: editId || crypto.randomUUID(),
+  name:m_name.value,
+  phone:m_phone.value,
+  balance:0
+ };
+
+ db.transaction("members","readwrite").objectStore("members").put(obj);
+
+ editId=null;
+ m_name.value="";
+ m_phone.value="";
  loadAll();
 }
 
-// 🔐 USERS
-function saveUser(){
- db.transaction("users","readwrite").objectStore("users")
- .put({id:crypto.randomUUID(),name:u_name.value,pass:u_pass.value,role:u_role.value});
-}
-
-// LOGIN
-function login(){
- db.transaction("users").objectStore("users")
- .getAll().onsuccess=e=>{
-  let u=e.target.result.find(x=>x.name==l_user.value && x.pass==l_pass.value);
-  if(!u) return alert("Fail");
-  alert("Welcome "+u.role);
+function editMember(id){
+ db.transaction("members").objectStore("members").get(id).onsuccess=e=>{
+  let m=e.target.result;
+  m_name.value=m.name;
+  m_phone.value=m.phone;
+  editId=id;
  };
 }
 
-// 👤 MEMBERS
-function saveMember(){
- db.transaction("members","readwrite").objectStore("members")
- .put({id:crypto.randomUUID(),name:m_name.value,balance:0,branch:currentBranch});
+function deleteMember(id){
+ db.transaction("members","readwrite").objectStore("members").delete(id);
  loadAll();
 }
 
-// 💰 BANK
+// BANK
 function bank(){
 
  let store=db.transaction("members","readwrite").objectStore("members");
 
  store.get(b_member.value).onsuccess=e=>{
   let m=e.target.result;
-
   let amt=+b_amount.value;
-  let type=b_type.value;
 
-  if(type==="deposit") m.balance+=amt;
-  else{
-   if(m.balance<amt) return alert("Low balance");
-   m.balance-=amt;
-  }
+  if(b_type.value==="deposit") m.balance+=amt;
+  else m.balance-=amt;
 
   store.put(m);
 
-  // ✅ SAVE BANK TRANSACTION
   db.transaction("bank","readwrite").objectStore("bank")
   .put({
    id:crypto.randomUUID(),
    name:m.name,
-   type,
+   type:b_type.value,
    amount:amt,
-   balance:m.balance,
-   date:new Date().toLocaleString(),
-   branch:currentBranch
-  });
-
-  notify("Bank "+type+" "+amt);
-  loadAll();
- };
-}
-
-// 💸 TRANSFER
-function transfer(){
-
- let s=from.value,t=to.value,a=+t_amt.value;
-
- let store=db.transaction("members","readwrite").objectStore("members");
-
- store.getAll().onsuccess=e=>{
-  let d=e.target.result;
-
-  let A=d.find(x=>x.id==s);
-  let B=d.find(x=>x.id==t);
-
-  if(A.balance<a) return alert("No balance");
-
-  A.balance-=a;
-  B.balance+=a;
-
-  store.put(A);
-  store.put(B);
-
-  // ✅ SAVE TRANSFER
-  db.transaction("transfer","readwrite").objectStore("transfer")
-  .put({
-   id:crypto.randomUUID(),
-   from:A.name,
-   to:B.name,
-   amount:a,
-   branch:currentBranch,
    date:new Date().toLocaleString()
   });
 
-  notify("Transfer done");
   loadAll();
  };
 }
 
-// 📦 STOCK
+// STOCK
 function addStock(){
  db.transaction("stock","readwrite").objectStore("stock")
  .put({id:crypto.randomUUID(),name:item.value,qty:+qty.value});
  loadAll();
 }
 
-// 🛒 STOCK ACTION
-function stockAction(){
- let store=db.transaction("stock","readwrite").objectStore("stock");
-
- store.get(stock_item.value).onsuccess=e=>{
-  let s=e.target.result;
-
-  if(bs_type.value==="buy") s.qty+=+bs_qty.value;
-  else{
-   if(s.qty<+bs_qty.value) return alert("Out");
-   s.qty-=+bs_qty.value;
-  }
-
-  store.put(s);
-  loadAll();
- };
-}
-
-// 📊 AI PREDICT
-function predict(){
- db.transaction("transactions").objectStore("transactions")
- .getAll().onsuccess=e=>{
-  let p=0;
-
-  e.target.result.forEach(t=>{
-   if(t.type==="sell") p+=t.amount;
-   if(t.type==="buy") p-=t.amount;
-  });
-
-  alert("Predicted Profit: "+(p*1.2));
- };
-}
-
-function stockAction(){
-
- let store=db.transaction("stock","readwrite").objectStore("stock");
-
- store.get(stock_item.value).onsuccess=e=>{
-  let s=e.target.result;
-
-  let qty=+bs_qty.value;
-  let price=100; // fixed price demo
-
-  if(bs_type.value==="buy") s.qty+=qty;
-  else{
-   if(s.qty<qty) return alert("Out");
-   s.qty-=qty;
-  }
-
-  store.put(s);
-
-  // ✅ SAVE BUY SELL
-  db.transaction("buysell","readwrite").objectStore("buysell")
-  .put({
-   id:crypto.randomUUID(),
-   item:s.name,
-   type:bs_type.value,
-   qty,
-   price,
-   total:qty*price,
-   date:new Date().toLocaleString()
-  });
-
-  loadAll();
- };
-}
-
-// 🔔 NOTIFICATION
-function enableNotification(){
- Notification.requestPermission();
-}
-
-function notify(msg){
- if(Notification.permission==="granted"){
-  new Notification("ERP",{
-   body:msg
-  });
- }
+function deleteStock(id){
+ db.transaction("stock","readwrite").objectStore("stock").delete(id);
+ loadAll();
 }
 
 // LOAD
 function loadAll(){
- loadUsers();
  loadMembers();
- loadStock();
- loadDropdowns();
  loadBank();
- loadTransfer();
- loadBS();
+ loadStock();
+ loadDropdown();
  drawChart();
 }
 
 function loadMembers(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  memberTable.innerHTML=e.target.result.map(m=>`
-   <tr><td>${m.name}</td><td>${m.balance}</td></tr>
-  `).join("");
- };
-}
-
-function loadStock(){
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess=e=>{
-  stockTable.innerHTML=e.target.result.map(s=>`
-   <tr><td>${s.name}</td><td>${s.qty}</td></tr>
-  `).join("");
- };
-}
-
-function loadDropdowns(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  let o="";
-  e.target.result.forEach(m=>{
-   o+=`<option value="${m.id}">${m.name}</option>`;
-  });
-  b_member.innerHTML=o;
-  from.innerHTML=o;
-  to.innerHTML=o;
- };
-
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess=e=>{
-  let o="";
-  e.target.result.forEach(s=>{
-   o+=`<option value="${s.id}">${s.name}</option>`;
-  });
-  stock_item.innerHTML=o;
- };
-}
-
-function loadUsers(){
- db.transaction("users").objectStore("users")
- .getAll().onsuccess=e=>{
-  userTable.innerHTML=e.target.result.map(u=>`
+ db.transaction("members").objectStore("members").getAll().onsuccess=e=>{
+  let data=e.target.result;
+  memberTable.innerHTML=data.map(m=>`
    <tr>
-    <td>${u.id}</td>
-    <td>${u.name}</td>
-    <td>${u.pass}</td>
-    <td>${u.role}</td>
-    <td><button onclick="deleteUser('${u.id}')">Delete</button></td>
+    <td>${m.name}</td>
+    <td>${m.phone}</td>
+    <td>${m.balance}</td>
+    <td>
+     <button onclick="editMember('${m.id}')">Edit</button>
+     <button onclick="deleteMember('${m.id}')">Delete</button>
+    </td>
    </tr>
   `).join("");
  };
 }
 
 function loadBank(){
- db.transaction("bank").objectStore("bank")
- .getAll().onsuccess=e=>{
+ db.transaction("bank").objectStore("bank").getAll().onsuccess=e=>{
   bankTable.innerHTML=e.target.result.map(b=>`
    <tr>
     <td>${b.name}</td>
     <td>${b.type}</td>
     <td>${b.amount}</td>
-    <td>${b.balance}</td>
     <td>${b.date}</td>
    </tr>
   `).join("");
  };
 }
 
-function loadTransfer(){
- db.transaction("transfer").objectStore("transfer")
- .getAll().onsuccess=e=>{
-  transferTable.innerHTML=e.target.result.map(t=>`
+function loadStock(){
+ db.transaction("stock").objectStore("stock").getAll().onsuccess=e=>{
+  stockTable.innerHTML=e.target.result.map(s=>`
    <tr>
-    <td>${t.from}</td>
-    <td>${t.to}</td>
-    <td>${t.amount}</td>
-    <td>${t.branch}</td>
-    <td>${t.date}</td>
+    <td>${s.name}</td>
+    <td>${s.qty}</td>
+    <td><button onclick="deleteStock('${s.id}')">Delete</button></td>
    </tr>
   `).join("");
  };
 }
 
-function loadBS(){
- db.transaction("buysell").objectStore("buysell")
- .getAll().onsuccess=e=>{
-  bsTable.innerHTML=e.target.result.map(b=>`
-   <tr>
-    <td>${b.item}</td>
-    <td>${b.type}</td>
-    <td>${b.qty}</td>
-    <td>${b.price}</td>
-    <td>${b.total}</td>
-    <td>${b.date}</td>
-   </tr>
+function loadDropdown(){
+ db.transaction("members").objectStore("members").getAll().onsuccess=e=>{
+  b_member.innerHTML=e.target.result.map(m=>`
+   <option value="${m.id}">${m.name}</option>
   `).join("");
  };
 }
 
+// SEARCH
+function filterMembers(){
+ let val=searchMember.value.toLowerCase();
+ [...memberTable.rows].forEach(r=>{
+  r.style.display=r.innerText.toLowerCase().includes(val)?"":"none";
+ });
+}
 
+// EXPORT EXCEL
+function exportExcel(){
+ let rows=[...document.querySelectorAll("table tr")];
+ let csv=rows.map(r=>[...r.children].map(c=>c.innerText).join(",")).join("\n");
+
+ let blob=new Blob([csv]);
+ let a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="erp.csv";
+ a.click();
+}
 
 // CHART
 function drawChart(){
-
- db.transaction("bank").objectStore("bank")
- .getAll().onsuccess=e=>{
-
+ db.transaction("bank").objectStore("bank").getAll().onsuccess=e=>{
   let inc=0,exp=0;
 
   e.target.result.forEach(t=>{
@@ -523,10 +277,7 @@ function drawChart(){
 
   chart=new Chart(document.getElementById("chart"),{
    type:"bar",
-   data:{
-    labels:["Income","Expense"],
-    datasets:[{data:[inc,exp]}]
-   }
+   data:{labels:["Income","Expense"],datasets:[{data:[inc,exp]}]}
   });
  };
 }
