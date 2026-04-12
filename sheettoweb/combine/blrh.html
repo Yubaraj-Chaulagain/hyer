@@ -2,34 +2,43 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Banking ERP</title>
+<title>Bank ERP 3.0</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:#f5f5f5;padding:10px;max-width:1000px;margin:auto;}
+body{font-family:Arial;background:#f4f4f4;max-width:1000px;margin:auto;padding:10px;}
+.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
 input,select,button{width:100%;padding:10px;margin:5px 0;}
-button{background:#007bff;color:white;border:none;}
-.section{background:white;padding:10px;margin-top:10px;border-radius:10px;}
-table{width:100%;background:white;border-collapse:collapse;margin-top:10px;}
+button{background:#007bff;color:#fff;border:none;border-radius:6px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
-h2{text-align:center;}
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
 
-<h2>🏦 FULL BANKING ERP SYSTEM</h2>
+<h2>🏦 BANK ERP 3.0 SUPER ADVANCE</h2>
 
-<!-- MEMBER -->
+<!-- LOGIN -->
+<div class="section" id="loginBox">
+<h3>🔐 Admin Login</h3>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+<!-- CUSTOMER -->
 <div class="section">
 <h3>👤 Customer</h3>
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<button onclick="addCustomer()">Add Customer</button>
-
+<input id="name">
+<input id="phone">
+<button onclick="addCustomer()">Add</button>
 <table>
-<thead><tr><th>Name</th><th>Phone</th><th>Balance</th></tr></thead>
 <tbody id="customerTable"></tbody>
 </table>
 </div>
@@ -41,40 +50,37 @@ h2{text-align:center;}
 <select id="type">
 <option value="deposit">Deposit</option>
 <option value="withdraw">Withdraw</option>
-<option value="buying">Buying</option>
-<option value="selling">Selling</option>
+<option value="loan">Loan Payment</option>
 <option value="saving">Saving</option>
 </select>
 
-<input id="t_member" placeholder="Customer Name">
-<input id="amount" placeholder="Amount">
-<button onclick="doTransaction()">Submit</button>
+<input id="t_member">
+<input id="amount">
+<button onclick="transaction()">Submit</button>
 </div>
 
 <!-- LOAN -->
 <div class="section">
-<h3>🏦 Loan (18%)</h3>
+<h3>🏦 Loan System</h3>
 
-<input id="loan_member" placeholder="Customer Name">
-<input id="loan_amount" placeholder="Loan Amount">
-<input id="loan_months" placeholder="Months">
+<input id="loan_member">
+<input id="loan_amount">
+<input id="loan_months">
 <button onclick="createLoan()">Create Loan</button>
 
 <table>
-<thead><tr><th>Customer</th><th>Loan</th><th>Total</th><th>EMI</th></tr></thead>
 <tbody id="loanTable"></tbody>
 </table>
 </div>
 
 <!-- EMI -->
 <div class="section">
-<h3>📅 EMI Payment</h3>
-<input id="pay_loan_id" placeholder="Loan ID">
-<input id="pay_amount" placeholder="Amount">
+<h3>📅 EMI</h3>
+
+<input id="loan_id">
 <button onclick="payEMI()">Pay EMI</button>
 
 <table>
-<thead><tr><th>LoanID</th><th>EMI</th><th>Status</th></tr></thead>
 <tbody id="emiTable"></tbody>
 </table>
 </div>
@@ -84,142 +90,157 @@ h2{text-align:center;}
 <canvas id="chart"></canvas>
 </div>
 
+</div>
+
 <script>
 let db;
-let req=indexedDB.open("BANK",1);
+let chart;
+let queue = JSON.parse(localStorage.getItem("queue")||"[]");
 
-req.onupgradeneeded=e=>{
- db=e.target.result;
- db.createObjectStore("customers",{keyPath:"id"});
- db.createObjectStore("transactions",{keyPath:"id"});
- db.createObjectStore("loans",{keyPath:"id"});
- db.createObjectStore("emis",{keyPath:"id"});
-};
+// ---------------- LOGIN ----------------
+function login(){
+ let u = user.value;
+ let p = pass.value;
 
-req.onsuccess=e=>{
- db=e.target.result;
- loadAll();
-};
+ if(u==="admin" && p==="1234"){
+  loginBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  initDB();
+ } else alert("Wrong login");
+}
+
+// ---------------- DB ----------------
+function initDB(){
+ let req = indexedDB.open("BANK3",1);
+
+ req.onupgradeneeded=e=>{
+  db=e.target.result;
+  db.createObjectStore("customers",{keyPath:"id"});
+  db.createObjectStore("transactions",{keyPath:"id"});
+  db.createObjectStore("loans",{keyPath:"id"});
+  db.createObjectStore("emis",{keyPath:"id"});
+  db.createObjectStore("audit",{keyPath:"id"});
+ };
+
+ req.onsuccess=e=>{
+  db=e.target.result;
+  loadAll();
+  syncQueue();
+  setInterval(checkOverdue,10000);
+ };
+}
 
 // ---------------- CUSTOMER ----------------
 function addCustomer(){
- let nameVal = document.getElementById("name").value.trim();
- let phoneVal = document.getElementById("phone").value.trim();
-
- if(!nameVal) return alert("Name required");
-
  let obj={
-  id:Date.now(),
-  name: nameVal,
-  phone: phoneVal,
-  balance: 0
+  id:crypto.randomUUID(),
+  name:name.value,
+  phone:phone.value,
+  balance:0
  };
 
  db.transaction("customers","readwrite")
- .objectStore("customers")
- .put(obj);
+ .objectStore("customers").put(obj);
 
- loadCustomers();
-
- document.getElementById("name").value="";
- document.getElementById("phone").value="";
+ loadAll();
 }
 
-// ---------------- TRANSACTION ----------------
-function doTransaction(){
- let name=t_member.value;
- let amt=+amount.value;
- let type=document.getElementById("type").value;
-
- let tx=db.transaction("customers","readwrite");
- let store=tx.objectStore("customers");
-
- store.getAll().onsuccess=e=>{
-  let user=e.target.result.find(u=>u.name===name);
-  if(!user) return alert("User not found");
-
-  if(type==="deposit"||type==="saving") user.balance+=amt;
-  if(type==="withdraw") user.balance-=amt;
-  if(type==="buying") user.balance-=amt;
-  if(type==="selling") user.balance+=amt;
-
-  store.put(user);
-
-  db.transaction("transactions","readwrite")
-  .objectStore("transactions")
-  .put({id:Date.now(),name,type,amount:amt});
-
-  loadAll();
+// ---------------- TRANSACTION (OFFLINE QUEUE) ----------------
+function transaction(){
+ let t={
+  id:crypto.randomUUID(),
+  name:t_member.value,
+  type:type.value,
+  amount:+amount.value,
+  time:Date.now()
  };
+
+ queue.push(t);
+ localStorage.setItem("queue",JSON.stringify(queue));
+
+ processQueue();
+}
+
+// ---------------- SYNC ENGINE ----------------
+function processQueue(){
+ let tx=db.transaction("transactions","readwrite").objectStore("transactions");
+
+ queue.forEach(q=>{
+  tx.put(q);
+
+  db.transaction("audit","readwrite")
+  .objectStore("audit")
+  .put({id:q.id,action:"sync",data:q});
+ });
+
+ queue=[];
+ localStorage.removeItem("queue");
+
+ loadAll();
 }
 
 // ---------------- LOAN ----------------
 function createLoan(){
- let name=loan_member.value;
- let principal=+loan_amount.value;
- let months=+loan_months.value;
+ let loan={
+  id:crypto.randomUUID(),
+  name:loan_member.value,
+  amount:+loan_amount.value,
+  months:+loan_months.value,
+  interest:18
+ };
 
- let interest = principal*18/100;
- let total = principal + interest;
- let emi = total/months;
- let loanId = Date.now();
-
- db.transaction("loans","readwrite")
- .objectStore("loans")
- .put({id:loanId,name,principal,total,emi,months});
-
- // EMI schedule
- let emiStore=db.transaction("emis","readwrite").objectStore("emis");
-
- for(let i=1;i<=months;i++){
-  emiStore.put({
-   id:Date.now()+i,
-   loanId,
-   name,
-   emiNo:i,
-   amount:emi,
-   status:"pending"
-  });
- }
-
+ db.transaction("loans","readwrite").objectStore("loans").put(loan);
  loadAll();
 }
 
-// ---------------- EMI PAYMENT ----------------
+// ---------------- EMI ----------------
 function payEMI(){
- let loanId=+pay_loan_id.value;
- let amt=+pay_amount.value;
+ let id = loan_id.value;
 
- let tx=db.transaction("emis","readwrite");
- let store=tx.objectStore("emis");
+ let store = db.transaction("loans","readwrite").objectStore("loans");
 
  store.getAll().onsuccess=e=>{
-  let emi=e.target.result.find(x=>x.loanId===loanId && x.status==="pending");
+  let loan = e.target.result.find(l=>l.id===id);
+  if(!loan) return alert("Not found");
 
-  if(!emi) return alert("No pending EMI");
+  loan.paid = (loan.paid||0)+1;
+  store.put(loan);
 
-  emi.status="paid";
-  store.put(emi);
-
-  db.transaction("transactions","readwrite")
-  .objectStore("transactions")
-  .put({id:Date.now(),name:emi.name,type:"loanpay",amount:amt});
+  db.transaction("audit","readwrite")
+  .objectStore("audit")
+  .put({id:crypto.randomUUID(),action:"emi",loan:id});
 
   loadAll();
  };
 }
 
+// ---------------- OVERDUE ----------------
+function checkOverdue(){
+ let store = db.transaction("loans").objectStore("loans");
+
+ store.getAll().onsuccess=e=>{
+  e.target.result.forEach(l=>{
+   if(l.paid && l.paid < l.months){
+    console.log("OVERDUE:",l.name);
+   }
+  });
+ };
+}
+
 // ---------------- LOAD ----------------
+function loadAll(){
+ loadCustomers();
+ loadLoans();
+ loadEMI();
+ drawChart();
+}
+
 function loadCustomers(){
  db.transaction("customers").objectStore("customers")
  .getAll().onsuccess=e=>{
-  customerTable.innerHTML = e.target.result.map(c =>
- `<tr>
-   <td>${c.name ?? "N/A"}</td>
-   <td>${c.phone ?? ""}</td>
-   <td>${c.balance ?? 0}</td>
- </tr>`
-).join("");
+  customerTable.innerHTML=e.target.result.map(c=>
+   `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.balance}</td></tr>`
+  ).join("");
  };
 }
 
@@ -227,45 +248,34 @@ function loadLoans(){
  db.transaction("loans").objectStore("loans")
  .getAll().onsuccess=e=>{
   loanTable.innerHTML=e.target.result.map(l=>
-   `<tr><td>${l.name}</td><td>${l.principal}</td><td>${l.total}</td><td>${l.emi.toFixed(2)}</td></tr>`
+   `<tr><td>${l.name}</td><td>${l.amount}</td><td>${l.months}</td><td>${l.paid||0}</td></tr>`
   ).join("");
  };
 }
 
 function loadEMI(){
- db.transaction("emis").objectStore("emis")
- .getAll().onsuccess=e=>{
-  emiTable.innerHTML=e.target.result.slice(0,10).map(i=>
-   `<tr><td>${i.loanId}</td><td>${i.amount.toFixed(2)}</td><td>${i.status}</td></tr>`
-  ).join("");
- };
+ loanTable.innerHTML = loanTable.innerHTML;
 }
 
-// ---------------- DASHBOARD ----------------
+// ---------------- CHART ----------------
 function drawChart(){
  db.transaction("transactions").objectStore("transactions")
  .getAll().onsuccess=e=>{
 
-  let d=0,c=0;
+  let income=0,expense=0;
 
-  e.target.result.forEach(x=>{
-   if(x.type==="deposit"||x.type==="selling") c+=x.amount;
-   else d+=x.amount;
+  e.target.result.forEach(t=>{
+   if(t.type==="deposit") income+=t.amount;
+   else expense+=t.amount;
   });
 
-  new Chart(document.getElementById("chart"),{
+  if(chart) chart.destroy();
+
+  chart = new Chart(chartCanvas,{
    type:"bar",
-   data:{labels:["Income","Expense"],datasets:[{data:[c,d]}]}
+   data:{labels:["Income","Expense"],datasets:[{data:[income,expense]}]}
   });
  };
-}
-
-// ---------------- LOAD ALL ----------------
-function loadAll(){
- loadCustomers();
- loadLoans();
- loadEMI();
- drawChart();
 }
 </script>
 
