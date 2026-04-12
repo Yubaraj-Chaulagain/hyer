@@ -147,16 +147,39 @@ function addCustomer(){
 
 // ---------------- TRANSACTION ----------------
 function transaction(){
- let t={
-  id:crypto.randomUUID(),
-  name:t_member.value,
-  type:type.value,
-  amount:+amount.value,
-  time:Date.now()
+
+ if(!db){
+  alert("DB not ready");
+  return;
+ }
+
+ let t = {
+  id: crypto.randomUUID(),
+  name: document.getElementById("t_member").value.trim(),
+  type: document.getElementById("type").value,
+  amount: Number(document.getElementById("amount").value),
+  time: Date.now()
  };
 
- db.transaction("transactions","readwrite").objectStore("transactions").put(t);
- loadAll();
+ if(!t.name || !t.amount){
+  alert("Fill all fields");
+  return;
+ }
+
+ let store = db.transaction("transactions","readwrite")
+ .objectStore("transactions");
+
+ let req = store.put(t);
+
+ req.onsuccess = ()=>{
+  alert("Transaction saved ✅");
+  loadAll();
+ };
+
+ req.onerror = ()=>{
+  alert("Transaction failed ❌");
+  console.log(req.error);
+ };
 }
 
 // ---------------- LOAN ----------------
