@@ -52,11 +52,19 @@ function loadMembers(){
 }
 
 // EDIT
-function editMember(m){
- editMemberId = m.id;
- m_name.value = m.name;
- m_phone.value = m.phone;
+<script>
+function editMember(id){
+ let tx = db.transaction("members","readonly");
+ let store = tx.objectStore("members");
+
+ store.get(id).onsuccess = e=>{
+  let m = e.target.result;
+  editMemberId = m.id;
+  m_name.value = m.name;
+  m_phone.value = m.phone;
+ };
 }
+</script>
 
 // DELETE
 function deleteMember(id){
@@ -120,7 +128,7 @@ function loadTransactions(){
    <td>${t.amount}</td>
    <td>${t.type}</td>
    <td>
-     <button onclick='editTransaction(${JSON.stringify(t)})'>✏️</button>
+     onclick='editTransaction(${t.id})'>✏️</button>
      <button onclick='deleteTransaction(${t.id})'>🗑️</button>
    </td></tr>`;
   });
@@ -188,8 +196,7 @@ function loadStock(){
    html+=`<tr>
    <td>${s.name}</td>
    <td>${s.qty}</td>
-   <td>
-     <button onclick='editStock(${JSON.stringify(s)})'>✏️</button>
+   <td>onclick='editStock(${s.id})'>✏️</button>
      <button onclick='deleteStock(${s.id})'>🗑️</button>
    </td></tr>`;
   });
