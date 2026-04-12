@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Business ERP Ultimate FIXED</title>
+<title>ERP CRUD Ultimate</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,66 +13,67 @@ input,select,button{width:100%;padding:10px;margin:5px 0;}
 button{background:#007bff;color:white;border:none;}
 table{width:100%;background:white;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
-h2{text-align:center;}
 .section{background:white;padding:10px;margin-top:10px;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
-<h2>📒 Business ERP Ultimate</h2>
+<h2>📒 ERP CRUD Ultimate</h2>
 
-<button id="installBtn">📲 Install App</button>
-
+<!-- MEMBER -->
 <div class="section">
 <h3>👤 Member</h3>
 <input id="m_name" placeholder="Name">
 <input id="m_phone" placeholder="Phone">
-<button onclick="addMember()">Add Member</button>
+<button onclick="saveMember()">Save</button>
+
+<table>
+<thead><tr><th>Name</th><th>Phone</th><th>Action</th></tr></thead>
+<tbody id="memberTable"></tbody>
+</table>
 </div>
 
+<!-- TRANSACTION -->
 <div class="section">
 <h3>💰 Transaction</h3>
-<input id="t_member" placeholder="Member Name">
+<input id="t_member" placeholder="Member">
 <input id="t_amount" placeholder="Amount">
 <select id="t_type">
 <option value="credit">Credit</option>
 <option value="debit">Debit</option>
 </select>
-<button onclick="addTransaction()">Save</button>
+<button onclick="saveTransaction()">Save</button>
+
+<table>
+<thead><tr><th>Member</th><th>Amount</th><th>Type</th><th>Action</th></tr></thead>
+<tbody id="txTable"></tbody>
+</table>
 </div>
 
+<!-- STOCK -->
 <div class="section">
 <h3>📦 Stock</h3>
 <input id="s_name" placeholder="Item">
 <input id="s_qty" placeholder="Qty">
-<button onclick="addStock()">Add Stock</button>
+<button onclick="saveStock()">Save</button>
 
-<input id="sell_item" placeholder="Sell Item">
+<table>
+<thead><tr><th>Item</th><th>Qty</th><th>Action</th></tr></thead>
+<tbody id="stockTable"></tbody>
+</table>
+
+<h4>Sell</h4>
+<input id="sell_item" placeholder="Item">
 <input id="sell_qty" placeholder="Qty">
 <input id="sell_price" placeholder="Price">
 <button onclick="sellItem()">Sell</button>
 </div>
 
-<div class="section">
-<h3>⚠️ Low Stock</h3>
-<input id="low_limit" placeholder="Limit (5)">
-<button onclick="checkLowStock()">Check</button>
-<ul id="lowList"></ul>
-</div>
-
-<div class="section">
-<button onclick="downloadExcel()">📥 Excel</button>
-<button onclick="backup()">📦 Backup</button>
-<input type="file" onchange="restore(event)">
-<button onclick="printData()">🧾 Print</button>
-<h3 id="total">Total: 0</h3>
-</div>
-
-<canvas id="chart"></canvas>
-
 <script>
-let db;
+let db, editId=null;
+
+// DB INIT
 let req=indexedDB.open("ERP",1);
 
 req.onupgradeneeded=e=>{
@@ -84,181 +85,186 @@ req.onupgradeneeded=e=>{
 
 req.onsuccess=e=>{
  db=e.target.result;
- drawChart();
+ loadAll();
 };
 
-// MEMBER
-function addMember(){
- let name=document.getElementById("m_name").value;
- let phone=document.getElementById("m_phone").value;
+// MEMBER CRUD
+function saveMember(){
+ let name=m_name.value;
+ let phone=m_phone.value;
 
- if(!name) return alert("Enter name");
+ let obj={id:editId||Date.now(),name,phone};
 
  db.transaction("members","readwrite")
- .objectStore("members")
- .put({id:Date.now(),name,phone});
+ .objectStore("members").put(obj);
 
- alert("Member Added");
+ editId=null;
+ m_name.value=""; m_phone.value="";
+ loadMembers();
 }
 
-// TRANSACTION
-function addTransaction(){
- let member=document.getElementById("t_member").value;
- let amount=+document.getElementById("t_amount").value;
- let type=document.getElementById("t_type").value;
+function loadMembers(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess=e=>{
+  memberTable.innerHTML=e.target.result.map(i=>`
+   <tr>
+   <td>${i.name}</td>
+   <td>${i.phone}</td>
+   <td>
+   <button onclick='editMember(${i.id})'>Edit</button>
+   <button onclick='deleteMember(${i.id})'>Delete</button>
+   </td>
+   </tr>
+  `).join("");
+ };
+}
 
- if(!member || !amount) return alert("Fill all");
+function editMember(id){
+ db.transaction("members").objectStore("members")
+ .get(id).onsuccess=e=>{
+  let d=e.target.result;
+  m_name.value=d.name;
+  m_phone.value=d.phone;
+  editId=id;
+ };
+}
+
+function deleteMember(id){
+ db.transaction("members","readwrite")
+ .objectStore("members").delete(id);
+ loadMembers();
+}
+
+// TRANSACTION CRUD
+function saveTransaction(){
+ let obj={
+  id:editId||Date.now(),
+  member:t_member.value,
+  amount:+t_amount.value,
+  type:t_type.value
+ };
 
  db.transaction("transactions","readwrite")
- .objectStore("transactions")
- .put({id:Date.now(),member,amount,type});
+ .objectStore("transactions").put(obj);
 
- alert("Saved");
- drawChart();
+ editId=null;
+ t_member.value=""; t_amount.value="";
+ loadTx();
 }
 
-// STOCK
-function addStock(){
- let name=document.getElementById("s_name").value;
- let qty=+document.getElementById("s_qty").value;
+function loadTx(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess=e=>{
+  txTable.innerHTML=e.target.result.map(i=>`
+   <tr>
+   <td>${i.member}</td>
+   <td>${i.amount}</td>
+   <td>${i.type}</td>
+   <td>
+   <button onclick='editTx(${i.id})'>Edit</button>
+   <button onclick='deleteTx(${i.id})'>Delete</button>
+   </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function editTx(id){
+ db.transaction("transactions").objectStore("transactions")
+ .get(id).onsuccess=e=>{
+  let d=e.target.result;
+  t_member.value=d.member;
+  t_amount.value=d.amount;
+  t_type.value=d.type;
+  editId=id;
+ };
+}
+
+function deleteTx(id){
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions").delete(id);
+ loadTx();
+}
+
+// STOCK CRUD
+function saveStock(){
+ let obj={
+  id:editId||Date.now(),
+  name:s_name.value,
+  qty:+s_qty.value
+ };
 
  db.transaction("stock","readwrite")
- .objectStore("stock")
- .put({id:Date.now(),name,qty});
+ .objectStore("stock").put(obj);
 
- alert("Stock Added");
+ editId=null;
+ s_name.value=""; s_qty.value="";
+ loadStock();
+}
+
+function loadStock(){
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess=e=>{
+  stockTable.innerHTML=e.target.result.map(i=>`
+   <tr>
+   <td>${i.name}</td>
+   <td>${i.qty}</td>
+   <td>
+   <button onclick='editStock(${i.id})'>Edit</button>
+   <button onclick='deleteStock(${i.id})'>Delete</button>
+   </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function editStock(id){
+ db.transaction("stock").objectStore("stock")
+ .get(id).onsuccess=e=>{
+  let d=e.target.result;
+  s_name.value=d.name;
+  s_qty.value=d.qty;
+  editId=id;
+ };
+}
+
+function deleteStock(id){
+ db.transaction("stock","readwrite")
+ .objectStore("stock").delete(id);
+ loadStock();
 }
 
 // SELL
 function sellItem(){
- let item=document.getElementById("sell_item").value;
- let qty=+document.getElementById("sell_qty").value;
- let price=+document.getElementById("sell_price").value;
-
- let total=qty*price;
+ let item=sell_item.value;
+ let qty=+sell_qty.value;
+ let price=+sell_price.value;
 
  db.transaction("transactions","readwrite")
  .objectStore("transactions")
- .put({id:Date.now(),item,qty,total});
+ .put({id:Date.now(),member:item,amount:qty*price,type:"credit"});
 
- reduceStock(item,qty);
-
- alert("Sold");
- drawChart();
-}
-
-// REDUCE STOCK
-function reduceStock(name,qty){
+ // reduce stock
  let tx=db.transaction("stock","readwrite");
- let store=tx.objectStore("stock");
-
- store.getAll().onsuccess=e=>{
+ tx.objectStore("stock").getAll().onsuccess=e=>{
   e.target.result.forEach(i=>{
-   if(i.name===name){
+   if(i.name===item){
     i.qty-=qty;
-    store.put(i);
+    tx.objectStore("stock").put(i);
    }
   });
  };
+
+ loadStock();
+ loadTx();
 }
 
-// LOW STOCK
-function checkLowStock(){
- let limit=+document.getElementById("low_limit").value||5;
-
- db.transaction("stock","readonly")
- .objectStore("stock")
- .getAll().onsuccess=e=>{
-  let low=e.target.result.filter(i=>i.qty<=limit);
-
-  document.getElementById("lowList").innerHTML=
-   low.map(i=>`<li>${i.name} (${i.qty})</li>`).join("");
- };
+// LOAD ALL
+function loadAll(){
+ loadMembers();
+ loadTx();
+ loadStock();
 }
-
-// EXCEL
-function downloadExcel(){
- db.transaction("transactions","readonly")
- .objectStore("transactions").getAll().onsuccess=e=>{
-  let ws=XLSX.utils.json_to_sheet(e.target.result);
-  let wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Data");
-  XLSX.writeFile(wb,"ERP.xlsx");
- };
-}
-
-// BACKUP
-function backup(){
- let data={};
-
- let tx=db.transaction(["members","transactions","stock"],"readonly");
-
- tx.objectStore("members").getAll().onsuccess=e=>data.members=e.target.result;
- tx.objectStore("transactions").getAll().onsuccess=e=>data.transactions=e.target.result;
- tx.objectStore("stock").getAll().onsuccess=e=>{
-  data.stock=e.target.result;
-
-  let blob=new Blob([JSON.stringify(data)]);
-  let a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="backup.json";
-  a.click();
- };
-}
-
-// RESTORE
-function restore(e){
- let file=e.target.files[0];
- let reader=new FileReader();
-
- reader.onload=()=>{
-  let d=JSON.parse(reader.result);
-
-  let tx=db.transaction(["members","transactions","stock"],"readwrite");
-
-  d.members.forEach(x=>tx.objectStore("members").put(x));
-  d.transactions.forEach(x=>tx.objectStore("transactions").put(x));
-  d.stock.forEach(x=>tx.objectStore("stock").put(x));
-
-  alert("Restored");
- };
-
- reader.readAsText(file);
-}
-
-// PRINT
-function printData(){
- window.print();
-}
-
-// CHART
-function drawChart(){
- db.transaction("transactions","readonly")
- .objectStore("transactions").getAll().onsuccess=e=>{
-
-  let c=0,d=0;
-  e.target.result.forEach(x=>{
-   if(x.type==="credit") c+=x.amount||0;
-   else d+=x.amount||0;
-  });
-
-  new Chart(document.getElementById("chart"),{
-   type:"bar",
-   data:{labels:["Credit","Debit"],datasets:[{data:[c,d]}]}
-  });
- };
-}
-
-// INSTALL
-let promptEvent;
-window.addEventListener("beforeinstallprompt",e=>{
- e.preventDefault();
- promptEvent=e;
-});
-
-document.getElementById("installBtn").onclick=()=>{
- if(promptEvent) promptEvent.prompt();
-};
 </script>
 
 </body>
