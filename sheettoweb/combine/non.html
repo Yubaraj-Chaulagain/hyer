@@ -231,13 +231,18 @@ function deleteMember(id){
 // BANK
 function bank(){
 
- let amt=+b_amount.value;
+ let memberId = document.getElementById("b_member").value;
+ let amt = +b_amount.value;
+
+ if(!memberId) return alert("Please select member");
  if(!amt || amt<=0) return alert("Invalid amount");
 
  let store=db.transaction("members","readwrite").objectStore("members");
 
- store.get(b_member.value).onsuccess=e=>{
+ store.get(memberId).onsuccess=e=>{
   let m=e.target.result;
+
+  if(!m) return alert("Member not found");
 
   if(b_type.value==="withdraw" && m.balance<amt){
    return alert("Low balance");
@@ -280,6 +285,7 @@ function doTransfer(){
  let toId = t_to.value;
  let amt = +t_amount.value;
 
+ if(!fromId || !toId) return alert("Select members");
  if(fromId===toId) return alert("Same member not allowed");
  if(!amt || amt<=0) return alert("Invalid amount");
 
@@ -291,6 +297,7 @@ function doTransfer(){
   let A=data.find(x=>x.id==fromId);
   let B=data.find(x=>x.id==toId);
 
+  if(!A || !B) return alert("Member missing");
   if(A.balance < amt) return alert("Insufficient balance");
 
   A.balance -= amt;
@@ -448,7 +455,7 @@ function loadDropdown(){
  memberStore.getAll().onsuccess = e=>{
   let list = e.target.result;
 
-  let options = `<option value="">Select Member</option>`;
+  let options = `<option value="" disabled selected>Select Member</option>`;
 
   list.forEach(m=>{
    options += `<option value="${m.id}">${m.name}</option>`;
@@ -481,6 +488,12 @@ function filterMembers(){
  [...memberTable.rows].forEach(r=>{
   r.style.display=r.innerText.toLowerCase().includes(val)?"":"none";
  });
+}
+
+function getValue(id){
+ let v = document.getElementById(id).value;
+ if(!v) throw new Error("Invalid selection");
+ return v;
 }
 
 // EXPORT EXCEL
