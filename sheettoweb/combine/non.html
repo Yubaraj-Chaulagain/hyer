@@ -2,17 +2,15 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ERP PRO MAX FIXED</title>
+<title>ERP ULTRA FIXED</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{font-family:Arial;background:#eef2f7;margin:0;}
-.tabs{display:flex;background:#2563eb;color:#fff;}
-.tabs button{flex:1;padding:10px;border:none;background:#2563eb;color:#fff;}
-.section{display:none;padding:10px;}
-.active{display:block;}
+.section{background:#fff;padding:10px;margin:10px;border-radius:10px;}
 input,select,button{width:100%;padding:8px;margin:5px 0;}
+button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 </style>
@@ -20,111 +18,70 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 
 <body>
 
-<h2 style="text-align:center">🚀 ERP PRO MAX FIXED SYSTEM</h2>
-
-<div class="tabs">
-<button onclick="showTab('members')">Members</button>
-<button onclick="showTab('bank')">Bank</button>
-<button onclick="showTab('stock')">Stock</button>
-<button onclick="showTab('transfer')">Transfer</button>
-<button onclick="showTab('buysell')">Buy/Sell</button>
-<button onclick="showTab('report')">Report</button>
-</div>
+<h2 style="text-align:center">🚀 ERP ULTRA FIXED SYSTEM</h2>
 
 <!-- MEMBERS -->
-<div id="members" class="section active">
-<h3>Members</h3>
+<div class="section">
+<h3>👤 Members</h3>
+
+<input id="m_search" placeholder="Search members" onkeyup="searchMembers()">
 
 <input id="m_name" placeholder="Name">
-<input id="m_phone" placeholder="Phone">
-<button onclick="saveMember()">Save</button>
+<button onclick="saveMember()">Save Member</button>
 
 <table>
-<thead>
-<tr><th>Name</th><th>Phone</th><th>Balance</th><th>Action</th></tr>
-</thead>
+<thead><tr><th>Name</th><th>Balance</th><th>Action</th></tr></thead>
 <tbody id="memberTable"></tbody>
 </table>
 </div>
 
-<!-- BANK -->
-<div id="bank" class="section">
-<h3>Bank</h3>
-
-<select id="b_member"></select>
-<select id="b_type">
-<option>deposit</option>
-<option>withdraw</option>
-</select>
-<input id="b_amount" placeholder="Amount">
-<button onclick="bank()">Submit</button>
-
-<table>
-<thead>
-<tr><th>Name</th><th>Type</th><th>Amount</th><th>Date</th></tr>
-</thead>
-<tbody id="bankTable"></tbody>
-</table>
-</div>
-
 <!-- STOCK -->
-<div id="stock" class="section">
-<h3>Stock</h3>
+<div class="section">
+<h3>📦 Stock</h3>
 
-<input id="item" placeholder="Item">
-<input id="qty" placeholder="Qty">
-<button onclick="addStock()">Add</button>
+<input id="s_search" placeholder="Search stock" onkeyup="searchStock()">
+
+<input id="s_name" placeholder="Item">
+<input id="s_qty" placeholder="Qty">
+<button onclick="saveStock()">Save Stock</button>
 
 <table>
-<thead>
-<tr><th>Item</th><th>Qty</th><th>Action</th></tr>
-</thead>
+<thead><tr><th>Item</th><th>Qty</th><th>Action</th></tr></thead>
 <tbody id="stockTable"></tbody>
 </table>
 </div>
 
-<!-- TRANSFER -->
-<div id="transfer" class="section">
-<h3>Transfer</h3>
+<!-- TRANSACTION -->
+<div class="section">
+<h3>💰 Transaction</h3>
 
-<select id="t_from"></select>
-<select id="t_to"></select>
-<input id="t_amount" placeholder="Amount">
-<button onclick="doTransfer()">Send</button>
+<select id="t_member"></select>
 
-<table>
-<thead>
-<tr><th>From</th><th>To</th><th>Amount</th><th>Date</th></tr>
-</thead>
-<tbody id="transferTable"></tbody>
-</table>
-</div>
-
-<!-- BUY SELL -->
-<div id="buysell" class="section">
-<h3>Buy / Sell</h3>
-
-<select id="bs_item"></select>
-<select id="bs_type">
+<select id="t_type">
+<option value="deposit">Deposit</option>
+<option value="withdraw">Withdraw</option>
 <option value="buy">Buy</option>
 <option value="sell">Sell</option>
 </select>
 
-<input id="bs_qty" placeholder="Qty">
-<input id="bs_price" placeholder="Price">
-<button onclick="doBuySell()">Submit</button>
-
-<table>
-<thead>
-<tr><th>Item</th><th>Type</th><th>Qty</th><th>Price</th><th>Total</th><th>Date</th></tr>
-</thead>
-<tbody id="bsTable"></tbody>
-</table>
+<input id="t_amount" placeholder="Amount">
+<button onclick="addTransaction()">Submit</button>
 </div>
 
-<!-- REPORT -->
-<div id="report" class="section">
-<h3>Report</h3>
+<!-- TRANSFER -->
+<div class="section">
+<h3>💸 Transfer</h3>
+
+<select id="f_member"></select>
+<select id="t_member2"></select>
+
+<input id="t_amt" placeholder="Amount">
+<button onclick="transfer()">Send</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section">
+<h3>📊 Dashboard</h3>
 <canvas id="chart"></canvas>
 </div>
 
@@ -132,17 +89,14 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 
 let db, chart;
 
-// ---------------- DB ----------------
-let req = indexedDB.open("ERP_PRO_FIXED", 1);
+// ================= DB =================
+let req = indexedDB.open("ERP_ULTRA_FINAL",1);
 
 req.onupgradeneeded = e=>{
  db = e.target.result;
-
  db.createObjectStore("members",{keyPath:"id"});
- db.createObjectStore("bank",{keyPath:"id"});
  db.createObjectStore("stock",{keyPath:"id"});
- db.createObjectStore("transfer",{keyPath:"id"});
- db.createObjectStore("buysell",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
 };
 
 req.onsuccess = e=>{
@@ -150,98 +104,113 @@ req.onsuccess = e=>{
  loadAll();
 };
 
-// ---------------- TAB ----------------
-function showTab(id){
- document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
-}
-
-// ---------------- MEMBER ----------------
+// ================= MEMBERS =================
 function saveMember(){
-
- let name = m_name.value.trim();
- let phone = m_phone.value.trim();
-
- if(!name) return alert("Enter name");
 
  let tx = db.transaction("members","readwrite");
  let store = tx.objectStore("members");
 
  store.put({
   id: crypto.randomUUID(),
-  name,
-  phone,
+  name: m_name.value,
   balance: 0
  });
 
  tx.oncomplete = ()=>{
   m_name.value="";
-  m_phone.value="";
   loadAll();
  };
 }
 
-// ---------------- BANK ----------------
-function bank(){
+function loadMembers(){
 
- let amt = +b_amount.value;
- if(!amt) return alert("Invalid amount");
-
- let tx = db.transaction("members","readwrite");
- let store = tx.objectStore("members");
-
- store.get(b_member.value).onsuccess = e=>{
-  let m = e.target.result;
-
-  if(b_type.value==="withdraw" && m.balance < amt){
-   return alert("Low balance");
-  }
-
-  m.balance += (b_type.value==="deposit"?amt:-amt);
-
-  store.put(m);
-
-  db.transaction("bank","readwrite").objectStore("bank").put({
-   id: crypto.randomUUID(),
-   name: m.name,
-   type: b_type.value,
-   amount: amt,
-   date: new Date().toLocaleString()
-  });
-
-  loadAll();
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess = e=>{
+  memberTable.innerHTML = e.target.result.map(m=>`
+   <tr>
+    <td>${m.name}</td>
+    <td>${m.balance}</td>
+    <td><button onclick="deleteMember('${m.id}')">Delete</button></td>
+   </tr>
+  `).join("");
  };
 }
 
-// ---------------- STOCK ----------------
-function addStock(){
-
- db.transaction("stock","readwrite").objectStore("stock")
- .put({
-  id: crypto.randomUUID(),
-  name: item.value,
-  qty: +qty.value
- });
-
+function deleteMember(id){
+ db.transaction("members","readwrite")
+ .objectStore("members").delete(id);
  loadAll();
 }
 
-// ---------------- TRANSFER ----------------
-function doTransfer(){
+// ================= STOCK =================
+function saveStock(){
 
- let from = t_from.value;
- let to = t_to.value;
- let amt = +t_amount.value;
+ let tx = db.transaction("stock","readwrite");
+ tx.objectStore("stock").put({
+  id: crypto.randomUUID(),
+  name: s_name.value,
+  qty: +s_qty.value
+ });
+
+ tx.oncomplete = loadAll;
+}
+
+function loadStock(){
+
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess = e=>{
+  stockTable.innerHTML = e.target.result.map(s=>`
+   <tr>
+    <td>${s.name}</td>
+    <td>${s.qty}</td>
+    <td><button onclick="deleteStock('${s.id}')">Delete</button></td>
+   </tr>
+  `).join("");
+ };
+}
+
+function deleteStock(id){
+ db.transaction("stock","readwrite")
+ .objectStore("stock").delete(id);
+ loadAll();
+}
+
+// ================= TRANSACTION =================
+function addTransaction(){
+
+ let tx = db.transaction("transactions","readwrite");
+ let store = tx.objectStore("transactions");
+
+ store.put({
+  id: crypto.randomUUID(),
+  member: t_member.value,
+  type: t_type.value,
+  amount: +t_amount.value
+ });
+
+ tx.oncomplete = ()=>{
+  t_amount.value="";
+  loadAll();
+ };
+}
+
+// ================= TRANSFER =================
+function transfer(){
+
+ let f = f_member.value;
+ let t = t_member2.value;
+ let amt = +t_amt.value;
 
  let store = db.transaction("members","readwrite").objectStore("members");
 
  store.getAll().onsuccess = e=>{
   let list = e.target.result;
 
-  let A = list.find(x=>x.id===from);
-  let B = list.find(x=>x.id===to);
+  let A = list.find(x=>x.id===f);
+  let B = list.find(x=>x.id===t);
 
-  if(!A || !B) return alert("Select members");
+  if(!A || !B) return;
+
   if(A.balance < amt) return alert("No balance");
 
   A.balance -= amt;
@@ -250,169 +219,59 @@ function doTransfer(){
   store.put(A);
   store.put(B);
 
-  db.transaction("transfer","readwrite").objectStore("transfer").put({
-   id: crypto.randomUUID(),
-   from: A.name,
-   to: B.name,
-   amount: amt,
-   date: new Date().toLocaleString()
-  });
-
   loadAll();
  };
 }
 
-// ---------------- BUY SELL ----------------
-function doBuySell(){
-
- let id = bs_item.value;
- let qty = +bs_qty.value;
- let price = +bs_price.value;
-
- let store = db.transaction("stock","readwrite").objectStore("stock");
-
- store.get(id).onsuccess = e=>{
-  let s = e.target.result;
-
-  if(bs_type.value==="sell" && s.qty < qty){
-   return alert("Stock low");
-  }
-
-  s.qty += (bs_type.value==="buy"?qty:-qty);
-
-  store.put(s);
-
-  db.transaction("buysell","readwrite").objectStore("buysell").put({
-   id: crypto.randomUUID(),
-   item: s.name,
-   type: bs_type.value,
-   qty,
-   price,
-   total: qty*price,
-   date: new Date().toLocaleString()
-  });
-
-  loadAll();
- };
+// ================= SEARCH =================
+function searchMembers(){
+ let val = m_search.value.toLowerCase();
+ [...memberTable.rows].forEach(r=>{
+  r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+ });
 }
 
-// ---------------- LOAD ----------------
+function searchStock(){
+ let val = s_search.value.toLowerCase();
+ [...stockTable.rows].forEach(r=>{
+  r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
+ });
+}
+
+// ================= LOAD =================
 function loadAll(){
  loadMembers();
- loadBank();
  loadStock();
- loadTransfer();
- loadBS();
  loadDropdown();
  drawChart();
 }
 
-// ---------------- MEMBERS ----------------
-function loadMembers(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess = e=>{
-  memberTable.innerHTML = e.target.result.map(m=>`
-   <tr>
-    <td>${m.name}</td>
-    <td>${m.phone}</td>
-    <td>${m.balance}</td>
-   </tr>
-  `).join("");
- };
-}
-
-// ---------------- BANK ----------------
-function loadBank(){
- db.transaction("bank").objectStore("bank")
- .getAll().onsuccess = e=>{
-  bankTable.innerHTML = e.target.result.map(b=>`
-   <tr>
-    <td>${b.name}</td>
-    <td>${b.type}</td>
-    <td>${b.amount}</td>
-    <td>${b.date}</td>
-   </tr>
-  `).join("");
- };
-}
-
-// ---------------- STOCK ----------------
-function loadStock(){
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess = e=>{
-  stockTable.innerHTML = e.target.result.map(s=>`
-   <tr>
-    <td>${s.name}</td>
-    <td>${s.qty}</td>
-   </tr>
-  `).join("");
- };
-}
-
-// ---------------- DROPDOWN FIX ----------------
+// ================= DROPDOWN =================
 function loadDropdown(){
 
  db.transaction("members").objectStore("members")
  .getAll().onsuccess = e=>{
-  let list = e.target.result;
+  let opt = e.target.result.map(m=>
+   `<option value="${m.id}">${m.name}</option>`
+  ).join("");
 
-  let opt = list.map(m=>`<option value="${m.id}">${m.name}</option>`).join("");
-
-  b_member.innerHTML = opt;
-  t_from.innerHTML = opt;
-  t_to.innerHTML = opt;
- };
-
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess = e=>{
-  bs_item.innerHTML = e.target.result.map(s=>`
-   <option value="${s.id}">${s.name}</option>
-  `).join("");
+  t_member.innerHTML = opt;
+  f_member.innerHTML = opt;
+  t_member2.innerHTML = opt;
  };
 }
 
-// ---------------- TRANSFER TABLE ----------------
-function loadTransfer(){
- db.transaction("transfer").objectStore("transfer")
- .getAll().onsuccess = e=>{
-  transferTable.innerHTML = e.target.result.map(t=>`
-   <tr>
-    <td>${t.from}</td>
-    <td>${t.to}</td>
-    <td>${t.amount}</td>
-    <td>${t.date}</td>
-   </tr>
-  `).join("");
- };
-}
-
-// ---------------- BUY SELL TABLE ----------------
-function loadBS(){
- db.transaction("buysell").objectStore("buysell")
- .getAll().onsuccess = e=>{
-  bsTable.innerHTML = e.target.result.map(b=>`
-   <tr>
-    <td>${b.item}</td>
-    <td>${b.type}</td>
-    <td>${b.qty}</td>
-    <td>${b.price}</td>
-    <td>${b.total}</td>
-    <td>${b.date}</td>
-   </tr>
-  `).join("");
- };
-}
-
-// ---------------- CHART ----------------
+// ================= CHART =================
 function drawChart(){
 
- db.transaction("bank").objectStore("bank")
+ db.transaction("transactions").objectStore("transactions")
  .getAll().onsuccess = e=>{
-  let inc=0,exp=0;
+
+  let inc=0, exp=0;
 
   e.target.result.forEach(t=>{
    if(t.type==="deposit") inc+=t.amount;
-   else exp+=t.amount;
+   if(t.type==="withdraw") exp+=t.amount;
   });
 
   if(chart) chart.destroy();
