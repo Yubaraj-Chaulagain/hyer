@@ -173,19 +173,42 @@ function showTab(id){
 // MEMBERS
 function saveMember(){
 
- let obj={
-  id: editId || crypto.randomUUID(),
-  name:m_name.value,
-  phone:m_phone.value,
-  balance:0
- };
+ let name = m_name.value.trim();
+ let phone = m_phone.value.trim();
 
- db.transaction("members","readwrite").objectStore("members").put(obj);
+ if(!name) return alert("Enter name");
 
+ if(editId){
+  // UPDATE (balance safe)
+  db.transaction("members","readwrite").objectStore("members")
+  .get(editId).onsuccess=e=>{
+   let m=e.target.result;
+   m.name=name;
+   m.phone=phone;
+
+   db.transaction("members","readwrite").objectStore("members").put(m);
+   resetForm();
+   loadAll();
+  };
+ }else{
+  // NEW
+  db.transaction("members","readwrite").objectStore("members")
+  .put({
+   id:crypto.randomUUID(),
+   name,
+   phone,
+   balance:0
+  });
+
+  resetForm();
+  loadAll();
+ }
+}
+
+function resetForm(){
  editId=null;
  m_name.value="";
  m_phone.value="";
- loadAll();
 }
 
 function editMember(id){
@@ -205,11 +228,17 @@ function deleteMember(id){
 // BANK
 function bank(){
 
+ let amt=+b_amount.value;
+ if(!amt || amt<=0) return alert("Invalid amount");
+
  let store=db.transaction("members","readwrite").objectStore("members");
 
  store.get(b_member.value).onsuccess=e=>{
   let m=e.target.result;
-  let amt=+b_amount.value;
+
+  if(b_type.value==="withdraw" && m.balance<amt){
+   return alert("Low balance");
+  }
 
   if(b_type.value==="deposit") m.balance+=amt;
   else m.balance-=amt;
@@ -225,6 +254,7 @@ function bank(){
    date:new Date().toLocaleString()
   });
 
+  b_amount.value="";
   loadAll();
  };
 }
@@ -247,6 +277,9 @@ function doTransfer(){
  let toId = t_to.value;
  let amt = +t_amount.value;
 
+ if(fromId===toId) return alert("Same member not allowed");
+ if(!amt || amt<=0) return alert("Invalid amount");
+
  let store=db.transaction("members","readwrite").objectStore("members");
 
  store.getAll().onsuccess=e=>{
@@ -255,7 +288,6 @@ function doTransfer(){
   let A=data.find(x=>x.id==fromId);
   let B=data.find(x=>x.id==toId);
 
-  if(!A || !B) return alert("Select member");
   if(A.balance < amt) return alert("Insufficient balance");
 
   A.balance -= amt;
@@ -273,6 +305,7 @@ function doTransfer(){
    date:new Date().toLocaleString()
   });
 
+  t_amount.value="";
   loadAll();
  };
 }
@@ -283,19 +316,20 @@ function doBuySell(){
  let qty = +bs_qty.value;
  let price = +bs_price.value;
 
+ if(!qty || qty<=0) return alert("Invalid qty");
+ if(!price || price<=0) return alert("Invalid price");
+
  let store=db.transaction("stock","readwrite").objectStore("stock");
 
  store.get(id).onsuccess=e=>{
   let s=e.target.result;
 
-  if(!s) return alert("Item not found");
-
-  if(bs_type.value==="buy"){
-   s.qty += qty;
-  }else{
-   if(s.qty < qty) return alert("Stock low");
-   s.qty -= qty;
+  if(bs_type.value==="sell" && s.qty<qty){
+   return alert("Stock low");
   }
+
+  if(bs_type.value==="buy") s.qty+=qty;
+  else s.qty-=qty;
 
   store.put(s);
 
@@ -310,6 +344,8 @@ function doBuySell(){
    date:new Date().toLocaleString()
   });
 
+  bs_qty.value="";
+  bs_price.value="";
   loadAll();
  };
 }
@@ -406,7 +442,16 @@ function loadDropdown(){
 
  db.transaction("members").objectStore("members")
  .getAll().onsuccess=e=>{
-  let m=e.target.result.map(x=>`<option value="${x.id}">${x.name}</option>`).join("");
+  let list=e.target.result;
+
+  if(!list.length){
+   b_member.innerHTML="";
+   t_from.innerHTML="";
+   t_to.innerHTML="";
+   return;
+  }
+
+  let m=list.map(x=>`<option value="${x.id}">${x.name}</option>`).join("");
 
   b_member.innerHTML=m;
   t_from.innerHTML=m;
@@ -415,7 +460,9 @@ function loadDropdown(){
 
  db.transaction("stock").objectStore("stock")
  .getAll().onsuccess=e=>{
-  bs_item.innerHTML=e.target.result.map(s=>`
+  let list=e.target.result;
+
+  bs_item.innerHTML=list.map(s=>`
    <option value="${s.id}">${s.name}</option>
   `).join("");
  };
