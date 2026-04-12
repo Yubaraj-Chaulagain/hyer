@@ -316,10 +316,31 @@ function loadBank(){
     <td>${b.amount}</td>
     <td>${b.date}</td>
     <td>
+     <button onclick="editBank('${b.id}','${b.name}','${b.type}',${b.amount})">✏️</button>
      <button onclick="deleteBank('${b.id}')">❌</button>
     </td>
    </tr>
   `).join("");
+ };
+}
+
+function editBank(id,name,type,amount){
+ let newType = prompt("Type (deposit/withdraw)", type);
+ let newAmt = +prompt("Amount", amount);
+
+ if(!newType || !newAmt) return;
+
+ let tx = db.transaction("bank","readwrite");
+ let store = tx.objectStore("bank");
+
+ store.get(id).onsuccess = e=>{
+  let b = e.target.result;
+
+  b.type = newType;
+  b.amount = newAmt;
+
+  store.put(b);
+  tx.oncomplete = loadAll;
  };
 }
 
@@ -343,10 +364,26 @@ function loadTransfer(){
     <td>${t.amount}</td>
     <td>${t.date}</td>
     <td>
+     <button onclick="editTransfer('${t.id}',${t.amount})">✏️</button>
      <button onclick="deleteTransfer('${t.id}')">❌</button>
     </td>
    </tr>
   `).join("");
+ };
+}
+
+function editTransfer(id,amount){
+ let newAmt = +prompt("New Amount", amount);
+ if(!newAmt) return;
+
+ let tx = db.transaction("transfer","readwrite");
+ let store = tx.objectStore("transfer");
+
+ store.get(id).onsuccess = e=>{
+  let t = e.target.result;
+  t.amount = newAmt;
+  store.put(t);
+  tx.oncomplete = loadAll;
  };
 }
 
@@ -372,6 +409,7 @@ function loadBuySell(){
     <td>${b.total}</td>
     <td>${b.date}</td>
     <td>
+     <button onclick="editBS('${b.id}',${b.qty},${b.price})">✏️</button>
      <button onclick="deleteBS('${b.id}')">❌</button>
     </td>
    </tr>
@@ -379,6 +417,26 @@ function loadBuySell(){
  };
 }
 
+function editBS(id,qty,price){
+ let newQty = +prompt("Qty", qty);
+ let newPrice = +prompt("Price", price);
+
+ if(!newQty || !newPrice) return;
+
+ let tx = db.transaction("buysell","readwrite");
+ let store = tx.objectStore("buysell");
+
+ store.get(id).onsuccess = e=>{
+  let b = e.target.result;
+
+  b.qty = newQty;
+  b.price = newPrice;
+  b.total = newQty * newPrice;
+
+  store.put(b);
+  tx.oncomplete = loadAll;
+ };
+}
 
 function deleteBS(id){
  if(!confirm("Delete Record?")) return;
@@ -387,7 +445,6 @@ function deleteBS(id){
  tx.objectStore("buysell").delete(id);
  tx.oncomplete = loadAll;
 }
-
 
 
 
