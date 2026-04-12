@@ -162,9 +162,7 @@ db.createObjectStore("buysell",{keyPath:"id"});
 req.onsuccess = e=>{
  db = e.target.result;
 
- setTimeout(()=>{
-  loadAll();
- }, 100);
+ setTimeout(loadAll, 300); // ⬅️ more safe
 };
 
 // TAB
