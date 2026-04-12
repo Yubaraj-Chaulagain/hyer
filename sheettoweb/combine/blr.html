@@ -2,222 +2,281 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cashbook Ultimate</title>
+<title>Business ERP Ultimate</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <style>
-body { font-family: Arial; max-width: 900px; margin:auto; padding:10px; background:#f5f5f5;}
-input, select, button { width:100%; padding:10px; margin:5px 0;}
-button { background:#007bff; color:#fff; border:none;}
-table { width:100%; background:#fff; border-collapse:collapse; margin-top:10px;}
-td,th { border:1px solid #ddd; padding:6px; font-size:12px;}
+body{font-family:Arial;background:#f5f5f5;padding:10px;max-width:1000px;margin:auto;}
+input,select,button{width:100%;padding:10px;margin:5px 0;}
+button{background:#007bff;color:white;border:none;}
+table{width:100%;background:white;border-collapse:collapse;margin-top:10px;}
+td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 h2{text-align:center;}
+.section{background:white;padding:10px;margin-top:10px;border-radius:10px;}
 </style>
 </head>
 
 <body>
 
-<h2>📒 Cashbook Ultimate</h2>
+<h2>📒 Business ERP Ultimate</h2>
 
-<!-- INSTALL BUTTON -->
+<!-- INSTALL -->
 <button id="installBtn">📲 Install App</button>
 
-<!-- FORM -->
-<form id="form">
-<input type="date" id="date" required>
-<input type="text" id="name" placeholder="Name" required>
-<input type="number" id="qty" placeholder="Quantity">
-<input type="text" id="details" placeholder="Details">
-<input type="number" id="rate" placeholder="Rate">
-<input type="number" id="prev" placeholder="Previous Balance">
+<!-- MEMBER -->
+<div class="section">
+<h3>👤 Member</h3>
+<input id="m_name" placeholder="Name">
+<input id="m_phone" placeholder="Phone">
+<button onclick="addMember()">Add Member</button>
+</div>
 
-<select id="type">
+<!-- TRANSACTION -->
+<div class="section">
+<h3>💰 Transaction</h3>
+<input id="t_member" placeholder="Member Name">
+<input id="t_amount" placeholder="Amount">
+<select id="t_type">
 <option value="credit">Credit</option>
 <option value="debit">Debit</option>
 </select>
+<button onclick="addTransaction()">Save</button>
+</div>
 
-<button type="submit">Save</button>
-</form>
+<!-- STOCK -->
+<div class="section">
+<h3>📦 Stock</h3>
+<input id="s_name" placeholder="Item">
+<input id="s_qty" placeholder="Qty">
+<button onclick="addStock()">Add Stock</button>
 
-<!-- DASHBOARD -->
-<input type="text" id="search" placeholder="Search name">
-<button onclick="filterData()">🔍 Filter</button>
-<button onclick="downloadCSV()">📥 Excel</button>
+<input id="sell_item" placeholder="Sell Item">
+<input id="sell_qty" placeholder="Qty">
+<input id="sell_price" placeholder="Price">
+<button onclick="sellItem()">Sell</button>
+</div>
+
+<!-- LOW STOCK -->
+<div class="section">
+<h3>⚠️ Low Stock</h3>
+<input id="low_limit" placeholder="Limit (5)">
+<button onclick="checkLowStock()">Check</button>
+<ul id="lowList"></ul>
+</div>
+
+<!-- REPORT -->
+<div class="section">
+<button onclick="downloadExcel()">📥 Excel</button>
+<button onclick="backup()">📦 Backup</button>
+<input type="file" onchange="restore(event)">
 <button onclick="printData()">🧾 Print</button>
 <h3 id="total">Total: 0</h3>
+</div>
 
-<!-- TABLE -->
-<table>
-<thead>
-<tr><th>Date</th><th>Name</th><th>Total</th><th>Type</th></tr>
-</thead>
-<tbody id="table"></tbody>
-</table>
-
-<!-- CHART -->
 <canvas id="chart"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// ================= DATABASE =================
+// EMAIL INIT
+(function(){ emailjs.init("YOUR_PUBLIC_KEY"); })();
+
+// DB
 let db;
-let req = indexedDB.open("db",1);
+let req=indexedDB.open("ERP",1);
 
-req.onupgradeneeded = e=>{
+req.onupgradeneeded=e=>{
  db=e.target.result;
- db.createObjectStore("data",{keyPath:"id"});
+ db.createObjectStore("members",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("stock",{keyPath:"id"});
 };
 
-req.onsuccess = e=>{
+req.onsuccess=e=>{
  db=e.target.result;
- load();
  drawChart();
 };
 
-// SAVE
-function save(d){
- let tx=db.transaction("data","readwrite");
- tx.objectStore("data").put(d);
+// MEMBER
+function addMember(){
+ db.transaction("members","readwrite")
+ .objectStore("members")
+ .put({id:Date.now(),name:m_name.value,phone:m_phone.value});
+ alert("Member Added");
 }
 
-// GET
-function getAll(cb){
- let tx=db.transaction("data","readonly");
- let req=tx.objectStore("data").getAll();
- req.onsuccess=()=>cb(req.result);
-}
-
-// ================= FORM =================
-form.onsubmit=e=>{
- e.preventDefault();
-
- let qty=+qty.value||0;
- let rate=+rate.value||0;
- let prev=+prev.value||0;
-
- let trans=qty*rate;
- let grand= type.value==="credit"? prev+trans : prev-trans;
-
- let data={
+// TRANSACTION
+function addTransaction(){
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .put({
   id:Date.now(),
-  date:date.value,
-  name:name.value,
-  quantity:qty,
-  details:details.value,
-  rate:rate,
-  previous_balance:prev,
-  transaction_balance:trans,
-  grand_total:grand,
-  transaction_type:type.value
- };
-
- save(data);
- form.reset();
- load();
- drawChart();
-};
-
-// ================= TABLE =================
-function load(){
- getAll(data=>{
-  render(data);
-  totalCalc(data);
+  member:t_member.value,
+  amount:+t_amount.value,
+  type:t_type.value
  });
+ alert("Saved");
 }
 
-function render(data){
- let html="";
- data.reverse().forEach(d=>{
-  html+=`<tr>
-  <td>${d.date}</td>
-  <td>${d.name}</td>
-  <td>${d.grand_total}</td>
-  <td>${d.transaction_type}</td></tr>`;
+// STOCK
+function addStock(){
+ db.transaction("stock","readwrite")
+ .objectStore("stock")
+ .put({id:Date.now(),name:s_name.value,qty:+s_qty.value});
+ alert("Stock Added");
+}
+
+// SELL
+function sellItem(){
+ let total=sell_qty.value*sell_price.value;
+
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions")
+ .put({
+  id:Date.now(),
+  item:sell_item.value,
+  qty:sell_qty.value,
+  total:total
  });
- table.innerHTML=html;
+
+ reduceStock(sell_item.value,+sell_qty.value);
+
+ alert("Sold");
 }
 
-// ================= TOTAL =================
-function totalCalc(data){
- let t=0;
- data.forEach(d=> t+=Number(d.grand_total||0));
- total.innerText="Total: "+t;
-}
+// REDUCE STOCK
+function reduceStock(name,qty){
+ let tx=db.transaction("stock","readwrite");
+ let store=tx.objectStore("stock");
 
-// ================= FILTER =================
-function filterData(){
- let s=search.value.toLowerCase();
- getAll(data=>{
-  let f=data.filter(d=>d.name.toLowerCase().includes(s));
-  render(f);
-  totalCalc(f);
- });
-}
-
-// ================= CSV =================
-function downloadCSV(){
- getAll(data=>{
-  let csv="DATE,NAME,TOTAL\n";
-  data.forEach(d=>{
-   csv+=`${d.date},${d.name},${d.grand_total}\n`;
+ store.getAll().onsuccess=e=>{
+  e.target.result.forEach(i=>{
+   if(i.name===name){
+    i.qty-=qty;
+    store.put(i);
+   }
   });
-  let blob=new Blob([csv]);
+ };
+}
+
+// LOW STOCK
+function checkLowStock(){
+ let limit=+low_limit.value||5;
+
+ db.transaction("stock","readonly")
+ .objectStore("stock")
+ .getAll().onsuccess=e=>{
+
+  let low=e.target.result.filter(i=>i.qty<=limit);
+
+  lowList.innerHTML=low.map(i=>`<li>${i.name} (${i.qty})</li>`).join("");
+
+  if(low.length){
+   notify("Low stock alert");
+   sendEmail("Low Stock",JSON.stringify(low));
+  }
+ };
+}
+
+// NOTIFICATION
+if("Notification" in window) Notification.requestPermission();
+
+function notify(msg){
+ if(Notification.permission==="granted"){
+  new Notification("Alert",{body:msg});
+ }
+}
+
+// EMAIL
+function sendEmail(sub,msg){
+ emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+  subject:sub,message:msg
+ });
+}
+
+// EXCEL
+function downloadExcel(){
+ let tx=db.transaction("transactions","readonly");
+ tx.objectStore("transactions").getAll().onsuccess=e=>{
+  let ws=XLSX.utils.json_to_sheet(e.target.result);
+  let wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Data");
+  XLSX.writeFile(wb,"ERP.xlsx");
+ };
+}
+
+// BACKUP
+function backup(){
+ let tx=db.transaction(["members","transactions","stock"],"readonly");
+ let data={};
+
+ tx.objectStore("members").getAll().onsuccess=e=>data.members=e.target.result;
+ tx.objectStore("transactions").getAll().onsuccess=e=>data.transactions=e.target.result;
+ tx.objectStore("stock").getAll().onsuccess=e=>{
+  data.stock=e.target.result;
+
+  let blob=new Blob([JSON.stringify(data)]);
   let a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="cashbook.csv";
+  a.download="backup.json";
   a.click();
- });
+ };
 }
 
-// ================= PRINT =================
+// RESTORE
+function restore(e){
+ let file=e.target.files[0];
+ let reader=new FileReader();
+
+ reader.onload=()=>{
+  let d=JSON.parse(reader.result);
+
+  let tx=db.transaction(["members","transactions","stock"],"readwrite");
+
+  d.members.forEach(x=>tx.objectStore("members").put(x));
+  d.transactions.forEach(x=>tx.objectStore("transactions").put(x));
+  d.stock.forEach(x=>tx.objectStore("stock").put(x));
+
+  alert("Restored");
+ };
+
+ reader.readAsText(file);
+}
+
+// PRINT
 function printData(){
- let w=window.open("");
- w.document.write(document.body.innerHTML);
+ let w=window.open();
+ w.document.write("<h2>ERP Report</h2>");
  w.print();
 }
 
-// ================= CHART =================
+// CHART
 function drawChart(){
- getAll(data=>{
+ db.transaction("transactions","readonly")
+ .objectStore("transactions").getAll().onsuccess=e=>{
+
   let c=0,d=0;
-  data.forEach(x=>{
-   if(x.transaction_type==="credit") c+=x.transaction_balance;
-   else d+=x.transaction_balance;
+  e.target.result.forEach(x=>{
+   if(x.type==="credit") c+=x.amount||0;
+   else d+=x.amount||0;
   });
 
   new Chart(chart,{
    type:"bar",
-   data:{
-    labels:["Credit","Debit"],
-    datasets:[{data:[c,d]}]
-   }
+   data:{labels:["Credit","Debit"],datasets:[{data:[c,d]}]}
   });
- });
+ };
 }
 
-// ================= NOTIFICATION =================
-if("Notification" in window){
- Notification.requestPermission();
-}
-
-setInterval(()=>{
- let h=new Date().getHours();
- if(h===20){
-  new Notification("📒 Reminder",{body:"Add today's entry"});
- }
-},3600000);
-
-// ================= INSTALL =================
+// INSTALL
 let promptEvent;
 window.addEventListener("beforeinstallprompt",e=>{
  e.preventDefault();
  promptEvent=e;
 });
 
-installBtn.onclick=()=>{
- if(promptEvent){
-  promptEvent.prompt();
- }
-};
+installBtn.onclick=()=>promptEvent && promptEvent.prompt();
 
 </script>
 
