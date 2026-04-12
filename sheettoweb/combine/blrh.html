@@ -58,6 +58,23 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 <input id="amount">
 <button onclick="transaction()">Submit</button>
 </div>
+<div class="section">
+<h3>💰 Transaction Table</h3>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody id="transactionTable"></tbody>
+</table>
+</div>
 
 <!-- LOAN -->
 <div class="section">
@@ -282,6 +299,26 @@ function drawChart(){
   });
  };
 }
+
+function loadTransactions(){
+
+ db.transaction("transactions")
+ .objectStore("transactions")
+ .getAll().onsuccess = e => {
+
+  transactionTable.innerHTML = e.target.result.map(t => `
+   <tr>
+     <td>${t.id ? t.id.slice(0,6) : "N/A"}</td>
+     <td>${t.name ?? "Unknown"}</td>
+     <td>${t.type ?? "-"}</td>
+     <td>${t.amount ?? 0}</td>
+     <td>${new Date(t.time).toLocaleString()}</td>
+   </tr>
+  `).join("");
+
+ };
+}
+
 </script>
 
 </body>
