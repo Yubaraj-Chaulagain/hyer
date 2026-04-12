@@ -309,36 +309,61 @@ function transfer(){
 function loadBank(){
  db.transaction("bank").objectStore("bank")
  .getAll().onsuccess = e=>{
-  bankTable.innerHTML = e.target.result.map(b=>
-   `<tr>
+  bankTable.innerHTML = e.target.result.map(b=>`
+   <tr>
     <td>${b.name}</td>
     <td>${b.type}</td>
     <td>${b.amount}</td>
     <td>${b.date}</td>
-   </tr>`
-  ).join("");
+    <td>
+     <button onclick="deleteBank('${b.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
  };
 }
+
+function deleteBank(id){
+ if(!confirm("Delete Bank Record?")) return;
+
+ let tx = db.transaction("bank","readwrite");
+ tx.objectStore("bank").delete(id);
+ tx.oncomplete = loadAll;
+}
+
+
 
 function loadTransfer(){
  db.transaction("transfer").objectStore("transfer")
  .getAll().onsuccess = e=>{
-  transferTable.innerHTML = e.target.result.map(t=>
-   `<tr>
+  transferTable.innerHTML = e.target.result.map(t=>`
+   <tr>
     <td>${t.from}</td>
     <td>${t.to}</td>
     <td>${t.amount}</td>
     <td>${t.date}</td>
-   </tr>`
-  ).join("");
+    <td>
+     <button onclick="deleteTransfer('${t.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
  };
 }
+
+function deleteTransfer(id){
+ if(!confirm("Delete Transfer?")) return;
+
+ let tx = db.transaction("transfer","readwrite");
+ tx.objectStore("transfer").delete(id);
+ tx.oncomplete = loadAll;
+}
+
 
 function loadBuySell(){
  db.transaction("buysell").objectStore("buysell")
  .getAll().onsuccess = e=>{
-  bsTable.innerHTML = e.target.result.map(b=>
-   `<tr>
+  bsTable.innerHTML = e.target.result.map(b=>`
+   <tr>
     <td>${b.member}</td>
     <td>${b.item}</td>
     <td>${b.type}</td>
@@ -346,11 +371,22 @@ function loadBuySell(){
     <td>${b.price}</td>
     <td>${b.total}</td>
     <td>${b.date}</td>
-   </tr>`
-  ).join("");
+    <td>
+     <button onclick="deleteBS('${b.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
  };
 }
 
+
+function deleteBS(id){
+ if(!confirm("Delete Record?")) return;
+
+ let tx = db.transaction("buysell","readwrite");
+ tx.objectStore("buysell").delete(id);
+ tx.oncomplete = loadAll;
+}
 
 
 
@@ -441,10 +477,40 @@ function loadMembers(){
  db.transaction("members")
  .objectStore("members")
  .getAll().onsuccess = e=>{
-  memberTable.innerHTML = e.target.result.map(m=>
-   `<tr><td>${m.name}</td><td>${m.balance}</td></tr>`
-  ).join("");
+  memberTable.innerHTML = e.target.result.map(m=>`
+   <tr>
+    <td>${m.name}</td>
+    <td>${m.balance}</td>
+    <td>
+     <button onclick="editMember('${m.id}','${m.name}')">✏️</button>
+     <button onclick="deleteMember('${m.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
  };
+}
+
+function editMember(id,name){
+ let newName = prompt("Edit Name", name);
+ if(!newName) return;
+
+ let tx = db.transaction("members","readwrite");
+ let store = tx.objectStore("members");
+
+ store.get(id).onsuccess = e=>{
+  let m = e.target.result;
+  m.name = newName;
+  store.put(m);
+  tx.oncomplete = loadAll;
+ };
+}
+
+function deleteMember(id){
+ if(!confirm("Delete Member?")) return;
+
+ let tx = db.transaction("members","readwrite");
+ tx.objectStore("members").delete(id);
+ tx.oncomplete = loadAll;
 }
 
 // STOCK TABLE
@@ -452,10 +518,41 @@ function loadStock(){
  db.transaction("stock")
  .objectStore("stock")
  .getAll().onsuccess = e=>{
-  stockTable.innerHTML = e.target.result.map(s=>
-   `<tr><td>${s.name}</td><td>${s.qty}</td></tr>`
-  ).join("");
+  stockTable.innerHTML = e.target.result.map(s=>`
+   <tr>
+    <td>${s.name}</td>
+    <td>${s.qty}</td>
+    <td>
+     <button onclick="editStock('${s.id}','${s.name}',${s.qty})">✏️</button>
+     <button onclick="deleteStock('${s.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
  };
+}
+
+function editStock(id,name,qty){
+ let newName = prompt("Item Name", name);
+ let newQty = prompt("Qty", qty);
+
+ if(!newName || !newQty) return;
+
+ let tx = db.transaction("stock","readwrite");
+ tx.objectStore("stock").put({
+  id,
+  name:newName,
+  qty:+newQty
+ });
+
+ tx.oncomplete = loadAll;
+}
+
+function deleteStock(id){
+ if(!confirm("Delete Stock?")) return;
+
+ let tx = db.transaction("stock","readwrite");
+ tx.objectStore("stock").delete(id);
+ tx.oncomplete = loadAll;
 }
 
 // DROPDOWNS FIXED
