@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP SAAS ALL IN ONE</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{font-family:Arial;background:#eef2f7;max-width:1100px;margin:auto;padding:10px;}
+.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
+input,select,button{width:100%;padding:10px;margin:5px 0;}
+button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
+h2{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<h2>🚀 ERP SAAS ALL IN ONE SYSTEM</h2>
+
+<!-- 🌍 BRANCH -->
+<div class="section">
+<h3>🌍 Branch</h3>
+<select id="branch" onchange="switchBranch(this.value)">
+ <option>Dubai</option>
+ <option>Nepal</option>
+ <option>India</option>
+</select>
+</div>
+
+<!-- 👤 USERS -->
+<div class="section">
+<h3>👤 Users</h3>
+<input id="u_name" placeholder="Username">
+<input id="u_pass" placeholder="Password">
+<select id="u_role">
+ <option>admin</option>
+ <option>staff</option>
+</select>
+<button onclick="saveUser()">Save User</button>
+</div>
+
+<!-- LOGIN -->
+<div class="section">
+<h3>🔐 Login</h3>
+<input id="l_user" placeholder="User">
+<input id="l_pass" placeholder="Pass">
+<button onclick="login()">Login</button>
+</div>
+
+<!-- MEMBERS -->
+<div class="section">
+<h3>👤 Members</h3>
+<input id="m_name" placeholder="Name">
+<input id="m_phone" placeholder="Phone">
+<button onclick="saveMember()">Save</button>
+
+<table>
+<thead><tr><th>Name</th><th>Balance</th></tr></thead>
+<tbody id="memberTable"></tbody>
+</table>
+</div>
+
+<!-- BANKING -->
+<div class="section">
+<h3>💰 Banking</h3>
+<select id="b_member"></select>
+<select id="b_type">
+<option>deposit</option>
+<option>withdraw</option>
+</select>
+<input id="b_amount" placeholder="Amount">
+<button onclick="bank()">Submit</button>
+</div>
+
+<!-- TRANSFER -->
+<div class="section">
+<h3>💸 Transfer</h3>
+<select id="from"></select>
+<select id="to"></select>
+<input id="t_amt" placeholder="Amount">
+<button onclick="transfer()">Send</button>
+</div>
+
+<!-- STOCK -->
+<div class="section">
+<h3>📦 Stock</h3>
+<input id="item" placeholder="Item">
+<input id="qty" placeholder="Qty">
+<button onclick="addStock()">Add</button>
+
+<table>
+<thead><tr><th>Item</th><th>Qty</th></tr></thead>
+<tbody id="stockTable"></tbody>
+</table>
+</div>
+
+<!-- BUY SELL -->
+<div class="section">
+<h3>🛒 Buy/Sell</h3>
+<select id="stock_item"></select>
+<select id="bs_type"><option>buy</option><option>sell</option></select>
+<input id="bs_qty">
+<button onclick="stockAction()">Go</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section">
+<h3>📊 Dashboard</h3>
+<canvas id="chart"></canvas>
+<button onclick="predict()">AI Predict Profit</button>
+</div>
+
+<script>
+
+let db, chart, currentBranch="Dubai";
+
+// DB
+let req=indexedDB.open("ERP_SAAS",1);
+
+req.onupgradeneeded=e=>{
+ db=e.target.result;
+ db.createObjectStore("users",{keyPath:"id"});
+ db.createObjectStore("members",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("stock",{keyPath:"id"});
+};
+
+req.onsuccess=e=>{
+ db=e.target.result;
+ loadAll();
+ enableNotification();
+};
+
+// 🌍 BRANCH
+function switchBranch(b){
+ currentBranch=b;
+ loadAll();
+}
+
+// 🔐 USERS
+function saveUser(){
+ db.transaction("users","readwrite").objectStore("users")
+ .put({id:crypto.randomUUID(),name:u_name.value,pass:u_pass.value,role:u_role.value});
+}
+
+// LOGIN
+function login(){
+ db.transaction("users").objectStore("users")
+ .getAll().onsuccess=e=>{
+  let u=e.target.result.find(x=>x.name==l_user.value && x.pass==l_pass.value);
+  if(!u) return alert("Fail");
+  alert("Welcome "+u.role);
+ };
+}
+
+// 👤 MEMBERS
+function saveMember(){
+ db.transaction("members","readwrite").objectStore("members")
+ .put({id:crypto.randomUUID(),name:m_name.value,balance:0,branch:currentBranch});
+ loadAll();
+}
+
+// 💰 BANK
+function bank(){
+ let store=db.transaction("members","readwrite").objectStore("members");
+
+ store.get(b_member.value).onsuccess=e=>{
+  let m=e.target.result;
+
+  if(b_type.value==="deposit") m.balance+=+b_amount.value;
+  else{
+   if(m.balance<+b_amount.value) return alert("Low balance");
+   m.balance-=+b_amount.value;
+  }
+
+  store.put(m);
+  notify("Banking "+b_type.value+" "+b_amount.value);
+  loadAll();
+ };
+}
+
+// 💸 TRANSFER
+function transfer(){
+ let s=from.value,t=to.value,a=+t_amt.value;
+
+ let store=db.transaction("members","readwrite").objectStore("members");
+
+ store.getAll().onsuccess=e=>{
+  let d=e.target.result;
+
+  let A=d.find(x=>x.id==s);
+  let B=d.find(x=>x.id==t);
+
+  if(A.balance<a) return alert("No balance");
+
+  A.balance-=a;
+  B.balance+=a;
+
+  store.put(A);
+  store.put(B);
+
+  notify("Transfer done");
+  loadAll();
+ };
+}
+
+// 📦 STOCK
+function addStock(){
+ db.transaction("stock","readwrite").objectStore("stock")
+ .put({id:crypto.randomUUID(),name:item.value,qty:+qty.value});
+ loadAll();
+}
+
+// 🛒 STOCK ACTION
+function stockAction(){
+ let store=db.transaction("stock","readwrite").objectStore("stock");
+
+ store.get(stock_item.value).onsuccess=e=>{
+  let s=e.target.result;
+
+  if(bs_type.value==="buy") s.qty+=+bs_qty.value;
+  else{
+   if(s.qty<+bs_qty.value) return alert("Out");
+   s.qty-=+bs_qty.value;
+  }
+
+  store.put(s);
+  loadAll();
+ };
+}
+
+// 📊 AI PREDICT
+function predict(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess=e=>{
+  let p=0;
+
+  e.target.result.forEach(t=>{
+   if(t.type==="sell") p+=t.amount;
+   if(t.type==="buy") p-=t.amount;
+  });
+
+  alert("Predicted Profit: "+(p*1.2));
+ };
+}
+
+// 🔔 NOTIFICATION
+function enableNotification(){
+ Notification.requestPermission();
+}
+
+function notify(msg){
+ if(Notification.permission==="granted"){
+  new Notification("ERP",{
+   body:msg
+  });
+ }
+}
+
+// LOAD
+function loadAll(){
+ loadMembers();
+ loadStock();
+ loadDropdowns();
+ drawChart();
+}
+
+function loadMembers(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess=e=>{
+  memberTable.innerHTML=e.target.result.map(m=>`
+   <tr><td>${m.name}</td><td>${m.balance}</td></tr>
+  `).join("");
+ };
+}
+
+function loadStock(){
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess=e=>{
+  stockTable.innerHTML=e.target.result.map(s=>`
+   <tr><td>${s.name}</td><td>${s.qty}</td></tr>
+  `).join("");
+ };
+}
+
+function loadDropdowns(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess=e=>{
+  let o="";
+  e.target.result.forEach(m=>{
+   o+=`<option value="${m.id}">${m.name}</option>`;
+  });
+  b_member.innerHTML=o;
+  from.innerHTML=o;
+  to.innerHTML=o;
+ };
+
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess=e=>{
+  let o="";
+  e.target.result.forEach(s=>{
+   o+=`<option value="${s.id}">${s.name}</option>`;
+  });
+  stock_item.innerHTML=o;
+ };
+}
+
+// CHART
+function drawChart(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess=e=>{
+  let inc=0,exp=0;
+
+  e.target.result.forEach(t=>{
+   if(t.type==="deposit") inc+=t.amount;
+   else exp+=t.amount;
+  });
+
+  if(chart) chart.destroy();
+
+  chart=new Chart(chart,{
+   type:"bar",
+   data:{labels:["Income","Expense"],datasets:[{data:[inc,exp]}]}
+  });
+ };
+}
+
+</script>
+
+</body>
+</html>
