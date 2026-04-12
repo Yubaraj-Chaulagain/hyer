@@ -41,8 +41,19 @@ h2{text-align:center;}
  <option>staff</option>
 </select>
 <button onclick="saveUser()">Save User</button>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Username</th>
+<th>Password</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
 </div>
-
 <!-- LOGIN -->
 <div class="section">
 <h3>🔐 Login</h3>
@@ -57,9 +68,17 @@ h2{text-align:center;}
 <input id="m_name" placeholder="Name">
 <input id="m_phone" placeholder="Phone">
 <button onclick="saveMember()">Save</button>
-
 <table>
-<thead><tr><th>Name</th><th>Balance</th></tr></thead>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Phone</th>
+<th>Balance</th>
+<th>Branch</th>
+<th>Action</th>
+</tr>
+</thead>
 <tbody id="memberTable"></tbody>
 </table>
 </div>
@@ -74,6 +93,18 @@ h2{text-align:center;}
 </select>
 <input id="b_amount" placeholder="Amount">
 <button onclick="bank()">Submit</button>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Balance After</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="bankTable"></tbody>
+</table>
 </div>
 
 <!-- TRANSFER -->
@@ -83,6 +114,18 @@ h2{text-align:center;}
 <select id="to"></select>
 <input id="t_amt" placeholder="Amount">
 <button onclick="transfer()">Send</button>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Amount</th>
+<th>Branch</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="transferTable"></tbody>
+</table>
 </div>
 
 <!-- STOCK -->
@@ -91,9 +134,16 @@ h2{text-align:center;}
 <input id="item" placeholder="Item">
 <input id="qty" placeholder="Qty">
 <button onclick="addStock()">Add</button>
-
 <table>
-<thead><tr><th>Item</th><th>Qty</th></tr></thead>
+<thead>
+<tr>
+<th>Item ID</th>
+<th>Item Name</th>
+<th>Quantity</th>
+<th>Branch</th>
+<th>Action</th>
+</tr>
+</thead>
 <tbody id="stockTable"></tbody>
 </table>
 </div>
@@ -105,6 +155,20 @@ h2{text-align:center;}
 <select id="bs_type"><option>buy</option><option>sell</option></select>
 <input id="bs_qty">
 <button onclick="stockAction()">Go</button>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Type</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="bsTable"></tbody>
+</table>
+
 </div>
 
 <!-- DASHBOARD -->
