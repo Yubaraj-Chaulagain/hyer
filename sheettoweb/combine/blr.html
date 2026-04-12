@@ -51,7 +51,6 @@ function loadMembers(){
  };
 }
 </script>
-// EDIT
 <script>
 function editMember(id){
  let tx = db.transaction("members","readonly");
@@ -65,8 +64,6 @@ function editMember(id){
  };
 }
 </script>
-
-// DELETE
 <script>
 function deleteMember(id){
  if(confirm("Delete member?")){
