@@ -120,14 +120,28 @@ function initDB(){
 
 // ---------------- CUSTOMER ----------------
 function addCustomer(){
- let c={
-  id:crypto.randomUUID(),
-  name:name.value,
-  phone:phone.value,
-  balance:0
+ let nameVal = document.getElementById("name").value.trim();
+ let phoneVal = document.getElementById("phone").value.trim();
+
+ if(!nameVal){
+  alert("Name required");
+  return;
+ }
+
+ let customer = {
+  id: crypto.randomUUID(),
+  name: nameVal,
+  phone: phoneVal || "-",
+  balance: 0
  };
 
- db.transaction("customers","readwrite").objectStore("customers").put(c);
+ db.transaction("customers","readwrite")
+ .objectStore("customers")
+ .put(customer);
+
+ document.getElementById("name").value = "";
+ document.getElementById("phone").value = "";
+
  loadAll();
 }
 
@@ -203,10 +217,16 @@ function loadAll(){
 
 function loadCustomers(){
  db.transaction("customers").objectStore("customers")
- .getAll().onsuccess=e=>{
-  customerTable.innerHTML=e.target.result.map(c=>
-   `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.balance}</td></tr>`
-  ).join("");
+ .getAll().onsuccess = e => {
+
+  customerTable.innerHTML = e.target.result.map(c => `
+   <tr>
+     <td>${c.name ?? "N/A"}</td>
+     <td>${c.phone ?? "-"}</td>
+     <td>${c.balance ?? 0}</td>
+   </tr>
+  `).join("");
+
  };
 }
 
