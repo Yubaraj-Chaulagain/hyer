@@ -336,6 +336,14 @@ function addStock(){
  tx.oncomplete = loadAll;
 }
 
+function showTab(id){
+ document.querySelectorAll(".tab-section")
+ .forEach(s=>s.classList.remove("active"));
+
+ document.getElementById(id)
+ .classList.add("active");
+}
+
 // ---------------- BUY / SELL ----------------
 function buySell(){
  let mid = bs_member.value;
