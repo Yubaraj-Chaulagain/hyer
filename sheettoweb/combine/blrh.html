@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Banking ERP</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{font-family:Arial;background:#f5f5f5;padding:10px;max-width:1000px;margin:auto;}
+input,select,button{width:100%;padding:10px;margin:5px 0;}
+button{background:#007bff;color:white;border:none;}
+.section{background:white;padding:10px;margin-top:10px;border-radius:10px;}
+table{width:100%;background:white;border-collapse:collapse;margin-top:10px;}
+td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
+h2{text-align:center;}
+</style>
+</head>
+
+<body>
+
+<h2>🏦 FULL BANKING ERP SYSTEM</h2>
+
+<!-- MEMBER -->
+<div class="section">
+<h3>👤 Customer</h3>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<button onclick="addCustomer()">Add Customer</button>
+
+<table>
+<thead><tr><th>Name</th><th>Phone</th><th>Balance</th></tr></thead>
+<tbody id="customerTable"></tbody>
+</table>
+</div>
+
+<!-- TRANSACTION -->
+<div class="section">
+<h3>💰 Transaction</h3>
+
+<select id="type">
+<option value="deposit">Deposit</option>
+<option value="withdraw">Withdraw</option>
+<option value="buying">Buying</option>
+<option value="selling">Selling</option>
+<option value="saving">Saving</option>
+</select>
+
+<input id="t_member" placeholder="Customer Name">
+<input id="amount" placeholder="Amount">
+<button onclick="doTransaction()">Submit</button>
+</div>
+
+<!-- LOAN -->
+<div class="section">
+<h3>🏦 Loan (18%)</h3>
+
+<input id="loan_member" placeholder="Customer Name">
+<input id="loan_amount" placeholder="Loan Amount">
+<input id="loan_months" placeholder="Months">
+<button onclick="createLoan()">Create Loan</button>
+
+<table>
+<thead><tr><th>Customer</th><th>Loan</th><th>Total</th><th>EMI</th></tr></thead>
+<tbody id="loanTable"></tbody>
+</table>
+</div>
+
+<!-- EMI -->
+<div class="section">
+<h3>📅 EMI Payment</h3>
+<input id="pay_loan_id" placeholder="Loan ID">
+<input id="pay_amount" placeholder="Amount">
+<button onclick="payEMI()">Pay EMI</button>
+
+<table>
+<thead><tr><th>LoanID</th><th>EMI</th><th>Status</th></tr></thead>
+<tbody id="emiTable"></tbody>
+</table>
+</div>
+
+<!-- CHART -->
+<div class="section">
+<canvas id="chart"></canvas>
+</div>
+
+<script>
+let db;
+let req=indexedDB.open("BANK",1);
+
+req.onupgradeneeded=e=>{
+ db=e.target.result;
+ db.createObjectStore("customers",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("loans",{keyPath:"id"});
+ db.createObjectStore("emis",{keyPath:"id"});
+};
+
+req.onsuccess=e=>{
+ db=e.target.result;
+ loadAll();
+};
+
+// ---------------- CUSTOMER ----------------
+function addCustomer(){
+ let obj={
+  id:Date.now(),
+  name:name.value,
+  phone:phone.value,
+  balance:0
+ };
+
+ db.transaction("customers","readwrite")
+ .objectStore("customers").put(obj);
+
+ loadCustomers();
+}
+
+// ---------------- TRANSACTION ----------------
+function doTransaction(){
+ let name=t_member.value;
+ let amt=+amount.value;
+ let type=document.getElementById("type").value;
+
+ let tx=db.transaction("customers","readwrite");
+ let store=tx.objectStore("customers");
+
+ store.getAll().onsuccess=e=>{
+  let user=e.target.result.find(u=>u.name===name);
+  if(!user) return alert("User not found");
+
+  if(type==="deposit"||type==="saving") user.balance+=amt;
+  if(type==="withdraw") user.balance-=amt;
+  if(type==="buying") user.balance-=amt;
+  if(type==="selling") user.balance+=amt;
+
+  store.put(user);
+
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({id:Date.now(),name,type,amount:amt});
+
+  loadAll();
+ };
+}
+
+// ---------------- LOAN ----------------
+function createLoan(){
+ let name=loan_member.value;
+ let principal=+loan_amount.value;
+ let months=+loan_months.value;
+
+ let interest = principal*18/100;
+ let total = principal + interest;
+ let emi = total/months;
+ let loanId = Date.now();
+
+ db.transaction("loans","readwrite")
+ .objectStore("loans")
+ .put({id:loanId,name,principal,total,emi,months});
+
+ // EMI schedule
+ let emiStore=db.transaction("emis","readwrite").objectStore("emis");
+
+ for(let i=1;i<=months;i++){
+  emiStore.put({
+   id:Date.now()+i,
+   loanId,
+   name,
+   emiNo:i,
+   amount:emi,
+   status:"pending"
+  });
+ }
+
+ loadAll();
+}
+
+// ---------------- EMI PAYMENT ----------------
+function payEMI(){
+ let loanId=+pay_loan_id.value;
+ let amt=+pay_amount.value;
+
+ let tx=db.transaction("emis","readwrite");
+ let store=tx.objectStore("emis");
+
+ store.getAll().onsuccess=e=>{
+  let emi=e.target.result.find(x=>x.loanId===loanId && x.status==="pending");
+
+  if(!emi) return alert("No pending EMI");
+
+  emi.status="paid";
+  store.put(emi);
+
+  db.transaction("transactions","readwrite")
+  .objectStore("transactions")
+  .put({id:Date.now(),name:emi.name,type:"loanpay",amount:amt});
+
+  loadAll();
+ };
+}
+
+// ---------------- LOAD ----------------
+function loadCustomers(){
+ db.transaction("customers").objectStore("customers")
+ .getAll().onsuccess=e=>{
+  customerTable.innerHTML=e.target.result.map(c=>
+   `<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.balance}</td></tr>`
+  ).join("");
+ };
+}
+
+function loadLoans(){
+ db.transaction("loans").objectStore("loans")
+ .getAll().onsuccess=e=>{
+  loanTable.innerHTML=e.target.result.map(l=>
+   `<tr><td>${l.name}</td><td>${l.principal}</td><td>${l.total}</td><td>${l.emi.toFixed(2)}</td></tr>`
+  ).join("");
+ };
+}
+
+function loadEMI(){
+ db.transaction("emis").objectStore("emis")
+ .getAll().onsuccess=e=>{
+  emiTable.innerHTML=e.target.result.slice(0,10).map(i=>
+   `<tr><td>${i.loanId}</td><td>${i.amount.toFixed(2)}</td><td>${i.status}</td></tr>`
+  ).join("");
+ };
+}
+
+// ---------------- DASHBOARD ----------------
+function drawChart(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess=e=>{
+
+  let d=0,c=0;
+
+  e.target.result.forEach(x=>{
+   if(x.type==="deposit"||x.type==="selling") c+=x.amount;
+   else d+=x.amount;
+  });
+
+  new Chart(document.getElementById("chart"),{
+   type:"bar",
+   data:{labels:["Income","Expense"],datasets:[{data:[c,d]}]}
+  });
+ };
+}
+
+// ---------------- LOAD ALL ----------------
+function loadAll(){
+ loadCustomers();
+ loadLoans();
+ loadEMI();
+ drawChart();
+}
+</script>
+
+</body>
+</html>
