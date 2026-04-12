@@ -5,6 +5,7 @@
 <title>ERP FIXED SYSTEM</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
 body{font-family:Arial;background:#eef2f7;margin:0;}
@@ -18,7 +19,7 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 
 <body>
 
-<h2 style="text-align:center">🚀 ERP FIXED SYSTEM</h2>
+<h2 style="text-align:center">🚀 ERP FIXED SYSTEM</h2><button onclick="exportExcel()">📤 Export Excel</button>
 
 <div class="section">
 <h3>Members</h3>
@@ -199,6 +200,34 @@ function loadMembers(){
   memberTable.innerHTML=html;
  };
 }
+
+function exportExcel(){
+
+ let wb = XLSX.utils.book_new();
+
+ // ---------- MEMBERS ----------
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess = e=>{
+  let members = e.target.result;
+
+  let ws1 = XLSX.utils.json_to_sheet(members);
+  XLSX.utils.book_append_sheet(wb, ws1, "Members");
+
+  // ---------- STOCK ----------
+  db.transaction("stock").objectStore("stock")
+  .getAll().onsuccess = e2=>{
+   let stock = e2.target.result;
+
+   let ws2 = XLSX.utils.json_to_sheet(stock);
+   XLSX.utils.book_append_sheet(wb, ws2, "Stock");
+
+   // ---------- DOWNLOAD ----------
+   XLSX.writeFile(wb, "ERP_REPORT.xlsx");
+  };
+ };
+
+}
+
 
 // ---------- STOCK TABLE ----------
 function loadStock(){
