@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP FULL CRUD SYSTEM</title>
+
+<style>
+body{font-family:Arial;background:#eef2f7;margin:0;padding:10px;}
+.section{background:#fff;padding:10px;margin-bottom:10px;border-radius:10px;}
+input,select,button{width:100%;padding:8px;margin:5px 0;}
+table{width:100%;border-collapse:collapse;}
+td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
+button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
+</style>
+</head>
+
+<body>
+
+<h2 style="text-align:center">🚀 ERP FULL CRUD SYSTEM</h2>
+
+<!-- ================= MEMBERS ================= -->
+<div class="section">
+<h3>👤 Members</h3>
+
+<input id="m_name" placeholder="Name">
+<input id="m_phone" placeholder="Phone">
+<button onclick="saveMember()">Save / Update</button>
+
+<table>
+<thead>
+<tr><th>Name</th><th>Phone</th><th>Balance</th><th>Action</th></tr>
+</thead>
+<tbody id="memberTable"></tbody>
+</table>
+</div>
+
+<!-- ================= TRANSACTIONS ================= -->
+<div class="section">
+<h3>💰 Transactions</h3>
+
+<select id="t_member"></select>
+<select id="t_type">
+<option>deposit</option>
+<option>withdraw</option>
+</select>
+<input id="t_amount" placeholder="Amount">
+
+<button onclick="saveTransaction()">Save / Update</button>
+
+<table>
+<thead>
+<tr><th>Member</th><th>Type</th><th>Amount</th><th>Action</th></tr>
+</thead>
+<tbody id="txnTable"></tbody>
+</table>
+</div>
+
+<!-- ================= STOCK ================= -->
+<div class="section">
+<h3>📦 Stock</h3>
+
+<input id="s_name" placeholder="Item">
+<input id="s_qty" placeholder="Qty">
+<button onclick="saveStock()">Save / Update</button>
+
+<table>
+<thead>
+<tr><th>Item</th><th>Qty</th><th>Action</th></tr>
+</thead>
+<tbody id="stockTable"></tbody>
+</table>
+</div>
+
+<script>
+
+let db;
+
+let editMemberId=null;
+let editTxnId=null;
+let editStockId=null;
+
+// ---------------- DB ----------------
+let req=indexedDB.open("ERP_CRUD",1);
+
+req.onupgradeneeded=e=>{
+ db=e.target.result;
+ db.createObjectStore("members",{keyPath:"id"});
+ db.createObjectStore("transactions",{keyPath:"id"});
+ db.createObjectStore("stock",{keyPath:"id"});
+};
+
+req.onsuccess=e=>{
+ db=e.target.result;
+ loadAll();
+};
+
+// ================= MEMBERS CRUD =================
+function saveMember(){
+
+ let name=m_name.value.trim();
+ let phone=m_phone.value.trim();
+
+ if(!name) return alert("Name required");
+
+ let tx=db.transaction("members","readwrite");
+ let store=tx.objectStore("members");
+
+ let obj={
+  id: editMemberId || crypto.randomUUID(),
+  name,
+  phone,
+  balance:0
+ };
+
+ if(editMemberId){
+  store.get(editMemberId).onsuccess=e=>{
+   let old=e.target.result;
+   obj.balance=old.balance;
+   store.put(obj);
+  };
+ }else{
+  store.put(obj);
+ }
+
+ tx.oncomplete=()=>{
+  resetMember();
+  loadAll();
+ };
+}
+
+function editMember(id){
+ db.transaction("members").objectStore("members")
+ .get(id).onsuccess=e=>{
+  let m=e.target.result;
+  m_name.value=m.name;
+  m_phone.value=m.phone;
+  editMemberId=id;
+ };
+}
+
+function deleteMember(id){
+ db.transaction("members","readwrite")
+ .objectStore("members").delete(id);
+ loadAll();
+}
+
+function resetMember(){
+ editMemberId=null;
+ m_name.value="";
+ m_phone.value="";
+}
+
+// ================= TRANSACTION CRUD =================
+function saveTransaction(){
+
+ let member=t_member.value;
+ let type=t_type.value;
+ let amt=+t_amount.value;
+
+ if(!member) return alert("Select member");
+
+ let tx=db.transaction("transactions","readwrite");
+ let store=tx.objectStore("transactions");
+
+ let obj={
+  id: editTxnId || crypto.randomUUID(),
+  member,
+  type,
+  amount:amt
+ };
+
+ store.put(obj);
+
+ tx.oncomplete=()=>{
+  editTxnId=null;
+  t_amount.value="";
+  loadAll();
+ };
+}
+
+function editTransaction(id){
+ db.transaction("transactions").objectStore("transactions")
+ .get(id).onsuccess=e=>{
+  let t=e.target.result;
+  t_member.value=t.member;
+  t_type.value=t.type;
+  t_amount.value=t.amount;
+  editTxnId=id;
+ };
+}
+
+function deleteTransaction(id){
+ db.transaction("transactions","readwrite")
+ .objectStore("transactions").delete(id);
+ loadAll();
+}
+
+// ================= STOCK CRUD =================
+function saveStock(){
+
+ let name=s_name.value.trim();
+ let qty=+s_qty.value;
+
+ if(!name) return alert("Item required");
+
+ let tx=db.transaction("stock","readwrite");
+ let store=tx.objectStore("stock");
+
+ let obj={
+  id: editStockId || crypto.randomUUID(),
+  name,
+  qty
+ };
+
+ store.put(obj);
+
+ tx.oncomplete=()=>{
+  editStockId=null;
+  s_name.value="";
+  s_qty.value="";
+  loadAll();
+ };
+}
+
+function editStock(id){
+ db.transaction("stock").objectStore("stock")
+ .get(id).onsuccess=e=>{
+  let s=e.target.result;
+  s_name.value=s.name;
+  s_qty.value=s.qty;
+  editStockId=id;
+ };
+}
+
+function deleteStock(id){
+ db.transaction("stock","readwrite")
+ .objectStore("stock").delete(id);
+ loadAll();
+}
+
+// ================= LOAD ALL =================
+function loadAll(){
+ loadMembers();
+ loadTransactions();
+ loadStock();
+ loadDropdown();
+}
+
+// ================= TABLE LOAD =================
+function loadMembers(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess=e=>{
+  memberTable.innerHTML=e.target.result.map(m=>`
+   <tr>
+    <td>${m.name}</td>
+    <td>${m.phone}</td>
+    <td>${m.balance}</td>
+    <td>
+     <button onclick="editMember('${m.id}')">Edit</button>
+     <button onclick="deleteMember('${m.id}')">Delete</button>
+    </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function loadTransactions(){
+ db.transaction("transactions").objectStore("transactions")
+ .getAll().onsuccess=e=>{
+  txnTable.innerHTML=e.target.result.map(t=>`
+   <tr>
+    <td>${t.member}</td>
+    <td>${t.type}</td>
+    <td>${t.amount}</td>
+    <td>
+     <button onclick="editTransaction('${t.id}')">Edit</button>
+     <button onclick="deleteTransaction('${t.id}')">Delete</button>
+    </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function loadStock(){
+ db.transaction("stock").objectStore("stock")
+ .getAll().onsuccess=e=>{
+  stockTable.innerHTML=e.target.result.map(s=>`
+   <tr>
+    <td>${s.name}</td>
+    <td>${s.qty}</td>
+    <td>
+     <button onclick="editStock('${s.id}')">Edit</button>
+     <button onclick="deleteStock('${s.id}')">Delete</button>
+    </td>
+   </tr>
+  `).join("");
+ };
+}
+
+// ================= DROPDOWN =================
+function loadDropdown(){
+ db.transaction("members").objectStore("members")
+ .getAll().onsuccess=e=>{
+  t_member.innerHTML=e.target.result.map(m=>
+   `<option value="${m.id}">${m.name}</option>`
+  ).join("");
+ };
+}
+
+</script>
+
+</body>
+</html>
