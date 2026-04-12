@@ -192,6 +192,9 @@ req.onupgradeneeded=e=>{
  db.createObjectStore("transactions",{keyPath:"id"});
  db.createObjectStore("stock",{keyPath:"id"});
 };
+db.createObjectStore("bank",{keyPath:"id"});
+db.createObjectStore("transfer",{keyPath:"id"});
+db.createObjectStore("buysell",{keyPath:"id"});
 
 req.onsuccess=e=>{
  db=e.target.result;
@@ -230,25 +233,43 @@ function saveMember(){
 
 // 💰 BANK
 function bank(){
+
  let store=db.transaction("members","readwrite").objectStore("members");
 
  store.get(b_member.value).onsuccess=e=>{
   let m=e.target.result;
 
-  if(b_type.value==="deposit") m.balance+=+b_amount.value;
+  let amt=+b_amount.value;
+  let type=b_type.value;
+
+  if(type==="deposit") m.balance+=amt;
   else{
-   if(m.balance<+b_amount.value) return alert("Low balance");
-   m.balance-=+b_amount.value;
+   if(m.balance<amt) return alert("Low balance");
+   m.balance-=amt;
   }
 
   store.put(m);
-  notify("Banking "+b_type.value+" "+b_amount.value);
+
+  // ✅ SAVE BANK TRANSACTION
+  db.transaction("bank","readwrite").objectStore("bank")
+  .put({
+   id:crypto.randomUUID(),
+   name:m.name,
+   type,
+   amount:amt,
+   balance:m.balance,
+   date:new Date().toLocaleString(),
+   branch:currentBranch
+  });
+
+  notify("Bank "+type+" "+amt);
   loadAll();
  };
 }
 
 // 💸 TRANSFER
 function transfer(){
+
  let s=from.value,t=to.value,a=+t_amt.value;
 
  let store=db.transaction("members","readwrite").objectStore("members");
@@ -266,6 +287,17 @@ function transfer(){
 
   store.put(A);
   store.put(B);
+
+  // ✅ SAVE TRANSFER
+  db.transaction("transfer","readwrite").objectStore("transfer")
+  .put({
+   id:crypto.randomUUID(),
+   from:A.name,
+   to:B.name,
+   amount:a,
+   branch:currentBranch,
+   date:new Date().toLocaleString()
+  });
 
   notify("Transfer done");
   loadAll();
@@ -312,6 +344,40 @@ function predict(){
  };
 }
 
+function stockAction(){
+
+ let store=db.transaction("stock","readwrite").objectStore("stock");
+
+ store.get(stock_item.value).onsuccess=e=>{
+  let s=e.target.result;
+
+  let qty=+bs_qty.value;
+  let price=100; // fixed price demo
+
+  if(bs_type.value==="buy") s.qty+=qty;
+  else{
+   if(s.qty<qty) return alert("Out");
+   s.qty-=qty;
+  }
+
+  store.put(s);
+
+  // ✅ SAVE BUY SELL
+  db.transaction("buysell","readwrite").objectStore("buysell")
+  .put({
+   id:crypto.randomUUID(),
+   item:s.name,
+   type:bs_type.value,
+   qty,
+   price,
+   total:qty*price,
+   date:new Date().toLocaleString()
+  });
+
+  loadAll();
+ };
+}
+
 // 🔔 NOTIFICATION
 function enableNotification(){
  Notification.requestPermission();
@@ -327,9 +393,13 @@ function notify(msg){
 
 // LOAD
 function loadAll(){
+ loadUsers();
  loadMembers();
  loadStock();
  loadDropdowns();
+ loadBank();
+ loadTransfer();
+ loadBS();
  drawChart();
 }
 
@@ -373,10 +443,75 @@ function loadDropdowns(){
  };
 }
 
+function loadUsers(){
+ db.transaction("users").objectStore("users")
+ .getAll().onsuccess=e=>{
+  userTable.innerHTML=e.target.result.map(u=>`
+   <tr>
+    <td>${u.id}</td>
+    <td>${u.name}</td>
+    <td>${u.pass}</td>
+    <td>${u.role}</td>
+    <td><button onclick="deleteUser('${u.id}')">Delete</button></td>
+   </tr>
+  `).join("");
+ };
+}
+
+function loadBank(){
+ db.transaction("bank").objectStore("bank")
+ .getAll().onsuccess=e=>{
+  bankTable.innerHTML=e.target.result.map(b=>`
+   <tr>
+    <td>${b.name}</td>
+    <td>${b.type}</td>
+    <td>${b.amount}</td>
+    <td>${b.balance}</td>
+    <td>${b.date}</td>
+   </tr>
+  `).join("");
+ };
+}
+
+function loadTransfer(){
+ db.transaction("transfer").objectStore("transfer")
+ .getAll().onsuccess=e=>{
+  transferTable.innerHTML=e.target.result.map(t=>`
+   <tr>
+    <td>${t.from}</td>
+    <td>${t.to}</td>
+    <td>${t.amount}</td>
+    <td>${t.branch}</td>
+    <td>${t.date}</td>
+   </tr>
+  `).join("");
+ };
+}
+
+function loadBS(){
+ db.transaction("buysell").objectStore("buysell")
+ .getAll().onsuccess=e=>{
+  bsTable.innerHTML=e.target.result.map(b=>`
+   <tr>
+    <td>${b.item}</td>
+    <td>${b.type}</td>
+    <td>${b.qty}</td>
+    <td>${b.price}</td>
+    <td>${b.total}</td>
+    <td>${b.date}</td>
+   </tr>
+  `).join("");
+ };
+}
+
+
+
 // CHART
 function drawChart(){
- db.transaction("transactions").objectStore("transactions")
+
+ db.transaction("bank").objectStore("bank")
  .getAll().onsuccess=e=>{
+
   let inc=0,exp=0;
 
   e.target.result.forEach(t=>{
@@ -386,9 +521,12 @@ function drawChart(){
 
   if(chart) chart.destroy();
 
-  chart=new Chart(chart,{
+  chart=new Chart(document.getElementById("chart"),{
    type:"bar",
-   data:{labels:["Income","Expense"],datasets:[{data:[inc,exp]}]}
+   data:{
+    labels:["Income","Expense"],
+    datasets:[{data:[inc,exp]}]
+   }
   });
  };
 }
