@@ -13,6 +13,10 @@ input,select,button{width:100%;padding:10px;margin:5px 0;}
 button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
 table{width:100%;border-collapse:collapse;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
+th{
+  background:#2563eb;
+  color:white;
+}
 </style>
 </head>
 
@@ -29,6 +33,12 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 <button onclick="saveMember()">Save</button>
 
 <table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Balance</th>
+</tr>
+</thead>
 <tbody id="memberTable"></tbody>
 </table>
 </div>
@@ -96,6 +106,12 @@ td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
 <button onclick="addStock()">Add</button>
 
 <table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Qty</th>
+</tr>
+</thead>
 <tbody id="stockTable"></tbody>
 </table>
 </div>
