@@ -159,9 +159,12 @@ req.onupgradeneeded=e=>{
 db.createObjectStore("buysell",{keyPath:"id"});
 };
 
-req.onsuccess=e=>{
- db=e.target.result;
- loadAll();
+req.onsuccess = e=>{
+ db = e.target.result;
+
+ setTimeout(()=>{
+  loadAll();
+ }, 100);
 };
 
 // TAB
@@ -440,31 +443,35 @@ function loadStock(){
 
 function loadDropdown(){
 
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  let list=e.target.result;
+ let memberStore = db.transaction("members").objectStore("members");
 
-  if(!list.length){
-   b_member.innerHTML="";
-   t_from.innerHTML="";
-   t_to.innerHTML="";
-   return;
-  }
+ memberStore.getAll().onsuccess = e=>{
+  let list = e.target.result;
 
-  let m=list.map(x=>`<option value="${x.id}">${x.name}</option>`).join("");
+  let options = `<option value="">Select Member</option>`;
 
-  b_member.innerHTML=m;
-  t_from.innerHTML=m;
-  t_to.innerHTML=m;
+  list.forEach(m=>{
+   options += `<option value="${m.id}">${m.name}</option>`;
+  });
+
+  document.getElementById("b_member").innerHTML = options;
+  document.getElementById("t_from").innerHTML = options;
+  document.getElementById("t_to").innerHTML = options;
  };
 
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess=e=>{
-  let list=e.target.result;
+ // STOCK DROPDOWN
+ let stockStore = db.transaction("stock").objectStore("stock");
 
-  bs_item.innerHTML=list.map(s=>`
-   <option value="${s.id}">${s.name}</option>
-  `).join("");
+ stockStore.getAll().onsuccess = e=>{
+  let list = e.target.result;
+
+  let options = `<option value="">Select Item</option>`;
+
+  list.forEach(s=>{
+   options += `<option value="${s.id}">${s.name}</option>`;
+  });
+
+  document.getElementById("bs_item").innerHTML = options;
  };
 }
 
