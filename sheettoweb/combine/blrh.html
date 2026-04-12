@@ -105,13 +105,16 @@ req.onsuccess=e=>{
 function addCustomer(){
  let obj={
   id:Date.now(),
-  name:name.value,
-  phone:phone.value,
-  balance:0
+  name: (name.value || "").trim(),
+  phone: phone.value || "",
+  balance: 0
  };
 
+ if(!obj.name) return alert("Name required");
+
  db.transaction("customers","readwrite")
- .objectStore("customers").put(obj);
+ .objectStore("customers")
+ .put(obj);
 
  loadCustomers();
 }
