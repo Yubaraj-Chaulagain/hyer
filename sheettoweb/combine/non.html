@@ -5,6 +5,7 @@
 <title>ERP PRO FIXED SYSTEM</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{font-family:Arial;background:#eef2f7;margin:0;}
@@ -53,7 +54,7 @@ th{
 <button onclick="showTab('transfer')">💸 Transfer</button>
 <button onclick="showTab('stock')">📦 Stock</button>
 <button onclick="showTab('buysell')">🛒 Buy/Sell</button>
-<button onclick="showTab('chart')">chart</button>
+<button onclick="showTab('chartTab')">📊 Chart</button>
 </div>
 
 <button onclick="exportExcel()">📤 Export Excel</button>
@@ -194,8 +195,8 @@ th{
 </table>
 </div>
 </div>
-<div id="chart" class="section tab-section">
-<canvas id="chart"></canvas>
+<div id="chartTab" class="section tab-section">
+<canvas id="myChart"></canvas>
 </div>
 
 
@@ -728,6 +729,8 @@ function searchMembers(){
  };
 }
 
+let chartInstance;
+
 function loadChart(){
 
  db.transaction("members")
@@ -737,7 +740,12 @@ function loadChart(){
   let names = e.target.result.map(x=>x.name);
   let balances = e.target.result.map(x=>x.balance);
 
-  new Chart(chart,{
+  let ctx = document.getElementById("myChart").getContext("2d");
+
+  // 🔥 destroy old chart (important)
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx,{
    type:"bar",
    data:{
     labels:names,
