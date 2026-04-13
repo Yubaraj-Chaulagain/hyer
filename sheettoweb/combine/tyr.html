@@ -5,6 +5,7 @@
 <title>ERP PRO FIXED SYSTEM</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{font-family:Arial;background:#eef2f7;margin:0;}
@@ -53,6 +54,8 @@ th{
 <button onclick="showTab('transfer')">💸 Transfer</button>
 <button onclick="showTab('stock')">📦 Stock</button>
 <button onclick="showTab('buysell')">🛒 Buy/Sell</button>
+<button onclick="showTab('chartTab')">📊 Chart</button>
+<button onclick="showTab('profitTab')">💹 Profit/Loss</button>
 </div>
 
 <button onclick="exportExcel()">📤 Export Excel</button>
@@ -65,6 +68,7 @@ th{
 <button onclick="saveMember()">Save</button></div>
 <div>
 <h3>👤 Members Table</h3>
+<input id="searchMember" placeholder="Search Member" onkeyup="searchMembers()">
 <table>
 <thead>
 <tr>
@@ -192,6 +196,15 @@ th{
 </table>
 </div>
 </div>
+<div id="chartTab" class="section tab-section">
+<canvas id="myChart"></canvas>
+</div>
+<div id="profitTab" class="section tab-section">
+<canvas id="profitChart"></canvas>
+</div>
+
+
+
 <script>
 
 let db;
@@ -527,6 +540,9 @@ function loadAll(){
  loadBank();      // ✅ ADD
  loadTransfer();  // ✅ ADD
  loadBuySell();   // ✅ ADD
+ loadChart();
+loadProfitChart();
+recalculateStock();
 }
 
 // MEMBERS TABLE
@@ -604,6 +620,96 @@ function editStock(id,name,qty){
  tx.oncomplete = loadAll;
 }
 
+function recalculateBalance(){
+
+ let tx = db.transaction(["members","bank","transfer","buysell"],"readonly");
+
+ let mStore = tx.objectStore("members");
+ let bStore = tx.objectStore("bank");
+ let tStore = tx.objectStore("transfer");
+ let bsStore = tx.objectStore("buysell");
+
+ Promise.all([
+  mStore.getAll(),
+  bStore.getAll(),
+  tStore.getAll(),
+  bsStore.getAll()
+ ]).then(([members,bank,transfer,bs])=>{
+
+  // reset balance
+  members.forEach(m=>m.balance=0);
+
+  // BANK
+  bank.forEach(b=>{
+   let m = members.find(x=>x.name===b.name);
+   if(!m) return;
+
+   if(b.type==="deposit") m.balance += b.amount;
+   else m.balance -= b.amount;
+  });
+
+  // TRANSFER
+  transfer.forEach(t=>{
+   let A = members.find(x=>x.name===t.from);
+   let B = members.find(x=>x.name===t.to);
+
+   if(A) A.balance -= t.amount;
+   if(B) B.balance += t.amount;
+  });
+
+  // BUY SELL
+  bs.forEach(b=>{
+   let m = members.find(x=>x.name===b.member);
+   if(!m) return;
+
+   if(b.type==="sell") m.balance += b.total;
+   if(b.type==="buy") m.balance -= b.total;
+  });
+
+  // save updated balances
+  let tx2 = db.transaction("members","readwrite");
+  let store = tx2.objectStore("members");
+
+  members.forEach(m=>store.put(m));
+
+  tx2.oncomplete = loadAll;
+
+ });
+}
+
+function recalculateStock(){
+
+ let tx = db.transaction(["stock","buysell"],"readonly");
+
+ let sStore = tx.objectStore("stock");
+ let bsStore = tx.objectStore("buysell");
+
+ Promise.all([
+  sStore.getAll(),
+  bsStore.getAll()
+ ]).then(([stock,bs])=>{
+
+  // reset stock
+  stock.forEach(s=>s.qty=0);
+
+  bs.forEach(b=>{
+   let s = stock.find(x=>x.name===b.item);
+   if(!s) return;
+
+   if(b.type==="buy") s.qty += b.qty;
+   if(b.type==="sell") s.qty -= b.qty;
+  });
+
+  let tx2 = db.transaction("stock","readwrite");
+  let store = tx2.objectStore("stock");
+
+  stock.forEach(s=>store.put(s));
+
+  tx2.oncomplete = loadAll;
+
+ });
+}
+
 function deleteStock(id){
  if(!confirm("Delete Stock?")) return;
 
@@ -611,6 +717,93 @@ function deleteStock(id){
  tx.objectStore("stock").delete(id);
  tx.oncomplete = loadAll;
 }
+
+function searchMembers(){
+ let q = searchMember.value.toLowerCase();
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = e=>{
+  let data = e.target.result.filter(m =>
+   m.name.toLowerCase().includes(q)
+  );
+
+  memberTable.innerHTML = data.map(m=>
+   `<tr><td>${m.name}</td><td>${m.balance}</td></tr>`
+  ).join("");
+ };
+}
+
+let chartInstance;
+
+function loadChart(){
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = e=>{
+
+  let names = e.target.result.map(x=>x.name);
+  let balances = e.target.result.map(x=>x.balance);
+
+  let ctx = document.getElementById("myChart").getContext("2d");
+
+  // 🔥 destroy old chart (important)
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx,{
+   type:"bar",
+   data:{
+    labels:names,
+    datasets:[{
+     label:"Balance",
+     data:balances
+    }]
+   }
+  });
+
+ };
+}
+
+let profitChart;
+
+function loadProfitChart(){
+
+ db.transaction("buysell")
+ .objectStore("buysell")
+ .getAll().onsuccess = e=>{
+
+  let data = e.target.result;
+
+  let profit = 0;
+  let loss = 0;
+
+  data.forEach(d=>{
+   if(d.type === "sell"){
+    profit += d.total;
+   }
+   if(d.type === "buy"){
+    loss += d.total;
+   }
+  });
+
+  let ctx = document.getElementById("profitChart").getContext("2d");
+
+  if(profitChart) profitChart.destroy();
+
+  profitChart = new Chart(ctx,{
+   type:"doughnut",
+   data:{
+    labels:["Profit","Loss"],
+    datasets:[{
+     data:[profit, loss]
+    }]
+   }
+  });
+
+ };
+}
+
+
 
 // DROPDOWNS FIXED
 function loadDropdowns(){
