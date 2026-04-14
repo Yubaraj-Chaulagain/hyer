@@ -1,10 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
+<header>
+  <nav>
+    <label for="category">Category:</label>
+    <select id="category" onchange="updateSubmenu()">
+      <option value="">Select Category</option>
+      <option value="fruits">Fruits</option>
+      <option value="vegetables">Vegetables</option>
+    </select>
+
+    <label for="item">Item:</label>
+    <select id="item" disabled>
+      <option value="">Select Category First</option>
+    </select>
+  </nav>
+</header>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ERP PRO SYSTEM</title>
-
+</head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
 <style>
 body{
@@ -407,6 +424,34 @@ function loadDashboard(){
  };
 }
 
+
+</script>
+<script>
+const data = {
+  fruits: ["Apple", "Banana", "Cherry"],
+  vegetables: ["Carrot", "Broccoli", "Spinach"]
+};
+
+function updateSubmenu() {
+  const categorySelect = document.getElementById("category");
+  const itemSelect = document.getElementById("item");
+  const selectedCategory = categorySelect.value;
+
+  // Clear existing options
+  itemSelect.innerHTML = '<option value="">Select Item</option>';
+
+  if (selectedCategory) {
+    itemSelect.disabled = false;
+    data[selectedCategory].forEach(item => {
+      const option = document.createElement("option");
+      option.value = item.toLowerCase();
+      option.textContent = item;
+      itemSelect.appendChild(option);
+    });
+  } else {
+    itemSelect.disabled = true;
+  }
+}
 </script>
 
 </body>
