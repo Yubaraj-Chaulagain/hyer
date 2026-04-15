@@ -42,17 +42,20 @@ th{
 .active{
  display:block;
 }
-/* SIDEBAR */
 .sidebar{
  position:fixed;
- left:-220px;
  top:0;
+ left:-220px;  /* hidden */
  width:200px;
  height:100%;
  background:#1e293b;
  padding:10px;
  transition:0.3s;
- z-index:1000;
+ z-index:1500;
+}
+
+.sidebar.active{
+ left:0;   /* 👈 open हुँदा */
 }
 
 .sidebar button{
@@ -72,16 +75,18 @@ th{
  left:0;
 }
 
-/* MENU BUTTON */
 .menu-btn{
  position:fixed;
  top:10px;
- left:10px;
+ left:10px;   /* 👈 LEFT SIDE TOP */
  background:#2563eb;
  color:#fff;
  border:none;
- padding:10px;
- z-index:1100;
+ padding:12px;
+ font-size:18px;
+ border-radius:6px;
+ z-index:2000;
+ box-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
 
 /* overlay */
