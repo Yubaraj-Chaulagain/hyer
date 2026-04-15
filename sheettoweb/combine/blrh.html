@@ -498,6 +498,67 @@ function resetPassword(){
  };
 }
 
+function loadUsers(){
+ db.transaction("users")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+
+  userTable.innerHTML = e.target.result.map(u=>`
+   <tr>
+    <td>${u.username}</td>
+    <td>${u.role}</td>
+    <td>
+      <button onclick="editUser('${u.id}')">✏️ Edit</button>
+      <button onclick="deleteUser('${u.id}')">❌ Delete</button>
+    </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function editUser(id){
+
+ let tx = db.transaction("users","readwrite");
+ let store = tx.objectStore("users");
+
+ store.get(id).onsuccess = e=>{
+  let u = e.target.result;
+
+  let newName = prompt("Edit Username", u.username);
+  if(!newName) return;
+
+  let newPass = prompt("Edit Password", u.password);
+  if(!newPass) return;
+
+  let newRole = prompt("Edit Role (admin/user)", u.role);
+  if(!newRole) return;
+
+  u.username = newName;
+  u.password = newPass;
+  u.role = newRole;
+
+  store.put(u);
+
+  tx.oncomplete = ()=>{
+   alert("✅ User updated");
+   loadUsers();
+  };
+ };
+}
+
+function deleteUser(id){
+
+ if(!confirm("Are you sure to delete this user?")) return;
+
+ let tx = db.transaction("users","readwrite");
+ tx.objectStore("users").delete(id);
+
+ tx.oncomplete = ()=>{
+  alert("🗑️ User deleted");
+  loadUsers();
+ };
+}
+
 
 
 // AUTO LOGIN
