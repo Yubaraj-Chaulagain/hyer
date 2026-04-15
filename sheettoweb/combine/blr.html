@@ -117,6 +117,31 @@ th{
 <body>
 <div id="loginPage" class="section active">
 <h2>🔐 Login</h2>
+<div id="users" class="section tab-section">
+<h3>👥 User Management</h3>
+
+<input id="u_name" placeholder="Username">
+<input id="u_pass" placeholder="Password">
+
+<select id="u_role">
+<option value="user">User</option>
+<option value="admin">Admin</option>
+</select>
+
+<button onclick="addUser()">Add User</button>
+
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
+</div>
+</div>
 <div id="app" style="display:none;">
 <!-- 👉 तिम्रो पुरै ERP system यहाँ राख -->
 <input id="loginUser" placeholder="Username">
@@ -151,30 +176,7 @@ th{
 
 <button onclick="exportExcel()">📤 Export Excel</button>
 
-<div id="users" class="section tab-section">
-<h3>👥 User Management</h3>
 
-<input id="u_name" placeholder="Username">
-<input id="u_pass" placeholder="Password">
-
-<select id="u_role">
-<option value="user">User</option>
-<option value="admin">Admin</option>
-</select>
-
-<button onclick="addUser()">Add User</button>
-
-<table>
-<thead>
-<tr>
-<th>Username</th>
-<th>Role</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="userTable"></tbody>
-</table>
-</div>
 
 <!-- MEMBERS -->
 <div id="members" class="section tab-section active">
