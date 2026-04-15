@@ -142,6 +142,19 @@ th{
 </table>
 </div>
 </div>
+<div id="loginPage" class="section active">
+<h2>🔐 Login</h2>
+
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<!-- 👇 ADD THIS -->
+<button onclick="showSignup()">📝 Signup</button>
+<button onclick="forgotPass()">❓ Forgot Password</button>
+
+</div>
 <div id="app" style="display:none;">
 <!-- 👉 तिम्रो पुरै ERP system यहाँ राख -->
 <input id="loginUser" placeholder="Username">
@@ -329,13 +342,14 @@ let req = indexedDB.open("ERP_PRO",1);
 
 req.onupgradeneeded = e=>{
  db = e.target.result;
+
  db.createObjectStore("members",{keyPath:"id"});
  db.createObjectStore("stock",{keyPath:"id"});
  db.createObjectStore("bank",{keyPath:"id"});
  db.createObjectStore("transfer",{keyPath:"id"});
  db.createObjectStore("buysell",{keyPath:"id"});
+ db.createObjectStore("users",{keyPath:"id"}); // ✅ HERE
 };
-db.createObjectStore("users",{keyPath:"id"});
 
 req.onsuccess = e=>{
  db = e.target.result;
@@ -1075,6 +1089,53 @@ function checkAdmin(){
  if(user.role !== "admin"){
   document.getElementById("users").style.display="none";
  }
+}
+
+function showSignup(){
+ loginPage.style.display="none";
+ signupPage.style.display="block";
+}
+
+function backLogin(){
+ signupPage.style.display="none";
+ loginPage.style.display="block";
+}
+
+function signup(){
+ let u = s_user.value;
+ let p = s_pass.value;
+ let r = s_role.value;
+
+ if(!u || !p) return alert("Fill all");
+
+ let tx = db.transaction("users","readwrite");
+
+ tx.objectStore("users").put({
+  id: crypto.randomUUID(),
+  username: u,
+  password: p,
+  role: r
+ });
+
+ tx.oncomplete = ()=>{
+  alert("Account created ✅");
+  backLogin();
+ };
+}
+
+function forgotPass(){
+ let username = prompt("Enter your username");
+
+ db.transaction("users")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+
+  let user = e.target.result.find(x=>x.username===username);
+
+  if(!user) return alert("User not found ❌");
+
+  alert("Your password: " + user.password);
+ };
 }
 
 
