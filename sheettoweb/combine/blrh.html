@@ -58,9 +58,13 @@ th{background:#2563eb;color:#fff;}
 <button onclick="showTab('stock')">Stock</button>
 <button onclick="showTab('buysell')">Buy/Sell</button>
 <button onclick="showTab('chartTab')">Chart</button>
+<button onclick="showTab('users')">Users</button>
 <button onclick="logout()">Logout</button>
 
 <button onclick="exportExcel()">Export Excel</button>
+
+<div id="users" class="section tab-section">
+<h3>👥 Users</h3>
 
 <table>
 <thead>
@@ -72,6 +76,8 @@ th{background:#2563eb;color:#fff;}
 </thead>
 <tbody id="userTable"></tbody>
 </table>
+
+</div>
 
 <!-- MEMBERS -->
 <div id="members" class="section tab-section active">
@@ -417,8 +423,14 @@ function loadAll(){
  loadDropdowns();
  loadChart();
 
- if(document.getElementById("userTable")){
+ let user = JSON.parse(localStorage.getItem("user"));
+
+ if(user && user.role === "admin"){
   loadUsers();
+  document.getElementById("users").style.display="block";
+ } else {
+  let uTab = document.getElementById("users");
+  if(uTab) uTab.style.display="none";
  }
 }
 
