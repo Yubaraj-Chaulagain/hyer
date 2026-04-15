@@ -232,28 +232,28 @@ function backLogin(){
 function saveMember(){
 
  if(!db){
-  alert("⚠️ सिस्टम अझै load हुँदैछ");
+  alert("⚠️ System loading...");
   return;
  }
 
  let name = m_name.value.trim();
 
  if(!name){
-  alert("❌ Enter member name");
+  alert("❌ Enter name");
   return;
  }
 
  let tx = db.transaction("members","readwrite");
+ let store = tx.objectStore("members");
 
- tx.objectStore("members").put({
+ store.put({
   id: crypto.randomUUID(),
   name
  });
 
  tx.oncomplete = ()=>{
-  alert("✅ Member added");
   m_name.value="";
-  loadAll();
+  loadMembers(); // 🔥 direct call (better than loadAll)
  };
 }
 
@@ -284,6 +284,13 @@ function getBalance(name,bank,transfer,bs){
 // LOAD MEMBERS
 function loadMembers(){
 
+ let table = document.getElementById("memberTable");
+
+ if(!table){
+  console.error("❌ memberTable not found");
+  return;
+ }
+
  let tx = db.transaction(["members","bank","transfer","buysell"]);
 
  Promise.all([
@@ -293,7 +300,7 @@ function loadMembers(){
   tx.objectStore("buysell").getAll()
  ]).then(([m,b,t,bs])=>{
 
-  memberTable.innerHTML = m.map(x=>`
+  table.innerHTML = m.map(x=>`
    <tr>
     <td>${x.name}</td>
     <td>${getBalance(x.name,b,t,bs)}</td>
