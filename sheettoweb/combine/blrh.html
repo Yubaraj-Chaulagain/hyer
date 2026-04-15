@@ -29,6 +29,8 @@ th{background:#2563eb;color:#fff;}
 <input id="loginPass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
 <button onclick="showSignup()">Signup</button>
+<button onclick="forgotPass()">ForgotPassword</button>
+<button onclick="resetPassword()">Reset Password</button>
 </div>
 
 <!-- SIGNUP -->
@@ -423,6 +425,80 @@ function exportExcel(){
   XLSX.writeFile(wb,"ERP.xlsx");
  };
 }
+
+function forgotPass(){
+ let username = prompt("Enter your username");
+
+ if(!username) return;
+
+ db.transaction("users","readwrite")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+
+  let users = e.target.result;
+  let user = users.find(x=>x.username===username);
+
+  if(!user){
+   alert("❌ User not found");
+   return;
+  }
+
+  let newPass = prompt("Enter new password");
+
+  if(!newPass) return;
+
+  user.password = newPass;
+
+  let tx = db.transaction("users","readwrite");
+  tx.objectStore("users").put(user);
+
+  tx.oncomplete = ()=>{
+   alert("✅ Password reset successful");
+  };
+ };
+}
+
+function resetPassword(){
+ let username = prompt("Enter username to reset password:");
+
+ if(!username) return;
+
+ db.transaction("users","readonly")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+
+  let users = e.target.result;
+  let user = users.find(x=>x.username===username);
+
+  if(!user){
+   alert("❌ User not found");
+   return;
+  }
+
+  // simple security check
+  let confirmAdmin = prompt("Enter ADMIN password to continue:");
+
+  if(confirmAdmin !== "1234"){   // default admin password
+   alert("❌ Not authorized");
+   return;
+  }
+
+  let newPass = prompt("Enter NEW password:");
+
+  if(!newPass) return;
+
+  user.password = newPass;
+
+  let tx = db.transaction("users","readwrite");
+  tx.objectStore("users").put(user);
+
+  tx.oncomplete = ()=>{
+   alert("✅ Password reset successful");
+  };
+ };
+}
+
+
 
 // AUTO LOGIN
 window.onload = ()=>{
