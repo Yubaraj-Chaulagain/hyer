@@ -230,12 +230,31 @@ function backLogin(){
 
 // MEMBERS
 function saveMember(){
+
+ if(!db){
+  alert("⚠️ सिस्टम अझै load हुँदैछ");
+  return;
+ }
+
+ let name = m_name.value.trim();
+
+ if(!name){
+  alert("❌ Enter member name");
+  return;
+ }
+
  let tx = db.transaction("members","readwrite");
+
  tx.objectStore("members").put({
-  id:crypto.randomUUID(),
-  name:m_name.value
+  id: crypto.randomUUID(),
+  name
  });
- tx.oncomplete=loadAll;
+
+ tx.oncomplete = ()=>{
+  alert("✅ Member added");
+  m_name.value="";
+  loadAll();
+ };
 }
 
 // BALANCE CALC
