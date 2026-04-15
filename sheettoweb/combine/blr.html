@@ -115,53 +115,37 @@ th{
 </head>
 
 <body>
-<div id="loginPage" class="section active">
+<!-- 🔥 LOGIN PAGE -->
+<div id="loginPage" class="section">
 <h2>🔐 Login</h2>
-<div id="users" class="section tab-section">
-<h3>👥 User Management</h3>
 
-<input id="u_name" placeholder="Username">
-<input id="u_pass" placeholder="Password">
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
 
-<select id="u_role">
+<button onclick="login()">Login</button>
+<button onclick="showSignup()">📝 Signup</button>
+<button onclick="forgotPass()">❓ Forgot Password</button>
+</div>
+
+<!-- 🔥 SIGNUP PAGE -->
+<div id="signupPage" class="section" style="display:none;">
+<h2>📝 Signup</h2>
+
+<input id="s_user" placeholder="Username">
+<input id="s_pass" placeholder="Password">
+
+<select id="s_role">
 <option value="user">User</option>
 <option value="admin">Admin</option>
 </select>
 
-<button onclick="addUser()">Add User</button>
-
-<table>
-<thead>
-<tr>
-<th>Username</th>
-<th>Role</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="userTable"></tbody>
-</table>
+<button onclick="signup()">Create Account</button>
+<button onclick="backLogin()">⬅ Back</button>
 </div>
-</div>
-<div id="loginPages" class="section active">
-<h2>🔐 Login</h2>
 
-<input id="loginUser" placeholder="Username">
-<input id="loginPass" type="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-
-<!-- 👇 ADD THIS -->
-<button onclick="showSignup()">📝 Signup</button>
-<button onclick="forgotPass()">❓ Forgot Password</button>
-
-</div>
+<!-- 🔥 APP -->
 <div id="app" style="display:none;">
 <!-- 👉 तिम्रो पुरै ERP system यहाँ राख -->
-<input id="loginUser" placeholder="Username">
-<input id="loginPass" type="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-</div>
 <button class="menu-btn" onclick="toggleMenu()">☰</button>
 
 <div class="sidebar" id="sidebar">
