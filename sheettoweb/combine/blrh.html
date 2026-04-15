@@ -2,63 +2,98 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ERP ULTRA SYSTEM</title>
+<title>ERP PRO 2.0 FINAL</title>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-body{font-family:Arial;background:#eef2f7;max-width:1100px;margin:auto;padding:10px;}
-.section{background:#fff;padding:10px;margin-top:10px;border-radius:10px;}
+body{font-family:Arial;background:#eef2f7;margin:0;}
+.section{background:#fff;margin:10px;padding:10px;border-radius:10px;}
 input,select,button{width:100%;padding:10px;margin:5px 0;}
 button{background:#2563eb;color:#fff;border:none;border-radius:6px;}
-table{width:100%;border-collapse:collapse;margin-top:10px;}
+table{width:100%;border-collapse:collapse;}
 td,th{border:1px solid #ddd;padding:6px;font-size:12px;}
-h2{text-align:center;}
+th{background:#2563eb;color:#fff;}
+.tab-section{display:none;}
+.active{display:block;}
 </style>
 </head>
 
 <body>
 
-<h2>🚀 ERP ULTRA FULL BUSINESS SYSTEM</h2>
+<!-- LOGIN -->
+<div id="loginPage" class="section">
+<h2>🔐 Login</h2>
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="showSignup()">Signup</button>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupPage" class="section" style="display:none;">
+<h2>Signup</h2>
+<input id="s_user" placeholder="Username">
+<input id="s_pass" placeholder="Password">
+<select id="s_role">
+<option value="user">User</option>
+<option value="admin">Admin</option>
+</select>
+<button onclick="signup()">Create</button>
+<button onclick="backLogin()">Back</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
+
+<h2 style="text-align:center">🚀 ERP PRO 2.0</h2>
+
+<button onclick="showTab('members')">Members</button>
+<button onclick="showTab('bank')">Bank</button>
+<button onclick="showTab('transfer')">Transfer</button>
+<button onclick="showTab('stock')">Stock</button>
+<button onclick="showTab('buysell')">Buy/Sell</button>
+<button onclick="showTab('chartTab')">Chart</button>
+<button onclick="logout()">Logout</button>
+
+<button onclick="exportExcel()">Export Excel</button>
 
 <!-- MEMBERS -->
-<div class="section">
-<h3>👤 Members</h3>
+<div id="members" class="section tab-section active">
+<h3>Members</h3>
 <input id="m_name" placeholder="Name">
-<input id="m_phone" placeholder="Phone">
-<button onclick="saveMember()">Save</button>
+<button onclick="saveMember()">Add</button>
+
 <table>
 <thead><tr><th>Name</th><th>Balance</th></tr></thead>
 <tbody id="memberTable"></tbody>
 </table>
 </div>
 
-<!-- BANKING -->
-<div class="section">
-<h3>🏦 Banking</h3>
+<!-- BANK -->
+<div id="bank" class="section tab-section">
 <select id="b_member"></select>
 <select id="b_type">
 <option value="deposit">Deposit</option>
 <option value="withdraw">Withdraw</option>
 </select>
 <input id="b_amount" placeholder="Amount">
-<button onclick="banking()">Submit</button>
+<button onclick="bank()">Submit</button>
 </div>
 
 <!-- TRANSFER -->
-<div class="section">
-<h3>💸 Transfer (ABBS)</h3>
-<select id="from"></select>
-<select id="to"></select>
+<div id="transfer" class="section tab-section">
+<select id="t_from"></select>
+<select id="t_to"></select>
 <input id="t_amt" placeholder="Amount">
-<button onclick="transfer()">Transfer</button>
+<button onclick="transfer()">Send</button>
 </div>
 
 <!-- STOCK -->
-<div class="section">
-<h3>📦 Stock</h3>
-<input id="item_name" placeholder="Item">
-<input id="item_qty" placeholder="Qty">
+<div id="stock" class="section tab-section">
+<input id="item" placeholder="Item">
+<input id="qty" placeholder="Qty">
 <button onclick="addStock()">Add</button>
 
 <table>
@@ -67,211 +102,337 @@ h2{text-align:center;}
 </table>
 </div>
 
-<!-- BUY/SELL -->
-<div class="section">
-<h3>🛒 Buy / Sell</h3>
-<select id="stock_item"></select>
+<!-- BUY SELL -->
+<div id="buysell" class="section tab-section">
+<select id="bs_member"></select>
+<select id="bs_item"></select>
 <select id="bs_type">
-<option value="buy">Buying</option>
-<option value="sell">Selling</option>
+<option value="buy">Buy</option>
+<option value="sell">Sell</option>
 </select>
 <input id="bs_qty" placeholder="Qty">
-<button onclick="stockAction()">Submit</button>
+<input id="bs_price" placeholder="Price">
+<button onclick="buySell()">Submit</button>
 </div>
 
-<!-- DASHBOARD -->
-<div class="section">
-<h3>📊 Dashboard</h3>
-<canvas id="chart"></canvas>
-<div id="profitBox"></div>
+<!-- CHART -->
+<div id="chartTab" class="section tab-section">
+<canvas id="myChart"></canvas>
+</div>
+
 </div>
 
 <script>
 
-let db, chart;
+let db, chartInstance;
 
-// DB
-let req=indexedDB.open("ERP_ULTRA",1);
+// DB INIT
+let req = indexedDB.open("ERP_PRO_V2",1);
 
-req.onupgradeneeded=e=>{
- db=e.target.result;
+req.onupgradeneeded = e=>{
+ db = e.target.result;
  db.createObjectStore("members",{keyPath:"id"});
- db.createObjectStore("transactions",{keyPath:"id"});
  db.createObjectStore("stock",{keyPath:"id"});
+ db.createObjectStore("bank",{keyPath:"id"});
+ db.createObjectStore("transfer",{keyPath:"id"});
+ db.createObjectStore("buysell",{keyPath:"id"});
+ db.createObjectStore("users",{keyPath:"id"});
 };
 
-req.onsuccess=e=>{
- db=e.target.result;
+req.onsuccess = e=>{
+ db = e.target.result;
+ initAdmin();
  loadAll();
 };
+
+// ADMIN INIT
+function initAdmin(){
+ let tx = db.transaction("users","readwrite");
+ let store = tx.objectStore("users");
+
+ store.getAll().onsuccess = e=>{
+  if(e.target.result.length===0){
+   store.put({
+    id:crypto.randomUUID(),
+    username:"admin",
+    password:"1234",
+    role:"admin"
+   });
+  }
+ };
+}
+
+// LOGIN
+function login(){
+ let u=loginUser.value, p=loginPass.value;
+
+ db.transaction("users")
+ .objectStore("users")
+ .getAll().onsuccess=e=>{
+  let user = e.target.result.find(x=>x.username===u && x.password===p);
+  if(!user) return alert("Invalid");
+
+  localStorage.setItem("user",JSON.stringify(user));
+  loginPage.style.display="none";
+  app.style.display="block";
+  loadAll();
+ };
+}
+
+function logout(){
+ localStorage.removeItem("user");
+ location.reload();
+}
+
+// SIGNUP
+function signup(){
+ let tx = db.transaction("users","readwrite");
+ tx.objectStore("users").put({
+  id:crypto.randomUUID(),
+  username:s_user.value,
+  password:s_pass.value,
+  role:s_role.value
+ });
+ alert("Created");
+ backLogin();
+}
+
+function showSignup(){
+ loginPage.style.display="none";
+ signupPage.style.display="block";
+}
+
+function backLogin(){
+ signupPage.style.display="none";
+ loginPage.style.display="block";
+}
 
 // MEMBERS
 function saveMember(){
- let obj={
+ let tx = db.transaction("members","readwrite");
+ tx.objectStore("members").put({
   id:crypto.randomUUID(),
-  name:m_name.value,
-  balance:0
- };
- db.transaction("members","readwrite").objectStore("members").put(obj);
- loadAll();
+  name:m_name.value
+ });
+ tx.oncomplete=loadAll;
 }
 
-// BANKING
-function banking(){
- let id=b_member.value;
- let type=b_type.value;
- let amt=+b_amount.value;
+// BALANCE CALC
+function getBalance(name,bank,transfer,bs){
+ let bal=0;
 
- let store=db.transaction("members","readwrite").objectStore("members");
-
- store.get(id).onsuccess=e=>{
-  let m=e.target.result;
-
-  if(type==="deposit") m.balance+=amt;
-  if(type==="withdraw"){
-   if(m.balance<amt) return alert("Low balance");
-   m.balance-=amt;
+ bank.forEach(b=>{
+  if(b.name===name){
+   bal += (b.type==="deposit"?b.amount:-b.amount);
   }
+ });
 
-  store.put(m);
+ transfer.forEach(t=>{
+  if(t.from===name) bal-=t.amount;
+  if(t.to===name) bal+=t.amount;
+ });
 
-  db.transaction("transactions","readwrite").objectStore("transactions")
-  .put({id:crypto.randomUUID(),type,name:m.name,amount:amt});
+ bs.forEach(b=>{
+  if(b.member===name){
+   bal += (b.type==="sell"?b.total:-b.total);
+  }
+ });
 
-  loadAll();
- };
+ return bal;
+}
+
+// LOAD MEMBERS
+function loadMembers(){
+
+ let tx = db.transaction(["members","bank","transfer","buysell"]);
+
+ Promise.all([
+  tx.objectStore("members").getAll(),
+  tx.objectStore("bank").getAll(),
+  tx.objectStore("transfer").getAll(),
+  tx.objectStore("buysell").getAll()
+ ]).then(([m,b,t,bs])=>{
+
+  memberTable.innerHTML = m.map(x=>`
+   <tr>
+    <td>${x.name}</td>
+    <td>${getBalance(x.name,b,t,bs)}</td>
+   </tr>
+  `).join("");
+
+ });
+}
+
+// BANK
+function bank(){
+ let tx = db.transaction("bank","readwrite");
+ tx.objectStore("bank").put({
+  id:crypto.randomUUID(),
+  name:b_member.value,
+  type:b_type.value,
+  amount:+b_amount.value
+ });
+ tx.oncomplete=loadAll;
 }
 
 // TRANSFER
 function transfer(){
- let f=from.value, t=to.value, amt=+t_amt.value;
-
- let store=db.transaction("members","readwrite").objectStore("members");
-
- store.getAll().onsuccess=e=>{
-  let data=e.target.result;
-
-  let A=data.find(x=>x.id===f);
-  let B=data.find(x=>x.id===t);
-
-  if(A.balance<amt) return alert("Insufficient");
-
-  A.balance-=amt;
-  B.balance+=amt;
-
-  store.put(A); store.put(B);
-
-  loadAll();
- };
+ let tx = db.transaction("transfer","readwrite");
+ tx.objectStore("transfer").put({
+  id:crypto.randomUUID(),
+  from:t_from.value,
+  to:t_to.value,
+  amount:+t_amt.value
+ });
+ tx.oncomplete=loadAll;
 }
 
 // STOCK
 function addStock(){
- db.transaction("stock","readwrite").objectStore("stock")
- .put({id:crypto.randomUUID(),name:item_name.value,qty:+item_qty.value});
- loadAll();
-}
-
-// BUY/SELL
-let totalBuy=0, totalSell=0;
-
-function stockAction(){
- let id=stock_item.value;
- let type=bs_type.value;
- let qty=+bs_qty.value;
-
- let store=db.transaction("stock","readwrite").objectStore("stock");
-
- store.get(id).onsuccess=e=>{
-  let s=e.target.result;
-
-  if(type==="buy"){ s.qty+=qty; totalBuy+=qty; }
-  if(type==="sell"){
-   if(s.qty<qty) return alert("Out of stock");
-   s.qty-=qty;
-   totalSell+=qty;
-  }
-
-  store.put(s);
-  loadAll();
- };
-}
-
-// LOAD
-function loadAll(){
- loadMembers();
- loadDropdowns();
- loadStock();
- drawChart();
- calcProfit();
-}
-
-function loadMembers(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  memberTable.innerHTML=e.target.result.map(m=>`
-   <tr><td>${m.name}</td><td>${m.balance}</td></tr>
-  `).join("");
- };
-}
-
-function loadDropdowns(){
- db.transaction("members").objectStore("members")
- .getAll().onsuccess=e=>{
-  let opt="";
-  e.target.result.forEach(m=>{
-   opt+=`<option value="${m.id}">${m.name}</option>`;
-  });
-  b_member.innerHTML=opt;
-  from.innerHTML=opt;
-  to.innerHTML=opt;
- };
-
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess=e=>{
-  let opt="";
-  e.target.result.forEach(s=>{
-   opt+=`<option value="${s.id}">${s.name}</option>`;
-  });
-  stock_item.innerHTML=opt;
- };
+ let tx = db.transaction("stock","readwrite");
+ tx.objectStore("stock").put({
+  id:crypto.randomUUID(),
+  name:item.value
+ });
+ tx.oncomplete=loadAll;
 }
 
 function loadStock(){
- db.transaction("stock").objectStore("stock")
- .getAll().onsuccess=e=>{
-  stockTable.innerHTML=e.target.result.map(s=>`
-   <tr><td>${s.name}</td><td>${s.qty}</td></tr>
-  `).join("");
- };
+
+ let tx = db.transaction(["stock","buysell"]);
+
+ Promise.all([
+  tx.objectStore("stock").getAll(),
+  tx.objectStore("buysell").getAll()
+ ]).then(([s,bs])=>{
+
+  stockTable.innerHTML = s.map(x=>{
+   let qty=0;
+
+   bs.forEach(b=>{
+    if(b.item===x.name){
+     qty += (b.type==="buy"?b.qty:-b.qty);
+    }
+   });
+
+   return `<tr><td>${x.name}</td><td>${qty}</td></tr>`;
+  }).join("");
+
+ });
 }
 
-// PROFIT
-function calcProfit(){
- let profit = totalSell - totalBuy;
- profitBox.innerHTML = "Profit: "+profit;
+// BUY SELL
+function buySell(){
+ let tx = db.transaction("buysell","readwrite");
+
+ let total = bs_qty.value * bs_price.value;
+
+ tx.objectStore("buysell").put({
+  id:crypto.randomUUID(),
+  member:bs_member.value,
+  item:bs_item.value,
+  type:bs_type.value,
+  qty:+bs_qty.value,
+  price:+bs_price.value,
+  total
+ });
+
+ tx.oncomplete=loadAll;
+}
+
+// DROPDOWN
+function loadDropdowns(){
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess=e=>{
+  let opt="";
+  e.target.result.forEach(x=>{
+   opt += `<option>${x.name}</option>`;
+  });
+
+  b_member.innerHTML=opt;
+  t_from.innerHTML=opt;
+  t_to.innerHTML=opt;
+  bs_member.innerHTML=opt;
+ };
+
+ db.transaction("stock")
+ .objectStore("stock")
+ .getAll().onsuccess=e=>{
+  let opt="";
+  e.target.result.forEach(x=>{
+   opt += `<option>${x.name}</option>`;
+  });
+
+  bs_item.innerHTML=opt;
+ };
 }
 
 // CHART
-function drawChart(){
- db.transaction("transactions").objectStore("transactions")
- .getAll().onsuccess=e=>{
+function loadChart(){
 
-  let inc=0, exp=0;
+ let tx = db.transaction(["members","bank","transfer","buysell"]);
 
-  e.target.result.forEach(t=>{
-   if(t.type==="deposit") inc+=t.amount;
-   else exp+=t.amount;
-  });
+ Promise.all([
+  tx.objectStore("members").getAll(),
+  tx.objectStore("bank").getAll(),
+  tx.objectStore("transfer").getAll(),
+  tx.objectStore("buysell").getAll()
+ ]).then(([m,b,t,bs])=>{
 
-  if(chart) chart.destroy();
+  let names = m.map(x=>x.name);
+  let balances = m.map(x=>getBalance(x.name,b,t,bs));
 
-  chart=new Chart(chart,{
+  let ctx = document.getElementById("myChart");
+
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx,{
    type:"bar",
-   data:{labels:["Income","Expense"],datasets:[{data:[inc,exp]}]}
+   data:{labels:names,datasets:[{data:balances}]}
   });
+
+ });
+}
+
+// LOAD ALL
+function loadAll(){
+ loadMembers();
+ loadStock();
+ loadDropdowns();
+ loadChart();
+}
+
+// TAB
+function showTab(id){
+ document.querySelectorAll(".tab-section")
+ .forEach(x=>x.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+}
+
+// EXPORT
+function exportExcel(){
+ let wb = XLSX.utils.book_new();
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess=e=>{
+  let ws = XLSX.utils.json_to_sheet(e.target.result);
+  XLSX.utils.book_append_sheet(wb,ws,"Members");
+  XLSX.writeFile(wb,"ERP.xlsx");
  };
 }
+
+// AUTO LOGIN
+window.onload = ()=>{
+ let user = JSON.parse(localStorage.getItem("user"));
+ if(user){
+  loginPage.style.display="none";
+  app.style.display="block";
+  loadAll();
+ }
+};
 
 </script>
 
