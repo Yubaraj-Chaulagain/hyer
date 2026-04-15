@@ -44,6 +44,16 @@ th{background:#2563eb;color:#fff;}
 </select>
 <button onclick="signup()">Create</button>
 <button onclick="backLogin()">Back</button>
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
 </div>
 
 <!-- APP -->
@@ -404,6 +414,7 @@ function loadAll(){
  loadStock();
  loadDropdowns();
  loadChart();
+loadUsers();
 }
 
 // TAB
