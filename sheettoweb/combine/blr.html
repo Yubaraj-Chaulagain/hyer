@@ -115,6 +115,15 @@ th{
 </head>
 
 <body>
+<div id="loginPage" class="section active">
+<h2>🔐 Login</h2>
+<div id="app" style="display:none;">
+<!-- 👉 तिम्रो पुरै ERP system यहाँ राख -->
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+</div>
 <button class="menu-btn" onclick="toggleMenu()">☰</button>
 
 <div class="sidebar" id="sidebar">
@@ -137,9 +146,35 @@ th{
 <button onclick="showTab('stock')">📦 Stock</button>
 <button onclick="showTab('buysell')">🛒 Buy/Sell</button>
 <button onclick="showTab('chartTab')">📊 Chart</button>
+<button onclick="logout()">🚪 Logout</button>
 </div>
 
 <button onclick="exportExcel()">📤 Export Excel</button>
+
+<div id="users" class="section tab-section">
+<h3>👥 User Management</h3>
+
+<input id="u_name" placeholder="Username">
+<input id="u_pass" placeholder="Password">
+
+<select id="u_role">
+<option value="user">User</option>
+<option value="admin">Admin</option>
+</select>
+
+<button onclick="addUser()">Add User</button>
+
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
+</div>
 
 <!-- MEMBERS -->
 <div id="members" class="section tab-section active">
@@ -281,7 +316,7 @@ th{
 <canvas id="myChart"></canvas>
 </div>
 
-
+</div>
 
 <script>
 
@@ -298,10 +333,30 @@ req.onupgradeneeded = e=>{
  db.createObjectStore("transfer",{keyPath:"id"});
  db.createObjectStore("buysell",{keyPath:"id"});
 };
+db.createObjectStore("users",{keyPath:"id"});
 
 req.onsuccess = e=>{
  db = e.target.result;
+initAdmin();
+
+function initAdmin(){
+ let tx = db.transaction("users","readwrite");
+ let store = tx.objectStore("users");
+
+ store.getAll().onsuccess = e=>{
+  if(e.target.result.length === 0){
+   store.put({
+    id: crypto.randomUUID(),
+    username: "admin",
+    password: "1234",
+    role: "admin"
+   });
+  }
+ };
+}
+
  loadAll();
+
 };
 
 // ---------------- MEMBERS ----------------
@@ -619,6 +674,8 @@ function loadAll(){
  loadTransfer();  // ✅ ADD
  loadBuySell();   // ✅ ADD
  loadChart();
+loadUsers();
+checkAdmin();
 recalculateStock();
 }
 
@@ -915,6 +972,109 @@ function goTab(id){
  showTab(id);
  toggleMenu(); // auto close after click
 }
+
+function login(){
+ let u = loginUser.value;
+ let p = loginPass.value;
+
+ db.transaction("users")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+
+  let user = e.target.result.find(x =>
+   x.username === u && x.password === p
+  );
+
+  if(!user) return alert("Invalid login");
+
+  localStorage.setItem("user", JSON.stringify(user));
+
+  loginPage.style.display="none";
+  app.style.display="block";
+
+  loadAll();
+ };
+}
+
+window.onload = ()=>{
+ let user = JSON.parse(localStorage.getItem("user"));
+
+ if(user){
+  loginPage.style.display="none";
+  app.style.display="block";
+  loadAll();
+ }
+};
+
+function logout(){
+ localStorage.removeItem("user");
+ location.reload();
+}
+function addUser(){
+ let tx = db.transaction("users","readwrite");
+
+ tx.objectStore("users").put({
+  id: crypto.randomUUID(),
+  username: u_name.value,
+  password: u_pass.value,
+  role: u_role.value
+ });
+
+ tx.oncomplete = loadUsers;
+}
+
+function loadUsers(){
+ db.transaction("users")
+ .objectStore("users")
+ .getAll().onsuccess = e=>{
+  userTable.innerHTML = e.target.result.map(u=>`
+   <tr>
+    <td>${u.username}</td>
+    <td>${u.role}</td>
+    <td>
+     <button onclick="editUser('${u.id}')">✏️</button>
+     <button onclick="deleteUser('${u.id}')">❌</button>
+    </td>
+   </tr>
+  `).join("");
+ };
+}
+
+function editUser(id){
+ let tx = db.transaction("users","readwrite");
+ let store = tx.objectStore("users");
+
+ store.get(id).onsuccess = e=>{
+  let u = e.target.result;
+
+  let name = prompt("Username", u.username);
+  let pass = prompt("Password", u.password);
+  let role = prompt("Role (admin/user)", u.role);
+
+  u.username = name;
+  u.password = pass;
+  u.role = role;
+
+  store.put(u);
+  tx.oncomplete = loadUsers;
+ };
+}
+
+function deleteUser(id){
+ if(!confirm("Delete user?")) return;
+
+ let tx = db.transaction("users","readwrite");
+ tx.objectStore("users").delete(id);
+ tx.oncomplete = loadUsers;
+}
+
+function checkAdmin(){
+ let user = JSON.parse(localStorage.getItem("user"));
+ if(user.role !== "admin"){
+  document.getElementById("users").style.display="none";
+ }
+}
+
 
 </script>
 
