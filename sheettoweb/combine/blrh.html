@@ -44,16 +44,7 @@ th{background:#2563eb;color:#fff;}
 </select>
 <button onclick="signup()">Create</button>
 <button onclick="backLogin()">Back</button>
-<table>
-<thead>
-<tr>
-<th>Username</th>
-<th>Role</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody id="userTable"></tbody>
-</table>
+
 </div>
 
 <!-- APP -->
@@ -70,6 +61,17 @@ th{background:#2563eb;color:#fff;}
 <button onclick="logout()">Logout</button>
 
 <button onclick="exportExcel()">Export Excel</button>
+
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Role</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
 
 <!-- MEMBERS -->
 <div id="members" class="section tab-section active">
@@ -212,6 +214,7 @@ function signup(){
 function showSignup(){
  loginPage.style.display="none";
  signupPage.style.display="block";
+ loadUsers(); // 👈 ADD THIS
 }
 
 function backLogin(){
@@ -408,13 +411,15 @@ function loadChart(){
  });
 }
 
-// LOAD ALL
 function loadAll(){
  loadMembers();
  loadStock();
  loadDropdowns();
  loadChart();
-loadUsers();
+
+ if(document.getElementById("userTable")){
+  loadUsers();
+ }
 }
 
 // TAB
