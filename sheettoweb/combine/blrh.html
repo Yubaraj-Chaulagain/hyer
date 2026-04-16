@@ -236,7 +236,14 @@ function saveMember(){
   return;
  }
 
- let name = m_name.value.trim();
+ let input = document.getElementById("m_name");
+
+ if(!input){
+  alert("❌ Input not found");
+  return;
+ }
+
+ let name = input.value.trim();
 
  if(!name){
   alert("❌ Enter name");
@@ -248,15 +255,15 @@ function saveMember(){
 
  store.put({
   id: crypto.randomUUID(),
-  name
+  name: name
  });
 
  tx.oncomplete = ()=>{
-  m_name.value="";
-  loadMembers(); // 🔥 direct call (better than loadAll)
+  alert("✅ Member added");
+  input.value = "";
+  loadMembers();
  };
 }
-
 // BALANCE CALC
 function getBalance(name,bank,transfer,bs){
  let bal=0;
