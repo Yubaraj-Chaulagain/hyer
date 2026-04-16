@@ -144,7 +144,9 @@ th{background:#2563eb;color:#fff;}
 
 <script>
 
+<script>
 let db, chartInstance;
+let isDBReady = false;   // 👈 यहाँ राख्ने
 
 // DB INIT
 let req = indexedDB.open("ERP_PRO_V2",1);
@@ -161,6 +163,7 @@ req.onupgradeneeded = e=>{
 
 req.onsuccess = e=>{
  db = e.target.result;
+ isDBReady = true;   // ✅ MUST
  initAdmin();
  loadAll();
 };
