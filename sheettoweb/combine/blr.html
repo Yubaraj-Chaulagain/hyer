@@ -1141,6 +1141,34 @@ function forgotPass(){
  };
 }
 
+function addUser(){
+
+ let name = document.getElementById("u_name").value.trim();
+ let pass = document.getElementById("u_pass").value.trim();
+ let role = document.getElementById("u_role").value;
+
+ if(!name || !pass){
+  alert("⚠️ Fill username and password");
+  return;
+ }
+
+ let tx = db.transaction("users","readwrite");
+ let store = tx.objectStore("users");
+
+ store.put({
+  id: crypto.randomUUID(),
+  username: name,
+  password: pass,
+  role: role
+ });
+
+ tx.oncomplete = ()=>{
+  alert("✅ User Created");
+  document.getElementById("u_name").value="";
+  document.getElementById("u_pass").value="";
+  loadUsers();
+ };
+}
 
 </script>
 
