@@ -169,6 +169,7 @@ th{
 <button onclick="showTab('stock')">📦 Stock</button>
 <button onclick="showTab('buysell')">🛒 Buy/Sell</button>
 <button onclick="showTab('chartTab')">📊 Chart</button>
+<button onclick="showTab('users')">👥 Users</button>
 <button onclick="logout()">🚪 Logout</button>
 </div>
 
@@ -1017,18 +1018,9 @@ function login(){
   app.style.display="block";
 
   loadAll();
+  loadUsers();   // ✅ ADD THIS
  };
 }
-
-window.onload = ()=>{
- let user = JSON.parse(localStorage.getItem("user"));
-
- if(user){
-  loginPage.style.display="none";
-  app.style.display="block";
-  loadAll();
- }
-};
 
 function logout(){
  localStorage.removeItem("user");
@@ -1048,10 +1040,13 @@ function addUser(){
 }
 
 function loadUsers(){
+ let table = document.getElementById("userTable");
+ if(!table) return; // ✅ prevent crash
+
  db.transaction("users")
  .objectStore("users")
  .getAll().onsuccess = e=>{
-  userTable.innerHTML = e.target.result.map(u=>`
+  table.innerHTML = e.target.result.map(u=>`
    <tr>
     <td>${u.username}</td>
     <td>${u.role}</td>
@@ -1095,7 +1090,7 @@ function deleteUser(id){
 function checkAdmin(){
  let user = JSON.parse(localStorage.getItem("user"));
  if(user.role !== "admin"){
-  document.getElementById("users").style.display="none";
+ document.querySelector('[onclick="goTab(\'users\')"]').style.display="none";
  }
 }
 
