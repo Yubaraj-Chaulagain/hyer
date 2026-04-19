@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PRO ERP OFFLINE + SYNC SYSTEM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#eef2f7;margin:0;padding:10px;}
+
+input,select,button{
+width:100%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ccc;
+}
+
+button{background:#2563eb;color:#fff;border:none;}
+button:hover{background:#1e40af;}
+
+table{width:100%;border-collapse:collapse;background:#fff;}
+th,td{border:1px solid #ddd;padding:8px;}
+th{background:yellow;}
+tr:nth-child(even){background:#f9f9f9;}
+
+h3{margin-top:20px;}
+</style>
+</head>
+
+<body>
+
+<h3>📋 Attendance PRO SYSTEM</h3>
+
+<input id="m_MID" placeholder="Member ID">
+
+<select id="m_COM">
+<option value="">Company</option>
+<option>SKM</option>
+<option>WorldStar</option>
+</select>
+
+<select id="m_OT">
+<option>0</option><option>1</option><option>2</option><option>3</option><option>4</option>
+</select>
+
+<select id="m_DN">
+<option value="">Profession</option>
+<option>Meson</option>
+<option>Carpenter</option>
+<option>Steelfixer</option>
+<option>Helper</option>
+</select>
+
+<button onclick="saveattendance()">💾 Save Offline</button>
+
+<input id="searchBox" placeholder="🔍 Search..." onkeyup="searchTable()">
+
+<button onclick="syncNow()">☁️ Sync to Google Sheet</button>
+<button onclick="loadGoogle()">📊 Load Google Data</button>
+<button onclick="exportExcel()">📤 Export Excel</button>
+
+<h3>📱 Offline Data</h3>
+<table>
+<thead>
+<tr><th>ID</th><th>Company</th><th>OT</th><th>Profession</th><th>Date</th></tr>
+</thead>
+<tbody id="AttendanceTable"></tbody>
+</table>
+
+<h3>☁️ Google Sheet Data</h3>
+<table>
+<thead>
+<tr><th>ID</th><th>Company</th><th>OT</th><th>Profession</th><th>Date</th></tr>
+</thead>
+<tbody id="GoogleTable"></tbody>
+</table>
+
+<script>
+
+let db;
+let API_URL = "https://script.google.com/macros/s/AKfycbxfuuf-PiUxXzhavylSYN8aLvUq_Dy1P5-ouNc1y886O6C-EppQewtSqcCD07B5O7R_4g/exec"; // 🔥 replace this
+
+let req = indexedDB.open("ERP_PRO",1);
+
+req.onupgradeneeded = e=>{
+ db = e.target.result;
+ db.createObjectStore("members",{keyPath:"id"});
+};
+
+req.onsuccess = e=>{
+ db = e.target.result;
+ loadAll();
+};
+
+// ---------------- SAVE OFFLINE (20 HOUR DUPLICATE BLOCK) ----------------
+function saveattendance(){
+
+ let MID = m_MID.value.trim();
+ let COM = m_COM.value;
+ let OT = m_OT.value;
+ let DN = m_DN.value;
+
+ if(!MID || !COM || !DN) return alert("Fill all fields");
+
+ let tx = db.transaction("members","readonly");
+ let store = tx.objectStore("members");
+
+ store.getAll().onsuccess = e=>{
+  let data = e.target.result;
+  let now = new Date();
+
+  let dup = data.find(m=>{
+   let diff = (now - new Date(m.date))/(1000*60*60);
+   return m.MID===MID && diff < 20;
+  });
+
+  if(dup){
+   alert("❌ 20 Hour Duplicate Block");
+   return;
+  }
+
+  let tx2 = db.transaction("members","readwrite");
+  tx2.objectStore("members").put({
+   id:crypto.randomUUID(),
+   MID,COM,OT,DN,
+   date:new Date().toISOString()
+  });
+
+  tx2.oncomplete = loadAll;
+ }
+}
+
+// ---------------- LOAD OFFLINE ----------------
+function loadAll(){
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = e=>{
+  renderOffline(e.target.result);
+ };
+}
+
+function renderOffline(data){
+ AttendanceTable.innerHTML = data.map(m=>`
+ <tr>
+ <td>${m.MID}</td>
+ <td>${m.COM}</td>
+ <td>${m.OT}</td>
+ <td>${m.DN}</td>
+ <td>${new Date(m.date).toLocaleString()}</td>
+ <td>
+   <button onclick="editData('${m.id}')">✏️ Edit</button>
+   <button onclick="deleteData('${m.id}')">❌ Delete</button>
+ </td>
+ </tr>
+ `).join("");
+}
+
+function editData(id){
+
+ let tx = db.transaction("members","readwrite");
+ let store = tx.objectStore("members");
+
+ store.get(id).onsuccess = e=>{
+  let m = e.target.result;
+
+  let newMID = prompt("Edit ID", m.MID);
+  let newCOM = prompt("Edit Company", m.COM);
+  let newOT = prompt("Edit OT", m.OT);
+  let newDN = prompt("Edit Profession", m.DN);
+
+  if(!newMID || !newCOM || !newDN) return;
+
+  m.MID = newMID;
+  m.COM = newCOM;
+  m.OT = newOT;
+  m.DN = newDN;
+
+  store.put(m);
+
+  tx.oncomplete = loadAll;
+ };
+}
+
+function deleteData(id){
+
+ if(!confirm("Are you sure to delete?")) return;
+
+ let tx = db.transaction("members","readwrite");
+ tx.objectStore("members").delete(id);
+
+ tx.oncomplete = loadAll;
+}
+
+// ---------------- SYNC TO GOOGLE SHEET ----------------
+async function syncNow(){
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = async e=>{
+
+  let data = e.target.result;
+
+  if(data.length === 0){
+    alert("No data to sync");
+    return;
+  }
+
+  let successCount = 0;
+
+  for(let m of data){
+
+   try{
+
+    let res = await fetch(API_URL,{
+ method:"POST",
+ headers:{
+  "Content-Type":"application/json"
+ },
+ body: JSON.stringify(m)
+});
+
+let text = await res.text();
+console.log(text);
+   }
+  }
+
+  // ✅ SAFE CONDITION
+  if(successCount === data.length){
+
+    let tx = db.transaction("members","readwrite");
+    tx.objectStore("members").clear();
+
+    tx.oncomplete = ()=>{
+      loadAll();
+      alert("☁️ Sync Successful + Local Cleared");
+    };
+
+  }else{
+
+    alert("⚠️ Partial Sync Done ("+successCount+"/"+data.length+") - Data NOT deleted");
+
+  }
+ };
+}
+
+// ---------------- LOAD GOOGLE SHEET ----------------
+function loadGoogle(){
+
+ fetch(API_URL)
+ .then(r=>r.json())
+ .then(data=>{
+
+  GoogleTable.innerHTML = data.map(r=>`
+  <tr>
+  <td>${r[0]}</td>
+  <td>${r[1]}</td>
+  <td>${r[2]}</td>
+  <td>${r[3]}</td>
+  <td>${r[4]}</td>
+  </tr>
+  `).join("");
+
+ });
+}
+
+// ---------------- EXPORT EXCEL ----------------
+function exportExcel(){
+
+ db.transaction("members")
+ .objectStore("members")
+ .getAll().onsuccess = e=>{
+
+  let data = e.target.result.map(m=>({
+   ID:m.MID,
+   Company:m.COM,
+   OT:m.OT,
+   Profession:m.DN,
+   Date:new Date(m.date).toLocaleString()
+  }));
+
+  let ws = XLSX.utils.json_to_sheet(data);
+  let wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Attendance");
+
+  XLSX.writeFile(wb,"Attendance.xlsx");
+ };
+}
+
+// ---------------- SEARCH ----------------
+function searchTable(){
+ let f = searchBox.value.toLowerCase();
+
+ document.querySelectorAll("#AttendanceTable tr").forEach(r=>{
+  r.style.display = r.innerText.toLowerCase().includes(f) ? "" : "none";
+ });
+}
+
+</script>
+
+</body>
+</html>
