@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+
+<title>Offline Cashbook</title>
+    <style>
+.match{
+  width:100%;
+  min-height:100vh;
+  overflow:auto;
+  padding:10px;
+  box-sizing:border-box;
+}
+
+input, select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin: 5px 0;
+  font-size: 16px;
+}
+
+/* BUTTONS */
+button{
+  width:auto;                 /* 🔥 fix */
+  padding:8px 14px;
+  margin:5px 3px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+/* SMALL TABLE BUTTONS */
+td button{
+  padding:4px 8px;
+  font-size:11px;
+}
+
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:arial;
+}
+
+th,td{
+  border:1px solid #2563eb;
+  padding:10px;
+  text-align:left;
+  word-break:break-word;
+}
+
+th{
+  background-color:#ffe066;
+}
+
+/* ROW STYLES */
+tr:nth-child(even){
+  background-color:#f9f9f9;
+}
+
+tr:hover{
+  background-color:#f1f1f1;
+}
+
+/* 📱 MOBILE */
+@media (max-width:768px){
+
+  button{
+    width:100%;              /* full width on mobile */
+  }
+
+  td button{
+    width:100%;
+    margin:2px 0;
+  }
+
+  th,td{
+    padding:6px;
+    font-size:12px;
+  }
+
+  table{
+    display:block;
+    overflow-x:auto;         /* 👈 horizontal scroll */
+  }
+}
+
+/* 💻 DESKTOP */
+@media (min-width:769px){
+
+  .form-row{
+    display:flex;
+    gap:10px;
+  }
+
+  .form-row > *{
+    flex:1;
+  }
+}
+
+        .tabs{
+  display:flex;
+  gap:5px;
+  margin-bottom:10px;
+}
+
+.tabs button{
+  flex:1;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:6px;
+}
+
+.tab{
+  display:none;
+}
+
+.tab.active{
+  display:block;
+}
+
+        /* Navbar container */
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  font-family: Arial;
+}
+
+/* Links inside the navbar */
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* The dropdown container */
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit; /* Important for vertical align on mobile phones */
+  margin: 0; /* Important for vertical align on mobile phones */
+}
+
+/* Add a red background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+        
+    </style>
+</head>
+
+<body>
+<div class="navbar">
+  <a href="#home"><button onclick="openTab('table')">Table</button></a>
+  <a href="#news"><button onclick="openTab('attendance')">Attendance</button></a>
+  <a href="#dffg"><button onclick="openTab('summary')">Summary</button></a>
+  <div class="dropdown">
+    <button class="dropbtn">Action Button 
+      <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-content">
+      <a href="#"><button onclick="exportExcel()">Export Excel</button></a>
+      <a href="#"><button onclick="uploadAll()">Upload All</button></a>
+      <a href="#"><button onclick="loadAll()">Show All</button></a>
+    </div>
+  </div> 
+</div>
+<div class="match">
+    <div class="tabs">
+  <button onclick="openTab('table')">Table</button>
+  
+</div>
+<div id="summary" class="tab">
+  <div id="summaryBox"></div>
+</div>
+   
+<!-- ================= ATTENDANCE FORM ================= -->
+ <div id="attendance" class="tab active">
+     <!-- तिम्रो Attendance Form यहाँ राख्ने -->
+     <h3>Attendance Record Form</h3>
+<input id="m_MID" placeholder="Member ID Number">
+<select id="m_COM">
+  <option value="">Select Company</option>
+  <option value="S.K.M">SKM</option>
+  <option value="WorldStar">WorldStar</option>
+</select>
+<select id="m_OT">
+  <option value="0">0</option>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+</select>
+<select id="m_DN">
+  <option value="">Select Profession</option>
+  <option value="M/S">Meson</option>
+  <option value="C/P">Carpenter</option>
+  <option value="S/F">Steel Fixer</option>
+  <option value="H">Helper</option>
+</select>
+<button onclick="saveattendance()">Save</button>
+</div>
+
+<!-- ================= TABLE ================= -->
+    <div id="table" class="tab">
+<h3>Members Attendance Table</h3>
+<input type="text" id="searchBox" placeholder="Search ID / Company / Profession / Date" onkeyup="searchTable()">
+<table>
+<thead>
+<tr>
+<th>ID Number</th>
+<th>Company</th>
+<th>Overtime</th>
+<th>Profession</th>
+<th>Date</th>
+<th colspan="3">Action</th>
+</tr>
+</thead>
+
+<tbody id="AttendanceTable"></tbody>
+</table>
+
+</div>
+
+<script>
+
+let db;
+
+// ================= DB INIT =================
+let req = indexedDB.open("ERP_PRO",1);
+
+req.onupgradeneeded = e=>{
+  db = e.target.result;
+  db.createObjectStore("members",{keyPath:"id"});
+};
+
+req.onsuccess = e=>{
+  db = e.target.result;
+  loadAll();
+  autoSync();
+};
+
+// ================= SAVE =================
+function saveattendance(){
+
+  let MID = m_MID.value.trim();
+  let COM = m_COM.value.trim();
+  let OT = m_OT.value.trim();
+  let DN = m_DN.value.trim();
+
+  if(!MID || !COM || !OT || !DN){
+    return alert("Please fill all fields");
+  }
+
+  let tx = db.transaction("members","readwrite");
+
+  tx.objectStore("members").put({
+    id: crypto.randomUUID(),
+    MID,
+    COM,
+    OT,
+    DN,
+    date: new Date().toISOString().split("T")[0]
+  });
+
+    tx.oncomplete = ()=>{
+  loadAll(); // यसले summary पनि update गर्छ
+};
+}
+
+// ================= EDIT =================
+function editAttendance(id,MID,COM,OT,DN){
+
+  let newMID = prompt("Edit Member ID", MID);
+  let newCOM = prompt("Edit Company", COM);
+  let newOT = prompt("Edit Overtime", OT);
+  let newDN = prompt("Edit Profession", DN);
+
+  if(!newMID) return;
+
+  let tx = db.transaction("members","readwrite");
+  let store = tx.objectStore("members");
+
+  store.get(id).onsuccess = e=>{
+    let m = e.target.result;
+
+    m.MID = newMID;
+    m.COM = newCOM;
+    m.OT = newOT;
+    m.DN = newDN;
+
+    store.put(m);
+    tx.oncomplete = loadAll;
+  };
+}
+
+// ================= LOAD TABLE =================
+    function loadAttendance(){
+
+  db.transaction("members")
+  .objectStore("members")
+  .getAll().onsuccess = e=>{
+
+    renderTable(e.target.result);
+  };
+}
+
+    function renderTable(data){
+
+  AttendanceTable.innerHTML = data.map(m=>`
+    <tr>
+      <td>${m.MID}</td>
+      <td>${m.COM}</td>
+      <td>${m.OT}</td>
+      <td>${m.DN}</td>
+      <td>${m.date}</td>
+
+      <td><button onclick="editAttendance('${m.id}','${m.MID}','${m.COM}','${m.OT}','${m.DN}')">Edit</button></td>
+      <td><button onclick="deleteAttendance('${m.id}')">Delete</button></td>
+      <td><button onclick="uploadSingle('${m.id}')">Upload</button></td>
+    </tr>
+  `).join("");
+
+  updateSummary(data);
+}
+ 
+// ================= DELETE =================
+function deleteAttendance(id){
+
+  if(!confirm("Delete this record?")) return;
+
+  let tx = db.transaction("members","readwrite");
+  tx.objectStore("members").delete(id);
+
+  tx.oncomplete = loadAll;
+}
+
+// ================= LOAD =================
+function loadAll(){
+  AttendanceTable.innerHTML = "";
+  loadAttendance();   // local
+  loadSheetData();    // google sheet
+}
+
+// ================= SERVICE WORKER =================
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("service-worker.js");
+  });
+}
+
+// ================= SINGLE UPLOAD =================
+function uploadSingle(id){
+
+  let tx = db.transaction("members","readonly");
+  let store = tx.objectStore("members");
+
+  store.get(id).onsuccess = e=>{
+    let m = e.target.result;
+
+    fetch("https://script.google.com/macros/s/AKfycbyJGzm3SMamwOFw-GyLZ-8Tre3TiT1vq8WSkC5jlosKdHwZWtEqW9U5lkH6YDa0MvkLDA/exec",{
+      method:"POST",
+      body: JSON.stringify([m])
+    })
+    .then(r=>r.text())
+    .then(res=>{
+      if(res !== "Success") throw "Error";
+
+      let tx2 = db.transaction("members","readwrite");
+      tx2.objectStore("members").delete(id);
+      tx2.oncomplete = loadAll;
+    })
+    .catch(()=>alert("Upload Failed"));
+  };
+}
+
+// ================= BULK UPLOAD =================
+async function uploadAll(){
+
+  let tx = db.transaction("members","readonly");
+  let store = tx.objectStore("members");
+
+  let all = await new Promise(res=>{
+    store.getAll().onsuccess = e=>res(e.target.result);
+  });
+
+  if(!all.length) return alert("No data");
+
+  fetch("https://script.google.com/macros/s/AKfycbyJGzm3SMamwOFw-GyLZ-8Tre3TiT1vq8WSkC5jlosKdHwZWtEqW9U5lkH6YDa0MvkLDA/exec",{
+    method:"POST",
+    body: JSON.stringify(all)
+  })
+  .then(r=>r.text())
+  .then(res=>{
+    if(res !== "Success") throw "Error";
+
+    let tx2 = db.transaction("members","readwrite");
+    tx2.objectStore("members").clear();
+    tx2.oncomplete = loadAll;
+
+    alert("Uploaded Successfully");
+  })
+  .catch(()=>alert("Upload Failed"));
+}
+
+// ================= EXPORT =================
+function exportExcel(){
+
+  let tx = db.transaction("members","readonly");
+  let store = tx.objectStore("members");
+
+  store.getAll().onsuccess = e=>{
+
+    let data = e.target.result;
+
+    if(!data.length) return alert("No Data");
+
+    let csv = "MemberID,Company,Overtime,Profession,Date\n";
+
+    data.forEach(m=>{
+      csv += `${m.MID},${m.COM},${m.OT},${m.DN},${m.date}\n`;
+    });
+
+    let blob = new Blob([csv],{type:"text/csv"});
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement("a");
+    a.href = url;
+    a.download = "Attendance.csv";
+    a.click();
+  };
+}
+
+// ================= AUTO SYNC =================
+function autoSync(){
+  setInterval(()=>{
+    if(navigator.onLine){
+      uploadAll();
+    }
+  },3600000);
+}
+function loadSheetData(){
+
+fetch("https://script.google.com/macros/s/AKfycbyJGzm3SMamwOFw-GyLZ-8Tre3TiT1vq8WSkC5jlosKdHwZWtEqW9U5lkH6YDa0MvkLDA/exec")
+.then(r=>r.json())
+.then(data=>{
+
+  AttendanceTable.innerHTML += data.map(m=>`
+    <tr style="background:#e6ffe6">
+      <td>${m.MID}</td>
+      <td>${m.COM}</td>
+      <td>${m.OT}</td>
+      <td>${m.DN}</td>
+      <td>${m.date}</td>
+
+      <td colspan="3">☁️ Cloud</td>
+    </tr>
+  `).join("");
+
+  updateSummary(data); // ✅ cloud data पनि count हुन्छ
+});
+}
+  
+    
+function updateSummary(data){
+
+  let profCount = {
+    "M/S":0,
+    "C/P":0,
+    "S/F":0,
+    "H":0
+  };
+
+  let companyCount = {
+    "S.K.M":0,
+    "WorldStar":0
+  };
+
+  data.forEach(m=>{
+
+    // profession count
+    if(profCount[m.DN] !== undefined){
+      profCount[m.DN]++;
+    }
+
+    // company count
+    if(companyCount[m.COM] !== undefined){
+      companyCount[m.COM]++;
+    }
+
+  });
+
+  summaryBox.innerHTML = `
+    <h4>📊 Summary</h4>
+
+    <b>Company:</b><br>
+    SKM: ${companyCount["S.K.M"]} |
+    WorldStar: ${companyCount["WorldStar"]}
+
+    <br><br>
+
+    <b>Profession:</b><br>
+    Meson (M/S): ${profCount["M/S"]} |
+    Carpenter (C/P): ${profCount["C/P"]} |
+    Steel Fixer (S/F): ${profCount["S/F"]} |
+    Helper (H): ${profCount["H"]}
+  `;
+}
+    function openTab(tabId){
+
+  // सबै tab hide
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.remove("active");
+  });
+
+  // selected tab show
+  document.getElementById(tabId).classList.add("active");
+}
+    function searchTable(){
+
+  let keyword = searchBox.value.toLowerCase();
+
+  db.transaction("members")
+  .objectStore("members")
+  .getAll().onsuccess = e=>{
+
+    let data = e.target.result;
+
+    let filtered = data.filter(m =>
+      m.MID.toLowerCase().includes(keyword) ||
+      m.COM.toLowerCase().includes(keyword) ||
+      m.DN.toLowerCase().includes(keyword) ||
+      m.date.includes(keyword)
+    );
+
+    renderTable(filtered);
+  };
+}
+</script>
+
+</body>
+</html>
