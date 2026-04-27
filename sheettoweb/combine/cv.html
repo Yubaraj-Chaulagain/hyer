@@ -5,141 +5,148 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CV Generator</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 <style>
 body{
-  font-family: Arial;
+  font-family:Arial;
   margin:0;
-  background:#f3f4f6;
-  display:flex;
-  flex-wrap:wrap;
+  background:#eef2f7;
 }
 
 /* FORM */
 .form{
-  width:40%;
-  padding:20px;
+  padding:15px;
   background:#fff;
 }
-
 input, textarea{
   width:100%;
   padding:10px;
   margin:5px 0;
+  border-radius:6px;
   border:1px solid #ccc;
-  border-radius:5px;
 }
-
-/* BUTTON */
 button{
   width:100%;
   padding:12px;
-  margin-top:10px;
-  background:#2563eb;
+  background:#0f766e;
   color:#fff;
   border:none;
   border-radius:6px;
-  font-size:16px;
 }
 
 /* CV DESIGN */
 .cv{
-  width:60%;
+  display:flex;
+  max-width:900px;
+  margin:20px auto;
+  background:#fff;
+}
+
+/* LEFT */
+.left{
+  width:35%;
+  background:#4b6b70;
+  color:#fff;
   padding:20px;
 }
-
-#cv-template{
-  background:#fff;
-  padding:25px;
+.left img{
+  width:120px;
+  height:120px;
   border-radius:10px;
+  object-fit:cover;
 }
 
-h1{color:#2563eb;margin-bottom:5px;}
-h3{border-bottom:1px solid #ddd;padding-bottom:5px;}
-
-@media(max-width:768px){
-  .form, .cv{width:100%;}
+/* RIGHT */
+.right{
+  width:65%;
+  padding:20px;
+}
+h1{
+  margin:0;
+}
+.section{
+  margin-top:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- FORM -->
 <div class="form">
-<h2>Fill Your Details</h2>
+<h2>Fill Your CV</h2>
 
-<input id="name" placeholder="Full Name">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-<input id="location" placeholder="Location">
-
-<textarea id="job" placeholder="Job Target"></textarea>
+<input type="file" id="photo">
+<input type="text" id="name" placeholder="Full Name">
+<input type="text" id="email" placeholder="Email">
+<textarea id="summary" placeholder="Professional Summary"></textarea>
+<textarea id="skills" placeholder="Skills (comma separated)"></textarea>
 <textarea id="experience" placeholder="Work Experience"></textarea>
 <textarea id="education" placeholder="Education"></textarea>
-<textarea id="skills" placeholder="Skills"></textarea>
-<textarea id="language" placeholder="Languages"></textarea>
 
 <button onclick="generateCV()">Generate CV</button>
-<button onclick="downloadPDF()">Download PDF</button>
 </div>
 
-<!-- CV OUTPUT -->
 <div class="cv">
-<div id="cv-template">
 
-<h1 id="cv-name">Your Name</h1>
-<p id="cv-contact"></p>
+<div class="left">
+<img id="cvPhoto">
 
-<h3>Objective</h3>
-<p id="cv-job"></p>
-
-<h3>Experience</h3>
-<p id="cv-exp"></p>
-
-<h3>Education</h3>
-<p id="cv-edu"></p>
+<h3>Contact</h3>
+<p id="cvEmail"></p>
 
 <h3>Skills</h3>
-<p id="cv-skills"></p>
+<p id="cvSkills"></p>
+</div>
 
-<h3>Languages</h3>
-<p id="cv-lang"></p>
+<div class="right">
+<h1 id="cvName">Your Name</h1>
+
+<div class="section">
+<h3>Professional Summary</h3>
+<p id="cvSummary"></p>
+</div>
+
+<div class="section">
+<h3>Work History</h3>
+<p id="cvExperience"></p>
+</div>
+
+<div class="section">
+<h3>Education</h3>
+<p id="cvEducation"></p>
+</div>
 
 </div>
 </div>
 
 <script>
 function generateCV(){
-  document.getElementById("cv-name").innerText =
+  document.getElementById("cvName").innerText =
     document.getElementById("name").value;
 
-  document.getElementById("cv-contact").innerText =
-    document.getElementById("phone").value + " | " +
-    document.getElementById("email").value + " | " +
-    document.getElementById("location").value;
+  document.getElementById("cvEmail").innerText =
+    document.getElementById("email").value;
 
-  document.getElementById("cv-job").innerText =
-    document.getElementById("job").value;
+  document.getElementById("cvSummary").innerText =
+    document.getElementById("summary").value;
 
-  document.getElementById("cv-exp").innerText =
-    document.getElementById("experience").value;
-
-  document.getElementById("cv-edu").innerText =
-    document.getElementById("education").value;
-
-  document.getElementById("cv-skills").innerText =
+  document.getElementById("cvSkills").innerText =
     document.getElementById("skills").value;
 
-  document.getElementById("cv-lang").innerText =
-    document.getElementById("language").value;
-}
+  document.getElementById("cvExperience").innerText =
+    document.getElementById("experience").value;
 
-function downloadPDF(){
-  const element = document.getElementById("cv-template");
+  document.getElementById("cvEducation").innerText =
+    document.getElementById("education").value;
 
-  html2pdf().from(element).save("My_CV.pdf");
+  // Photo Upload
+  let file = document.getElementById("photo").files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById("cvPhoto").src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
 }
 </script>
 
