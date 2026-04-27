@@ -75,9 +75,11 @@ div.innerHTML=`
 <input placeholder="Address" id="address${workCount}">
 <textarea placeholder="Description" id="desc${workCount}"></textarea>`; document.getElementById('workContainer').appendChild(div); }
 
-function gen(){ const cvName = document.getElementById('name'); const location = document.getElementById('location'); const phone = document.getElementById('phone'); const email = document.getElementById('email'); const dob = document.getElementById('dob'); const nationality = document.getElementById('nationality'); const summary = document.getElementById('summary'); const skills = document.getElementById('skills'); const languages = document.getElementById('languages'); const education = document.getElementById('education'); const target = document.getElementById('target');
+function gen(){ const nameEl = document.getElementById('name'); const locationEl = document.getElementById('location'); const phoneEl = document.getElementById('phone'); const emailEl = document.getElementById('email'); const dobEl = document.getElementById('dob'); const nationalityEl = document.getElementById('nationality'); const summaryEl = document.getElementById('summary'); const skillsEl = document.getElementById('skills'); const languagesEl = document.getElementById('languages'); const educationEl = document.getElementById('education'); const targetEl = document.getElementById('target');
 
-cvName.innerText = name.value; cvLocation.innerText = location.value; cvPhone.innerText = phone.value; cvEmail.innerText = email.value; cvDob.innerText = dob.value; cvNationality.innerText = nationality.value; cvSummary.innerText = summary.value; cvSkills.innerText = skills.value; cvLang.innerText = languages.value; cvEdu.innerText = education.value; cvTarget.innerText = target.value;
+const cvName = document.getElementById('cvName'); const cvLocation = document.getElementById('cvLocation'); const cvPhone = document.getElementById('cvPhone'); const cvEmail = document.getElementById('cvEmail'); const cvDob = document.getElementById('cvDob'); const cvNationality = document.getElementById('cvNationality'); const cvSummary = document.getElementById('cvSummary'); const cvSkills = document.getElementById('cvSkills'); const cvLang = document.getElementById('cvLang'); const cvEdu = document.getElementById('cvEdu'); const cvTarget = document.getElementById('cvTarget');
+
+cvName.innerText = nameEl.value; cvLocation.innerText = locationEl.value; cvPhone.innerText = phoneEl.value; cvEmail.innerText = emailEl.value; cvDob.innerText = dobEl.value; cvNationality.innerText = nationalityEl.value; cvSummary.innerText = summaryEl.value; cvSkills.innerText = skillsEl.value; cvLang.innerText = languagesEl.value; cvEdu.innerText = educationEl.value; cvTarget.innerText = targetEl.value;
 
 let workHTML = "";
 
@@ -87,15 +89,19 @@ if(job || company){ workHTML += <p><b>${job}</b> (${start} - ${end})</p><p>${com
 
 document.getElementById('cvWork').innerHTML = workHTML;
 
-let file = photo.files[0]; if(file){ let reader = new FileReader(); reader.onload = e => cvPhoto.src = e.target.result; reader.readAsDataURL(file); } }
+let file = document.getElementById('photo').files[0]; if(file){ let reader = new FileReader(); reader.onload = e => document.getElementById('cvPhoto').src = e.target.result; reader.readAsDataURL(file); } }
 
-function downloadTXT(){ let text = "CV\n" + name.value + "\n" + location.value + "\n" + phone.value + "\n" + email.value + "\nTarget: " + target.value + "\n\nSummary:\n" + summary.value;
+function downloadTXT(){ const name = document.getElementById('name').value; const location = document.getElementById('location').value; const phone = document.getElementById('phone').value; const email = document.getElementById('email').value; const target = document.getElementById('target').value; const summary = document.getElementById('summary').value;
+
+let text = "CV\n" + name + "\n" + location + "\n" + phone + "\n" + email + "\nTarget: " + target + "\n\nSummary:\n" + summary;
 
 let blob = new Blob([text],{type:"text/plain"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cv.txt"; a.click(); }
 
 async function downloadPDF(){ const { jsPDF } = window.jspdf; let doc = new jsPDF();
 
-doc.text("CV",10,10); doc.text(name.value,10,20); doc.text("Target: " + target.value,10,30); doc.text(location.value,10,40); doc.text(phone.value,10,50); doc.text(email.value,10,60); doc.text("Summary:",10,70); doc.text(summary.value,10,80);
+const name = document.getElementById('name').value; const location = document.getElementById('location').value; const phone = document.getElementById('phone').value; const email = document.getElementById('email').value; const summary = document.getElementById('summary').value; const target = document.getElementById('target').value;
+
+doc.text("CV",10,10); doc.text(name,10,20); doc.text("Target: " + target,10,30); doc.text(location,10,40); doc.text(phone,10,50); doc.text(email,10,60); doc.text("Summary:",10,70); doc.text(summary,10,80);
 
 doc.save("cv.pdf"); } </script>
 
