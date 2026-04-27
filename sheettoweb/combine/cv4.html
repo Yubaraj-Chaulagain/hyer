@@ -78,9 +78,39 @@ div.innerHTML=`
 document.getElementById('workContainer').appendChild(div);
 }
 
-function gen(){ cvName.innerText = document.getElementById("name").value || "Your Name";
-cvLocation.innerText = location.value; cvPhone.innerText = phone.value; cvEmail.innerText = email.value; cvDob.innerText = dob.value; cvNationality.innerText = nationality.value; cvSummary.innerText = summary.value; cvSkills.innerText = skills.value; cvLang.innerText = languages.value; cvEdu.innerText = education.value;
+function gen(){
 
+document.getElementById("cvName").innerText =
+document.getElementById("name").value || "Your Name";
+
+document.getElementById("cvLocation").innerText =
+document.getElementById("location").value || "";
+
+document.getElementById("cvPhone").innerText =
+document.getElementById("phone").value || "";
+
+document.getElementById("cvEmail").innerText =
+document.getElementById("email").value || "";
+
+document.getElementById("cvDob").innerText =
+document.getElementById("dob").value || "";
+
+document.getElementById("cvNationality").innerText =
+document.getElementById("nationality").value || "";
+
+document.getElementById("cvSummary").innerText =
+document.getElementById("summary").value || "";
+
+document.getElementById("cvSkills").innerText =
+document.getElementById("skills").value || "";
+
+document.getElementById("cvLang").innerText =
+document.getElementById("languages").value || "";
+
+document.getElementById("cvEdu").innerText =
+document.getElementById("education").value || "";
+
+/* WORK HISTORY */
 let workHTML = "";
 
 for(let i=1;i<=workCount;i++){
@@ -89,20 +119,30 @@ let company=document.getElementById('company'+i)?.value||"";
 let start=document.getElementById('start'+i)?.value||"";
 let end=document.getElementById('end'+i)?.value||"";
 let address=document.getElementById('address'+i)?.value||"";
-
 let desc=document.getElementById('desc'+i)?.value||"";
 
 if(job || company){
 workHTML += `
 <p><b>${job}</b> (${start} - ${end})</p>
 <p>${company} | ${address}</p>
-
 <p class='small'>${desc}</p><br>
 `;
 }
-}cvWork.innerHTML = workHTML;
+}
 
-let file = photo.files[0]; if(file){ let reader = new FileReader(); reader.onload = e => cvPhoto.src = e.target.result; reader.readAsDataURL(file); } }
+document.getElementById("cvWork").innerHTML = workHTML;
+
+/* PHOTO */
+let file = document.getElementById("photo").files[0];
+if(file){
+let reader = new FileReader();
+reader.onload = function(e){
+document.getElementById("cvPhoto").src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+}
 
 function downloadTXT(){ let text = "CV\n" + name.value + "\n" + location.value + "\n" + phone.value + "\n" + email.value + "\n\nSummary:\n" + summary.value; let blob = new Blob([text],{type:"text/plain"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cv.txt"; a.click(); }
 
