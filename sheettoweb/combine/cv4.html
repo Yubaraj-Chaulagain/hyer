@@ -78,7 +78,8 @@ div.innerHTML=`
 document.getElementById('workContainer').appendChild(div);
 }
 
-function gen(){ cvName.innerText = name.value; cvLocation.innerText = location.value; cvPhone.innerText = phone.value; cvEmail.innerText = email.value; cvDob.innerText = dob.value; cvNationality.innerText = nationality.value; cvSummary.innerText = summary.value; cvSkills.innerText = skills.value; cvLang.innerText = languages.value; cvEdu.innerText = education.value;
+function gen(){ cvName.innerText = document.getElementById("name").value || "Your Name";
+cvLocation.innerText = location.value; cvPhone.innerText = phone.value; cvEmail.innerText = email.value; cvDob.innerText = dob.value; cvNationality.innerText = nationality.value; cvSummary.innerText = summary.value; cvSkills.innerText = skills.value; cvLang.innerText = languages.value; cvEdu.innerText = education.value;
 
 let workHTML = "";
 
