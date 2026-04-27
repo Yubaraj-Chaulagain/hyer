@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro CV Builder</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#eef2f7}
+
+/* FORM */
+.form{padding:15px;background:#fff}
+input,textarea{
+width:100%;padding:10px;margin:5px 0;
+border-radius:6px;border:1px solid #ccc;
+}
+button{
+width:100%;padding:12px;background:#0f766e;
+color:#fff;border:none;border-radius:6px;
+cursor:pointer;
+}
+
+/* CV */
+.cv{display:flex;max-width:900px;margin:20px auto;background:#fff}
+.left{
+width:35%;background:#4b6b70;color:#fff;padding:20px
+}
+.left img{
+width:120px;height:120px;border-radius:10px;object-fit:cover
+}
+.right{width:65%;padding:20px}
+h1{margin:0;border-bottom:3px solid black;padding-bottom:5px}
+.section{margin-top:15px}
+.small{font-size:14px}
+
+/* Work box */
+.workBox{
+border:1px solid #ccc;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+background:#f9f9f9;
+}
+.removeBtn{
+background:red;
+margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="form">
+<h2>Fill CV Details</h2>
+
+<input type="file" id="photo">
+
+<h3>Basic Info</h3>
+<input id="name" placeholder="Full Name">
+<input id="location" placeholder="Location">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="dob" placeholder="Date of Birth">
+<input id="nationality" placeholder="Nationality">
+
+<h3>Summary</h3>
+<textarea id="summary"></textarea>
+
+<h3>Work History</h3>
+<div id="workContainer"></div>
+<button onclick="addWork()">+ Add Work</button>
+
+<h3>Skills</h3>
+<textarea id="skills"></textarea>
+
+<h3>Languages</h3>
+<textarea id="languages"></textarea>
+
+<h3>Education</h3>
+<textarea id="education"></textarea>
+
+<button onclick="gen()">Generate CV</button>
+</div>
+
+<!-- CV -->
+<div class="cv">
+
+<div class="left">
+<img id="cvPhoto">
+<h3>Contact</h3>
+<p id="cvLocation"></p>
+<p id="cvPhone"></p>
+<p id="cvEmail"></p>
+<p id="cvDob"></p>
+<p id="cvNationality"></p>
+
+<h3>Skills</h3>
+<p id="cvSkills"></p>
+
+<h3>Languages</h3>
+<p id="cvLang"></p>
+</div>
+
+<div class="right">
+<h1 id="cvName">Your Name</h1>
+
+<div class="section">
+<h3>PROFESSIONAL SUMMARY</h3>
+<p id="cvSummary" class="small"></p>
+</div>
+
+<div class="section">
+<h3>WORK HISTORY</h3>
+<div id="cvWork"></div>
+</div>
+
+<div class="section">
+<h3>EDUCATION</h3>
+<p id="cvEdu"></p>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let workCount = 0;
+
+// ADD WORK FIELD
+function addWork(){
+workCount++;
+
+let div = document.createElement("div");
+div.className = "workBox";
+div.id = "work"+workCount;
+
+div.innerHTML = `
+<input placeholder="Job Title" class="job">
+<input placeholder="Company" class="company">
+<input placeholder="Start Date" class="start">
+<input placeholder="End Date" class="end">
+<textarea placeholder="Description" class="desc"></textarea>
+<button class="removeBtn" onclick="this.parentElement.remove()">Remove</button>
+`;
+
+document.getElementById("workContainer").appendChild(div);
+}
+
+// GENERATE CV
+function gen(){
+
+cvName.innerText=name.value
+cvLocation.innerText=location.value
+cvPhone.innerText=phone.value
+cvEmail.innerText=email.value
+cvDob.innerText=dob.value
+cvNationality.innerText=nationality.value
+cvSummary.innerText=summary.value
+cvSkills.innerText=skills.value
+cvLang.innerText=languages.value
+cvEdu.innerText=education.value
+
+// PHOTO
+let file=photo.files[0]
+if(file){
+let reader=new FileReader()
+reader.onload=e=>cvPhoto.src=e.target.result
+reader.readAsDataURL(file)
+}
+
+// WORK HISTORY
+let works = document.querySelectorAll(".workBox")
+let output = ""
+
+works.forEach(w=>{
+let job = w.querySelector(".job").value
+let company = w.querySelector(".company").value
+let start = w.querySelector(".start").value
+let end = w.querySelector(".end").value
+let desc = w.querySelector(".desc").value
+
+output += `
+<p><b>${job}</b></p>
+<p>${company}</p>
+<p>${start} - ${end}</p>
+<p class="small">${desc}</p>
+<br>
+`
+})
+
+cvWork.innerHTML = output
+}
+
+</script>
+
+</body>
+</html>
