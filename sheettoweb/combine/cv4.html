@@ -144,7 +144,20 @@ reader.readAsDataURL(file);
 
 }
 
-function downloadTXT(){ let text = "CV\n" + name.value + "\n" + location.value + "\n" + phone.value + "\n" + email.value + "\n\nSummary:\n" + summary.value; let blob = new Blob([text],{type:"text/plain"}); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "cv.txt"; a.click(); }
+async function downloadPDF(){
+const { jsPDF } = window.jspdf;
+let doc = new jsPDF();
+
+doc.text("CV",10,10);
+doc.text(document.getElementById("name").value,10,20);
+doc.text(document.getElementById("location").value,10,30);
+doc.text(document.getElementById("phone").value,10,40);
+doc.text(document.getElementById("email").value,10,50);
+doc.text("Summary:",10,60);
+doc.text(document.getElementById("summary").value,10,70);
+
+doc.save("cv.pdf");
+}
 
 async function downloadPDF(){ const { jsPDF } = window.jspdf; let doc = new jsPDF();
 
