@@ -93,127 +93,60 @@ button:hover{background:#1e40af;}
     <h3>CV Preview</h3>
     <div id="output" class="cv-preview">Your CV will appear here...</div>
   </div></div><script>
-function aiSummary(name, job, skills, exp){
-  let s = "";
-  let skillList = skills.split(',').map(x=>x.trim()).filter(Boolean);
-
-  s += name + " is a motivated " + job + ".\n\n";
-  s += "Professional Summary:\n";
-
-  if(job.toLowerCase().includes("helper") || job.toLowerCase().includes("cashier")){
-    s += "Experienced in customer service, teamwork, and fast-paced environment handling.\n";
-  } else {
-    s += "Skilled professional with experience in multiple domains.\n";
-  }
-
-  s += "\nKey Skills:\n- " + skillList.join("\n- ");
-
-  s += "\n\nExperience:\n" + exp;
-
-  return s;
-}
-
-function generateCV(){
-  let name=document.getElementById('name').value;
-  let job=document.getElementById('job').value;
-  let email=document.getElementById('email').value;
-  let phone=document.getElementById('phone').value;
-  let address=document.getElementById('address').value;
-  let dob=document.getElementById('dob').value;
-  let exp=document.getElementById('experience').value;
-  let skills=document.getElementById('skills').value;
-  let edu=document.getElementById('education').value;
-
-  let jobs="";
-  document.querySelectorAll('.jobItem').forEach((el,i)=>{
-    jobs += "
-Job " + (i+1) + ": " + el.value + "
-";
-  });
-
-  let cv = "=== PROFESSIONAL CV ===
-
-";
-  cv += "Name: " + name + "
-";
-  cv += "DOB: " + dob + "
-";
-  cv += "Job: " + job + "
-";
-  cv += "Email: " + email + "
-";
-  cv += "Phone: " + phone + "
-";
-  cv += "Address: " + address + "
-
-";
-
-  cv += aiSummary(name, job, skills, exp);
-
-  cv += "
-
-Job History:
-" + jobs;
-
-  cv += "
-Education:
-" + edu;
-
-  document.getElementById('output').innerText = cv;
-}
-
-function saveCV(){
-  let jobItems=[];
-  document.querySelectorAll('.jobItem').forEach(el=>jobItems.push(el.value));
-
-  localStorage.setItem('cv_data', JSON.stringify({
-    name: name.value,
-    job: job.value,
-    email: email.value,
-    phone: phone.value,
-    address: address.value,
-    dob: dob.value,
-    experience: experience.value,
-    skills: skills.value,
-    education: education.value,
-    jobs: jobItems
-  }));
-  alert("Saved Successfully!");
-}
-
-function loadCV(){
-  let data = JSON.parse(localStorage.getItem('cv_data'));
-  if(!data) return alert("No data found");
-
-  name.value=data.name;
-  job.value=data.job;
-  email.value=data.email;
-  phone.value=data.phone;
-  address.value=data.address;
-  dob.value=data.dob;
-  experience.value=data.experience;
-  skills.value=data.skills;
-  education.value=data.education;
-
-  document.getElementById('jobList').innerHTML="";
-  if(data.jobs){
-    data.jobs.forEach(j=>addJob(j));
-  }
-
-  generateCV();
-}
-
-function downloadCV(){
-  let text=document.getElementById('output').innerText;
-  let blob=new Blob([text],{type:"text/plain"});
-  let a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download="AI_CV.txt";
-  a.click();
-}
 function addJob(value=""){
-  let div=document.createElement('div');
-  div.innerHTML='<textarea class="jobItem" placeholder="Company, Role, Duration">'+value+'</textarea>';document.getElementById('jobList').appendChild(div); }
+  const div=document.createElement('div');
+  div.innerHTML = `<textarea class="jobItem" placeholder="Company, Role, Duration">${value}</textarea>`;document.getElementById('jobList').appendChild(div); }
 
-</script></body>
+function aiSummary(name, job, skills, exp){ let s = ""; let skillList = skills.split(',').map(x=>x.trim()).filter(Boolean);
+
+s += name + " is a motivated " + job + ".
+
+"; s += "Professional Summary: ";
+
+if(job.toLowerCase().includes("helper") || job.toLowerCase().includes("cashier")){ s += "Experienced in customer service, teamwork, and fast-paced environment handling. "; } else { s += "Skilled professional with experience in multiple domains. "; }
+
+s += " Key Skills:
+
+" + skillList.join("
+
+"); s += "
+
+
+Experience: " + exp;
+
+return s; }
+
+function generateCV(){ const name = document.getElementById('name').value; const job = document.getElementById('job').value; const email = document.getElementById('email').value; const phone = document.getElementById('phone').value; const address = document.getElementById('address').value; const dob = document.getElementById('dob').value; const exp = document.getElementById('experience').value; const skills = document.getElementById('skills').value; const edu = document.getElementById('education').value;
+
+let jobs = ""; document.querySelectorAll('.jobItem').forEach((el,i)=>{ jobs += " Job " + (i+1) + ": " + el.value + " "; });
+
+let cv = "=== PROFESSIONAL CV ===
+
+"; cv += "Name: " + name + " "; cv += "DOB: " + dob + " "; cv += "Job: " + job + " "; cv += "Email: " + email + " "; cv += "Phone: " + phone + " "; cv += "Address: " + address + "
+
+";
+
+cv += aiSummary(name, job, skills, exp); cv += "
+
+Job History: " + jobs; cv += " Education: " + edu;
+
+document.getElementById('output').innerText = cv; }
+
+function saveCV(){ const jobItems=[]; document.querySelectorAll('.jobItem').forEach(el=>jobItems.push(el.value));
+
+localStorage.setItem('cv_data', JSON.stringify({ name: document.getElementById('name').value, job: document.getElementById('job').value, email: document.getElementById('email').value, phone: document.getElementById('phone').value, address: document.getElementById('address').value, dob: document.getElementById('dob').value, experience: document.getElementById('experience').value, skills: document.getElementById('skills').value, education: document.getElementById('education').value, jobs: jobItems }));
+
+alert("Saved Successfully!"); }
+
+function loadCV(){ const data = JSON.parse(localStorage.getItem('cv_data')); if(!data) return alert("No data found");
+
+document.getElementById('name').value = data.name; document.getElementById('job').value = data.job; document.getElementById('email').value = data.email; document.getElementById('phone').value = data.phone; document.getElementById('address').value = data.address; document.getElementById('dob').value = data.dob; document.getElementById('experience').value = data.experience; document.getElementById('skills').value = data.skills; document.getElementById('education').value = data.education;
+
+document.getElementById('jobList').innerHTML = ""; if(data.jobs){ data.jobs.forEach(j=>addJob(j)); }
+
+generateCV(); }
+
+function downloadCV(){ let text = document.getElementById('output').innerText; let blob = new Blob([text], {type:"text/plain"}); let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "AI_CV.txt"; a.click(); } </script>
+
+</body>
 </html>
