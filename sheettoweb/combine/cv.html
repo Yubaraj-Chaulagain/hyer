@@ -1,88 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV Generator</title>
+<title>Pro CV Builder</title>
 
 <style>
-body{
-  font-family:Arial;
-  margin:0;
-  background:#eef2f7;
-}
+body{font-family:Arial;margin:0;background:#eef2f7}
 
 /* FORM */
-.form{
-  padding:15px;
-  background:#fff;
-}
-input, textarea{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-  border-radius:6px;
-  border:1px solid #ccc;
+.form{padding:15px;background:#fff}
+input,textarea{
+width:100%;padding:10px;margin:5px 0;
+border-radius:6px;border:1px solid #ccc;
 }
 button{
-  width:100%;
-  padding:12px;
-  background:#0f766e;
-  color:#fff;
-  border:none;
-  border-radius:6px;
+width:100%;padding:12px;background:#0f766e;
+color:#fff;border:none;border-radius:6px;
 }
 
-/* CV DESIGN */
-.cv{
-  display:flex;
-  max-width:900px;
-  margin:20px auto;
-  background:#fff;
-}
+/* CV */
+.cv{display:flex;max-width:900px;margin:20px auto;background:#fff}
 
 /* LEFT */
 .left{
-  width:35%;
-  background:#4b6b70;
-  color:#fff;
-  padding:20px;
+width:35%;background:#4b6b70;color:#fff;padding:20px
 }
 .left img{
-  width:120px;
-  height:120px;
-  border-radius:10px;
-  object-fit:cover;
+width:120px;height:120px;border-radius:10px;object-fit:cover
 }
 
 /* RIGHT */
-.right{
-  width:65%;
-  padding:20px;
-}
-h1{
-  margin:0;
-}
-.section{
-  margin-top:20px;
-}
+.right{width:65%;padding:20px}
+h1{margin:0;border-bottom:3px solid black;padding-bottom:5px}
+.section{margin-top:15px}
+.small{font-size:14px}
 </style>
 </head>
 
 <body>
 
 <div class="form">
-<h2>Fill Your CV</h2>
+<h2>Fill CV Details</h2>
 
 <input type="file" id="photo">
-<input type="text" id="name" placeholder="Full Name">
-<input type="text" id="email" placeholder="Email">
-<textarea id="summary" placeholder="Professional Summary"></textarea>
-<textarea id="skills" placeholder="Skills (comma separated)"></textarea>
-<textarea id="experience" placeholder="Work Experience"></textarea>
-<textarea id="education" placeholder="Education"></textarea>
 
-<button onclick="generateCV()">Generate CV</button>
+<h3>Basic Info</h3>
+<input id="name" placeholder="Full Name">
+<input id="location" placeholder="Location">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="dob" placeholder="Date of Birth">
+<input id="nationality" placeholder="Nationality">
+
+<h3>Summary</h3>
+<textarea id="summary"></textarea>
+
+<h3>Work 1</h3>
+<input id="job1" placeholder="Job Title">
+<input id="company1" placeholder="Company">
+<input id="date1" placeholder="Date">
+<textarea id="desc1" placeholder="Description"></textarea>
+
+<h3>Work 2</h3>
+<input id="job2">
+<input id="company2">
+<input id="date2">
+<textarea id="desc2"></textarea>
+
+<h3>Skills</h3>
+<textarea id="skills"></textarea>
+
+<h3>Languages</h3>
+<textarea id="languages" placeholder="English - A1, Hindi - C1"></textarea>
+
+<h3>Education</h3>
+<textarea id="education"></textarea>
+
+<button onclick="gen()">Generate CV</button>
 </div>
 
 <div class="cv">
@@ -91,62 +85,82 @@ h1{
 <img id="cvPhoto">
 
 <h3>Contact</h3>
+<p id="cvLocation"></p>
+<p id="cvPhone"></p>
 <p id="cvEmail"></p>
+<p id="cvDob"></p>
+<p id="cvNationality"></p>
 
 <h3>Skills</h3>
 <p id="cvSkills"></p>
+
+<h3>Languages</h3>
+<p id="cvLang"></p>
 </div>
 
 <div class="right">
 <h1 id="cvName">Your Name</h1>
 
 <div class="section">
-<h3>Professional Summary</h3>
-<p id="cvSummary"></p>
+<h3>PROFESSIONAL SUMMARY</h3>
+<p id="cvSummary" class="small"></p>
 </div>
 
 <div class="section">
-<h3>Work History</h3>
-<p id="cvExperience"></p>
+<h3>WORK HISTORY</h3>
+
+<p><b id="cvJob1"></b></p>
+<p id="cvCompany1"></p>
+<p id="cvDate1"></p>
+<p id="cvDesc1" class="small"></p>
+
+<br>
+
+<p><b id="cvJob2"></b></p>
+<p id="cvCompany2"></p>
+<p id="cvDate2"></p>
+<p id="cvDesc2" class="small"></p>
 </div>
 
 <div class="section">
-<h3>Education</h3>
-<p id="cvEducation"></p>
+<h3>EDUCATION</h3>
+<p id="cvEdu"></p>
 </div>
 
 </div>
 </div>
 
 <script>
-function generateCV(){
-  document.getElementById("cvName").innerText =
-    document.getElementById("name").value;
+function gen(){
+cvName.innerText=name.value
+cvLocation.innerText=location.value
+cvPhone.innerText=phone.value
+cvEmail.innerText=email.value
+cvDob.innerText=dob.value
+cvNationality.innerText=nationality.value
+cvSummary.innerText=summary.value
 
-  document.getElementById("cvEmail").innerText =
-    document.getElementById("email").value;
+cvJob1.innerText=job1.value
+cvCompany1.innerText=company1.value
+cvDate1.innerText=date1.value
+cvDesc1.innerText=desc1.value
 
-  document.getElementById("cvSummary").innerText =
-    document.getElementById("summary").value;
+cvJob2.innerText=job2.value
+cvCompany2.innerText=company2.value
+cvDate2.innerText=date2.value
+cvDesc2.innerText=desc2.value
 
-  document.getElementById("cvSkills").innerText =
-    document.getElementById("skills").value;
+cvSkills.innerText=skills.value
+cvLang.innerText=languages.value
+cvEdu.innerText=education.value
 
-  document.getElementById("cvExperience").innerText =
-    document.getElementById("experience").value;
-
-  document.getElementById("cvEducation").innerText =
-    document.getElementById("education").value;
-
-  // Photo Upload
-  let file = document.getElementById("photo").files[0];
-  if(file){
-    let reader = new FileReader();
-    reader.onload = function(e){
-      document.getElementById("cvPhoto").src = e.target.result;
-    }
-    reader.readAsDataURL(file);
-  }
+// photo
+let file=photo.files[0]
+if(file){
+let reader=new FileReader()
+reader.onload=e=>cvPhoto.src=e.target.result
+reader.readAsDataURL(file)
+}
 }
 </script>
 
