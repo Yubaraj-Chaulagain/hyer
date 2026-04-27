@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro CV Builder Advanced</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{font-family:Arial;margin:0;background:#eef2f7}
+.form{padding:15px;background:#fff}
+input,textarea{
+width:100%;padding:10px;margin:5px 0;
+border-radius:6px;border:1px solid #ccc;
+}
+button{
+width:100%;padding:12px;background:#0f766e;
+color:#fff;border:none;border-radius:6px;margin-top:5px;
+}
+.cv{display:flex;max-width:900px;margin:20px auto;background:#fff}
+.left{width:35%;background:#4b6b70;color:#fff;padding:20px}
+.left img{width:120px;height:120px;border-radius:10px;object-fit:cover}
+.right{width:65%;padding:20px}
+h1{margin:0;border-bottom:3px solid black;padding-bottom:5px}
+.section{margin-top:15px}
+.small{font-size:14px}
+.workBox{border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:8px}
+</style>
+
+</head>
+
+<body>
+
+<div class="form">
+<h2>Fill CV Details</h2>
+
+<input type="file" id="photo">
+
+<h3>Basic Info</h3>
+<input id="name" placeholder="Full Name">
+<input id="location" placeholder="Location">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="dob" placeholder="Date of Birth">
+<input id="nationality" placeholder="Nationality">
+
+<h3>Summary</h3>
+<textarea id="summary"></textarea>
+
+<h3>Work History</h3>
+<div id="workContainer"></div>
+<button onclick="addWork()">+ Add Work</button>
+
+<h3>Skills</h3>
+<textarea id="skills"></textarea>
+
+<h3>Languages</h3>
+<textarea id="languages"></textarea>
+
+<h3>Education</h3>
+<textarea id="education"></textarea>
+
+<button onclick="gen()">Generate CV</button>
+<button onclick="downloadTXT()">Download TXT</button>
+<button onclick="downloadPDF()">Download PDF</button>
+
+</div>
+
+<!-- CV DISPLAY -->
+<div class="cv">
+
+<div class="left">
+<img id="cvPhoto">
+
+<h3>Contact</h3>
+<p id="cvLocation"></p>
+<p id="cvPhone"></p>
+<p id="cvEmail"></p>
+<p id="cvDob"></p>
+<p id="cvNationality"></p>
+
+<h3>Skills</h3>
+<p id="cvSkills"></p>
+
+<h3>Languages</h3>
+<p id="cvLang"></p>
+</div>
+
+<div class="right">
+
+<h1 id="cvName">Your Name</h1>
+
+<div class="section">
+<h3>PROFESSIONAL SUMMARY</h3>
+<p id="cvSummary" class="small"></p>
+</div>
+
+<div class="section">
+<h3>WORK HISTORY</h3>
+<div id="cvWork"></div>
+</div>
+
+<div class="section">
+<h3>EDUCATION</h3>
+<p id="cvEdu"></p>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let workCount = 0;
+
+function addWork(){
+workCount++;
+let div=document.createElement('div');
+div.className='workBox';
+div.innerHTML=`
+<input placeholder="Job Title" id="job${workCount}">
+<input placeholder="Company" id="company${workCount}">
+<input placeholder="Start Date" id="start${workCount}">
+<input placeholder="End Date" id="end${workCount}">
+<input placeholder="Address" id="address${workCount}">
+<textarea placeholder="Description" id="desc${workCount}"></textarea>
+`;
+document.getElementById('workContainer').appendChild(div);
+}
+
+function gen(){
+
+document.getElementById("cvName").innerText =
+document.getElementById("name").value || "Your Name";
+
+document.getElementById("cvLocation").innerText =
+document.getElementById("location").value || "";
+
+document.getElementById("cvPhone").innerText =
+document.getElementById("phone").value || "";
+
+document.getElementById("cvEmail").innerText =
+document.getElementById("email").value || "";
+
+document.getElementById("cvDob").innerText =
+document.getElementById("dob").value || "";
+
+document.getElementById("cvNationality").innerText =
+document.getElementById("nationality").value || "";
+
+document.getElementById("cvSummary").innerText =
+document.getElementById("summary").value || "";
+
+document.getElementById("cvSkills").innerText =
+document.getElementById("skills").value || "";
+
+document.getElementById("cvLang").innerText =
+document.getElementById("languages").value || "";
+
+document.getElementById("cvEdu").innerText =
+document.getElementById("education").value || "";
+
+/* WORK */
+let workHTML = "";
+
+for(let i=1;i<=workCount;i++){
+let job=document.getElementById('job'+i)?.value||"";
+let company=document.getElementById('company'+i)?.value||"";
+let start=document.getElementById('start'+i)?.value||"";
+let end=document.getElementById('end'+i)?.value||"";
+let address=document.getElementById('address'+i)?.value||"";
+let desc=document.getElementById('desc'+i)?.value||"";
+
+if(job || company){
+workHTML += `
+<p><b>${job}</b> (${start} - ${end})</p>
+<p>${company} | ${address}</p>
+<p class='small'>${desc}</p><br>
+`;
+}
+}
+
+document.getElementById("cvWork").innerHTML = workHTML;
+
+/* PHOTO */
+let file = document.getElementById("photo").files[0];
+if(file){
+let reader = new FileReader();
+reader.onload = function(e){
+document.getElementById("cvPhoto").src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+}
+
+/* TXT DOWNLOAD */
+function downloadTXT(){
+let text =
+"CV\n" +
+document.getElementById("name").value + "\n" +
+document.getElementById("location").value + "\n" +
+document.getElementById("phone").value + "\n" +
+document.getElementById("email").value + "\n\nSummary:\n" +
+document.getElementById("summary").value;
+
+let blob = new Blob([text],{type:"text/plain"});
+let a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = "cv.txt";
+a.click();
+}
+
+/* PDF DOWNLOAD */
+async function downloadPDF(){
+const { jsPDF } = window.jspdf;
+let doc = new jsPDF();
+
+doc.text("CV",10,10);
+doc.text(document.getElementById("name").value || "",10,20);
+doc.text(document.getElementById("location").value || "",10,30);
+doc.text(document.getElementById("phone").value || "",10,40);
+doc.text(document.getElementById("email").value || "",10,50);
+doc.text("Summary:",10,60);
+doc.text(document.getElementById("summary").value || "",10,70);
+
+doc.save("cv.pdf");
+}
+
+</script>
+
+</body>
+</html>
