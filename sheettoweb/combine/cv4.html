@@ -72,7 +72,7 @@ div.innerHTML=`
 <input placeholder="Start Date" id="start${workCount}">
 <input placeholder="End Date" id="end${workCount}">
 <input placeholder="Address" id="address${workCount}">
-<input placeholder="Work Target / Goal" id="target${workCount}">
+
 <textarea placeholder="Description" id="desc${workCount}"></textarea>
 `;
 document.getElementById('workContainer').appendChild(div);
@@ -88,14 +88,14 @@ let company=document.getElementById('company'+i)?.value||"";
 let start=document.getElementById('start'+i)?.value||"";
 let end=document.getElementById('end'+i)?.value||"";
 let address=document.getElementById('address'+i)?.value||"";
-let target=document.getElementById('target'+i)?.value||"";
+
 let desc=document.getElementById('desc'+i)?.value||"";
 
 if(job || company){
 workHTML += `
 <p><b>${job}</b> (${start} - ${end})</p>
 <p>${company} | ${address}</p>
-<p><b>Target:</b> ${target}</p>
+
 <p class='small'>${desc}</p><br>
 `;
 }
