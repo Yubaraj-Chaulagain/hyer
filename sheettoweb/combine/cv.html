@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO CV Generator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#eef2f7;margin:0;padding:10px;}
+input,textarea{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ccc;}
+button{width:100%;padding:12px;margin-top:10px;background:#2563eb;color:#fff;border:none;border-radius:6px;}
+
+.cv{background:#fff;padding:20px;border-radius:10px;margin-top:10px;}
+img{width:100px;height:100px;border-radius:50%;object-fit:cover;}
+</style>
+</head>
+
+<body>
+
+<h2>CV Form</h2>
+
+<input id="name" placeholder="Full Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="location" placeholder="Location">
+
+<input type="file" id="photo">
+
+<textarea id="job" placeholder="Job Target"></textarea>
+<textarea id="experience" placeholder="Experience"></textarea>
+<textarea id="education" placeholder="Education"></textarea>
+<textarea id="skills" placeholder="Skills"></textarea>
+
+<button onclick="generateCV()">Generate CV</button>
+<button onclick="downloadPDF()">Download PDF</button>
+
+<div class="cv" id="cv">
+
+<img id="cv-photo" src="">
+<h1 id="cv-name"></h1>
+<p id="cv-contact"></p>
+
+<h3>Objective</h3>
+<p id="cv-job"></p>
+
+<h3>Experience</h3>
+<p id="cv-exp"></p>
+
+<h3>Education</h3>
+<p id="cv-edu"></p>
+
+<h3>Skills</h3>
+<p id="cv-skills"></p>
+
+</div>
+
+<script>
+// AUTO SAVE
+const fields = ["name","phone","email","location","job","experience","education","skills"];
+
+fields.forEach(id=>{
+  document.getElementById(id).value = localStorage.getItem(id) || "";
+  document.getElementById(id).addEventListener("input", e=>{
+    localStorage.setItem(id,e.target.value);
+  });
+});
+
+// PHOTO UPLOAD
+document.getElementById("photo").addEventListener("change", function(){
+  const file = this.files[0];
+  const reader = new FileReader();
+  reader.onload = function(){
+    document.getElementById("cv-photo").src = reader.result;
+    localStorage.setItem("photo", reader.result);
+  }
+  reader.readAsDataURL(file);
+});
+
+// LOAD PHOTO
+window.onload = ()=>{
+  if(localStorage.getItem("photo")){
+    document.getElementById("cv-photo").src = localStorage.getItem("photo");
+  }
+}
+
+// GENERATE CV
+function generateCV(){
+  document.getElementById("cv-name").innerText = name.value;
+  document.getElementById("cv-contact").innerText =
+    phone.value+" | "+email.value+" | "+location.value;
+
+  document.getElementById("cv-job").innerText = job.value;
+  document.getElementById("cv-exp").innerText = experience.value;
+  document.getElementById("cv-edu").innerText = education.value;
+  document.getElementById("cv-skills").innerText = skills.value;
+
+  sendToGoogleSheet(); // 🔥 auto sync
+}
+
+// DOWNLOAD PDF
+function downloadPDF(){
+  html2pdf().from(document.getElementById("cv")).save("CV.pdf");
+}
+
+// GOOGLE SHEET SYNC
+function sendToGoogleSheet(){
+  fetch("YOUR_GOOGLE_SCRIPT_URL", {
+    method: "POST",
+    body: JSON.stringify({
+      name:name.value,
+      phone:phone.value,
+      email:email.value,
+      location:location.value,
+      job:job.value
+    })
+  });
+}
+</script>
+
+</body>
+</html>
