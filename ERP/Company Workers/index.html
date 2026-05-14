@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Offline ERP System</title>
+<style>
+body{font-family:Arial;background:#eef2f7;margin:0;padding:10px}
+.container{max-width:1200px;margin:auto}
+.card{background:#fff;padding:10px;margin:10px 0;border-radius:8px}
+input,select,button{width:100%;padding:8px;margin:5px 0}
+button{background:#2563eb;color:#fff;border:none;cursor:pointer}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border:1px solid #ccc;padding:5px;font-size:12px}
+th{background:#f3f4f6}
+.row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.small{font-size:12px}
+nav button{width:auto;margin:2px}
+.hidden{display:none}
+    .nav{
+  position:relative;
+}
+
+.menu-btn{
+  display:none;
+  width:auto;
+  background:#111;
+}
+
+.nav-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+.nav-links button{
+  width:auto;
+}
+
+/* 🔥 MOBILE VIEW */
+@media (max-width: 768px){
+
+  .menu-btn{
+    display:block;
+  }
+
+  .nav-links{
+    display:none;
+    flex-direction:column;
+    background:#fff;
+    padding:10px;
+    position:absolute;
+    width:100%;
+    left:0;
+    top:50px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .nav-links.show{
+    display:flex;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h2>Welcome Offline ERP System</h2>
+
+<!-- LOGIN -->
+<div id="loginCard" class="card">
+<h3>Login</h3>
+<input id="user" placeholder="Username" />
+<input id="pass" type="password" placeholder="Password" />
+<button onclick="login()">Login</button>
+<button onclick="showRegister()">Request Account</button>
+<button onclick="forgotPassword()">Forgot Password</button>
+
+</div>
+    <div id="registerCard" class="card hidden">
+<h3>Request New Account</h3>
+
+<input id="r_name" placeholder="Username">
+<input id="r_pass" placeholder="Password">
+
+<select id="u_role">
+<option>User</option>
+<option>Manager</option>
+<option>SuperManager</option>
+<option>Admin</option>
+</select>
+<select id="r_field"></select>
+<input type="date" id="r_start">
+<input type="date" id="r_end">
+
+<button onclick="requestUser()">Submit Request</button>
+<button onclick="backToLogin()">Back</button>
+</div>
+
+<!-- MAIN -->
+<div id="app" class="hidden">
+    <nav class="card nav">
+
+<button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+
+<div id="navMenu" class="nav-links">
+    
+<button id="btn_customer" onclick="show('customer')">Customers</button>
+
+<button id="btn_company" onclick="show('company')">Working Company</button>
+
+<button id="btn_legal" onclick="show('legal')">Legal Company</button>
+
+<button id="btn_attendance" onclick="show('attendance')">Attendance</button>
+
+<button id="btn_transaction" onclick="show('transaction')">Transactions</button>
+
+<button id="btn_stock" onclick="show('stock')">Stock</button>
+
+<button id="btn_sell" onclick="show('sell')">Sell</button>
+
+<button id="btn_buy" onclick="show('buy')">Buy</button>
+
+<button id="btn_history" onclick="show('history')">Login History</button>
+
+<button id="btn_activity" onclick="show('activity')">Activities</button>
+
+<button id="btn_users" onclick="show('users')">Users</button>
+    
+<button onclick="exportExcel()">Export Excel</button>
+
+<button onclick="syncToGoogleSheet()">Sync Google Sheet</button>
+    
+<button onclick="changeMyPassword()">Change My Password</button>
+
+<button onclick="logout()">Logout</button>
+    
+    <h3>Date Filter Export</h3>
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+
+<button onclick="exportFilteredCSV()">
+Download Filtered CSV
+</button>
+
+</div>
+
+</nav>
+    
+     <h3 id="pageTitle">Dashboard</h3>
+<!-- CUSTOMER -->
+<div id="customer" class="card">
+<input id="c_name" placeholder="Name" />
+<label for="c_prof">Select Profession:</label>
+<select id="c_prof" name="profession">
+  <option value="">-- Select Profession --</option>
+  <option value="mason">Mason</option>
+  <option value="carpenter">Carpenter</option>
+  <option value="helper">Helper</option>
+  <option value="steel_fixer">Steel Fixer</option>
+  <option value="electrician">Electrician</option>
+  <option value="foreman">Foreman</option>
+  <option value="charge_hand">Charge Hand</option>
+  <option value="camp_boss">Camp Boss</option>
+  <option value="security">Security</option>
+  <option value="cleaner">Cleaner</option>
+</select>
+    <label for="c_company">Select Company:</label>
+<select id="c_company"></select>
+<input id="c_email" placeholder="Gmail" />
+<input id="c_phone" placeholder="Phone" />
+<button onclick="addCustomer()">Add Customer</button>
+<table id="customerTable"></table>
+</div>
+
+<!-- COMPANY -->
+<div id="company" class="card hidden">
+<input id="w_name" placeholder="Name" />
+<input id="w_addr" placeholder="Address" />
+<input id="w_phone" placeholder="Phone" />
+<input id="w_email" placeholder="Gmail" />
+<button onclick="addCompany()">Add Company</button>
+<table id="companyTable"></table>
+</div>
+
+<!-- LEGAL -->
+<div id="legal" class="card hidden">
+<input id="l_name" placeholder="Name" />
+<input id="l_addr" placeholder="Address" />
+<input id="l_phone" placeholder="Phone" />
+<input id="l_email" placeholder="Gmail" />
+<button onclick="addLegal()">Add Legal Company</button>
+<table id="legalTable"></table>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="attendance" class="card hidden">
+<select id="att_company" onchange="loadMembers()"></select>
+<div id="memberList"></div>
+<button onclick="markAttendance()">Mark Present</button>
+<table id="attTable"></table>
+</div>
+
+<!-- TRANSACTION -->
+<div id="transaction" class="card hidden">
+<select id="t_type" onchange="txnUI()">
+<option>saving</option>
+<option>withdraw</option>
+<option>transfer</option>
+</select>
+<div id="txnBox"></div>
+<button onclick="addTxn()">Submit</button>
+<table id="txnTable"></table>
+</div>
+    <!-- STOCK -->
+<div id="stock" class="card hidden">
+<input id="p_name" placeholder="Product Name">
+<input id="p_qty" placeholder="Quantity">
+<input id="p_buy_price" placeholder="Buy Rate">
+<input id="p_sell_price" placeholder="Sell Rate">
+ 
+<button onclick="addStock()">Add Product</button>
+
+<table id="stockTable"></table>
+</div>
+
+    <!-- BUY -->
+<div id="buy" class="card hidden">
+<select id="buy_product"></select>
+
+<input id="buy_qty" placeholder="Quantity">
+
+<select id="buy_mode">
+  <option value="cash">Cash</option>
+  <option value="account">From Account</option>
+</select>
+
+<button onclick="buyProduct()">Buy</button>
+
+<table id="buyTable"></table>
+</div>
+
+<!-- SELL -->
+<div id="sell" class="card hidden">
+<select id="sell_customer"></select>
+<select id="sell_product"></select>
+
+<input id="sell_qty" placeholder="Quantity">
+    
+       <select id="sell_mode">
+  <option value="cash">Cash</option>
+  <option value="account">From Account</option>
+</select>
+
+
+<button onclick="sellProduct()">Sell</button>
+
+<table id="sellTable"></table>
+</div>
+    
+<div id="users" class="card hidden">
+<input id="u_name" placeholder="Username">
+<input id="u_pass" placeholder="Password">
+
+<select id="r_role">
+<option>User</option>
+<option>Manager</option>
+<option>SuperManager</option>
+<option>Admin</option>
+</select>
+
+<select id="u_field"></select>
+<input type="date" id="u_start">
+<input type="date" id="u_end">
+
+<button type="button" onclick="addUser()">Add User</button>
+
+<table id="userTable"></table>
+</div>
+
+    <div id="history" class="card hidden">
+<button onclick="clearHistory()">Clear Activities</button>
+<table id="historyTable"></table>
+</div>
+    
+    <div id="activity" class="card hidden">
+        <button onclick="clearActivities()">Clear Activities</button>
+<table id="activityTable"></table>
+</div>
+   
+</div>
+</div>
+
+<script>
+let stock = JSON.parse(localStorage.getItem('stock') || '[]');
+let user = document.getElementById('user');
+let pass = document.getElementById('pass');
+let loginCard = document.getElementById('loginCard');
+let app = document.getElementById('app');
+let registerCard = document.getElementById('registerCard');
+let loginHistory = JSON.parse(localStorage.getItem('loginHistory') || '[]');
+let activities = JSON.parse(localStorage.getItem('activities') || '[]');
+let users = JSON.parse(localStorage.getItem('users') || '[]');
+let customers=JSON.parse(localStorage.getItem('customers')||'[]');
+let companies=JSON.parse(localStorage.getItem('companies')||'[]');
+let legal=JSON.parse(localStorage.getItem('legal')||'[]');
+let attendance=JSON.parse(localStorage.getItem('attendance')||'[]');
+let txn=JSON.parse(localStorage.getItem('txn')||'[]');
+
+function save(){
+
+localStorage.setItem('customers',JSON.stringify(customers));
+localStorage.setItem('companies',JSON.stringify(companies));
+localStorage.setItem('legal',JSON.stringify(legal));
+localStorage.setItem('attendance',JSON.stringify(attendance));
+localStorage.setItem('txn',JSON.stringify(txn));
+localStorage.setItem('stock',JSON.stringify(stock));
+
+localStorage.setItem('users',JSON.stringify(users));
+localStorage.setItem('activities',JSON.stringify(activities));
+localStorage.setItem('loginHistory',JSON.stringify(loginHistory));
+
+}
+
+function login(){
+
+let username = user.value.trim();
+let password = pass.value.trim();
+
+// 🔒 BLOCK CHECK
+if(isBlocked(username)){
+return;
+}
+
+// 🔑 ADMIN PASSWORD
+let adminPass = localStorage.getItem("adminPass") || "admin123";
+
+// ✅ ADMIN LOGIN
+if(username === "admin"){
+
+// ❌ WRONG ADMIN PASSWORD
+if(password !== adminPass){
+
+addFailedAttempt(username);
+
+saveHistory(username, "Failed");
+logActivity("Failed Admin Login");
+
+alert("Wrong admin password");
+
+return;
+}
+
+// ✅ SUCCESS
+resetAttempts(username);
+
+let adminUser = {
+username:"admin",
+role:"Admin"
+};
+
+localStorage.setItem("currentUser", JSON.stringify(adminUser));
+
+saveHistory("admin", "Success");
+logActivity("Admin Login Success");
+
+loginCard.classList.add('hidden');
+app.classList.remove('hidden');
+
+loadAll();
+applyPermissions();
+show("customer");
+
+return;
+}
+
+// 👤 NORMAL USER
+let u = users.find(x =>
+x.username == username &&
+x.password == password
+);
+
+// ❌ WRONG LOGIN
+if(!u){
+
+addFailedAttempt(username);
+
+saveHistory(username, "Failed");
+logActivity("Failed Login: " + username);
+
+alert("Invalid username or password");
+
+return;
+}
+
+// ❌ NOT ACTIVE
+if(u.status != "Active"){
+
+alert("User not approved");
+
+return;
+}
+
+// ⏳ EXPIRY
+let today = new Date().toISOString().split("T")[0];
+
+if(u.end && today > u.end){
+
+u.status = "Disabled";
+
+localStorage.setItem(
+'users',
+JSON.stringify(users)
+);
+
+alert("Account expired");
+
+return;
+}
+
+// ✅ SUCCESS LOGIN
+resetAttempts(username);
+
+saveHistory(username, "Success");
+logActivity("Login Success: " + username);
+
+localStorage.setItem(
+"currentUser",
+JSON.stringify(u)
+);
+
+loginCard.classList.add('hidden');
+app.classList.remove('hidden');
+
+loadAll();
+applyPermissions();
+show("customer");
+}
+function logout(){location.reload();}
+
+function show(id){
+
+  let current = getCurrentUser();
+
+  // safety check
+  if(!document.getElementById(id)) return;
+
+  // ✅ ALL SECTION HIDE
+  [
+    "customer",
+    "company",
+    "legal",
+    "attendance",
+    "transaction",
+    "stock",
+    "buy",
+    "sell",
+    "users",
+    "history",
+    "activity"
+  ].forEach(x=>{
+    let el = document.getElementById(x);
+    if(el){
+      el.classList.add("hidden");
+    }
+  });
+
+  // ✅ OPEN SELECTED SECTION
+  let target = document.getElementById(id);
+  if(target){
+    target.classList.remove("hidden");
+  }
+
+  // ✅ PAGE TITLE
+  let title = document.getElementById("pageTitle");
+
+  if(title){
+
+    let titles = {
+      customer:"Customers",
+      company:"Working Company",
+      legal:"Legal Company",
+      attendance:"Attendance",
+      transaction:"Transactions",
+      stock:"Stock Management",
+      buy:"Buy Product",
+      sell:"Sell Product",
+      users:"User Management",
+      history:"Login History",
+      activity:"Activity Log"
+    };
+
+    title.innerText = titles[id] || "Dashboard";
+  }
+
+  // ✅ MOBILE MENU AUTO CLOSE
+  let nav = document.getElementById("navMenu");
+  if(nav){
+    nav.classList.remove("show");
+  }
+}
+function addCompany(){companies.push({name:w_name.value,addr:w_addr.value,phone:w_phone.value,email:w_email.value,date:new Date().toLocaleString()});
+   // ✅ CLEAR FIELDS
+  clearInputs([
+    "w_name",
+    "w_addr",
+    "w_phone",
+    "w_email"
+  ]);                    
+save();loadAll();}
+function addLegal(){legal.push({name:l_name.value,addr:l_addr.value,phone:l_phone.value,email:l_email.value,date:new Date().toLocaleString()});                 
+save();loadAll();
+                    clearInputs([
+    "l_name",
+    "l_addr",
+    "l_phone",
+    "l_email"
+  ]);  }
+
+
+
+function addCustomer(){
+
+if(!c_name.value || !c_company.value){
+  alert("Fill required fields");
+  return;
+}
+
+customers.push({
+  name: c_name.value,
+  prof: c_prof.value,
+  company: c_company.value || "N/A",
+  email: c_email.value,
+  phone: c_phone.value,
+  balance: 0,
+  date: new Date().toLocaleString()
+});
+
+logActivity("Added Customer: " + c_name.value);
+
+save();
+loadAll();
+
+// clear fields
+clearInputs([
+  "c_name",
+  "c_prof",
+  "c_company",
+  "c_email",
+  "c_phone"
+]);
+
+}
+
+function loadAll(){
+// 👤 CURRENT USER
+let current = getCurrentUser();
+
+// FIXED FILTER
+let filteredCustomers = customers;
+
+if(current && current.role=="User"){
+filteredCustomers = customers.filter(c => c.company == current.field);
+}
+
+// 👔 MANAGER = ALL COMPANIES (NO FILTER)
+// 👉 (your requirement: manager handle all customers)
+
+// 🔑 ADMIN = ALSO ALL
+
+// ==========================
+// COMPANY DROPDOWN
+// ==========================
+c_company.innerHTML = companies.map(c =>
+`<option>${c.name}</option>`
+).join('');
+
+att_company.innerHTML = companies.map(c =>
+`<option>${c.name}</option>`
+).join('');
+
+// ==========================
+// CUSTOMER TABLE
+// ==========================
+customerTable.innerHTML =
+'<tr><th>Name</th><th>Company</th><th>Balance</th><th>Time</th><th>Action</th></tr>' +
+
+filteredCustomers.map((c,i)=>{
+
+let realIndex = customers.indexOf(c);
+
+return `
+<tr>
+<td>${c.name}</td>
+<td>${c.company}</td>
+<td>${c.balance}</td>
+<td>${c.date || ""}</td>
+<td>
+<button onclick="editCustomer(${realIndex})">Edit</button>
+<button onclick="deleteCustomer(${realIndex})">Delete</button>
+</td>
+</tr>`;
+}).join('');
+
+// ==========================
+// COMPANY TABLE
+// ==========================
+companyTable.innerHTML =
+'<tr><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
+companies.map((c,i)=>
+`<tr>
+<td>${c.name}</td>
+<td>${c.phone}</td>
+<td>${c.date || ""}</td>
+<td>
+<button onclick="editCompany(${i})">Edit</button>
+<button onclick="deleteCompany(${i})">Delete</button>
+</td>
+</tr>`).join('');
+
+// ==========================
+// LEGAL TABLE
+// ==========================
+legalTable.innerHTML =
+'<tr><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
+legal.map((c,i)=>
+`<tr>
+<td>${c.name}</td>
+<td>${c.phone}</td>
+<td>${c.date || ""}</td>
+<td>
+<button onclick="editLegal(${i})">Edit</button>
+<button onclick="deleteLegal(${i})">Delete</button>
+</td>
+</tr>`).join('');
+
+// ==========================
+// ATTENDANCE TABLE
+// ==========================
+attTable.innerHTML =
+'<tr><th>Company</th><th>Member</th><th>Time</th><th>Action</th></tr>' +
+attendance.map((a,i)=>
+`<tr>
+<td>${a.company}</td>
+<td>${a.member}</td>
+<td>${a.date}</td>
+<td>
+<button onclick="deleteAttendance(${i})">Delete</button>
+</td>
+</tr>`).join('');
+
+// ==========================
+// TRANSACTION TABLE
+// ==========================
+txnTable.innerHTML =
+'<tr><th>Type</th><th>From</th><th>To</th><th>Amount</th><th>Time</th><th>Action</th></tr>' +
+txn.filter(t=>!["buy","sell"].includes(t.type)).map((t,i)=>
+`<tr>
+<td>${t.type}</td>
+<td>${t.from||''}</td>
+<td>${t.to||''}</td>
+<td>${t.amount}</td>
+<td>${t.date || ""}</td>
+<td>
+<button onclick="deleteTxn(${i})">Delete</button>
+</td>
+</tr>`).join('');
+
+// ==========================
+// USERS TABLE (ADMIN ONLY)
+// ==========================
+if(userTable && current && current.role=="Admin"){
+userTable.innerHTML =
+'<tr><th>User</th><th>Password</th><th>Role</th><th>Company</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
+users.map((u,i)=>
+`<tr>
+<td>${u.username}</td>
+<td>••••••</td>
+<td>${u.role}</td>
+<td>${u.field || ""}</td>
+<td>${u.status}</td>
+<td>${u.date || ""}</td>
+<td>
+<button onclick="editUser(${i})">Edit</button>
+<button onclick="approveUser(${i})">Approve</button>
+<button onclick="rejectUser(${i})">Reject</button>
+<button onclick="deleteUser(${i})">Delete</button>
+</td>
+</tr>`
+).join('');
+loadCompanyDropdowns();
+}
+// ==========================
+// LOGIN HISTORY TABLE
+// ==========================
+if(historyTable){
+
+historyTable.innerHTML =
+'<tr><th>User</th><th>Status</th><th>Time</th><th>Control</th></tr>' +
+
+loginHistory.map((h,i)=>`
+<tr>
+<td>${h.username}</td>
+<td>${h.status}</td>
+<td>${h.time}</td>
+<td>
+<button onclick="deleteHistory(${i})">Delete</button>
+</td>
+</tr>
+`).join('');
+}
+
+// ==========================
+// ACTIVITY TABLE
+// ==========================
+if(activityTable){
+
+activityTable.innerHTML =
+'<tr><th>User</th><th>Role</th><th>Action</th><th>Time</th><th>Control</th></tr>' +
+
+activities.map((a,i)=>`
+<tr>
+<td>${a.user}</td>
+<td>${a.role}</td>
+<td>${a.action}</td>
+<td>${a.time}</td>
+<td>
+<button onclick="deleteActivity(${i})">Delete</button>
+</td>
+</tr>
+`).join('');
+}
+
+    // STOCK TABLE
+stockTable.innerHTML =
+'<tr><th>Product</th><th>Qty</th><th>Buy Rate</th><th>Sell Rate</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
+stock.map((s,i)=>`
+<tr>
+<td>${s.name}</td>
+<td>${s.qty}</td>
+<td>${s.buyPrice}</td>
+<td>${s.sellPrice}</td>
+<td>${s.status}</td>
+<td>${s.date || ""}</td>
+<td>
+<button onclick="editStock(${i})">Edit</button>
+<button onclick="toggleStock(${i})">${s.status=="active"?"Disable":"Enable"}</button>
+</td>
+</tr>
+`).join('');
+
+// DROPDOWN
+sell_customer.innerHTML = customers.map(c=>`<option>${c.name}</option>`).join('');
+sell_product.innerHTML = stock.map(p=>`<option>${p.name}</option>`).join('');
+
+   buy_product.innerHTML =
+stock
+.filter(p=>p.status=="active")
+.map(p=>`<option>${p.name}</option>`)
+.join('');
+
+// BUY TABLE
+buyTable.innerHTML =
+'<tr><th>Product</th><th>Buyer</th><th>Qty</th><th>Buy Rate</th><th>Total</th><th>Mode</th><th>Time</th></tr>' +
+txn
+.filter(t=>t.type=="buy")
+.map(t=>`
+<tr>
+<td>${t.product}</td>
+<td>${t.buyer || ""}</td>
+<td>${t.qty}</td>
+<td>${t.buyRate || 0}</td>
+<td>${t.total || 0}</td>
+<td>${t.mode}</td>
+<td>${t.date}</td>
+</tr>
+`).join('');
+
+sellTable.innerHTML =
+'<tr><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th><th>Mode</th><th>Time</th><th>Action</th></tr>' +
+txn
+.filter(t=>t.type=="sell")
+.map((t,i)=>`
+<tr>
+<td>${t.customer}</td>
+<td>${t.product}</td>
+<td>${t.qty}</td>
+<td>${t.total}</td>
+<td>${t.mode}</td>
+<td>${t.date}</td>
+<td>
+<button onclick="editSell(${i})">Edit</button>
+<button onclick="deleteSell(${i})">Delete</button>
+</td>
+</tr>
+`).join('');
+}
+
+function loadMembers(){
+let list = customers.filter(c=>c.company==att_company.value);
+
+memberList.innerHTML = list.map((c,i)=>`
+<label>
+<input type="checkbox" value="${c.name}">
+${c.name}
+</label><br>
+`).join('');
+}
+
+function markAttendance(){
+let checked = document.querySelectorAll('#memberList input:checked');
+
+checked.forEach(cb=>{
+attendance.push({
+company: att_company.value,
+member: cb.value,
+date: new Date().toLocaleString()
+});
+});
+
+save();
+loadAll();
+}
+    
+    function loadCompanyDropdowns(){
+  
+  let options = '<option value="">-- Select Company --</option>';
+
+  companies.forEach(c=>{
+    options += `<option value="${c.name}">${c.name}</option>`;
+  });
+
+  // 👇 Customer form
+  document.getElementById("c_company").innerHTML = options;
+
+  // 👇 Attendance
+  document.getElementById("att_company").innerHTML = options;
+
+  // 👇 USER Working Field (NEW FIX)
+  document.getElementById("u_field").innerHTML = options;
+
+  // 👇 Register field (optional fix)
+  if(document.getElementById("r_field")){
+    document.getElementById("r_field").innerHTML = options;
+  }
+}
+
+function txnUI(){
+let t=t_type.value;
+txnBox.innerHTML='';
+if(t=='transfer'){
+txnBox.innerHTML=`<select id='from'>${customers.map(c=>`<option>${c.name}</option>`)}</select>
+<select id='to'>${customers.map(c=>`<option>${c.name}</option>`)}</select>
+<input id='amount' placeholder='Amount' />`;
+}else{
+txnBox.innerHTML=`<select id='member'>${customers.map(c=>`<option>${c.name}</option>`)}</select>
+<input id='amount' placeholder='Amount' />`;
+}
+}
+
+ function deleteCustomer(i){
+if(confirm("Delete this customer?")){
+let name = customers[i].name;   // ✅ SAVE BEFORE DELETE
+
+customers.splice(i,1);
+
+logActivity("Deleted Customer: " + name);
+
+save();
+loadAll();
+}
+}
+
+function editCustomer(i){
+let c = customers[i];
+let oldName = c.name;   // ✅ ADD HERE
+
+let name = prompt("Edit Name", c.name);
+let company = prompt("Edit Company", c.company);
+
+if(name){
+c.name = name;
+c.company = company;
+
+logActivity("Edited Customer: " + oldName + " → " + name);
+
+save();
+loadAll();
+}
+}
+
+    function deleteCompany(i){
+if(confirm("Delete company?")){
+companies.splice(i,1);
+save();loadAll();
+}
+}
+
+function editCompany(i){
+let c=companies[i];
+let name=prompt("Edit Name",c.name);
+if(name){
+c.name=name;
+save();loadAll();
+}
+}
+
+    function deleteLegal(i){
+if(confirm("Delete legal company?")){
+legal.splice(i,1);
+save();loadAll();
+}
+}
+
+function editLegal(i){
+let c=legal[i];
+let name=prompt("Edit Name",c.name);
+if(name){
+c.name=name;
+save();loadAll();
+}
+}
+
+    function deleteAttendance(i){
+attendance.splice(i,1);
+save();loadAll();
+}
+
+    function deleteTxn(i){
+txn.splice(i,1);
+save();loadAll();
+}
+
+  function getCurrentUser(){
+return JSON.parse(localStorage.getItem("currentUser"));
+}
+
+let isAddingUser = false;
+
+function addUser(){
+
+if(isAddingUser) return;
+isAddingUser = true;
+
+users.push({
+username:u_name.value,
+password:u_pass.value,
+role:r_role.value,
+field:u_field.value,
+start:u_start.value,
+end:u_end.value,
+date:new Date().toLocaleString(),
+status:"Pending"
+});
+    logActivity("Added User: " + u_name.value);
+
+localStorage.setItem('users',JSON.stringify(users));
+loadAll();
+
+// clear
+u_name.value="";
+u_pass.value="";
+u_field.value="";
+r_role.selectedIndex = 0;
+u_start.value="";
+u_end.value="";
+
+setTimeout(()=>{ isAddingUser = false; }, 500);
+}
+ 
+ function approveUser(i){
+users[i].status="Active";
+localStorage.setItem('users',JSON.stringify(users));
+loadAll();
+}
+
+function rejectUser(i){
+users[i].status="Rejected";
+localStorage.setItem('users',JSON.stringify(users));
+loadAll();
+}
+
+function deleteUser(i){
+users.splice(i,1);
+localStorage.setItem('users',JSON.stringify(users));
+loadAll();
+}   
+
+function applyPermissions(){
+
+let current = getCurrentUser();
+
+if(!current) return;
+
+// hide all first
+[
+"btn_users",
+"btn_transaction",
+"btn_company",
+"btn_legal",
+"btn_attendance",
+"btn_stock",
+"btn_buy",
+"btn_sell",
+"btn_history",
+"btn_activity"
+].forEach(id=>{
+let el=document.getElementById(id);
+if(el) el.style.display="none";
+});
+
+// USER
+if(current.role=="User"){
+
+[
+"btn_customer",
+"btn_attendance",
+"btn_sell",
+"btn_buy"
+].forEach(id=>{
+let el=document.getElementById(id);
+if(el) el.style.display="inline-block";
+});
+
+}
+
+// MANAGER
+else if(current.role=="Manager"){
+
+[
+"btn_customer",
+"btn_company",
+"btn_attendance",
+"btn_transaction",
+"btn_stock",
+"btn_sell",
+"btn_buy",
+"btn_history",
+"btn_activity"
+].forEach(id=>{
+let el=document.getElementById(id);
+if(el) el.style.display="inline-block";
+});
+
+}
+
+// SUPER MANAGER
+else if(current.role=="SuperManager"){
+
+[
+"btn_customer",
+"btn_company",
+"btn_legal",
+"btn_attendance",
+"btn_transaction",
+"btn_stock",
+"btn_sell",
+"btn_buy",
+"btn_history",
+"btn_activity"
+].forEach(id=>{
+let el=document.getElementById(id);
+if(el) el.style.display="inline-block";
+});
+
+}
+
+// ADMIN
+else if(current.role=="Admin"){
+
+document.querySelectorAll("#navMenu button").forEach(btn=>{
+btn.style.display="inline-block";
+});
+
+}
+}
+    
+    function goBack(){
+show("customer");   // default home
+}
+    function showRegister(){
+loginCard.classList.add("hidden");
+registerCard.classList.remove("hidden");
+}
+
+function backToLogin(){
+registerCard.classList.add("hidden");
+loginCard.classList.remove("hidden");
+}
+ function requestUser(){
+
+users.push({
+username:r_name.value,
+password:r_pass.value,
+role:u_role.value,   // ✅ FIXED (THIS IS IMPORTANT)
+field:r_field.value,
+start:r_start.value,
+end:r_end.value,
+date:new Date().toLocaleString(),
+status:"Pending"
+});
+
+localStorage.setItem('users',JSON.stringify(users));
+alert("Request sent! Wait for admin approval.");
+backToLogin();
+}
+
+ function editUser(i){
+  let u = users[i];
+
+  let newUsername = prompt("Change Username", u.username);
+  let newPassword = prompt("Change Password", u.password);
+  let newRole = prompt("Change Role", u.role);
+  let newField = prompt("Change Company", u.field);
+
+  if(newUsername){
+    u.username = newUsername;
+    u.password = newPassword;
+    u.role = newRole;
+    u.field = newField;
+
+    localStorage.setItem('users', JSON.stringify(users));
+    loadAll();
+  }
+}
+  function changeMyPassword(){
+
+let current = getCurrentUser();
+
+if(!current){
+alert("Login first");
+return;
+}
+
+let newPass = prompt("Enter new password");
+
+if(!newPass) return;
+
+// admin special
+if(current.username=="admin"){
+
+localStorage.setItem("adminPass", newPass);
+
+alert("Admin password changed");
+
+return;
+}
+
+let u = users.find(x=>x.username==current.username);
+
+if(u){
+
+u.password = newPass;
+
+localStorage.setItem('users',JSON.stringify(users));
+
+alert("Password changed");
+
+}
+
+}
+
+    function saveHistory(user, status){
+loginHistory.push({
+username: user,
+status: status,
+time: new Date().toLocaleString()
+});
+
+localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
+}
+
+function logActivity(action){
+let current = getCurrentUser();
+
+activities.push({
+user: current ? current.username : "Unknown",
+role: current ? current.role : "Unknown",
+action: action,
+time: new Date().toLocaleString()
+});
+
+localStorage.setItem('activities', JSON.stringify(activities));
+}   
+
+ let failedAttempts = JSON.parse(localStorage.getItem('failedAttempts') || '{}');
+
+// ❌ WRONG LOGIN COUNT
+function addFailedAttempt(username){
+
+if(!failedAttempts[username]){
+failedAttempts[username] = {
+count:0,
+blockedUntil:null
+};
+}
+
+failedAttempts[username].count++;
+
+// 🔥 3 TIME WRONG = BLOCK 2 MINUTE
+if(failedAttempts[username].count >= 3){
+
+failedAttempts[username].blockedUntil = Date.now() + (2 * 60 * 1000);
+
+alert("❌ Account locked for 2 minutes");
+
+}
+
+localStorage.setItem(
+'failedAttempts',
+JSON.stringify(failedAttempts)
+);
+}
+
+// 🔒 BLOCK CHECK
+function isBlocked(username){
+
+let data = failedAttempts[username];
+
+if(!data) return false;
+
+// ⏳ BLOCK TIME CHECK
+if(data.blockedUntil){
+
+if(Date.now() < data.blockedUntil){
+
+let remain =
+Math.ceil((data.blockedUntil - Date.now()) / 1000);
+
+alert("⛔ Try again after " + remain + " sec");
+
+return true;
+
+}else{
+
+// ✅ AUTO RESET AFTER 2 MIN
+failedAttempts[username] = {
+count:0,
+blockedUntil:null
+};
+
+localStorage.setItem(
+'failedAttempts',
+JSON.stringify(failedAttempts)
+);
+
+return false;
+}
+}
+
+return false;
+}
+
+// ✅ RESET AFTER SUCCESS LOGIN
+function resetAttempts(username){
+
+failedAttempts[username] = {
+count:0,
+blockedUntil:null
+};
+
+localStorage.setItem(
+'failedAttempts',
+JSON.stringify(failedAttempts)
+);
+} 
+
+  function toggleMenu(){
+  document.getElementById("navMenu").classList.toggle("show");
+}
+    
+  function setupMenuAutoClose(){
+  let menu = document.getElementById("navMenu");
+
+  document.querySelectorAll("#navMenu button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      menu.classList.remove("show");
+    });
+  });
+
+}
+    
+    function deleteActivity(i){
+
+if(confirm("Delete this activity?")){
+
+activities.splice(i,1);
+
+localStorage.setItem('activities', JSON.stringify(activities));
+
+loadAll();
+
+}
+}
+    
+function clearActivities(){
+
+if(confirm("Are you sure you want to clear all activities?")){
+
+activities = []; // reset array
+localStorage.setItem('activities', JSON.stringify(activities));
+
+loadAll(); // refresh table
+
+}
+}
+    function deleteHistory(i){
+
+if(confirm("Delete this history record?")){
+
+loginHistory.splice(i,1);
+
+localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
+
+loadAll();
+
+}
+}
+    function clearHistory(){
+
+if(confirm("Clear login history?")){
+loginHistory = [];
+localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
+loadAll();
+}
+}
+    function forgotPassword(){
+
+  let uname = prompt("Enter Username:");
+
+  let u = users.find(x => x.username == uname);
+
+  if(!u){
+    alert("User not found");
+    return;
+  }
+
+  alert("Password: " + u.password);
+}
+    
+function exportExcel(){
+
+let tables = {
+CUSTOMERS: customers,
+COMPANIES: companies,
+LEGAL: legal,
+ATTENDANCE: attendance,
+TRANSACTIONS: txn,
+USERS: users,
+ACTIVITIES: activities,
+LOGIN_HISTORY: loginHistory,
+STOCK: stock
+};
+
+let csv = "";
+
+for(let tableName in tables){
+
+let data = tables[tableName];
+
+csv += "\n\n====================\n";
+csv += tableName + "\n";
+csv += "====================\n";
+
+if(data.length == 0){
+
+csv += "No Data\n";
+continue;
+
+}
+
+// HEADER
+let headers = Object.keys(data[0]);
+
+csv += headers.join(",") + "\n";
+
+// ROWS
+data.forEach(row=>{
+
+let values = headers.map(h=>{
+
+let val = row[h] ?? "";
+
+return `"${String(val).replace(/"/g,'""')}"`;
+
+});
+
+csv += values.join(",") + "\n";
+
+});
+
+}
+
+// DOWNLOAD SINGLE FILE
+let blob = new Blob([csv], {
+type: "text/csv;charset=utf-8;"
+});
+
+let link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+
+link.download = "ERP_FULL_DATA.csv";
+
+link.click();
+
+logActivity("Exported Full CSV File");
+
+alert("✅ Single CSV File Exported");
+
+}
+
+    function exportFilteredCSV(){
+
+let from = document.getElementById("fromDate").value;
+let to = document.getElementById("toDate").value;
+
+if(!from || !to){
+alert("Select date range");
+return;
+}
+
+from = new Date(from);
+to = new Date(to);
+
+function inRange(dateStr){
+
+if(!dateStr) return true;
+
+let d = new Date(dateStr);
+
+return d >= from && d <= to;
+}
+
+// 🔥 FILTER DATA
+let filtered = {
+
+customers: customers,
+
+companies: companies,
+
+legal: legal,
+
+attendance: attendance.filter(x =>
+inRange(x.date)
+),
+
+transactions: txn.filter(x =>
+inRange(x.date)
+),
+
+stock: stock,
+
+sell: txn.filter(x =>
+x.type=="sell" && inRange(x.date)
+),
+
+buy: txn.filter(x =>
+x.type=="buy" && inRange(x.date)
+),
+
+loginHistory: loginHistory.filter(x =>
+inRange(x.time)
+),
+
+activities: activities.filter(x =>
+inRange(x.time)
+),
+
+users: users
+
+};
+
+// 🔥 JSON → CSV STYLE
+let csv = "";
+
+for(let key in filtered){
+
+csv += "\n\n===== " + key.toUpperCase() + " =====\n";
+
+let arr = filtered[key];
+
+if(arr.length==0){
+csv += "No Data\n";
+continue;
+}
+
+// HEADER
+csv += Object.keys(arr[0]).join(",") + "\n";
+
+// ROWS
+arr.forEach(row=>{
+
+csv += Object.values(row)
+.map(v => `"${v}"`)
+.join(",") + "\n";
+
+});
+
+}
+
+// DOWNLOAD
+let blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+
+let link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+
+link.download =
+"ERP_Filtered_Report.csv";
+
+link.click();
+
+logActivity("Downloaded Filtered CSV Report");
+
+alert("✅ CSV Downloaded");
+
+}
+    
+   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNj9_gpOWt0U70qTKV50HSq-14UPfqVjKmb3iWBH4iBw9a2Jnnhb9SzLKsNelUrgIL/exec";
+
+function syncToGoogleSheet(){
+
+let payload = {
+customers,
+companies,
+legal,
+users,
+attendance,
+txn,
+activities,
+loginHistory
+};
+
+fetch(GOOGLE_SCRIPT_URL, {
+method: "POST",
+body: JSON.stringify(payload)
+})
+.then(res => res.text())
+.then(data => {
+  alert("☁ All Sheets Synced Successfully");
+  logActivity("Full Multi-Sheet Google Sync");
+})
+.catch(err => {
+  alert("❌ Sync Failed");
+  console.log(err);
+});
+}  
+  function addStock(){
+  stock.push({
+  name: p_name.value,
+  qty: Number(p_qty.value),
+  buyPrice: Number(p_buy_price.value),
+  sellPrice: Number(p_sell_price.value),
+  date: new Date().toLocaleString(),
+  status: "active"
+});
+
+  save();
+  loadAll();
+}
+  function sellProduct(){
+
+  let customer = customers.find(c=>c.name==sell_customer.value);
+  let product = stock.find(p=>p.name==sell_product.value);
+  let qty = Number(sell_qty.value);
+  let mode = sell_mode.value;
+
+  if(!customer || !product){
+    alert("Error");
+    return;
+  }
+
+  if(qty <= 0){
+    alert("Invalid quantity");
+    return;
+  }
+
+  // ✅ stock check
+  if(product.qty < qty){
+    alert("Stock not enough");
+    return;
+  }
+
+  let total = qty * product.sellPrice;
+
+  // ✅ ACCOUNT MODE
+  // customer sanga paisa cha bhane matra sell
+  if(mode == "account"){
+
+    if(customer.balance < total){
+      alert("Customer balance not enough");
+      return;
+    }
+
+    // paisa ghataune
+    customer.balance -= total;
+  }
+
+  // ✅ CASH MODE
+  // cash ma balance touch hudaina
+
+  // ✅ stock reduce
+  product.qty -= qty;
+
+  // ✅ save transaction
+  txn.push({
+    type:"sell",
+    customer:customer.name,
+    product:product.name,
+    qty:qty,
+    total:total,
+    mode:mode,
+    date:new Date().toLocaleString()
+  });
+
+  logActivity("Sold " + product.name + " to " + customer.name);
+
+  save();
+  loadAll();
+
+  alert("✅ Product Sold Successfully");
+}
+    function buyProduct(){
+
+  let product = stock.find(p => p.name == buy_product.value);
+  let qty = Number(buy_qty.value);
+  let mode = buy_mode.value;
+
+  let current = getCurrentUser();
+
+  if(!current){
+    alert("Login required");
+    return;
+  }
+
+  if(!product){
+    alert("Product not found");
+    return;
+  }
+
+  if(qty <= 0){
+    alert("Invalid quantity");
+    return;
+  }
+
+  let total = qty * product.buyPrice;
+
+  let customer = customers.find(c => c.name == current.username);
+
+  // account mode
+  if(mode == "account"){
+    if(!customer){
+      alert("Customer account not found");
+      return;
+    }
+
+    if(customer.balance < total){
+      alert("Insufficient balance");
+      return;
+    }
+
+    customer.balance -= total;
+  }
+
+  // stock increase
+  product.qty += qty;
+
+  // 🔥 IMPORTANT: FULL RECORD
+  txn.push({
+    type: "buy",
+    product: product.name,
+    qty: qty,
+    buyRate: product.buyPrice,
+    total: total,
+    mode: mode,
+    buyer: current.username,
+    date: new Date().toLocaleString()
+  });
+
+  logActivity("Bought " + product.name + " qty " + qty);
+
+  save();
+  loadAll();
+
+  alert("✅ Product Bought Successfully");
+}
+    function deleteSell(i){
+  let t = txn.filter(x=>x.type=="sell")[i];
+  if(!confirm("Delete sell record?")) return;
+
+  let product = stock.find(p=>p.name==t.product);
+  let customer = customers.find(c=>c.name==t.customer);
+
+  // reverse effect
+  if(product) product.qty += t.qty;
+  if(customer && t.mode=="account") customer.balance += t.total;
+
+  txn = txn.filter(x => x !== t);
+
+  save();
+  loadAll();
+}
+    function deleteBuy(i){
+  let t = txn.filter(x=>x.type=="buy")[i];
+  if(!confirm("Delete buy record?")) return;
+
+  let product = stock.find(p=>p.name==t.product);
+
+  if(product) product.qty -= t.qty;
+
+  txn = txn.filter(x => x !== t);
+
+  save();
+  loadAll();
+}
+
+    function editSell(i){
+  let list = txn.filter(t=>t.type=="sell");
+  let old = list[i];
+
+  let newQty = Number(prompt("Edit Qty", old.qty));
+  if(!newQty) return;
+
+  let product = stock.find(p=>p.name==old.product);
+  let customer = customers.find(c=>c.name==old.customer);
+
+  // reverse old effect
+  if(product) product.qty += old.qty;
+  if(customer && old.mode=="account") customer.balance += old.total;
+
+  // recalc
+  old.qty = newQty;
+  old.total = newQty * product.sellPrice;
+
+  // apply new
+  if(product) product.qty -= newQty;
+  if(customer && old.mode=="account") customer.balance -= old.total;
+
+  save();
+  loadAll();
+}
+
+    function editBuy(i){
+  let list = txn.filter(t=>t.type=="buy");
+  let old = list[i];
+
+  let newQty = Number(prompt("Edit Qty", old.qty));
+  if(!newQty) return;
+
+  let product = stock.find(p=>p.name==old.product);
+
+  // reverse old
+  if(product) product.qty -= old.qty;
+
+  // update
+  old.qty = newQty;
+  old.amount = newQty * product.price;
+
+  // apply new
+  if(product) product.qty += newQty;
+
+  save();
+  loadAll();
+}
+
+    function toggleStock(i){
+  if(stock[i].status=="active"){
+    stock[i].status="inactive";
+  }else{
+    stock[i].status="active";
+  }
+
+  save();
+  loadAll();
+}
+    function editStock(i){
+  let s = stock[i];
+
+  s.name = prompt("Product Name", s.name);
+  s.qty = Number(prompt("Quantity", s.qty));
+ s.buyPrice = Number(prompt("Buy Price", s.buyPrice));
+s.sellPrice = Number(prompt("Sell Price", s.sellPrice));
+
+  save();
+  loadAll();
+}
+    
+function addTxn(){
+
+let t = t_type.value;
+let amount = Number(document.getElementById('amount').value);
+
+if(amount <= 0){
+alert("Invalid amount");
+return;
+}
+
+// 🟢 SAVING / WITHDRAW
+if(t=='saving' || t=='withdraw'){
+
+let m = customers.find(c=>c.name==member.value);
+
+if(!m){
+alert("Customer not found");
+return;
+}
+
+if(t=='saving'){
+m.balance += amount;
+}else{
+if(m.balance < amount){
+alert("Insufficient balance");
+return;
+}
+m.balance -= amount;
+}
+
+txn.push({
+type:t,
+from:member.value,
+amount,
+date:new Date().toLocaleString()
+});
+}
+
+// 🔵 TRANSFER (MOST IMPORTANT)
+if(t=='transfer'){
+
+let f = customers.find(c=>c.name==from.value);
+let toUser = customers.find(c=>c.name==to.value);
+
+// ❌ same user block
+if(from.value == to.value){
+alert("Cannot transfer to same customer");
+return;
+}
+
+// ❌ not found
+if(!f || !toUser){
+alert("Customer not found");
+return;
+}
+
+// ❌ insufficient balance
+if(f.balance < amount){
+alert("Insufficient balance");
+return;
+}
+
+// ✅ UPDATE BALANCE
+f.balance -= amount;
+toUser.balance += amount;
+
+// ✅ DOUBLE ENTRY (VERY IMPORTANT)
+txn.push({
+type:"transfer-out",
+from:from.value,
+to:to.value,
+amount,
+date:new Date().toLocaleString()
+});
+
+txn.push({
+type:"transfer-in",
+from:from.value,
+to:to.value,
+amount,
+date:new Date().toLocaleString()
+});
+
+}
+    logActivity("Transaction: " + t + " Amount: " + amount);
+
+save();
+loadAll();
+}
+    function clearInputs(ids){
+  ids.forEach(id=>{
+    let el = document.getElementById(id);
+    if(el){
+      if(el.tagName === "SELECT"){
+        el.selectedIndex = 0;
+      }else{
+        el.value = "";
+      }
+    }
+  });
+}
+
+window.onload = function(){
+
+loadAll();
+
+txnUI();
+
+applyPermissions();
+
+setTimeout(()=>{
+setupMenuAutoClose();
+},300);
+
+};
+</script>
+</body>
+</html>
