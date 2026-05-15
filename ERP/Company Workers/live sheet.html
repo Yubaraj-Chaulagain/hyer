@@ -3,65 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔥 Auto ERP Dashboard</title>
+<title>ERP Dashboard</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial;
-}
-
 body{
+    font-family:Arial;
     background:#eef2f7;
+    margin:0;
     padding:15px;
 }
 
 h1{
     text-align:center;
-    margin-bottom:15px;
-    color:#222;
-}
-
-.topbar{
-    display:flex;
-    gap:10px;
-    margin-bottom:15px;
-    flex-wrap:wrap;
 }
 
 input{
-    flex:1;
+    width:100%;
     padding:12px;
+    margin-bottom:20px;
     border:none;
     border-radius:10px;
-    font-size:15px;
+    font-size:16px;
 }
 
-button{
-    padding:12px 18px;
-    border:none;
-    border-radius:10px;
-    background:#2563eb;
-    color:#fff;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-button:hover{
-    opacity:0.9;
-}
-
-.sheet-card{
+.card{
     background:#fff;
     margin-bottom:20px;
-    border-radius:15px;
+    border-radius:10px;
     overflow:hidden;
-    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-.sheet-title{
+.title{
     background:#2563eb;
     color:#fff;
     padding:12px;
@@ -71,7 +44,6 @@ button:hover{
 
 .table-wrap{
     overflow:auto;
-    max-height:500px;
 }
 
 table{
@@ -79,47 +51,19 @@ table{
     border-collapse:collapse;
 }
 
-th{
-    background:#111827;
-    color:#fff;
-    position:sticky;
-    top:0;
-    z-index:2;
-}
-
 th,td{
     border:1px solid #ddd;
     padding:10px;
-    font-size:14px;
     text-align:left;
+}
+
+th{
+    background:#111827;
+    color:#fff;
 }
 
 tr:nth-child(even){
     background:#f9fafb;
-}
-
-.loading{
-    text-align:center;
-    padding:30px;
-    font-size:20px;
-    color:#2563eb;
-    font-weight:bold;
-}
-
-.error{
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
-    color:red;
-    margin-top:20px;
-    line-height:1.8;
-}
-
-@media(max-width:768px){
-    th,td{
-        font-size:12px;
-        padding:7px;
-    }
 }
 </style>
 </head>
@@ -128,220 +72,125 @@ tr:nth-child(even){
 
 <h1>🔥 Auto ERP Dashboard</h1>
 
-<div class="topbar">
-    <input type="text" id="search" placeholder="Search all sheets..." onkeyup="filterAll()">
+<input type="text" id="search" placeholder="Search..." onkeyup="searchAll()">
 
-    <button onclick="loadSheets()">🔄 Refresh</button>
-</div>
-
-<div id="app">
-    <div class="loading">
-        🔄 Loading Google Sheets...
-    </div>
-</div>
+<div id="app">Loading...</div>
 
 <script>
 
-// ===============================
-// GOOGLE SHEET URL
-// ===============================
-
 const SHEET_ID = "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
+
+const SHEETS = [
+    "Customers",
+    "Users",
+    "Stock",
+    "Sell",
+    "Buy",
+    "Transactions",
+    "Attendance",
+    "Activities"
+];
 
 const app = document.getElementById("app");
 
-// ===============================
-// LOAD ALL SHEETS
-// ===============================
+async function loadAll(){
 
-async function loadSheets(){
+    app.innerHTML = "";
 
-    app.innerHTML = `
-        <div class="loading">
-            🔄 Loading Google Sheets...
-        </div>
-    `;
+    for(let sheet of SHEETS){
 
-    try{
+        try{
 
-        // Get workbook info
-        const metaUrl = `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/basic?alt=json`;
+            const url =
+            `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${sheet}`;
 
-        const metaRes = await fetch(metaUrl);
+            const res = await fetch(url);
 
-        if(!metaRes.ok){
-            throw new Error("Google Sheet is not public");
+            const text = await res.text();
+
+            const json = JSON.parse(
+                text.substr(47).slice(0,-2)
+            );
+
+            renderSheet(sheet,json.table);
+
+        }catch(err){
+
+            console.log(sheet,err);
+
         }
-
-        const metaData = await metaRes.json();
-
-        const sheets = metaData.feed.entry;
-
-        if(!sheets || sheets.length===0){
-            app.innerHTML = `
-                <div class="error">
-                    ❌ No sheets found
-                </div>
-            `;
-            return;
-        }
-
-        app.innerHTML = "";
-
-        // LOOP ALL SHEETS
-        for(let sheet of sheets){
-
-            const sheetName = sheet.title.$t;
-
-            const sheetUrl =
-            `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(sheetName)}`;
-
-            try{
-
-                const res = await fetch(sheetUrl);
-
-                const data = await res.json();
-
-                renderSheet(sheetName,data);
-
-            }catch(err){
-
-                console.log(err);
-
-            }
-        }
-
-    }catch(err){
-
-        app.innerHTML = `
-        <div class="error">
-            <h2>❌ Google Sheet is not public</h2>
-
-            <br>
-
-            <b>STEP 1 →</b> Open Google Sheet<br>
-            <b>STEP 2 →</b> Click SHARE<br>
-            <b>STEP 3 →</b> Anyone with link<br>
-            <b>STEP 4 →</b> Viewer<br>
-            <b>STEP 5 →</b> File → Share → Publish to web
-
-            <br><br>
-
-            <b>Your Sheet:</b><br>
-            https://docs.google.com/spreadsheets/d/${SHEET_ID}
-
-        </div>
-        `;
     }
 }
 
-// ===============================
-// RENDER SHEET
-// ===============================
-
-function renderSheet(name,data){
+function renderSheet(name,table){
 
     const card = document.createElement("div");
 
-    card.className = "sheet-card";
+    card.className = "card";
 
     let html = `
-        <div class="sheet-title">
-            📄 ${name}
-        </div>
+        <div class="title">${name}</div>
+        <div class="table-wrap">
+        <table>
     `;
 
-    if(!data || data.length===0){
-
-        html += `
-        <div style="padding:15px">
-            No Data Found
-        </div>
-        `;
-
-        card.innerHTML = html;
-
-        app.appendChild(card);
-
-        return;
-    }
-
-    const headers = Object.keys(data[0]);
-
-    html += `<div class="table-wrap">`;
-
-    html += `<table>`;
-
     // HEADERS
-    html += `<tr>`;
+    html += "<tr>";
 
-    headers.forEach(h=>{
-        html += `<th>${h}</th>`;
+    table.cols.forEach(col=>{
+
+        html += `<th>${col.label}</th>`;
+
     });
 
-    html += `</tr>`;
+    html += "</tr>";
 
     // ROWS
-    data.forEach(row=>{
+    table.rows.forEach(row=>{
 
-        html += `<tr class="data-row">`;
+        html += `<tr class="row">`;
 
-        headers.forEach(h=>{
+        row.c.forEach(cell=>{
 
-            html += `<td>${row[h] || ""}</td>`;
+            html += `<td>${cell ? cell.v : ""}</td>`;
 
         });
 
         html += `</tr>`;
     });
 
-    html += `</table></div>`;
+    html += "</table></div>";
 
     card.innerHTML = html;
 
     app.appendChild(card);
 }
 
-// ===============================
-// SEARCH FILTER
-// ===============================
+function searchAll(){
 
-function filterAll(){
-
-    const value = document
-    .getElementById("search")
+    const value =
+    document.getElementById("search")
     .value
     .toLowerCase();
 
-    const rows = document.querySelectorAll(".data-row");
+    const rows =
+    document.querySelectorAll(".row");
 
     rows.forEach(row=>{
 
-        const text = row.innerText.toLowerCase();
+        const text =
+        row.innerText.toLowerCase();
 
         row.style.display =
         text.includes(value)
         ? ""
         : "none";
-
     });
 }
 
-// ===============================
-// AUTO REFRESH
-// ===============================
+loadAll();
 
-setInterval(()=>{
-
-    loadSheets();
-
-},30000);
-
-// ===============================
-// START
-// ===============================
-
-loadSheets();
+setInterval(loadAll,30000);
 
 </script>
 
