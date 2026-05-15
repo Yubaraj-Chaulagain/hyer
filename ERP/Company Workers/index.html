@@ -615,7 +615,7 @@ att_company.innerHTML = companies.map(c =>
 // CUSTOMER TABLE
 // ==========================
 customerTable.innerHTML =
-'<tr><th>Name</th><th>Company</th><th>Balance</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Name</th><th>Company</th><th>Balance</th><th>Time</th><th>Action</th></tr>' +
 
 filteredCustomers.map((c,i)=>{
 
@@ -638,7 +638,7 @@ return `
 // COMPANY TABLE
 // ==========================
 companyTable.innerHTML =
-'<tr><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
 companies.map((c,i)=>
 `<tr>
 <td>${c.name}</td>
@@ -654,7 +654,7 @@ companies.map((c,i)=>
 // LEGAL TABLE
 // ==========================
 legalTable.innerHTML =
-'<tr><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
 legal.map((c,i)=>
 `<tr>
 <td>${c.name}</td>
@@ -670,7 +670,7 @@ legal.map((c,i)=>
 // ATTENDANCE TABLE
 // ==========================
 attTable.innerHTML =
-'<tr><th>Company</th><th>Member</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Company</th><th>Member</th><th>Time</th><th>Action</th></tr>' +
 attendance.map((a,i)=>
 `<tr>
 <td>${a.company}</td>
@@ -685,7 +685,7 @@ attendance.map((a,i)=>
 // TRANSACTION TABLE
 // ==========================
 txnTable.innerHTML =
-'<tr><th>Type</th><th>From</th><th>To</th><th>Amount</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Type</th><th>From</th><th>To</th><th>Amount</th><th>Time</th><th>Action</th></tr>' +
 txn.filter(t=>!["buy","sell"].includes(t.type)).map((t,i)=>
 `<tr>
 <td>${t.type}</td>
@@ -703,7 +703,7 @@ txn.filter(t=>!["buy","sell"].includes(t.type)).map((t,i)=>
 // ==========================
 if(userTable && current && current.role=="Admin"){
 userTable.innerHTML =
-'<tr><th>User</th><th>Password</th><th>Role</th><th>Company</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>User</th><th>Password</th><th>Role</th><th>Company</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
 users.map((u,i)=>
 `<tr>
 <td>${u.username}</td>
@@ -765,7 +765,7 @@ activities.map((a,i)=>`
 
     // STOCK TABLE
 stockTable.innerHTML =
-'<tr><th>Product</th><th>Qty</th><th>Buy Rate</th><th>Sell Rate</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Product</th><th>Qty</th><th>Buy Rate</th><th>Sell Rate</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
 stock.map((s,i)=>`
 <tr>
 <td>${s.name}</td>
@@ -793,7 +793,7 @@ stock
 
 // BUY TABLE
 buyTable.innerHTML =
-'<tr><th>Product</th><th>Buyer</th><th>Qty</th><th>Buy Rate</th><th>Total</th><th>Mode</th><th>Time</th></tr>' +
+'<tr><th>ID</th><th>Product</th><th>Buyer</th><th>Qty</th><th>Buy Rate</th><th>Total</th><th>Mode</th><th>Time</th></tr>' +
 txn
 .filter(t=>t.type=="buy")
 .map(t=>`
@@ -809,7 +809,7 @@ txn
 `).join('');
 
 sellTable.innerHTML =
-'<tr><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th><th>Mode</th><th>Time</th><th>Action</th></tr>' +
+'<tr><th>ID</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th><th>Mode</th><th>Time</th><th>Action</th></tr>' +
 txn
 .filter(t=>t.type=="sell")
 .map((t,i)=>`
