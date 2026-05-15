@@ -88,24 +88,32 @@ Loading Google Sheets...
 <script>
 
 // =====================================================
-// 🔥 GOOGLE SHEET ID
+// GOOGLE SHEET ID
 // =====================================================
 
-const SHEET_ID = "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
+const SHEET_ID =
+"1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
-async function getAllSheets() {
+// =====================================================
+// GET ALL SHEETS
+// =====================================================
 
-  const url =
-    `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
+async function getAllSheets(){
 
-  const res = await fetch(url);
-  const data = await res.json();
+const url =
+`https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
 
-  return data.feed.entry.map(sheet => ({
-    name: sheet.title.$t,
-    gid: sheet.link.find(l => l.rel.includes("alternate"))
-          .href.split("gid=")[1]
-  }));
+const res = await fetch(url);
+const data = await res.json();
+
+return data.feed.entry.map(sheet => ({
+
+name: sheet.title.$t,
+
+gid:
+sheet.id.$t.split("/").pop()
+
+}));
 
 }
 
@@ -113,35 +121,30 @@ async function getAllSheets() {
 // LOAD ALL SHEETS
 // =====================================================
 
-// =====================================================
-// LOAD ALL SHEETS
-// =====================================================
-
 async function loadAllSheets(){
 
-document.getElementById("status")
-.innerHTML = "🔄 Loading live sheets...";
-
-let dashboard =
+const dashboard =
 document.getElementById("dashboard");
 
 dashboard.innerHTML = "";
 
-// 🔥 AUTO GET SHEETS
-let SHEETS = await getAllSheets();
+document.getElementById("status")
+.innerHTML = "🔄 Loading sheets...";
 
-for(let sheet of SHEETS){
+try{
 
-let url =
+const sheets = await getAllSheets();
+
+for(const sheet of sheets){
+
+const csvUrl =
 `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${sheet.gid}`;
 
 try{
 
-let res = await fetch(url);
+const res = await fetch(csvUrl);
 
-let csv = await res.text();
-
-let html = createTable(csv);
+const csv = await res.text();
 
 dashboard.innerHTML += `
 
@@ -151,7 +154,7 @@ dashboard.innerHTML += `
 ${sheet.name}
 </div>
 
-${html}
+${createTable(csv)}
 
 </div>
 
@@ -167,7 +170,7 @@ dashboard.innerHTML += `
 ${sheet.name}
 </div>
 
-<p>❌ Failed to load sheet</p>
+<p>❌ Failed loading data</p>
 
 </div>
 
@@ -180,10 +183,25 @@ ${sheet.name}
 document.getElementById("status")
 .innerHTML = "✅ All sheets loaded";
 
+}catch(err){
+
+document.getElementById("status")
+.innerHTML = "❌ Sheet access failed";
+
+console.log(err);
+
 }
+
+}
+
+// =====================================================
+// CSV → TABLE
+// =====================================================
+
 function createTable(csv){
 
-let rows = csv.trim().split("\n");
+let rows =
+csv.trim().split("\n");
 
 let html = "<table>";
 
@@ -191,9 +209,13 @@ rows.forEach((row,index)=>{
 
 html += "<tr>";
 
-row.split(",").forEach(col=>{
+let cols = row.split(",");
 
-if(index==0){
+cols.forEach(col=>{
+
+col = col.replace(/"/g,'');
+
+if(index === 0){
 
 html += `<th>${col}</th>`;
 
@@ -216,20 +238,20 @@ return html;
 }
 
 // =====================================================
-// SEARCH FILTER
+// SEARCH
 // =====================================================
 
 function filterAll(){
 
 let value =
 document.getElementById("search")
-.value
-.toLowerCase();
+.value.toLowerCase();
 
-document.querySelectorAll("table tr")
+document
+.querySelectorAll("table tr")
 .forEach((tr,index)=>{
 
-if(index==0) return;
+if(index===0) return;
 
 let text =
 tr.innerText.toLowerCase();
