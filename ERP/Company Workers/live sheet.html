@@ -113,7 +113,17 @@ th,td{
         font-size:14px;
     }
 }
+.section{
+    display:none;
+}
 
+.section.active{
+    display:block;
+}
+    .table-wrap{
+    overflow-x:auto;
+}
+    
 </style>
 </head>
 
@@ -156,50 +166,38 @@ const menu = document.getElementById("menu");
 
 async function loadAll(){
 
-   app.replaceChildren();
+    app.replaceChildren();
+    menu.innerHTML = "";
 
     // MENU BUTTONS
-    app.innerHTML = "";
-
-    SHEETS.forEach((sheet,index)=>{
+    SHEETS.forEach(sheet=>{
 
         const btn = document.createElement("button");
-
         btn.className = "menu-btn";
-
         btn.innerText = sheet;
-
         btn.onclick = ()=>showSection(sheet);
-
         menu.appendChild(btn);
     });
 
-    // LOAD EACH SHEET
+    // LOAD SHEETS
     for(let sheet of SHEETS){
 
         try{
-
             const url =
             `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}`;
 
             const res = await fetch(url);
-
             const text = await res.text();
 
-            const json = JSON.parse(
-                text.substr(47).slice(0,-2)
-            );
+            const json = JSON.parse(text.substr(47).slice(0,-2));
 
             renderSheet(sheet,json.table);
 
         }catch(err){
-
             console.log(sheet,err);
-
         }
     }
 
-    // DEFAULT FIRST SECTION
     showSection(SHEETS[0]);
 }
 
