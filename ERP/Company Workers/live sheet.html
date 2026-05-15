@@ -123,13 +123,94 @@ th,td{
     .table-wrap{
     overflow-x:auto;
 }
+    .topbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#2563eb;
+    color:white;
+    padding:10px;
+}
+
+.hamburger{
+    font-size:20px;
+    background:none;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+
+/* SIDE MENU */
+#menu{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:250px;
+    height:100%;
+    background:#111827;
+    padding:10px;
+    overflow-y:auto;
+    transition:0.3s;
+    z-index:1000;
+    flex-direction:column;
+}
+
+/* OPEN STATE */
+#menu.open{
+    left:0;
+}
+
+/* BUTTONS */
+.menu-btn{
+    width:100%;
+    margin-bottom:8px;
+}
+
+/* OVERLAY */
+#overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+    display:none;
+    z-index:999;
+}
+
+/* SHOW OVERLAY */
+#overlay.show{
+    display:block;
+}
+
+/* DESKTOP FIX */
+@media (min-width:768px){
+    #menu{
+        left:0;
+        position:fixed;
+    }
+
+    #overlay{
+        display:none !important;
+    }
+
+    .hamburger{
+        display:none;
+    }
+}
     
 </style>
 </head>
 
 <body>
+<!-- TOP BAR -->
+<div class="topbar">
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+    <h1>🔥 Auto ERP Dashboard</h1>
+</div>
 
-<h1>🔥 Auto ERP Dashboard</h1>
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeMenu()"></div>
 
 <input 
 type="text" 
@@ -256,24 +337,33 @@ function showSection(sheetName){
 
     document.querySelectorAll(".section")
     .forEach(sec=>{
-
         sec.classList.remove("active");
-
     });
 
     const active =
     document.getElementById("section-"+sheetName);
 
     if(active){
-
         active.classList.add("active");
     }
 
     document.getElementById("search").value = "";
 
     searchCurrentSection();
+
+    closeMenu(); // 🔥 AUTO CLOSE SIDEBAR
 }
 
+    function toggleMenu(){
+    document.getElementById("menu").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+function closeMenu(){
+    document.getElementById("menu").classList.remove("open");
+    document.getElementById("overlay").classList.remove("show");
+}
+    
 function searchCurrentSection(){
 
     const value =
