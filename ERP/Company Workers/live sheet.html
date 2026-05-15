@@ -1,209 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Live Google Sheet ERP Dashboard</title>
+<title>Live Google Sheet Table</title>
 
 <style>
 
 body{
 font-family:Arial;
-margin:0;
 background:#eef2f7;
-}
-
-.header{
-background:#2563eb;
-color:#fff;
-padding:15px;
-font-size:22px;
-font-weight:bold;
-text-align:center;
-}
-
-.container{
-padding:10px;
-max-width:1400px;
-margin:auto;
-}
-
-.topbar{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:10px;
-}
-
-input{
-padding:10px;
-width:250px;
-border:1px solid #ccc;
-border-radius:6px;
-}
-
-button{
-padding:10px 15px;
-border:none;
-background:#2563eb;
-color:#fff;
-border-radius:6px;
-cursor:pointer;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
-gap:15px;
+padding:20px;
 }
 
 .card{
 background:#fff;
+padding:15px;
 border-radius:10px;
-padding:10px;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
 overflow:auto;
-}
-
-.card h3{
-margin:0 0 10px 0;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-font-size:13px;
 }
 
 th,td{
-border:1px solid #ddd;
-padding:6px;
-text-align:left;
+border:1px solid #ccc;
+padding:8px;
+font-size:14px;
 }
 
 th{
-background:#f3f4f6;
-position:sticky;
-top:0;
+background:#2563eb;
+color:#fff;
 }
 
-.status{
-margin:10px 0;
-font-size:13px;
-color:green;
-}
-
-@media(max-width:768px){
 input{
+padding:10px;
 width:100%;
-}
+margin-bottom:10px;
 }
 
 </style>
+
 </head>
 <body>
 
-<div class="header">
-🔥 Live ERP Dashboard (Google Sheet CSV)
-</div>
-
-<div class="container">
-
-<div class="topbar">
-
-<input id="searchBox" placeholder="Search anything..." onkeyup="filterAll()">
-
-<button onclick="loadAllSheets()">
-🔄 Refresh
-</button>
-
-</div>
-
-<div class="status" id="status">
-Loading...
-</div>
-
-<div class="grid">
-
 <div class="card">
-<h3>Customers</h3>
-<table id="customersTable"></table>
-</div>
 
-<div class="card">
-<h3>Stock</h3>
-<table id="stockTable"></table>
-</div>
+<h2>🔥 Live Google Sheet Data</h2>
 
-<div class="card">
-<h3>Attendance</h3>
-<table id="attendanceTable"></table>
-</div>
+<input
+id="search"
+placeholder="Search..."
+onkeyup="filterTable()"
+>
 
-<div class="card">
-<h3>Sell Report</h3>
-<table id="sellTable"></table>
-</div>
-
-</div>
+<table id="sheetTable"></table>
 
 </div>
 
 <script>
 
-// ======================================================
-// 🔥 GOOGLE SHEET CSV LINKS
-// ======================================================
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg/export?format=csv&gid=2086456401";
 
-// Replace with YOUR REAL URLs
+// LOAD DATA
+async function loadSheet(){
 
-const SHEETS = {
-
-customers:
-"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=0",
-
-stock:
-"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=123456",
-
-attendance:
-"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=222222",
-
-sell:
-"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=333333"
-
-};
-
-// ======================================================
-// LOAD SINGLE CSV
-// ======================================================
-
-async function loadCSV(url, tableId){
-
-try{
-
-let res = await fetch(url);
+let res = await fetch(CSV_URL);
 
 let csv = await res.text();
-
-renderCSV(csv, tableId);
-
-}catch(err){
-
-document.getElementById(tableId).innerHTML =
-"<tr><td>Error loading data</td></tr>";
-
-console.log(err);
-
-}
-
-}
-
-// ======================================================
-// CSV → TABLE
-// ======================================================
-
-function renderCSV(csv, tableId){
 
 let rows = csv.trim().split("\n");
 
@@ -231,55 +99,22 @@ html += "</tr>";
 
 });
 
-document.getElementById(tableId).innerHTML = html;
+document.getElementById("sheetTable").innerHTML = html;
 
 }
 
-// ======================================================
-// LOAD ALL SHEETS
-// ======================================================
-
-async function loadAllSheets(){
-
-document.getElementById("status").innerHTML =
-"🔄 Refreshing live data...";
-
-await Promise.all([
-
-loadCSV(SHEETS.customers, "customersTable"),
-
-loadCSV(SHEETS.stock, "stockTable"),
-
-loadCSV(SHEETS.attendance, "attendanceTable"),
-
-loadCSV(SHEETS.sell, "sellTable")
-
-]);
-
-document.getElementById("status").innerHTML =
-"✅ Live data loaded successfully";
-
-}
-
-// ======================================================
 // SEARCH FILTER
-// ======================================================
-
-function filterAll(){
+function filterTable(){
 
 let value =
-document.getElementById("searchBox")
+document.getElementById("search")
 .value
 .toLowerCase();
 
-document.querySelectorAll("table").forEach(table=>{
+document.querySelectorAll("#sheetTable tr")
+.forEach((tr,index)=>{
 
-table.querySelectorAll("tr").forEach((tr,index)=>{
-
-if(index==0){
-tr.style.display="";
-return;
-}
+if(index==0) return;
 
 let text = tr.innerText.toLowerCase();
 
@@ -290,25 +125,12 @@ text.includes(value)
 
 });
 
-});
-
 }
 
-// ======================================================
 // AUTO REFRESH EVERY 30 SEC
-// ======================================================
+setInterval(loadSheet,30000);
 
-setInterval(()=>{
-
-loadAllSheets();
-
-},30000);
-
-// ======================================================
-// START
-// ======================================================
-
-loadAllSheets();
+loadSheet();
 
 </script>
 
