@@ -530,7 +530,7 @@ function show(id){
     nav.classList.remove("show");
   }
 }
-function addCompany(){companies.push({name:w_name.value,addr:w_addr.value,phone:w_phone.value,email:w_email.value,date:new Date().toLocaleString()});
+function addCompany(){companies.push({id: Date.now() + Math.random(),name:w_name.value,addr:w_addr.value,phone:w_phone.value,email:w_email.value,date:new Date().toLocaleString()});
    // ✅ CLEAR FIELDS
   clearInputs([
     "w_name",
@@ -539,7 +539,7 @@ function addCompany(){companies.push({name:w_name.value,addr:w_addr.value,phone:
     "w_email"
   ]);                    
 save();loadAll();}
-function addLegal(){legal.push({name:l_name.value,addr:l_addr.value,phone:l_phone.value,email:l_email.value,date:new Date().toLocaleString()});                 
+function addLegal(){legal.push({id: Date.now() + Math.random(),name:l_name.value,addr:l_addr.value,phone:l_phone.value,email:l_email.value,date:new Date().toLocaleString()});                 
 save();loadAll();
                     clearInputs([
     "l_name",
@@ -558,6 +558,7 @@ if(!c_name.value || !c_company.value){
 }
 
 customers.push({
+id: Date.now() + Math.random(),
   name: c_name.value,
   prof: c_prof.value,
   company: c_company.value || "N/A",
@@ -974,6 +975,7 @@ if(isAddingUser) return;
 isAddingUser = true;
 
 users.push({
+id: Date.now() + Math.random(),
 username:u_name.value,
 password:u_pass.value,
 role:r_role.value,
@@ -1119,8 +1121,8 @@ registerCard.classList.add("hidden");
 loginCard.classList.remove("hidden");
 }
  function requestUser(){
-
 users.push({
+id: Date.now() + Math.random(),
 username:r_name.value,
 password:r_pass.value,
 role:u_role.value,   // ✅ FIXED (THIS IS IMPORTANT)
@@ -1548,37 +1550,48 @@ alert("✅ CSV Downloaded");
 
 }
     
-   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNj9_gpOWt0U70qTKV50HSq-14UPfqVjKmb3iWBH4iBw9a2Jnnhb9SzLKsNelUrgIL/exec";
+   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxX6DAMPFFVb8xoLqYe7mXzFybsEclj7haUD4bDnNDdTNLEH7iVtab0hiZE5TrwRZm0/exec";
 
 function syncToGoogleSheet(){
 
-let payload = {
-customers,
-companies,
-legal,
-users,
-attendance,
-txn,
-activities,
-loginHistory
-};
+function send(sheet, action, row){
+  fetch(GOOGLE_SCRIPT_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      sheet: sheet,
+      action: action,
+      row: row,
+      id: row.id
+    })
+  });
+}
 
-fetch(GOOGLE_SCRIPT_URL, {
-method: "POST",
-body: JSON.stringify(payload)
-})
-.then(res => res.text())
-.then(data => {
-  alert("☁ All Sheets Synced Successfully");
-  logActivity("Full Multi-Sheet Google Sync");
-})
-.catch(err => {
-  alert("❌ Sync Failed");
-  console.log(err);
+// CUSTOMERS
+customers.forEach(c=>{
+  send("customers","update",c);
 });
+
+// COMPANIES
+companies.forEach(c=>{
+  send("companies","update",c);
+});
+
+// STOCK
+stock.forEach(s=>{
+  send("stock","update",s);
+});
+
+// USERS
+users.forEach(u=>{
+  send("users","update",u);
+});
+
+alert("✅ Synced (Update Mode)");
+logActivity("Google Sheet Sync (Update Mode)");
 }  
   function addStock(){
   stock.push({
+id: Date.now() + Math.random(),
   name: p_name.value,
   qty: Number(p_qty.value),
   buyPrice: Number(p_buy_price.value),
@@ -1636,6 +1649,7 @@ body: JSON.stringify(payload)
 
   // ✅ save transaction
   txn.push({
+    id: Date.now() + Math.random(),
     type:"sell",
     customer:customer.name,
     product:product.name,
@@ -1699,6 +1713,7 @@ body: JSON.stringify(payload)
 
   // 🔥 IMPORTANT: FULL RECORD
   txn.push({
+    id: Date.now() + Math.random(),
     type: "buy",
     product: product.name,
     qty: qty,
@@ -1848,6 +1863,7 @@ m.balance -= amount;
 }
 
 txn.push({
+id: Date.now() + Math.random(),
 type:t,
 from:member.value,
 amount,
@@ -1885,6 +1901,7 @@ toUser.balance += amount;
 
 // ✅ DOUBLE ENTRY (VERY IMPORTANT)
 txn.push({
+id: Date.now() + Math.random(),
 type:"transfer-out",
 from:from.value,
 to:to.value,
@@ -1893,6 +1910,7 @@ date:new Date().toLocaleString()
 });
 
 txn.push({
+id: Date.now() + Math.random(),
 type:"transfer-in",
 from:from.value,
 to:to.value,
