@@ -623,6 +623,7 @@ let realIndex = customers.indexOf(c);
 
 return `
 <tr>
+<td>${c.id}</td>
 <td>${c.name}</td>
 <td>${c.company}</td>
 <td>${c.balance}</td>
@@ -641,6 +642,7 @@ companyTable.innerHTML =
 '<tr><th>ID</th><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
 companies.map((c,i)=>
 `<tr>
+<td>${c.id}</td>
 <td>${c.name}</td>
 <td>${c.phone}</td>
 <td>${c.date || ""}</td>
@@ -657,6 +659,7 @@ legalTable.innerHTML =
 '<tr><th>ID</th><th>Name</th><th>Phone</th><th>Time</th><th>Action</th></tr>' +
 legal.map((c,i)=>
 `<tr>
+<td>${c.id}</td>
 <td>${c.name}</td>
 <td>${c.phone}</td>
 <td>${c.date || ""}</td>
@@ -673,6 +676,7 @@ attTable.innerHTML =
 '<tr><th>ID</th><th>Company</th><th>Member</th><th>Time</th><th>Action</th></tr>' +
 attendance.map((a,i)=>
 `<tr>
+<td>${a.id}</td>
 <td>${a.company}</td>
 <td>${a.member}</td>
 <td>${a.date}</td>
@@ -688,6 +692,7 @@ txnTable.innerHTML =
 '<tr><th>ID</th><th>Type</th><th>From</th><th>To</th><th>Amount</th><th>Time</th><th>Action</th></tr>' +
 txn.filter(t=>!["buy","sell"].includes(t.type)).map((t,i)=>
 `<tr>
+<td>${t.id}</td>
 <td>${t.type}</td>
 <td>${t.from||''}</td>
 <td>${t.to||''}</td>
@@ -706,6 +711,7 @@ userTable.innerHTML =
 '<tr><th>ID</th><th>User</th><th>Password</th><th>Role</th><th>Company</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
 users.map((u,i)=>
 `<tr>
+<td>${u.id}</td>
 <td>${u.username}</td>
 <td>••••••</td>
 <td>${u.role}</td>
@@ -752,6 +758,7 @@ activityTable.innerHTML =
 
 activities.map((a,i)=>`
 <tr>
+<td>${a.id}</td>
 <td>${a.user}</td>
 <td>${a.role}</td>
 <td>${a.action}</td>
@@ -768,6 +775,7 @@ stockTable.innerHTML =
 '<tr><th>ID</th><th>Product</th><th>Qty</th><th>Buy Rate</th><th>Sell Rate</th><th>Status</th><th>Time</th><th>Action</th></tr>' +
 stock.map((s,i)=>`
 <tr>
+<td>${s.id}</td>
 <td>${s.name}</td>
 <td>${s.qty}</td>
 <td>${s.buyPrice}</td>
@@ -798,6 +806,7 @@ txn
 .filter(t=>t.type=="buy")
 .map(t=>`
 <tr>
+<td>${t.id}</td>
 <td>${t.product}</td>
 <td>${t.buyer || ""}</td>
 <td>${t.qty}</td>
@@ -814,6 +823,7 @@ txn
 .filter(t=>t.type=="sell")
 .map((t,i)=>`
 <tr>
+<td>${t.id}</td>
 <td>${t.customer}</td>
 <td>${t.product}</td>
 <td>${t.qty}</td>
