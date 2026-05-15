@@ -109,15 +109,9 @@ async function getAllSheets() {
 
 }
 
-getAllSheets().then(sheets => {
-  console.log(sheets);
-
-  // auto section create
-  sheets.forEach(s => {
-    createSection(s.name, s.gid);
-  });
-
-});
+// =====================================================
+// LOAD ALL SHEETS
+// =====================================================
 
 // =====================================================
 // LOAD ALL SHEETS
@@ -132,6 +126,9 @@ let dashboard =
 document.getElementById("dashboard");
 
 dashboard.innerHTML = "";
+
+// 🔥 AUTO GET SHEETS
+let SHEETS = await getAllSheets();
 
 for(let sheet of SHEETS){
 
@@ -184,11 +181,6 @@ document.getElementById("status")
 .innerHTML = "✅ All sheets loaded";
 
 }
-
-// =====================================================
-// CSV → TABLE
-// =====================================================
-
 function createTable(csv){
 
 let rows = csv.trim().split("\n");
