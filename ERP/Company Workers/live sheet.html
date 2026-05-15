@@ -6,7 +6,6 @@
 <title>ERP Dashboard</title>
 
 <style>
-
 body{
     font-family:Arial;
     background:#eef2f7;
@@ -14,20 +13,41 @@ body{
     padding:10px;
 }
 
-/* Center layout on large screens */
+/* TOP BAR */
+.topbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#2563eb;
+    color:white;
+    padding:10px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+/* HAMBURGER BUTTON (ALL DEVICES) */
+.hamburger{
+    font-size:22px;
+    background:none;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+
+/* CENTER APP */
 #app{
     max-width:1200px;
     margin:auto;
 }
 
-/* Heading scaling */
+/* TITLE */
 h1{
-    text-align:center;
-    margin-bottom:15px;
+    margin:0;
     font-size:clamp(18px, 2.5vw, 28px);
 }
 
-/* Search box responsive */
+/* SEARCH */
 input{
     width:100%;
     padding:12px;
@@ -37,110 +57,7 @@ input{
     font-size:16px;
 }
 
-/* Menu responsive scroll */
-#menu{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:15px;
-}
-
-/* Better buttons for small screens */
-.menu-btn{
-    flex:1 1 auto;
-    min-width:120px;
-    background:#2563eb;
-    color:#fff;
-    border:none;
-    padding:10px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:14px;
-}
-
-/* Card responsive spacing */
-.card{
-    background:#fff;
-    margin-bottom:15px;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 2px 8px rgba(0,0,0,0.1);
-}
-
-/* Table responsiveness (IMPORTANT) */
-.table-wrap::-webkit-scrollbar{
-    height:6px;
-}
-
-.table-wrap::-webkit-scrollbar-thumb{
-    background:#888;
-    border-radius:10px;
-}
-
-/* Table */
-table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:600px; /* helps scrolling on mobile */
-}
-
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    font-size:14px;
-    white-space:nowrap;
-}
-
-/* Mobile optimization */
-@media (max-width:768px){
-
-    body{
-        padding:8px;
-    }
-
-    .menu-btn{
-        font-size:12px;
-        padding:8px;
-        min-width:100px;
-    }
-
-    th,td{
-        font-size:12px;
-        padding:6px;
-    }
-
-    input{
-        font-size:14px;
-    }
-}
-.section{
-    display:none;
-}
-
-.section.active{
-    display:block;
-}
-    .table-wrap{
-    overflow-x:auto;
-}
-    .topbar{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:#2563eb;
-    color:white;
-    padding:10px;
-}
-
-.hamburger{
-    font-size:20px;
-    background:none;
-    border:none;
-    color:white;
-    cursor:pointer;
-}
-
-/* SIDE MENU */
+/* SIDE MENU (DEFAULT HIDDEN) */
 #menu{
     position:fixed;
     top:0;
@@ -152,18 +69,31 @@ th,td{
     overflow-y:auto;
     transition:0.3s;
     z-index:1000;
+    display:flex;
     flex-direction:column;
 }
 
-/* OPEN STATE */
+/* OPEN MENU */
 #menu.open{
     left:0;
 }
 
-/* BUTTONS */
+/* MENU BUTTONS */
 .menu-btn{
     width:100%;
     margin-bottom:8px;
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+/* MENU HOVER */
+.menu-btn:hover{
+    background:#1d4ed8;
 }
 
 /* OVERLAY */
@@ -178,27 +108,86 @@ th,td{
     z-index:999;
 }
 
-/* SHOW OVERLAY */
 #overlay.show{
     display:block;
 }
 
-/* DESKTOP FIX */
-@media (min-width:768px){
-    #menu{
-        left:0;
-        position:fixed;
+/* CARD */
+.card{
+    background:#fff;
+    margin-bottom:15px;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* TABLE WRAP */
+.table-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}
+
+/* TABLE SCROLL BAR */
+.table-wrap::-webkit-scrollbar{
+    height:6px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb{
+    background:#888;
+    border-radius:10px;
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:600px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    font-size:14px;
+    white-space:nowrap;
+}
+
+th{
+    background:#111827;
+    color:#fff;
+}
+
+/* ACTIVE SECTION */
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+/* MOBILE */
+@media (max-width:768px){
+
+    body{
+        padding:8px;
     }
 
-    #overlay{
-        display:none !important;
+    input{
+        font-size:14px;
     }
 
-    .hamburger{
-        display:none;
+    th,td{
+        font-size:12px;
+        padding:6px;
     }
 }
-    
+
+/* CHROMEBOOK / DESKTOP (NO AUTO OPEN MENU) */
+@media (min-width:768px){
+    #menu{
+        left:-260px; /* still hidden until click */
+    }
+}
 </style>
 </head>
 
