@@ -6,6 +6,7 @@
 <title>ERP Dashboard</title>
 
 <style>
+
 body{
     font-family:Arial;
     background:#eef2f7;
@@ -15,6 +16,7 @@ body{
 
 h1{
     text-align:center;
+    margin-bottom:20px;
 }
 
 input{
@@ -24,6 +26,36 @@ input{
     border:none;
     border-radius:10px;
     font-size:16px;
+    box-sizing:border-box;
+}
+
+#menu{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.menu-btn{
+    background:#2563eb;
+    color:#fff;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.menu-btn:hover{
+    background:#1d4ed8;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
 }
 
 .card{
@@ -55,6 +87,7 @@ th,td{
     border:1px solid #ddd;
     padding:10px;
     text-align:left;
+    white-space:nowrap;
 }
 
 th{
@@ -65,6 +98,13 @@ th{
 tr:nth-child(even){
     background:#f9fafb;
 }
+
+.loading{
+    text-align:center;
+    padding:20px;
+    font-size:18px;
+}
+
 </style>
 </head>
 
@@ -72,9 +112,20 @@ tr:nth-child(even){
 
 <h1>🔥 Auto ERP Dashboard</h1>
 
-<input type="text" id="search" placeholder="Search..." onkeyup="searchAll()">
+<input 
+type="text" 
+id="search" 
+placeholder="Search current section..." 
+onkeyup="searchCurrentSection()"
+>
 
-<div id="app">Loading...</div>
+<!-- MENU -->
+<div id="menu"></div>
+
+<!-- APP -->
+<div id="app" class="loading">
+Loading Google Sheets...
+</div>
 
 <script>
 
@@ -92,17 +143,35 @@ const SHEETS = [
 ];
 
 const app = document.getElementById("app");
+const menu = document.getElementById("menu");
 
 async function loadAll(){
 
     app.innerHTML = "";
 
+    // MENU BUTTONS
+    menu.innerHTML = "";
+
+    SHEETS.forEach((sheet,index)=>{
+
+        const btn = document.createElement("button");
+
+        btn.className = "menu-btn";
+
+        btn.innerText = sheet;
+
+        btn.onclick = ()=>showSection(sheet);
+
+        menu.appendChild(btn);
+    });
+
+    // LOAD EACH SHEET
     for(let sheet of SHEETS){
 
         try{
 
             const url =
-            `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${sheet}`;
+            `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheet)}`;
 
             const res = await fetch(url);
 
@@ -120,18 +189,24 @@ async function loadAll(){
 
         }
     }
+
+    // DEFAULT FIRST SECTION
+    showSection(SHEETS[0]);
 }
 
 function renderSheet(name,table){
 
-    const card = document.createElement("div");
+    const section = document.createElement("div");
 
-    card.className = "card";
+    section.className = "section";
+
+    section.id = "section-"+name;
 
     let html = `
-        <div class="title">${name}</div>
-        <div class="table-wrap">
-        <table>
+        <div class="card">
+            <div class="title">${name}</div>
+            <div class="table-wrap">
+            <table>
     `;
 
     // HEADERS
@@ -159,22 +234,53 @@ function renderSheet(name,table){
         html += `</tr>`;
     });
 
-    html += "</table></div>";
+    html += `
+            </table>
+            </div>
+        </div>
+    `;
 
-    card.innerHTML = html;
+    section.innerHTML = html;
 
-    app.appendChild(card);
+    app.appendChild(section);
 }
 
-function searchAll(){
+function showSection(sheetName){
+
+    document.querySelectorAll(".section")
+    .forEach(sec=>{
+
+        sec.classList.remove("active");
+
+    });
+
+    const active =
+    document.getElementById("section-"+sheetName);
+
+    if(active){
+
+        active.classList.add("active");
+    }
+
+    document.getElementById("search").value = "";
+
+    searchCurrentSection();
+}
+
+function searchCurrentSection(){
 
     const value =
     document.getElementById("search")
     .value
     .toLowerCase();
 
+    const activeSection =
+    document.querySelector(".section.active");
+
+    if(!activeSection) return;
+
     const rows =
-    document.querySelectorAll(".row");
+    activeSection.querySelectorAll(".row");
 
     rows.forEach(row=>{
 
@@ -190,6 +296,7 @@ function searchAll(){
 
 loadAll();
 
+// AUTO REFRESH
 setInterval(loadAll,30000);
 
 </script>
