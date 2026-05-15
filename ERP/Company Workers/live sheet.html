@@ -11,98 +11,107 @@ body{
     font-family:Arial;
     background:#eef2f7;
     margin:0;
-    padding:15px;
+    padding:10px;
 }
 
+/* Center layout on large screens */
+#app{
+    max-width:1200px;
+    margin:auto;
+}
+
+/* Heading scaling */
 h1{
     text-align:center;
-    margin-bottom:20px;
+    margin-bottom:15px;
+    font-size:clamp(18px, 2.5vw, 28px);
 }
 
+/* Search box responsive */
 input{
     width:100%;
     padding:12px;
-    margin-bottom:20px;
+    margin-bottom:15px;
     border:none;
     border-radius:10px;
     font-size:16px;
-    box-sizing:border-box;
 }
 
+/* Menu responsive scroll */
 #menu{
     display:flex;
     flex-wrap:wrap;
-    gap:10px;
-    margin-bottom:20px;
+    gap:8px;
+    margin-bottom:15px;
 }
 
+/* Better buttons for small screens */
 .menu-btn{
+    flex:1 1 auto;
+    min-width:120px;
     background:#2563eb;
     color:#fff;
     border:none;
-    padding:10px 15px;
+    padding:10px;
     border-radius:8px;
     cursor:pointer;
     font-size:14px;
 }
 
-.menu-btn:hover{
-    background:#1d4ed8;
-}
-
-.section{
-    display:none;
-}
-
-.section.active{
-    display:block;
-}
-
+/* Card responsive spacing */
 .card{
     background:#fff;
-    margin-bottom:20px;
+    margin-bottom:15px;
     border-radius:10px;
     overflow:hidden;
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-.title{
-    background:#2563eb;
-    color:#fff;
-    padding:12px;
-    font-size:18px;
-    font-weight:bold;
+/* Table responsiveness (IMPORTANT) */
+.table-wrap::-webkit-scrollbar{
+    height:6px;
 }
 
-.table-wrap{
-    overflow:auto;
+.table-wrap::-webkit-scrollbar-thumb{
+    background:#888;
+    border-radius:10px;
 }
 
+/* Table */
 table{
     width:100%;
     border-collapse:collapse;
+    min-width:600px; /* helps scrolling on mobile */
 }
 
 th,td{
     border:1px solid #ddd;
-    padding:10px;
-    text-align:left;
+    padding:8px;
+    font-size:14px;
     white-space:nowrap;
 }
 
-th{
-    background:#111827;
-    color:#fff;
-}
+/* Mobile optimization */
+@media (max-width:768px){
 
-tr:nth-child(even){
-    background:#f9fafb;
-}
+    body{
+        padding:8px;
+    }
 
-.loading{
-    text-align:center;
-    padding:20px;
-    font-size:18px;
+    .menu-btn{
+        font-size:12px;
+        padding:8px;
+        min-width:100px;
+    }
+
+    th,td{
+        font-size:12px;
+        padding:6px;
+    }
+
+    input{
+        font-size:14px;
+    }
 }
 
 </style>
@@ -147,7 +156,7 @@ const menu = document.getElementById("menu");
 
 async function loadAll(){
 
-    app.innerHTML = "";
+   app.replaceChildren();
 
     // MENU BUTTONS
     menu.innerHTML = "";
