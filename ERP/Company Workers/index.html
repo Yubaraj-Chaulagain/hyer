@@ -854,6 +854,7 @@ let checked = document.querySelectorAll('#memberList input:checked');
 
 checked.forEach(cb=>{
 attendance.push({
+id: crypto.randomUUID(),
 company: att_company.value,
 member: cb.value,
 date: new Date().toLocaleString()
