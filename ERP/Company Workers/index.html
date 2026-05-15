@@ -1561,45 +1561,75 @@ alert("✅ CSV Downloaded");
 
 }
     
-   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxX6DAMPFFVb8xoLqYe7mXzFybsEclj7haUD4bDnNDdTNLEH7iVtab0hiZE5TrwRZm0/exec";
+   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBzuLZyYotvlquKoie57GXcZTGIKei0gYO6CFdbGLaqiEUiQ0g2bR6PFZa_N9Yr47k/exec";
 
-function syncToGoogleSheet(){
+async function syncToGoogleSheet(){
 
-function send(sheet, action, row){
-  fetch(GOOGLE_SCRIPT_URL,{
-    method:"POST",
-    body: JSON.stringify({
-      sheet: sheet,
-      action: action,
-      row: row,
-      id: row.id
-    })
-  });
-}
+  async function send(sheet, row){
+    try{
+      let res = await fetch(GOOGLE_SCRIPT_URL,{
+        method:"POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          sheet: sheet,
+          row: row
+        })
+      });
 
-// CUSTOMERS
-customers.forEach(c=>{
-  send("customers","update",c);
-});
+      return await res.json();
+    }catch(err){
+      console.error("Sync error:", err);
+      return {status:"ERROR"};
+    }
+  }
 
-// COMPANIES
-companies.forEach(c=>{
-  send("companies","update",c);
-});
+  let ok = true;
 
-// STOCK
-stock.forEach(s=>{
-  send("stock","update",s);
-});
+  // CUSTOMERS
+  for(let c of customers){
+    let r = await send("customers", c);
+    if(!r || r.status !== "OK") ok = false;
+  }
 
-// USERS
-users.forEach(u=>{
-  send("users","update",u);
-});
+  // COMPANIES
+  for(let c of companies){
+    let r = await send("companies", c);
+    if(!r || r.status !== "OK") ok = false;
+  }
 
-alert("✅ Synced (Update Mode)");
-logActivity("Google Sheet Sync (Update Mode)");
-}  
+  // STOCK
+  for(let s of stock){
+    let r = await send("stock", s);
+    if(!r || r.status !== "OK") ok = false;
+  }
+
+  // USERS
+  for(let u of users){
+    let r = await send("users", u);
+    if(!r || r.status !== "OK") ok = false;
+  }
+
+  // FINAL RESULT
+  if(ok){
+
+    // 🧹 CLEAR OFFLINE DATA AFTER SUCCESS
+    customers = [];
+    companies = [];
+    stock = [];
+    users = [];
+
+    save();
+    loadAll();
+
+    alert("✅ Sync Successful & Offline Data Cleared");
+    logActivity("Google Sheet Full Sync Success");
+
+  }else{
+    alert("❌ Sync Failed (Data not cleared)");
+  }
+} 
   function addStock(){
   stock.push({
 id: Date.now() + Math.random(),
