@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Live Google Sheet ERP Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#eef2f7;
+}
+
+.header{
+background:#2563eb;
+color:#fff;
+padding:15px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
+}
+
+.container{
+padding:10px;
+max-width:1400px;
+margin:auto;
+}
+
+.topbar{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:10px;
+}
+
+input{
+padding:10px;
+width:250px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+background:#2563eb;
+color:#fff;
+border-radius:6px;
+cursor:pointer;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+gap:15px;
+}
+
+.card{
+background:#fff;
+border-radius:10px;
+padding:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+overflow:auto;
+}
+
+.card h3{
+margin:0 0 10px 0;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:6px;
+text-align:left;
+}
+
+th{
+background:#f3f4f6;
+position:sticky;
+top:0;
+}
+
+.status{
+margin:10px 0;
+font-size:13px;
+color:green;
+}
+
+@media(max-width:768px){
+input{
+width:100%;
+}
+}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+🔥 Live ERP Dashboard (Google Sheet CSV)
+</div>
+
+<div class="container">
+
+<div class="topbar">
+
+<input id="searchBox" placeholder="Search anything..." onkeyup="filterAll()">
+
+<button onclick="loadAllSheets()">
+🔄 Refresh
+</button>
+
+</div>
+
+<div class="status" id="status">
+Loading...
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>Customers</h3>
+<table id="customersTable"></table>
+</div>
+
+<div class="card">
+<h3>Stock</h3>
+<table id="stockTable"></table>
+</div>
+
+<div class="card">
+<h3>Attendance</h3>
+<table id="attendanceTable"></table>
+</div>
+
+<div class="card">
+<h3>Sell Report</h3>
+<table id="sellTable"></table>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// ======================================================
+// 🔥 GOOGLE SHEET CSV LINKS
+// ======================================================
+
+// Replace with YOUR REAL URLs
+
+const SHEETS = {
+
+customers:
+"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=0",
+
+stock:
+"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=123456",
+
+attendance:
+"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=222222",
+
+sell:
+"https://docs.google.com/spreadsheets/d/YOUR_ID/export?format=csv&gid=333333"
+
+};
+
+// ======================================================
+// LOAD SINGLE CSV
+// ======================================================
+
+async function loadCSV(url, tableId){
+
+try{
+
+let res = await fetch(url);
+
+let csv = await res.text();
+
+renderCSV(csv, tableId);
+
+}catch(err){
+
+document.getElementById(tableId).innerHTML =
+"<tr><td>Error loading data</td></tr>";
+
+console.log(err);
+
+}
+
+}
+
+// ======================================================
+// CSV → TABLE
+// ======================================================
+
+function renderCSV(csv, tableId){
+
+let rows = csv.trim().split("\n");
+
+let html = "";
+
+rows.forEach((row,index)=>{
+
+html += "<tr>";
+
+row.split(",").forEach(col=>{
+
+if(index==0){
+
+html += `<th>${col}</th>`;
+
+}else{
+
+html += `<td>${col}</td>`;
+
+}
+
+});
+
+html += "</tr>";
+
+});
+
+document.getElementById(tableId).innerHTML = html;
+
+}
+
+// ======================================================
+// LOAD ALL SHEETS
+// ======================================================
+
+async function loadAllSheets(){
+
+document.getElementById("status").innerHTML =
+"🔄 Refreshing live data...";
+
+await Promise.all([
+
+loadCSV(SHEETS.customers, "customersTable"),
+
+loadCSV(SHEETS.stock, "stockTable"),
+
+loadCSV(SHEETS.attendance, "attendanceTable"),
+
+loadCSV(SHEETS.sell, "sellTable")
+
+]);
+
+document.getElementById("status").innerHTML =
+"✅ Live data loaded successfully";
+
+}
+
+// ======================================================
+// SEARCH FILTER
+// ======================================================
+
+function filterAll(){
+
+let value =
+document.getElementById("searchBox")
+.value
+.toLowerCase();
+
+document.querySelectorAll("table").forEach(table=>{
+
+table.querySelectorAll("tr").forEach((tr,index)=>{
+
+if(index==0){
+tr.style.display="";
+return;
+}
+
+let text = tr.innerText.toLowerCase();
+
+tr.style.display =
+text.includes(value)
+? ""
+: "none";
+
+});
+
+});
+
+}
+
+// ======================================================
+// AUTO REFRESH EVERY 30 SEC
+// ======================================================
+
+setInterval(()=>{
+
+loadAllSheets();
+
+},30000);
+
+// ======================================================
+// START
+// ======================================================
+
+loadAllSheets();
+
+</script>
+
+</body>
+</html>
