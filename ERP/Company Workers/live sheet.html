@@ -2,374 +2,346 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>🔥 Auto Google Sheet ERP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 Auto ERP Dashboard</title>
 
 <style>
-
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial;
 }
 
 body{
-font-family:Arial;
-background:#eef2f7;
-padding:15px;
+    background:#eef2f7;
+    padding:15px;
 }
 
 h1{
-text-align:center;
-margin-bottom:15px;
-color:#2563eb;
+    text-align:center;
+    margin-bottom:15px;
+    color:#222;
 }
 
-#search{
-width:100%;
-padding:12px;
-border:none;
-border-radius:8px;
-margin-bottom:20px;
-font-size:15px;
-box-shadow:0 2px 5px rgba(0,0,0,0.1);
+.topbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+    flex-wrap:wrap;
 }
 
-.status{
-margin-bottom:15px;
-font-size:14px;
-font-weight:bold;
-color:green;
+input{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+}
+
+button{
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    opacity:0.9;
 }
 
 .sheet-card{
-background:#fff;
-padding:15px;
-margin-bottom:20px;
-border-radius:12px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
-overflow:auto;
+    background:#fff;
+    margin-bottom:20px;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
 .sheet-title{
-font-size:20px;
-font-weight:bold;
-margin-bottom:10px;
-color:#2563eb;
+    background:#2563eb;
+    color:#fff;
+    padding:12px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.table-wrap{
+    overflow:auto;
+    max-height:500px;
 }
 
 table{
-width:100%;
-border-collapse:collapse;
-min-width:700px;
-}
-
-th,td{
-border:1px solid #ddd;
-padding:8px;
-font-size:13px;
-text-align:left;
+    width:100%;
+    border-collapse:collapse;
 }
 
 th{
-background:#2563eb;
-color:white;
-position:sticky;
-top:0;
-z-index:1;
+    background:#111827;
+    color:#fff;
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:10px;
+    font-size:14px;
+    text-align:left;
 }
 
 tr:nth-child(even){
-background:#f9fafb;
+    background:#f9fafb;
 }
 
 .loading{
-text-align:center;
-padding:20px;
-font-size:18px;
+    text-align:center;
+    padding:30px;
+    font-size:20px;
+    color:#2563eb;
+    font-weight:bold;
 }
 
 .error{
-color:red;
-font-weight:bold;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    color:red;
+    margin-top:20px;
+    line-height:1.8;
 }
 
+@media(max-width:768px){
+    th,td{
+        font-size:12px;
+        padding:7px;
+    }
+}
 </style>
 </head>
+
 <body>
 
 <h1>🔥 Auto ERP Dashboard</h1>
 
-<input
-type="text"
-id="search"
-placeholder="Search all sheets..."
-onkeyup="filterAll()"
->
+<div class="topbar">
+    <input type="text" id="search" placeholder="Search all sheets..." onkeyup="filterAll()">
 
-<div class="status" id="status">
-🔄 Loading Google Sheets...
+    <button onclick="loadSheets()">🔄 Refresh</button>
 </div>
 
-<div id="dashboard"></div>
+<div id="app">
+    <div class="loading">
+        🔄 Loading Google Sheets...
+    </div>
+</div>
 
 <script>
 
-// =====================================================
-// GOOGLE SHEET ID
-// =====================================================
+// ===============================
+// GOOGLE SHEET URL
+// ===============================
 
-const SHEET_ID =
-"1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
+const SHEET_ID = "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
-// =====================================================
-// GET ALL SHEETS
-// =====================================================
+const app = document.getElementById("app");
 
-async function getAllSheets(){
-
-try{
-
-const url =
-`https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
-
-const res = await fetch(url);
-
-const data = await res.json();
-
-return data.feed.entry.map(sheet => ({
-
-name: sheet.title.$t,
-
-gid:
-sheet.id.$t.split("/").pop()
-
-}));
-
-}catch(err){
-
-console.log(err);
-
-return [];
-
-}
-
-}
-
-// =====================================================
+// ===============================
 // LOAD ALL SHEETS
-// =====================================================
+// ===============================
 
-async function loadAllSheets(){
+async function loadSheets(){
 
-const dashboard =
-document.getElementById("dashboard");
+    app.innerHTML = `
+        <div class="loading">
+            🔄 Loading Google Sheets...
+        </div>
+    `;
 
-dashboard.innerHTML = "";
+    try{
 
-document.getElementById("status")
-.innerHTML = "🔄 Loading sheets...";
+        // Get workbook info
+        const metaUrl = `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/basic?alt=json`;
 
-const sheets =
-await getAllSheets();
+        const metaRes = await fetch(metaUrl);
 
-if(!sheets.length){
+        if(!metaRes.ok){
+            throw new Error("Google Sheet is not public");
+        }
 
-document.getElementById("status")
-.innerHTML =
-"❌ No sheets found";
+        const metaData = await metaRes.json();
 
-dashboard.innerHTML = `
+        const sheets = metaData.feed.entry;
 
-<div class="sheet-card">
+        if(!sheets || sheets.length===0){
+            app.innerHTML = `
+                <div class="error">
+                    ❌ No sheets found
+                </div>
+            `;
+            return;
+        }
 
-<p class="error">
-Google Sheet is not public
-</p>
+        app.innerHTML = "";
 
-<br>
+        // LOOP ALL SHEETS
+        for(let sheet of sheets){
 
-<p>
-STEP 1 → Open Google Sheet
-</p>
+            const sheetName = sheet.title.$t;
 
-<p>
-STEP 2 → Click SHARE
-</p>
+            const sheetUrl =
+            `https://opensheet.elk.sh/${SHEET_ID}/${encodeURIComponent(sheetName)}`;
 
-<p>
-STEP 3 → Anyone with link
-</p>
+            try{
 
-<p>
-STEP 4 → Viewer
-</p>
+                const res = await fetch(sheetUrl);
 
-<p>
-STEP 5 → File → Share → Publish to web
-</p>
+                const data = await res.json();
 
-</div>
+                renderSheet(sheetName,data);
 
-`;
+            }catch(err){
 
-return;
+                console.log(err);
 
+            }
+        }
+
+    }catch(err){
+
+        app.innerHTML = `
+        <div class="error">
+            <h2>❌ Google Sheet is not public</h2>
+
+            <br>
+
+            <b>STEP 1 →</b> Open Google Sheet<br>
+            <b>STEP 2 →</b> Click SHARE<br>
+            <b>STEP 3 →</b> Anyone with link<br>
+            <b>STEP 4 →</b> Viewer<br>
+            <b>STEP 5 →</b> File → Share → Publish to web
+
+            <br><br>
+
+            <b>Your Sheet:</b><br>
+            https://docs.google.com/spreadsheets/d/${SHEET_ID}
+
+        </div>
+        `;
+    }
 }
 
-for(const sheet of sheets){
+// ===============================
+// RENDER SHEET
+// ===============================
 
-const csvUrl =
-`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${sheet.gid}`;
+function renderSheet(name,data){
 
-try{
+    const card = document.createElement("div");
 
-const res = await fetch(csvUrl);
+    card.className = "sheet-card";
 
-const csv = await res.text();
+    let html = `
+        <div class="sheet-title">
+            📄 ${name}
+        </div>
+    `;
 
-dashboard.innerHTML += `
+    if(!data || data.length===0){
 
-<div class="sheet-card">
+        html += `
+        <div style="padding:15px">
+            No Data Found
+        </div>
+        `;
 
-<div class="sheet-title">
-📄 ${sheet.name}
-</div>
+        card.innerHTML = html;
 
-${createTable(csv)}
+        app.appendChild(card);
 
-</div>
+        return;
+    }
 
-`;
+    const headers = Object.keys(data[0]);
 
-}catch(err){
+    html += `<div class="table-wrap">`;
 
-dashboard.innerHTML += `
+    html += `<table>`;
 
-<div class="sheet-card">
+    // HEADERS
+    html += `<tr>`;
 
-<div class="sheet-title">
-${sheet.name}
-</div>
+    headers.forEach(h=>{
+        html += `<th>${h}</th>`;
+    });
 
-<p class="error">
-❌ Failed loading sheet
-</p>
+    html += `</tr>`;
 
-</div>
+    // ROWS
+    data.forEach(row=>{
 
-`;
+        html += `<tr class="data-row">`;
 
+        headers.forEach(h=>{
+
+            html += `<td>${row[h] || ""}</td>`;
+
+        });
+
+        html += `</tr>`;
+    });
+
+    html += `</table></div>`;
+
+    card.innerHTML = html;
+
+    app.appendChild(card);
 }
 
-}
-
-document.getElementById("status")
-.innerHTML =
-"✅ All sheets loaded";
-
-}
-
-// =====================================================
-// CSV TO TABLE
-// =====================================================
-
-function createTable(csv){
-
-if(!csv.trim()){
-
-return `
-<p>No Data Found</p>
-`;
-
-}
-
-const rows =
-csv.trim().split("\n");
-
-let html = "<table>";
-
-rows.forEach((row,index)=>{
-
-html += "<tr>";
-
-const cols =
-row.split(",");
-
-cols.forEach(col=>{
-
-col = col
-.replace(/"/g,"")
-.trim();
-
-if(index === 0){
-
-html += `
-<th>${col}</th>
-`;
-
-}else{
-
-html += `
-<td>${col}</td>
-`;
-
-}
-
-});
-
-html += "</tr>";
-
-});
-
-html += "</table>";
-
-return html;
-
-}
-
-// =====================================================
+// ===============================
 // SEARCH FILTER
-// =====================================================
+// ===============================
 
 function filterAll(){
 
-const value =
-document
-.getElementById("search")
-.value
-.toLowerCase();
+    const value = document
+    .getElementById("search")
+    .value
+    .toLowerCase();
 
-document
-.querySelectorAll("table tr")
-.forEach((tr,index)=>{
+    const rows = document.querySelectorAll(".data-row");
 
-if(index === 0) return;
+    rows.forEach(row=>{
 
-const text =
-tr.innerText.toLowerCase();
+        const text = row.innerText.toLowerCase();
 
-tr.style.display =
-text.includes(value)
-? ""
-: "none";
+        row.style.display =
+        text.includes(value)
+        ? ""
+        : "none";
 
-});
-
+    });
 }
 
-// =====================================================
+// ===============================
 // AUTO REFRESH
-// =====================================================
+// ===============================
 
-setInterval(loadAllSheets,30000);
+setInterval(()=>{
 
-// =====================================================
+    loadSheets();
+
+},30000);
+
+// ===============================
 // START
-// =====================================================
+// ===============================
 
-loadAllSheets();
+loadSheets();
 
 </script>
 
