@@ -4,54 +4,72 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>Auto Google Sheet ERP Dashboard</title>
+<title>🔥 Auto Google Sheet ERP</title>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
 body{
 font-family:Arial;
 background:#eef2f7;
-margin:0;
 padding:15px;
 }
 
 h1{
 text-align:center;
+margin-bottom:15px;
+color:#2563eb;
 }
 
 #search{
 width:100%;
-padding:10px;
+padding:12px;
+border:none;
+border-radius:8px;
+margin-bottom:20px;
+font-size:15px;
+box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+.status{
 margin-bottom:15px;
-border:1px solid #ccc;
-border-radius:6px;
+font-size:14px;
+font-weight:bold;
+color:green;
 }
 
 .sheet-card{
 background:#fff;
 padding:15px;
 margin-bottom:20px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
 overflow:auto;
 }
 
 .sheet-title{
 font-size:20px;
+font-weight:bold;
 margin-bottom:10px;
 color:#2563eb;
-font-weight:bold;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
+min-width:700px;
 }
 
 th,td{
-border:1px solid #ccc;
+border:1px solid #ddd;
 padding:8px;
 font-size:13px;
+text-align:left;
 }
 
 th{
@@ -59,12 +77,22 @@ background:#2563eb;
 color:white;
 position:sticky;
 top:0;
+z-index:1;
 }
 
-.status{
-margin:10px 0;
-font-size:13px;
-color:green;
+tr:nth-child(even){
+background:#f9fafb;
+}
+
+.loading{
+text-align:center;
+padding:20px;
+font-size:18px;
+}
+
+.error{
+color:red;
+font-weight:bold;
 }
 
 </style>
@@ -74,13 +102,14 @@ color:green;
 <h1>🔥 Auto ERP Dashboard</h1>
 
 <input
+type="text"
 id="search"
 placeholder="Search all sheets..."
 onkeyup="filterAll()"
 >
 
 <div class="status" id="status">
-Loading Google Sheets...
+🔄 Loading Google Sheets...
 </div>
 
 <div id="dashboard"></div>
@@ -95,59 +124,40 @@ const SHEET_ID =
 "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
 // =====================================================
-  async function extractSheets(){
-
-const url =
-`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-
-const res = await fetch(url);
-
-const html = await res.text();
-
-let matches =
-[...html.matchAll(/gid=(\d+)/g)];
-
-let gids =
-[...new Set(matches.map(m=>m[1]))];
-
-let sheets = [];
-
-for(let gid of gids){
-
-sheets.push({
-
-name:"Sheet "+gid,
-gid:gid
-
-});
-
-}
-
-return sheets;
-
-}
 // GET ALL SHEETS
 // =====================================================
+
 async function getAllSheets(){
 
+try{
+
 const url =
-`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+`https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
 
 const res = await fetch(url);
 
-const text = await res.text();
+const data = await res.json();
 
-// Google junk remove
-const json =
-JSON.parse(
-text.substring(47).slice(0,-2)
-);
+return data.feed.entry.map(sheet => ({
 
-return json.table.cols
-? await extractSheets()
-: [];
+name: sheet.title.$t,
+
+gid:
+sheet.id.$t.split("/").pop()
+
+}));
+
+}catch(err){
+
+console.log(err);
+
+return [];
 
 }
+
+}
+
+// =====================================================
 // LOAD ALL SHEETS
 // =====================================================
 
@@ -161,9 +171,52 @@ dashboard.innerHTML = "";
 document.getElementById("status")
 .innerHTML = "🔄 Loading sheets...";
 
-try{
+const sheets =
+await getAllSheets();
 
-const sheets = await getAllSheets();
+if(!sheets.length){
+
+document.getElementById("status")
+.innerHTML =
+"❌ No sheets found";
+
+dashboard.innerHTML = `
+
+<div class="sheet-card">
+
+<p class="error">
+Google Sheet is not public
+</p>
+
+<br>
+
+<p>
+STEP 1 → Open Google Sheet
+</p>
+
+<p>
+STEP 2 → Click SHARE
+</p>
+
+<p>
+STEP 3 → Anyone with link
+</p>
+
+<p>
+STEP 4 → Viewer
+</p>
+
+<p>
+STEP 5 → File → Share → Publish to web
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
 
 for(const sheet of sheets){
 
@@ -181,7 +234,7 @@ dashboard.innerHTML += `
 <div class="sheet-card">
 
 <div class="sheet-title">
-${sheet.name}
+📄 ${sheet.name}
 </div>
 
 ${createTable(csv)}
@@ -200,7 +253,9 @@ dashboard.innerHTML += `
 ${sheet.name}
 </div>
 
-<p>❌ Failed loading data</p>
+<p class="error">
+❌ Failed loading sheet
+</p>
 
 </div>
 
@@ -211,26 +266,26 @@ ${sheet.name}
 }
 
 document.getElementById("status")
-.innerHTML = "✅ All sheets loaded";
-
-}catch(err){
-
-document.getElementById("status")
-.innerHTML = "❌ Sheet access failed";
-
-console.log(err);
-
-}
+.innerHTML =
+"✅ All sheets loaded";
 
 }
 
 // =====================================================
-// CSV → TABLE
+// CSV TO TABLE
 // =====================================================
 
 function createTable(csv){
 
-let rows =
+if(!csv.trim()){
+
+return `
+<p>No Data Found</p>
+`;
+
+}
+
+const rows =
 csv.trim().split("\n");
 
 let html = "<table>";
@@ -239,19 +294,26 @@ rows.forEach((row,index)=>{
 
 html += "<tr>";
 
-let cols = row.split(",");
+const cols =
+row.split(",");
 
 cols.forEach(col=>{
 
-col = col.replace(/"/g,'');
+col = col
+.replace(/"/g,"")
+.trim();
 
 if(index === 0){
 
-html += `<th>${col}</th>`;
+html += `
+<th>${col}</th>
+`;
 
 }else{
 
-html += `<td>${col}</td>`;
+html += `
+<td>${col}</td>
+`;
 
 }
 
@@ -268,22 +330,24 @@ return html;
 }
 
 // =====================================================
-// SEARCH
+// SEARCH FILTER
 // =====================================================
 
 function filterAll(){
 
-let value =
-document.getElementById("search")
-.value.toLowerCase();
+const value =
+document
+.getElementById("search")
+.value
+.toLowerCase();
 
 document
 .querySelectorAll("table tr")
 .forEach((tr,index)=>{
 
-if(index===0) return;
+if(index === 0) return;
 
-let text =
+const text =
 tr.innerText.toLowerCase();
 
 tr.style.display =
