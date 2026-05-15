@@ -91,37 +91,33 @@ Loading Google Sheets...
 // 🔥 GOOGLE SHEET ID
 // =====================================================
 
-const SHEET_ID =
-"1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
+const SHEET_ID = "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
-// =====================================================
-// 🔥 SHEET LIST
-// Add your sheet names + gid here
-// =====================================================
+async function getAllSheets() {
 
-const SHEETS = [
+  const url =
+    `https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
 
-{
-name:"Customers",
-gid:"2086456401"
-},
+  const res = await fetch(url);
+  const data = await res.json();
 
-{
-name:"Stock",
-gid:"0"
-},
+  return data.feed.entry.map(sheet => ({
+    name: sheet.title.$t,
+    gid: sheet.link.find(l => l.rel.includes("alternate"))
+          .href.split("gid=")[1]
+  }));
 
-{
-name:"Attendance",
-gid:"123456"
-},
-
-{
-name:"Sell",
-gid:"654321"
 }
 
-];
+getAllSheets().then(sheets => {
+  console.log(sheets);
+
+  // auto section create
+  sheets.forEach(s => {
+    createSection(s.name, s.gid);
+  });
+
+});
 
 // =====================================================
 // LOAD ALL SHEETS
