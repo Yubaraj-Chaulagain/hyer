@@ -235,7 +235,8 @@ const app = document.getElementById("app");
 const menu = document.getElementById("menu");
 
 async function loadAll(){
-
+document.getElementById("menu").classList.remove("open");
+document.getElementById("overlay").classList.remove("show");
     app.replaceChildren();
     menu.innerHTML = "";
 
