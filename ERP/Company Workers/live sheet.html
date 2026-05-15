@@ -1,23 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Live Google Sheet Table</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Auto Google Sheet ERP Dashboard</title>
 
 <style>
 
 body{
 font-family:Arial;
 background:#eef2f7;
-padding:20px;
+margin:0;
+padding:15px;
 }
 
-.card{
+h1{
+text-align:center;
+}
+
+#search{
+width:100%;
+padding:10px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.sheet-card{
 background:#fff;
 padding:15px;
+margin-bottom:20px;
 border-radius:10px;
 box-shadow:0 2px 10px rgba(0,0,0,0.1);
 overflow:auto;
+}
+
+.sheet-title{
+font-size:20px;
+margin-bottom:10px;
+color:#2563eb;
+font-weight:bold;
 }
 
 table{
@@ -28,54 +51,153 @@ border-collapse:collapse;
 th,td{
 border:1px solid #ccc;
 padding:8px;
-font-size:14px;
+font-size:13px;
 }
 
 th{
 background:#2563eb;
-color:#fff;
+color:white;
+position:sticky;
+top:0;
 }
 
-input{
-padding:10px;
-width:100%;
-margin-bottom:10px;
+.status{
+margin:10px 0;
+font-size:13px;
+color:green;
 }
 
 </style>
-
 </head>
 <body>
 
-<div class="card">
-
-<h2>🔥 Live Google Sheet Data</h2>
+<h1>🔥 Auto ERP Dashboard</h1>
 
 <input
 id="search"
-placeholder="Search..."
-onkeyup="filterTable()"
+placeholder="Search all sheets..."
+onkeyup="filterAll()"
 >
 
-<table id="sheetTable"></table>
-
+<div class="status" id="status">
+Loading Google Sheets...
 </div>
+
+<div id="dashboard"></div>
 
 <script>
 
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg/export?format=csv&gid=2086456401";
+// =====================================================
+// 🔥 GOOGLE SHEET ID
+// =====================================================
 
-// LOAD DATA
-async function loadSheet(){
+const SHEET_ID =
+"1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
-let res = await fetch(CSV_URL);
+// =====================================================
+// 🔥 SHEET LIST
+// Add your sheet names + gid here
+// =====================================================
+
+const SHEETS = [
+
+{
+name:"Customers",
+gid:"2086456401"
+},
+
+{
+name:"Stock",
+gid:"0"
+},
+
+{
+name:"Attendance",
+gid:"123456"
+},
+
+{
+name:"Sell",
+gid:"654321"
+}
+
+];
+
+// =====================================================
+// LOAD ALL SHEETS
+// =====================================================
+
+async function loadAllSheets(){
+
+document.getElementById("status")
+.innerHTML = "🔄 Loading live sheets...";
+
+let dashboard =
+document.getElementById("dashboard");
+
+dashboard.innerHTML = "";
+
+for(let sheet of SHEETS){
+
+let url =
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${sheet.gid}`;
+
+try{
+
+let res = await fetch(url);
 
 let csv = await res.text();
 
+let html = createTable(csv);
+
+dashboard.innerHTML += `
+
+<div class="sheet-card">
+
+<div class="sheet-title">
+${sheet.name}
+</div>
+
+${html}
+
+</div>
+
+`;
+
+}catch(err){
+
+dashboard.innerHTML += `
+
+<div class="sheet-card">
+
+<div class="sheet-title">
+${sheet.name}
+</div>
+
+<p>❌ Failed to load sheet</p>
+
+</div>
+
+`;
+
+}
+
+}
+
+document.getElementById("status")
+.innerHTML = "✅ All sheets loaded";
+
+}
+
+// =====================================================
+// CSV → TABLE
+// =====================================================
+
+function createTable(csv){
+
 let rows = csv.trim().split("\n");
 
-let html = "";
+let html = "<table>";
 
 rows.forEach((row,index)=>{
 
@@ -99,24 +221,30 @@ html += "</tr>";
 
 });
 
-document.getElementById("sheetTable").innerHTML = html;
+html += "</table>";
+
+return html;
 
 }
 
+// =====================================================
 // SEARCH FILTER
-function filterTable(){
+// =====================================================
+
+function filterAll(){
 
 let value =
 document.getElementById("search")
 .value
 .toLowerCase();
 
-document.querySelectorAll("#sheetTable tr")
+document.querySelectorAll("table tr")
 .forEach((tr,index)=>{
 
 if(index==0) return;
 
-let text = tr.innerText.toLowerCase();
+let text =
+tr.innerText.toLowerCase();
 
 tr.style.display =
 text.includes(value)
@@ -127,10 +255,17 @@ text.includes(value)
 
 }
 
-// AUTO REFRESH EVERY 30 SEC
-setInterval(loadSheet,30000);
+// =====================================================
+// AUTO REFRESH
+// =====================================================
 
-loadSheet();
+setInterval(loadAllSheets,30000);
+
+// =====================================================
+// START
+// =====================================================
+
+loadAllSheets();
 
 </script>
 
