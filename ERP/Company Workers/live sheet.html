@@ -95,29 +95,59 @@ const SHEET_ID =
 "1GBZfB519IJtggOlgGNjlG8-gyXi-FlemOEGu2bWZebg";
 
 // =====================================================
-// GET ALL SHEETS
-// =====================================================
-
-async function getAllSheets(){
+  async function extractSheets(){
 
 const url =
-`https://spreadsheets.google.com/feeds/worksheets/${SHEET_ID}/public/full?alt=json`;
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
 
 const res = await fetch(url);
-const data = await res.json();
 
-return data.feed.entry.map(sheet => ({
+const html = await res.text();
 
-name: sheet.title.$t,
+let matches =
+[...html.matchAll(/gid=(\d+)/g)];
 
-gid:
-sheet.id.$t.split("/").pop()
+let gids =
+[...new Set(matches.map(m=>m[1]))];
 
-}));
+let sheets = [];
+
+for(let gid of gids){
+
+sheets.push({
+
+name:"Sheet "+gid,
+gid:gid
+
+});
 
 }
 
+return sheets;
+
+}
+// GET ALL SHEETS
 // =====================================================
+async function getAllSheets(){
+
+const url =
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+const res = await fetch(url);
+
+const text = await res.text();
+
+// Google junk remove
+const json =
+JSON.parse(
+text.substring(47).slice(0,-2)
+);
+
+return json.table.cols
+? await extractSheets()
+: [];
+
+}
 // LOAD ALL SHEETS
 // =====================================================
 
