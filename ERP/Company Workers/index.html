@@ -160,6 +160,8 @@ nav button{width:auto;margin:2px}
 <button onclick="exportExcel()">Export Excel</button>
 
 <button onclick="syncToGoogleSheet()">Sync Google Sheet</button>
+
+<button onclick="loadFromSheet(sheet)">Google Sheet to sync to offline</button>
     
 <button onclick="changeMyPassword()">Change My Password</button>
 
@@ -1561,75 +1563,65 @@ alert("✅ CSV Downloaded");
 
 }
     
-   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBzuLZyYotvlquKoie57GXcZTGIKei0gYO6CFdbGLaqiEUiQ0g2bR6PFZa_N9Yr47k/exec";
-
+   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQ1m4i2DsZxfq2Frudk3wirVKk_8mhlqbN-IJ-ma4tdrs224YVCJ67NtGZIDIcZj6e/exec";
 async function syncToGoogleSheet(){
 
   async function send(sheet, row){
-    try{
-      let res = await fetch(GOOGLE_SCRIPT_URL,{
-        method:"POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          sheet: sheet,
-          row: row
-        })
-      });
+    let res = await fetch(GOOGLE_SCRIPT_URL,{
+      method:"POST",
+      body: JSON.stringify({ sheet, row })
+    });
 
-      return await res.json();
-    }catch(err){
-      console.error("Sync error:", err);
-      return {status:"ERROR"};
-    }
+    return await res.json();
   }
 
   let ok = true;
 
-  // CUSTOMERS
-  for(let c of customers){
-    let r = await send("customers", c);
-    if(!r || r.status !== "OK") ok = false;
+  const tables = [
+    ["customers", customers],
+    ["companies", companies],
+    ["stock", stock],
+    ["users", users]
+  ];
+
+  for(let [sheet, data] of tables){
+    for(let row of data){
+      let r = await send(sheet, row);
+      if(!r || r.status !== "OK"){
+        ok = false;
+      }
+    }
   }
 
-  // COMPANIES
-  for(let c of companies){
-    let r = await send("companies", c);
-    if(!r || r.status !== "OK") ok = false;
-  }
-
-  // STOCK
-  for(let s of stock){
-    let r = await send("stock", s);
-    if(!r || r.status !== "OK") ok = false;
-  }
-
-  // USERS
-  for(let u of users){
-    let r = await send("users", u);
-    if(!r || r.status !== "OK") ok = false;
-  }
-
-  // FINAL RESULT
   if(ok){
 
-    // 🧹 CLEAR OFFLINE DATA AFTER SUCCESS
+    // ✅ CLEAR OFFLINE DATA (IMPORTANT)
     customers = [];
     companies = [];
     stock = [];
     users = [];
 
-    save();
+    localStorage.setItem('customers', JSON.stringify([]));
+    localStorage.setItem('companies', JSON.stringify([]));
+    localStorage.setItem('stock', JSON.stringify([]));
+    localStorage.setItem('users', JSON.stringify([]));
+
     loadAll();
 
-    alert("✅ Sync Successful & Offline Data Cleared");
-    logActivity("Google Sheet Full Sync Success");
+    alert("✅ Sync Successful & Offline Cleared");
+
+    logActivity("Full Sync Success");
 
   }else{
-    alert("❌ Sync Failed (Data not cleared)");
+    alert("❌ Sync Failed");
   }
-} 
+}
+    async function loadFromSheet(sheet){
+
+  let res = await fetch(GOOGLE_SCRIPT_URL + "?sheet=" + sheet);
+  return await res.json();
+}
+
   function addStock(){
   stock.push({
 id: Date.now() + Math.random(),
