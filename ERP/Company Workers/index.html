@@ -166,15 +166,6 @@ nav button{width:auto;margin:2px}
 <button onclick="changeMyPassword()">Change My Password</button>
 
 <button onclick="logout()">Logout</button>
-    
-    <h3>Date Filter Export</h3>
-
-<input type="date" id="fromDate">
-<input type="date" id="toDate">
-
-<button onclick="exportFilteredCSV()">
-Download Filtered CSV
-</button>
 
 </div>
 
@@ -320,7 +311,16 @@ Download Filtered CSV
         <button onclick="clearActivities()">Clear Activities</button>
 <table id="activityTable"></table>
 </div>
-   
+ <div>
+         <h3>Date Filter Export</h3>
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+
+<button onclick="exportFilteredCSV()">
+Download Filtered CSV
+</button>
+ </div>  
 </div>
 </div>
 
