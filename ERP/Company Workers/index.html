@@ -165,6 +165,8 @@ nav button{width:auto;margin:2px}
     
 <button onclick="changeMyPassword()">Change My Password</button>
 
+<button id="btn_report" onclick="show('report')">Reports</button>
+
 <button onclick="logout()">Logout</button>
 
 </div>
@@ -311,16 +313,28 @@ nav button{width:auto;margin:2px}
         <button onclick="clearActivities()">Clear Activities</button>
 <table id="activityTable"></table>
 </div>
- <div>
-         <h3>Date Filter Export</h3>
+ <!-- DATE FILTER SECTION -->
+<div id="report" class="card hidden">
 
-<input type="date" id="fromDate">
-<input type="date" id="toDate">
+<h3>Date Filter Report Export</h3>
+
+<div class="row">
+  <div>
+    <label>From Date</label>
+    <input type="date" id="fromDate">
+  </div>
+
+  <div>
+    <label>To Date</label>
+    <input type="date" id="toDate">
+  </div>
+</div>
 
 <button onclick="exportFilteredCSV()">
 Download Filtered CSV
 </button>
- </div>  
+
+</div>
 </div>
 </div>
 
@@ -490,7 +504,8 @@ function show(id){
     "sell",
     "users",
     "history",
-    "activity"
+    "activity",
+      "report"
   ].forEach(x=>{
     let el = document.getElementById(x);
     if(el){
@@ -520,6 +535,7 @@ function show(id){
       sell:"Sell Product",
       users:"User Management",
       history:"Login History",
+        report:"Reports",
       activity:"Activity Log"
     };
 
@@ -1049,6 +1065,7 @@ if(!current) return;
 "btn_buy",
 "btn_sell",
 "btn_history",
+"btn_report",
 "btn_activity"
 ].forEach(id=>{
 let el=document.getElementById(id);
@@ -1082,6 +1099,7 @@ else if(current.role=="Manager"){
 "btn_sell",
 "btn_buy",
 "btn_history",
+"btn_report",
 "btn_activity"
 ].forEach(id=>{
 let el=document.getElementById(id);
@@ -1103,6 +1121,7 @@ else if(current.role=="SuperManager"){
 "btn_sell",
 "btn_buy",
 "btn_history",
+"btn_report",
 "btn_activity"
 ].forEach(id=>{
 let el=document.getElementById(id);
