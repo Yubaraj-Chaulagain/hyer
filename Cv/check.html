@@ -142,7 +142,7 @@ Generate Resume
 Download Professional Resume PDF
 </button>
     <button onclick="copyAllData()">Copy All Entry Data</button>
- <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button>
+ <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button><button onclick="previewResume()">Preview Resume</button>
 </div><div class="cv">
 <div class="left">
 <div class="photoWrap">
@@ -870,6 +870,23 @@ pdf.save("Professional-Resume.pdf");
 /* REMOVE TEMP */
 document.body.removeChild(tempDiv);
 
+}
+function previewResume(){
+  // पहिले data CV मा fill गर
+  gen();
+
+  // CV section मा smooth scroll
+  document.querySelector(".cv").scrollIntoView({
+    behavior: "smooth"
+  });
+
+  // optional: highlight effect
+  let cv = document.querySelector(".cv");
+  cv.style.boxShadow = "0 0 20px #0f766e";
+
+  setTimeout(()=>{
+    cv.style.boxShadow = "0 10px 30px rgba(0,0,0,0.15)";
+  }, 1500);
 }
 </script>
 </body>
