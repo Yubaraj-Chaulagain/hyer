@@ -1,0 +1,1031 @@
+<!DOCTYPE html><html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>Pro CV Builder Advanced</title><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><style>.photoWrap{ width:120px; height:120px; overflow:hidden; border-radius:10px; position:relative; border:2px solid #fff; touch-action:none; margin:auto; }
+.photoWrap img{ width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0; cursor:grab; transform-origin:center; }
+
+body{ font-family:Arial; margin:0; background:#eef2f7; }
+.form{ padding:15px; background:#fff; }
+input, textarea, select{ width:100%; padding:10px; margin:5px 0; border-radius:6px; border:1px solid #ccc; box-sizing:border-box; }
+button{ width:100%; padding:12px; background:#0f766e; color:#fff; border:none; border-radius:6px; margin-top:5px; font-size:16px; }
+.cv{ display:flex; width:794px;          /* A4 width / min-height:1123px;    / A4 height */ margin:20px auto; background:#fff; box-shadow:0 0 10px rgba(0,0,0,0.2); overflow:hidden; }
+/* LEFT SIDE */ .left{ width:35%; background:#4b6b70; color:#fff; padding:25px; box-sizing:border-box; }
+/* RIGHT SIDE */ .right{ width:65%; padding:25px; box-sizing:border-box; }
+
+h1{ margin:0; border-bottom:3px solid black; padding-bottom:5px; word-break:break-word; }
+.section{ margin-top:15px; }
+.small{ font-size:14px; line-height:1.5; }
+.workBox{ border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:8px; }
+
+/* ===== MOBILE RESPONSIVE ===== */
+/* MOBILE VIEW SAME COMPUTER STYLE */ @media(max-width:900px){
+body{ overflow-x:auto; }
+.cv{ width:794px; min-width:794px; margin:10px auto; }
+}
+/* PDF PERFECT */ @media print{
+body{ background:#fff; }
+.cv{ width:210mm; height:297mm; margin:0; box-shadow:none; }
+}
+/* ===== PROFESSIONAL RESUME DESIGN ===== */
+
+.right{
+background:#ffffff;
+padding:35px;
+font-family:'Segoe UI',sans-serif;
+}
+
+#cvName{
+font-size:34px;
+font-weight:bold;
+color:#0f172a;
+border:none;
+margin-bottom:5px;
+letter-spacing:1px;
+}
+
+.right .section{
+margin-top:22px;
+}
+
+.right .section h3{
+background:#0f766e;
+color:#fff;
+padding:8px 12px;
+border-radius:6px;
+font-size:16px;
+letter-spacing:1px;
+margin-bottom:10px;
+}
+
+#cvSummary,
+#cvEdu,
+#cvRespons,
+#cvWork,
+#cvSkills{
+font-size:15px;
+line-height:1.8;
+color:#333;
+text-align:justify;
+}
+
+#cvWork p{
+margin-bottom:10px;
+}
+
+#cvWork b{
+color:#0f766e;
+font-size:16px;
+}
+
+.photoWrap{
+width:130px;
+height:130px;
+border-radius:50%;
+border:4px solid #fff;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+margin:auto;
+overflow:hidden;
+}
+
+.left{
+background:linear-gradient(
+180deg,
+#134e4a,
+#0f766e
+);
+color:#fff;
+}
+
+.left h3{
+font-size:18px;
+letter-spacing:1px;
+margin-top:20px;
+}
+
+.left p,
+.left h5{
+font-size:14px;
+line-height:1.7;
+word-break:break-word;
+}
+
+.cv{
+border-radius:14px;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+</style></head><body><div class="form">
+<h2>Fill CV Details</h2>
+<Input Type="Number" Placeholder="Entry Amount" required>
+<input type="file" id="photo" Required><input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1">
+<h3>Basic Info</h3>
+<input id="name" placeholder="Full Name" Required>
+<input id="location" placeholder="Location" Required>
+<input id="phone" placeholder="Phone" Required>
+<input id="email" placeholder="Email">
+<input id="dob" placeholder="Date of Birth" Required>
+<select id="gender" placeholder="Please Select Gender" Required>
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option></select>
+<input id="nationality" placeholder="Nationality" Required><h3>Summary</h3>
+<textarea id="summary" Required></textarea><h3>Work History</h3>
+<div id="workContainer"></div>
+<button onclick="addWork()">+ Add Work</button><h3>Skills</h3>
+<textarea id="skills" Required></textarea><h3>Languages</h3>
+<textarea id="languages" Required></textarea><h3>Education</h3>
+<textarea id="education" Required></textarea><h3>Responsbiliti</h3>
+<textarea id="Responsbiliti" Required></textarea><button onclick="gen()">Generate CV</button> <button onclick="generateResume()">
+Generate Resume
+</button><button onclick="downloadTXT()">Download TXT</button> <button onclick="downloadPDF()">Download PDF</button><button onclick="downloadResumePDF()">
+Download Professional Resume PDF
+</button>
+    <button onclick="copyAllData()">Copy All Entry Data</button>
+ <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button><button onclick="previewResume()">Preview Resume</button><button onclick="generateAI()">Generate AI Content (Groq)</button>
+</div><div class="cv">
+<div class="left">
+<div class="photoWrap">
+<img id="cvPhoto">
+</div>
+
+<h3><u>Contact</u></h3>
+<p><h5>Location:<p id="cvLocation"></p></h5></p> 
+<h5>Phone:<p id="cvPhone"></p></h5>
+<h5>Email:<p id="cvEmail"></p></h5>
+<h5>Dob:<p id="cvDob"></p></h5>
+<h5>Gender:<p id="cvgender"></p></h5>    
+<h5>Nationality:<p id="cvNationality"></p></h5>
+    <h3><u>Skills</u></h3>
+<p id="cvSkills"></p><h3><u>Languages</u></h3>
+<p id="cvLang"></p>
+</div><div class="right">
+<h1 id="cvName">Your Name</h1><div class="section">
+<h3>PROFESSIONAL SUMMARY</h3>
+<p id="cvSummary" class="small"></p>
+</div><div class="section">
+<h3>WORK HISTORY</h3>
+<div id="cvWork"></div>
+</div><div class="section">
+<h3>EDUCATION</h3>
+<p id="cvEdu"></p>
+</div>
+    <div class="section">
+<h3>Responsibilities</h3>
+<p id="cvRespons"></p>
+</div>
+</div>
+</div>
+  <h3>Saved CV List</h3>
+<div id="dataList"></div> 
+<div id="previewModal" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%; height:100%;
+background:rgba(0,0,0,0.7);
+z-index:9999;
+overflow:auto;
+">
+
+  <div style="
+  width:90%;
+  max-width:900px;
+  margin:40px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  position:relative;
+  ">
+
+    <button onclick="closePreview()" style="
+      position:absolute;
+      right:10px;
+      top:10px;
+      background:red;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:5px;
+      cursor:pointer;
+    ">Close</button>
+
+    <div id="previewContent"></div>
+
+  </div>
+</div>
+ </body>
+    <script>
+let workCount = 0;
+
+function addWork(){
+workCount++;
+let div=document.createElement('div');
+div.className='workBox';
+div.innerHTML=`
+<input placeholder="Job Title" id="job${workCount}">
+<input placeholder="Company" id="company${workCount}">
+<input placeholder="Start Date" id="start${workCount}">
+<input placeholder="End Date" id="end${workCount}">
+<input placeholder="Address" id="address${workCount}">
+
+<textarea placeholder="Description" id="desc${workCount}"></textarea>
+`;
+document.getElementById('workContainer').appendChild(div);
+}
+
+function gen(){
+
+document.getElementById("cvName").innerText =
+document.getElementById("name").value || "Your Name";
+
+document.getElementById("cvLocation").innerText =
+document.getElementById("location").value || "";
+
+document.getElementById("cvPhone").innerText =
+document.getElementById("phone").value || "";
+
+document.getElementById("cvEmail").innerText =
+document.getElementById("email").value || "";
+
+document.getElementById("cvDob").innerText =
+document.getElementById("dob").value || "";
+    
+document.getElementById("cvgender").innerText =
+document.getElementById("gender").value || "";
+
+document.getElementById("cvNationality").innerText =
+document.getElementById("nationality").value || "";
+
+document.getElementById("cvSummary").innerText =
+document.getElementById("summary").value || "";
+
+document.getElementById("cvSkills").innerText =
+document.getElementById("skills").value || "";
+
+document.getElementById("cvLang").innerText =
+document.getElementById("languages").value || "";
+
+document.getElementById("cvEdu").innerText =
+document.getElementById("education").value || "";
+
+document.getElementById("cvRespons").innerText =
+document.getElementById("Responsbiliti").value || "";
+
+/* WORK HISTORY */
+let workHTML = "";
+
+for(let i=1;i<=workCount;i++){
+let job=document.getElementById('job'+i)?.value||"";
+let company=document.getElementById('company'+i)?.value||"";
+let start=document.getElementById('start'+i)?.value||"";
+let end=document.getElementById('end'+i)?.value||"";
+let address=document.getElementById('address'+i)?.value||"";
+let desc=document.getElementById('desc'+i)?.value||"";
+
+if(job || company){
+workHTML += `
+<p><b>${job}</b> (${start} - ${end})</p>
+<p>${company} | ${address}</p>
+<p class='small'>${desc}</p><br>
+`;
+}
+}
+
+document.getElementById("cvWork").innerHTML = workHTML;
+
+/* PHOTO */
+let file = document.getElementById("photo").files[0];
+if(file){
+let reader = new FileReader();
+reader.onload = function(e){
+document.getElementById("cvPhoto").src = e.target.result;
+};
+reader.readAsDataURL(file);
+}
+
+}
+    </script>
+    <script>
+
+async function downloadPDF(){
+  const { jsPDF } = window.jspdf;
+
+  let cv = document.querySelector(".cv");
+
+  // Convert HTML to canvas
+  let canvas = await html2canvas(cv, {
+    scale: 2
+  });
+
+  let imgData = canvas.toDataURL("image/png");
+
+  // A4 size
+  let pdf = new jsPDF("p", "mm", "a4");
+
+  let imgWidth = 210;
+  let pageHeight = 297;
+
+  let imgHeight = canvas.height * imgWidth / canvas.width;
+
+  let position = 0;
+
+  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+
+  // If content is long → multiple pages
+  while (imgHeight > pageHeight){
+    position = position - pageHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    imgHeight -= pageHeight;
+  }
+
+  pdf.save("cv-design.pdf");
+}
+
+        async function syncToSheet(){
+  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+
+  for(let data of all){
+    await fetch("YOUR_WEB_APP_URL", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+  }
+
+  localStorage.removeItem("cvData");
+  alert("Synced to Google Sheets 🚀");
+}
+
+
+        function loadList(){
+  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+  let html = "";
+
+  all.forEach(d => {
+    html += `
+      <div class="workBox">
+        <b>${d.name}</b><br>
+        ${d.phone}<br><br>
+
+        <button onclick="editData(${d.id})">Edit</button>
+        <button onclick="deleteData(${d.id})">Delete</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("dataList").innerHTML = html;
+}
+function deleteData(id){
+  if(!confirm("Delete this CV?")) return;
+
+  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+  all = all.filter(d => d.id !== id);
+
+  localStorage.setItem("cvData", JSON.stringify(all));
+  loadList();
+}
+
+let editId = null; // ✅ ADD THIS        
+function editData(id){
+  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+  let d = all.find(x => x.id === id);
+  if(!d) return;
+
+ document.getElementById("name").value = d.name;
+document.getElementById("location").value = d.location;
+document.getElementById("phone").value = d.phone;
+document.getElementById("email").value = d.email;
+document.getElementById("dob").value = d.dob;
+document.getElementById("gender").value = d.gender;
+document.getElementById("nationality").value = d.nationality;
+document.getElementById("summary").value = d.summary;
+document.getElementById("skills").value = d.skills;
+document.getElementById("languages").value = d.languages;
+document.getElementById("education").value = d.education;
+document.getElementById("Responsbiliti").value = d.Responsbiliti;
+
+  // ✅ load WORKS
+  document.getElementById("workContainer").innerHTML = "";
+  workCount = 0;
+
+  d.works?.forEach(w => {
+    addWork();
+    document.getElementById('job'+workCount).value = w.job;
+    document.getElementById('company'+workCount).value = w.company;
+    document.getElementById('start'+workCount).value = w.start;
+    document.getElementById('end'+workCount).value = w.end;
+    document.getElementById('address'+workCount).value = w.address;
+    document.getElementById('desc'+workCount).value = w.desc;
+  });
+
+  // ✅ load PHOTO
+  if(d.photo){
+    document.getElementById("cvPhoto").src = d.photo;
+  }
+
+  editId = id;
+  alert("Editing Mode ✏️");
+}
+  function saveOffline(){
+  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+
+  // ✅ collect WORK DATA
+  let works = [];
+  for(let i=1;i<=workCount;i++){
+    let job = document.getElementById('job'+i)?.value || "";
+    let company = document.getElementById('company'+i)?.value || "";
+    let start = document.getElementById('start'+i)?.value || "";
+    let end = document.getElementById('end'+i)?.value || "";
+    let address = document.getElementById('address'+i)?.value || "";
+    let desc = document.getElementById('desc'+i)?.value || "";
+
+    if(job || company){
+      works.push({job, company, start, end, address, desc});
+    }
+  }
+
+  // ✅ photo (base64)
+  let photoData = document.getElementById("cvPhoto").src || "";
+
+  let newData = {
+  id: editId || Date.now(),
+  name: document.getElementById("name").value,
+  location: document.getElementById("location").value,
+  phone: document.getElementById("phone").value,
+  email: document.getElementById("email").value,
+  dob: document.getElementById("dob").value,
+  gender: document.getElementById("gender").value,
+  nationality: document.getElementById("nationality").value,
+  summary: document.getElementById("summary").value,
+  skills: document.getElementById("skills").value,
+  languages: document.getElementById("languages").value,
+  education: document.getElementById("education").value,
+  Responsbiliti: document.getElementById("Responsbiliti").value,
+  works: works,
+  photo: photoData
+};
+
+  if(editId){
+    all = all.map(d => d.id === editId ? newData : d);
+  } else {
+    all.push(newData);
+  }
+
+  localStorage.setItem("cvData", JSON.stringify(all));
+
+  clearForm();
+  loadList();
+
+  alert(editId ? "Updated ✅" : "Saved ✅");
+}
+        
+   function clearForm(){
+  name.value = "";
+  location.value = "";
+  phone.value = "";
+  email.value = "";
+  dob.value = "";
+  gender.value = "";
+  nationality.value = "";
+  summary.value = "";
+  skills.value = "";
+  languages.value = "";
+  education.value = "";
+  Responsbiliti.value = "";
+
+  document.getElementById("workContainer").innerHTML = "";
+  document.getElementById("cvPhoto").src = "";
+
+  workCount = 0;
+  editId = null;
+}
+        
+        window.onload = function(){
+  loadList();
+};
+        
+        
+        </script>
+
+<script>
+function copyAllData(){
+
+  // collect work history
+  let works = "";
+
+  for(let i=1;i<=workCount;i++){
+
+    let job = document.getElementById('job'+i)?.value || "";
+    let company = document.getElementById('company'+i)?.value || "";
+    let start = document.getElementById('start'+i)?.value || "";
+    let end = document.getElementById('end'+i)?.value || "";
+    let address = document.getElementById('address'+i)?.value || "";
+    let desc = document.getElementById('desc'+i)?.value || "";
+
+    if(job || company){
+      works += `
+Job Title: ${job}
+Company: ${company}
+Date: ${start} - ${end}
+Address: ${address}
+Description: ${desc}
+
+`;
+    }
+  }
+
+  // make full text
+  let text = `
+Full Name: ${document.getElementById("name").value}
+Location: ${document.getElementById("location").value}
+Phone: ${document.getElementById("phone").value}
+Email: ${document.getElementById("email").value}
+Date of Birth: ${document.getElementById("dob").value}
+Gender: ${document.getElementById("gender").value}
+Nationality: ${document.getElementById("nationality").value}
+
+SUMMARY:
+${document.getElementById("summary").value}
+
+SKILLS:
+${document.getElementById("skills").value}
+
+LANGUAGES:
+${document.getElementById("languages").value}
+
+EDUCATION:
+${document.getElementById("education").value}
+
+Responsibilities:
+${document.getElementById("Responsbiliti").value}
+
+WORK HISTORY:
+${works}
+`;
+
+  // copy to clipboard
+  navigator.clipboard.writeText(text);
+
+  alert("All Entry Data Copied ✅");
+}
+</script>
+<script>
+let scale = 1;
+let posX = 0;
+let posY = 0;
+
+const img = document.getElementById("cvPhoto");
+const zoom = document.getElementById("zoomRange");
+
+/* RANGE ZOOM */
+zoom.addEventListener("input", function(){
+scale = parseFloat(this.value);
+updateTransform();
+});
+
+/* PINCH ZOOM SYSTEM */
+
+let initialDistance = 0;
+let initialScale = 1;
+
+img.addEventListener("touchstart", function(e){
+
+if(e.touches.length === 2){
+
+e.preventDefault();
+
+initialDistance = getDistance(
+  e.touches[0],
+  e.touches[1]
+);
+
+initialScale = scale;
+
+}
+
+},{ passive:false });
+
+img.addEventListener("touchmove", function(e){
+
+if(e.touches.length === 2){
+
+e.preventDefault();
+
+let currentDistance = getDistance(
+  e.touches[0],
+  e.touches[1]
+);
+
+scale =
+  initialScale *
+  (currentDistance / initialDistance);
+
+/* LIMIT */
+scale = Math.max(1, Math.min(scale, 3));
+
+zoom.value = scale;
+
+updateTransform();
+
+}
+
+},{ passive:false });
+
+function getDistance(t1, t2){
+
+return Math.sqrt(
+Math.pow(t2.clientX - t1.clientX, 2) +
+Math.pow(t2.clientY - t1.clientY, 2)
+);
+
+}
+
+function updateTransform(){
+  img.style.transform =
+    `translate(${posX}px, ${posY}px) scale(${scale})`;
+}
+
+/* DRAG SYSTEM */
+let isDragging = false;
+let startX, startY;
+
+img.addEventListener("mousedown", startDrag);
+img.addEventListener("touchstart", startDrag);
+
+function startDrag(e){
+  isDragging = true;
+
+  let point = e.touches ? e.touches[0] : e;
+
+  startX = point.clientX - posX;
+  startY = point.clientY - posY;
+}
+
+document.addEventListener("mousemove", drag);
+document.addEventListener("touchmove", drag);
+
+function drag(e){
+  if(!isDragging) return;
+
+  let point = e.touches ? e.touches[0] : e;
+
+  posX = point.clientX - startX;
+  posY = point.clientY - startY;
+
+  updateTransform();
+}
+
+document.addEventListener("mouseup", stopDrag);
+document.addEventListener("touchend", stopDrag);
+
+function stopDrag(){
+  isDragging = false;
+}
+
+
+function generateResume(){
+
+let jobs = [];
+
+for(let i=1;i<=workCount;i++){
+
+let job =
+document.getElementById('job'+i)?.value || "";
+
+if(job){
+jobs.push(job);
+}
+
+}
+
+let name =
+document.getElementById("name").value || "";
+
+let nationality =
+document.getElementById("nationality").value || "";
+
+let skills =
+document.getElementById("skills").value || "";
+
+let education =
+document.getElementById("education").value || "";
+
+let summary = `
+${name} is a hardworking and motivated professional with experience as ${jobs.join(", ")}. Skilled in ${skills}. A dedicated ${nationality} worker with strong teamwork, communication, and problem-solving abilities seeking career growth opportunities.
+`;
+
+document.getElementById("cvName").innerText = name;
+
+document.getElementById("cvSummary").innerText = summary;
+
+document.getElementById("cvSkills").innerText = skills;
+
+document.getElementById("cvEdu").innerText = education;
+
+/* AUTO RESPONSIBILITIES */
+document.getElementById("cvRespons").innerText =
+"Responsible for daily work activities, maintaining safety, teamwork, and completing assigned tasks efficiently.";
+
+/* SHORT WORK HISTORY */
+let workHTML = "";
+
+for(let i=1;i<=workCount;i++){
+
+let job =
+document.getElementById('job'+i)?.value || "";
+
+let company =
+document.getElementById('company'+i)?.value || "";
+
+if(job || company){
+
+workHTML += `
+<p><b>${job}</b> - ${company}</p>
+`;
+
+}
+
+}
+
+document.getElementById("cvWork").innerHTML = workHTML;
+
+/* PHOTO */
+let file =
+document.getElementById("photo").files[0];
+
+if(file){
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+document.getElementById("cvPhoto").src =
+e.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+alert("Professional Resume Generated ✅");
+
+}
+
+
+
+async function downloadResumePDF(){
+
+const { jsPDF } = window.jspdf;
+
+/* CREATE TEMP RESUME */
+let resumeHTML = `
+<div id="resumePDF"
+style="
+width:794px;
+padding:40px;
+font-family:Segoe UI;
+background:white;
+color:#111;
+">
+
+<div style="text-align:center;">
+
+<img src="${document.getElementById("cvPhoto").src}"
+style="
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #0f766e;
+">
+
+<h1 style="
+margin-top:10px;
+font-size:34px;
+color:#0f172a;
+">
+${document.getElementById("name").value}
+</h1>
+
+<p>
+${document.getElementById("phone").value}
+ |
+${document.getElementById("email").value}
+</p>
+
+<p>
+${document.getElementById("location").value}
+</p>
+
+</div>
+
+<hr style="margin:25px 0;">
+
+<h2 style="color:#0f766e;">
+Professional Summary
+</h2>
+
+<p style="
+font-size:15px;
+line-height:1.8;
+text-align:justify;
+">
+${document.getElementById("cvSummary").innerText}
+</p>
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Skills
+</h2>
+
+<p>
+${document.getElementById("skills").value}
+</p>
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Work Experience
+</h2>
+
+${document.getElementById("cvWork").innerHTML}
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Education
+</h2>
+
+<p>
+${document.getElementById("education").value}
+</p>
+
+</div>
+`;
+
+/* TEMP DIV */
+let tempDiv = document.createElement("div");
+tempDiv.innerHTML = resumeHTML;
+
+document.body.appendChild(tempDiv);
+
+let canvas = await html2canvas(
+document.getElementById("resumePDF"),
+{
+scale:2
+});
+
+let imgData =
+canvas.toDataURL("image/png");
+
+let pdf =
+new jsPDF("p","mm","a4");
+
+let imgWidth = 210;
+
+let imgHeight =
+canvas.height * imgWidth / canvas.width;
+
+pdf.addImage(
+imgData,
+"PNG",
+0,
+0,
+imgWidth,
+imgHeight
+);
+
+pdf.save("Professional-Resume.pdf");
+
+/* REMOVE TEMP */
+document.body.removeChild(tempDiv);
+
+}
+function previewResume(){
+
+  gen();
+
+  // सही resume content (RIGHT side only)
+  let resumeHTML = document.querySelector(".right").innerHTML;
+
+  document.getElementById("previewContent").innerHTML = `
+    <div id="resumePDF">
+      ${resumeHTML}
+    </div>
+  `;
+
+  document.getElementById("previewModal").style.display = "block";
+}
+
+function closePreview(){
+  document.getElementById("previewModal").style.display = "none";
+}
+function printPreview(){
+
+  let resumeHTML = document.getElementById("previewContent").innerHTML;
+
+  let printWindow = window.open("", "", "width=900,height=700");
+
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>Resume Print</title>
+      <style>
+        body{
+          margin:0;
+          padding:20px;
+          font-family:Segoe UI, Arial;
+        }
+
+        #resumePDF{
+          width:210mm;
+          min-height:297mm;
+          padding:20px;
+        }
+
+        h1,h2,h3{
+          color:#0f766e;
+        }
+
+        img{
+          max-width:120px;
+          border-radius:50%;
+        }
+      </style>
+    </head>
+
+    <body onload="window.print(); window.close();">
+      ${resumeHTML}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+}
+
+async function generateAI(){
+
+  const apiKey = "YOUR_GROQ_API_KEY"; // 👈 यहाँ राख
+
+  let jobTitles = [];
+  for(let i=1;i<=workCount;i++){
+    let job = document.getElementById('job'+i)?.value || "";
+    if(job) jobTitles.push(job);
+  }
+
+  let prompt = `
+You are a professional CV writer.
+
+User details:
+Name: ${document.getElementById("name").value}
+Nationality: ${document.getElementById("nationality").value}
+Skills input: ${document.getElementById("skills").value}
+Jobs: ${jobTitles.join(", ")}
+
+Generate:
+1. Professional Summary (1 paragraph)
+2. Skills (bullet list)
+3. Responsibilities (bullet list)
+
+Return JSON only like:
+{
+ "summary": "...",
+ "skills": "...",
+ "responsibilities": "..."
+}
+`;
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: "llama3-70b-8192",
+      messages: [
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7
+    })
+  });
+
+  const data = await res.json();
+
+  let output = JSON.parse(data.choices[0].message.content);
+
+  // 👉 Auto fill CV fields
+  document.getElementById("cvSummary").innerText = output.summary;
+  document.getElementById("cvSkills").innerText = output.skills;
+  document.getElementById("cvRespons").innerText = output.responsibilities;
+
+  alert("AI Content Generated ✅");
+}
+</script>
+</html>
