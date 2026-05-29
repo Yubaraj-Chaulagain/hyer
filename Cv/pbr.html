@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Background Remover</title>
+
+<style>
+
+body{
+    margin:0;
+    padding:20px;
+    font-family:Arial;
+    background:#f1f5f9;
+    text-align:center;
+}
+
+.container{
+    max-width:500px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+h1{
+    color:#0f766e;
+}
+
+input{
+    width:100%;
+    margin-top:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    background:#0f766e;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.preview{
+    margin-top:20px;
+}
+
+img{
+    max-width:100%;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+canvas{
+    max-width:100%;
+    border:1px solid #ddd;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Photo Background Remover</h1>
+
+<input type="file" id="upload">
+
+<button onclick="removeBackground()">
+Remove Background
+</button>
+
+<button onclick="downloadImage()">
+Download PNG
+</button>
+
+<div class="preview">
+    <img id="original">
+    <canvas id="canvas"></canvas>
+</div>
+
+</div>
+
+<script>
+
+let originalImage = document.getElementById("original");
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+document.getElementById("upload")
+.addEventListener("change", function(e){
+
+    let file = e.target.files[0];
+
+    let reader = new FileReader();
+
+    reader.onload = function(event){
+
+        originalImage.src = event.target.result;
+
+    }
+
+    reader.readAsDataURL(file);
+
+});
+
+function removeBackground(){
+
+    let img = originalImage;
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx.drawImage(img,0,0);
+
+    let imageData = ctx.getImageData(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    let data = imageData.data;
+
+    // SIMPLE WHITE BG REMOVE
+    for(let i=0;i<data.length;i+=4){
+
+        let r = data[i];
+        let g = data[i+1];
+        let b = data[i+2];
+
+        // detect white background
+        if(
+            r > 220 &&
+            g > 220 &&
+            b > 220
+        ){
+            data[i+3] = 0;
+        }
+
+    }
+
+    ctx.putImageData(imageData,0,0);
+
+}
+
+function downloadImage(){
+
+    let link = document.createElement("a");
+
+    link.download = "background-removed.png";
+
+    link.href = canvas.toDataURL();
+
+    link.click();
+
+}
+
+</script>
+
+</body>
+</html>
