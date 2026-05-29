@@ -553,6 +553,69 @@ document.addEventListener("touchend", stopDrag);
 function stopDrag(){
   isDragging = false;
 }
+
+/* ===== RESUME GENERATE ===== */
+function genResume(){
+
+let jobs = [];
+
+for(let i=1;i<=workCount;i++){
+
+let job =
+document.getElementById('job'+i)?.value || "";
+
+if(job){
+jobs.push(job);
+}
+
+}
+
+let name =
+document.getElementById("name").value;
+
+let nationality =
+document.getElementById("nationality").value;
+
+let skills =
+document.getElementById("skills").value;
+
+let summary = `${name} is a hardworking and motivated ${jobs.join(", ")} with experience in ${skills}. A dedicated ${nationality} worker with strong teamwork and communication skills seeking career growth opportunities.`;
+
+document.getElementById("cvSummary").innerText = summary;
+
+document.getElementById("cvName").innerText = name;
+
+document.getElementById("cvSkills").innerText = skills;
+
+loadPhoto();
+
+alert("Resume Generated ✅");
+
+}
+
+/* ===== PHOTO LOAD ===== */
+function loadPhoto(){
+
+let file =
+document.getElementById("photo").files[0];
+
+if(file){
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+document.getElementById("cvPhoto").src =
+e.target.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+}
+
 </script>
 </body>
 </html>
