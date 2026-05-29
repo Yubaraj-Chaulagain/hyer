@@ -872,21 +872,29 @@ document.body.removeChild(tempDiv);
 
 }
 function previewResume(){
-  // पहिले data CV मा fill गर
+
+  // 1. पहिले CV update गर
   gen();
 
-  // CV section मा smooth scroll
-  document.querySelector(".cv").scrollIntoView({
-    behavior: "smooth"
+  // 2. CV देखिने ठाउँमा scroll
+  const cv = document.querySelector(".cv");
+
+  cv.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
   });
 
-  // optional: highlight effect
-  let cv = document.querySelector(".cv");
-  cv.style.boxShadow = "0 0 20px #0f766e";
+  // 3. Strong highlight (visible effect)
+  cv.style.transform = "scale(1.02)";
+  cv.style.transition = "0.3s ease";
+  cv.style.boxShadow = "0 0 30px #0f766e";
 
+  // 4. remove highlight after 2 sec
   setTimeout(()=>{
+    cv.style.transform = "scale(1)";
     cv.style.boxShadow = "0 10px 30px rgba(0,0,0,0.15)";
-  }, 1500);
+  }, 2000);
+
 }
 </script>
 </body>
