@@ -138,7 +138,9 @@ box-shadow:0 10px 30px rgba(0,0,0,0.15);
 <textarea id="education" Required></textarea><h3>Responsbiliti</h3>
 <textarea id="Responsbiliti" Required></textarea><button onclick="gen()">Generate CV</button> <button onclick="generateResume()">
 Generate Resume
-</button><button onclick="downloadTXT()">Download TXT</button> <button onclick="downloadPDF()">Download PDF</button>
+</button><button onclick="downloadTXT()">Download TXT</button> <button onclick="downloadPDF()">Download PDF</button><button onclick="downloadResumePDF()">
+Download Professional Resume PDF
+</button>
     <button onclick="copyAllData()">Copy All Entry Data</button>
  <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button>
 </div><div class="cv">
@@ -731,6 +733,142 @@ reader.readAsDataURL(file);
 }
 
 alert("Professional Resume Generated ✅");
+
+}
+
+<!-- PROFESSIONAL RESUME PDF BUTTON -->
+
+
+async function downloadResumePDF(){
+
+const { jsPDF } = window.jspdf;
+
+/* CREATE TEMP RESUME */
+let resumeHTML = `
+<div id="resumePDF"
+style="
+width:794px;
+padding:40px;
+font-family:Segoe UI;
+background:white;
+color:#111;
+">
+
+<div style="text-align:center;">
+
+<img src="${document.getElementById("cvPhoto").src}"
+style="
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid #0f766e;
+">
+
+<h1 style="
+margin-top:10px;
+font-size:34px;
+color:#0f172a;
+">
+${document.getElementById("name").value}
+</h1>
+
+<p>
+${document.getElementById("phone").value}
+ |
+${document.getElementById("email").value}
+</p>
+
+<p>
+${document.getElementById("location").value}
+</p>
+
+</div>
+
+<hr style="margin:25px 0;">
+
+<h2 style="color:#0f766e;">
+Professional Summary
+</h2>
+
+<p style="
+font-size:15px;
+line-height:1.8;
+text-align:justify;
+">
+${document.getElementById("cvSummary").innerText}
+</p>
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Skills
+</h2>
+
+<p>
+${document.getElementById("skills").value}
+</p>
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Work Experience
+</h2>
+
+${document.getElementById("cvWork").innerHTML}
+
+<h2 style="
+color:#0f766e;
+margin-top:25px;
+">
+Education
+</h2>
+
+<p>
+${document.getElementById("education").value}
+</p>
+
+</div>
+`;
+
+/* TEMP DIV */
+let tempDiv = document.createElement("div");
+tempDiv.innerHTML = resumeHTML;
+
+document.body.appendChild(tempDiv);
+
+let canvas = await html2canvas(
+document.getElementById("resumePDF"),
+{
+scale:2
+});
+
+let imgData =
+canvas.toDataURL("image/png");
+
+let pdf =
+new jsPDF("p","mm","a4");
+
+let imgWidth = 210;
+
+let imgHeight =
+canvas.height * imgWidth / canvas.width;
+
+pdf.addImage(
+imgData,
+"PNG",
+0,
+0,
+imgWidth,
+imgHeight
+);
+
+pdf.save("Professional-Resume.pdf");
+
+/* REMOVE TEMP */
+document.body.removeChild(tempDiv);
 
 }
 </script>
