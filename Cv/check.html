@@ -910,20 +910,68 @@ document.body.removeChild(tempDiv);
 }
 function previewResume(){
 
-  // CV update गर
   gen();
 
-  // CV HTML copy गर
-  let cvHTML = document.querySelector(".cv").innerHTML;
+  // IMPORTANT: CV होइन, Resume layout use गर
+  let resumeHTML = document.getElementById("cv").innerHTML || document.querySelector(".right").innerHTML;
 
-  // modal मा show गर
-  document.getElementById("previewContent").innerHTML = cvHTML;
+  document.getElementById("previewContent").innerHTML = `
+    <div id="resumePDF">
+      ${resumeHTML}
+    </div>
+  `;
 
   document.getElementById("previewModal").style.display = "block";
 }
 
 function closePreview(){
   document.getElementById("previewModal").style.display = "none";
+}
+function printPreview(){
+
+  // Resume content (IMPORTANT: .cv होइन)
+  let resumeHTML = document.getElementById("previewContent").innerHTML;
+
+  let printWindow = window.open("", "", "width=900,height=700");
+
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>Resume Print</title>
+      <style>
+        body{
+          margin:0;
+          padding:20px;
+          font-family:Segoe UI, Arial;
+          background:white;
+        }
+
+        /* Resume clean print style */
+        #resumePDF{
+          width:210mm;
+          min-height:297mm;
+          margin:auto;
+          padding:20px;
+          box-sizing:border-box;
+        }
+
+        h1,h2,h3{
+          color:#0f766e;
+        }
+
+        img{
+          border-radius:50%;
+        }
+      </style>
+    </head>
+
+    <body onload="window.print(); window.close();">
+      ${resumeHTML}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
 }
 </script>
 </html>
