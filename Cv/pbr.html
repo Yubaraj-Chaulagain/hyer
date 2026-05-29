@@ -1,168 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AI Background Remover</title>
+<title>Face Only Photo Generator</title>
 
 <style>
-
 body{
-    margin:0;
-    padding:20px;
-    font-family:Arial;
-    background:#f1f5f9;
-    text-align:center;
-}
-
-.container{
-    max-width:500px;
-    margin:auto;
-    background:#fff;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
-}
-
-h1{
-    color:#0f766e;
-}
-
-input{
-    width:100%;
-    margin-top:15px;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    border:none;
-    border-radius:8px;
-    background:#0f766e;
-    color:#fff;
-    font-size:16px;
-    cursor:pointer;
-}
-
-.preview{
-    margin-top:20px;
-}
-
-img{
-    max-width:100%;
-    border-radius:10px;
-    margin-top:15px;
+  font-family:Arial;
+  text-align:center;
+  background:#eef2f7;
+  padding:20px;
 }
 
 canvas{
-    max-width:100%;
-    border:1px solid #ddd;
-    border-radius:10px;
-    margin-top:15px;
+  margin-top:20px;
+  border-radius:50%;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 
+button{
+  margin-top:15px;
+  padding:10px 15px;
+  background:#0f766e;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<h2>Face Only Photo (Background Hidden)</h2>
 
-<h1>Photo Background Remover</h1>
+<input type="file" id="photoInput" accept="image/*">
 
-<input type="file" id="upload">
+<br>
 
-<button onclick="removeBackground()">
-Remove Background
-</button>
+<canvas id="canvas"></canvas>
 
-<button onclick="downloadImage()">
-Download PNG
-</button>
+<br>
 
-<div class="preview">
-    <img id="original">
-    <canvas id="canvas"></canvas>
-</div>
-
-</div>
+<button onclick="downloadImage()">Download Image</button>
 
 <script>
-
-let originalImage = document.getElementById("original");
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-document.getElementById("upload")
-.addEventListener("change", function(e){
+let finalImage = null;
 
-    let file = e.target.files[0];
+document.getElementById("photoInput").addEventListener("change", function(e){
 
-    let reader = new FileReader();
+  let file = e.target.files[0];
+  let reader = new FileReader();
 
-    reader.onload = function(event){
+  reader.onload = function(event){
 
-        originalImage.src = event.target.result;
+    let img = new Image();
+    img.src = event.target.result;
 
+    img.onload = function(){
+
+      canvas.width = 250;
+      canvas.height = 250;
+
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // 🔥 circle crop (face only effect)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(125, 125, 110, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // fit image
+      ctx.drawImage(img, 0, 0, 250, 250);
+
+      ctx.restore();
+
+      finalImage = canvas.toDataURL("image/png");
     }
 
-    reader.readAsDataURL(file);
+  }
+
+  reader.readAsDataURL(file);
 
 });
 
-function removeBackground(){
-
-    let img = originalImage;
-
-    canvas.width = img.width;
-    canvas.height = img.height;
-
-    ctx.drawImage(img,0,0);
-
-    let imageData = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    let data = imageData.data;
-
-    // SIMPLE WHITE BG REMOVE
-    for(let i=0;i<data.length;i+=4){
-
-        let r = data[i];
-        let g = data[i+1];
-        let b = data[i+2];
-
-        // detect white background
-        if(
-            r > 220 &&
-            g > 220 &&
-            b > 220
-        ){
-            data[i+3] = 0;
-        }
-
-    }
-
-    ctx.putImageData(imageData,0,0);
-
-}
-
 function downloadImage(){
 
-    let link = document.createElement("a");
+  if(!finalImage){
+    alert("Please upload image first!");
+    return;
+  }
 
-    link.download = "background-removed.png";
-
-    link.href = canvas.toDataURL();
-
-    link.click();
-
+  let a = document.createElement("a");
+  a.href = finalImage;
+  a.download = "face-only.png";
+  a.click();
 }
-
 </script>
 
 </body>
