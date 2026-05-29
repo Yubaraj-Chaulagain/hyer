@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>White Background Face Photo</title>
+
+<style>
+body{
+  font-family:Arial;
+  text-align:center;
+  background:#eef2f7;
+  padding:20px;
+}
+
+canvas{
+  margin-top:20px;
+  border:2px solid #ddd;
+  border-radius:10px;
+  background:white;
+}
+
+button{
+  margin-top:15px;
+  padding:10px 15px;
+  background:#0f766e;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Face Photo → White Background</h2>
+
+<input type="file" id="photoInput" accept="image/*">
+
+<br>
+
+<canvas id="canvas"></canvas>
+
+<br>
+
+<button onclick="downloadImg()">Download</button>
+
+<script>
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+let finalImage = null;
+
+document.getElementById("photoInput").addEventListener("change", function(e){
+
+  let file = e.target.files[0];
+  let reader = new FileReader();
+
+  reader.onload = function(event){
+
+    let img = new Image();
+    img.src = event.target.result;
+
+    img.onload = function(){
+
+      canvas.width = 250;
+      canvas.height = 250;
+
+      ctx.clearRect(0,0,250,250);
+
+      // ✅ WHITE BACKGROUND
+      ctx.fillStyle = "white";
+      ctx.fillRect(0,0,250,250);
+
+      // 🔥 FACE CIRCLE AREA (passport style)
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(125, 120, 95, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // draw image
+      ctx.drawImage(img, 0, 0, 250, 250);
+
+      ctx.restore();
+
+      finalImage = canvas.toDataURL("image/png");
+    }
+
+  }
+
+  reader.readAsDataURL(file);
+
+});
+
+function downloadImg(){
+  if(!finalImage){
+    alert("Upload photo first!");
+    return;
+  }
+
+  let a = document.createElement("a");
+  a.href = finalImage;
+  a.download = "passport-white-bg.png";
+  a.click();
+}
+</script>
+
+</body>
+</html>
