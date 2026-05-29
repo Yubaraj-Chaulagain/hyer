@@ -554,8 +554,8 @@ function stopDrag(){
   isDragging = false;
 }
 
-/* ===== RESUME GENERATE ===== */
-function genResume(){
+
+function generateResume(){
 
 let jobs = [];
 
@@ -571,31 +571,57 @@ jobs.push(job);
 }
 
 let name =
-document.getElementById("name").value;
+document.getElementById("name").value || "";
 
 let nationality =
-document.getElementById("nationality").value;
+document.getElementById("nationality").value || "";
 
 let skills =
-document.getElementById("skills").value;
+document.getElementById("skills").value || "";
 
-let summary = `${name} is a hardworking and motivated ${jobs.join(", ")} with experience in ${skills}. A dedicated ${nationality} worker with strong teamwork and communication skills seeking career growth opportunities.`;
+let education =
+document.getElementById("education").value || "";
 
-document.getElementById("cvSummary").innerText = summary;
+let summary = `
+${name} is a hardworking and motivated professional with experience as ${jobs.join(", ")}. Skilled in ${skills}. A dedicated ${nationality} worker with strong teamwork, communication, and problem-solving abilities seeking career growth opportunities.
+`;
 
 document.getElementById("cvName").innerText = name;
 
+document.getElementById("cvSummary").innerText = summary;
+
 document.getElementById("cvSkills").innerText = skills;
 
-loadPhoto();
+document.getElementById("cvEdu").innerText = education;
 
-alert("Resume Generated ✅");
+/* AUTO RESPONSIBILITIES */
+document.getElementById("cvRespons").innerText =
+"Responsible for daily work activities, maintaining safety, teamwork, and completing assigned tasks efficiently.";
+
+/* SHORT WORK HISTORY */
+let workHTML = "";
+
+for(let i=1;i<=workCount;i++){
+
+let job =
+document.getElementById('job'+i)?.value || "";
+
+let company =
+document.getElementById('company'+i)?.value || "";
+
+if(job || company){
+
+workHTML += `
+<p><b>${job}</b> - ${company}</p>
+`;
 
 }
 
-/* ===== PHOTO LOAD ===== */
-function loadPhoto(){
+}
 
+document.getElementById("cvWork").innerHTML = workHTML;
+
+/* PHOTO */
 let file =
 document.getElementById("photo").files[0];
 
@@ -614,8 +640,9 @@ reader.readAsDataURL(file);
 
 }
 
-}
+alert("Professional Resume Generated ✅");
 
+}
 </script>
 </body>
 </html>
