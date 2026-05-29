@@ -142,7 +142,7 @@ Generate Resume
 Download Professional Resume PDF
 </button>
     <button onclick="copyAllData()">Copy All Entry Data</button>
- <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button><button onclick="previewResume()">Preview Resume</button>
+ <button onclick="saveOffline()">Save Offline</button>        <button onclick="syncToSheet()">Sync to Google Sheet</button><button onclick="previewResume()">Preview Resume</button><button onclick="generateAI()">Generate AI Content (Groq)</button>
 </div><div class="cv">
 <div class="left">
 <div class="photoWrap">
@@ -773,7 +773,6 @@ alert("Professional Resume Generated ✅");
 
 }
 
-<!-- PROFESSIONAL RESUME PDF BUTTON -->
 
 
 async function downloadResumePDF(){
@@ -968,6 +967,65 @@ function printPreview(){
   `);
 
   printWindow.document.close();
+}
+
+async function generateAI(){
+
+  const apiKey = "YOUR_GROQ_API_KEY"; // 👈 यहाँ राख
+
+  let jobTitles = [];
+  for(let i=1;i<=workCount;i++){
+    let job = document.getElementById('job'+i)?.value || "";
+    if(job) jobTitles.push(job);
+  }
+
+  let prompt = `
+You are a professional CV writer.
+
+User details:
+Name: ${document.getElementById("name").value}
+Nationality: ${document.getElementById("nationality").value}
+Skills input: ${document.getElementById("skills").value}
+Jobs: ${jobTitles.join(", ")}
+
+Generate:
+1. Professional Summary (1 paragraph)
+2. Skills (bullet list)
+3. Responsibilities (bullet list)
+
+Return JSON only like:
+{
+ "summary": "...",
+ "skills": "...",
+ "responsibilities": "..."
+}
+`;
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: "llama3-70b-8192",
+      messages: [
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7
+    })
+  });
+
+  const data = await res.json();
+
+  let output = JSON.parse(data.choices[0].message.content);
+
+  // 👉 Auto fill CV fields
+  document.getElementById("cvSummary").innerText = output.summary;
+  document.getElementById("cvSkills").innerText = output.skills;
+  document.getElementById("cvRespons").innerText = output.responsibilities;
+
+  alert("AI Content Generated ✅");
 }
 </script>
 </html>
