@@ -450,10 +450,68 @@ let posY = 0;
 const img = document.getElementById("cvPhoto");
 const zoom = document.getElementById("zoomRange");
 
+/* RANGE ZOOM */
 zoom.addEventListener("input", function(){
-  scale = this.value;
-  updateTransform();
+scale = parseFloat(this.value);
+updateTransform();
 });
+
+/* PINCH ZOOM SYSTEM */
+
+let initialDistance = 0;
+let initialScale = 1;
+
+img.addEventListener("touchstart", function(e){
+
+if(e.touches.length === 2){
+
+e.preventDefault();
+
+initialDistance = getDistance(
+  e.touches[0],
+  e.touches[1]
+);
+
+initialScale = scale;
+
+}
+
+},{ passive:false });
+
+img.addEventListener("touchmove", function(e){
+
+if(e.touches.length === 2){
+
+e.preventDefault();
+
+let currentDistance = getDistance(
+  e.touches[0],
+  e.touches[1]
+);
+
+scale =
+  initialScale *
+  (currentDistance / initialDistance);
+
+/* LIMIT */
+scale = Math.max(1, Math.min(scale, 3));
+
+zoom.value = scale;
+
+updateTransform();
+
+}
+
+},{ passive:false });
+
+function getDistance(t1, t2){
+
+return Math.sqrt(
+Math.pow(t2.clientX - t1.clientX, 2) +
+Math.pow(t2.clientY - t1.clientY, 2)
+);
+
+}
 
 function updateTransform(){
   img.style.transform =
