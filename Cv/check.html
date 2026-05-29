@@ -9,27 +9,23 @@ body{ font-family:Arial; margin:0; background:#eef2f7; }
 .form{ padding:15px; background:#fff; }
 input, textarea, select{ width:100%; padding:10px; margin:5px 0; border-radius:6px; border:1px solid #ccc; box-sizing:border-box; }
 button{ width:100%; padding:12px; background:#0f766e; color:#fff; border:none; border-radius:6px; margin-top:5px; font-size:16px; }
-.cv{ display:flex; max-width:900px; margin:20px auto; background:#fff; min-height:100vh; }
-.left{ width:35%; background:#4b6b70; color:#fff; padding:20px; box-sizing:border-box; }
-.right{ width:65%; padding:20px; box-sizing:border-box; }
+.cv{ display:flex; width:794px;          /* A4 width / min-height:1123px;    / A4 height */ margin:20px auto; background:#fff; box-shadow:0 0 10px rgba(0,0,0,0.2); overflow:hidden; }
+/* LEFT SIDE */ .left{ width:35%; background:#4b6b70; color:#fff; padding:25px; box-sizing:border-box; }
+/* RIGHT SIDE */ .right{ width:65%; padding:25px; box-sizing:border-box; }
+
 h1{ margin:0; border-bottom:3px solid black; padding-bottom:5px; word-break:break-word; }
 .section{ margin-top:15px; }
 .small{ font-size:14px; line-height:1.5; }
 .workBox{ border:1px solid #ddd; padding:10px; margin:10px 0; border-radius:8px; }
 
 /* ===== MOBILE RESPONSIVE ===== */
-@media(max-width:768px){
-.cv{ flex-direction:column; width:100%; margin:0; }
-.left{ width:100%; text-align:center; }
-.right{ width:100%; }
-.photoWrap{ margin:auto; }
-#zoomRange{ width:100%; margin-top:10px; }
-h1{ font-size:24px; }
+/* MOBILE VIEW SAME COMPUTER STYLE */ @media(max-width:900px){
+body{ overflow-x:auto; }
+.cv{ width:794px; min-width:794px; margin:10px auto; }
 }
-/* ===== PDF PERFECT SIZE ===== */
-@media print{
+/* PDF PERFECT */ @media print{
 body{ background:#fff; }
-.cv{ width:210mm; min-height:297mm; margin:0; box-shadow:none; }
+.cv{ width:210mm; height:297mm; margin:0; box-shadow:none; }
 }
 </style></head><body><div class="form">
 <h2>Fill CV Details</h2>
