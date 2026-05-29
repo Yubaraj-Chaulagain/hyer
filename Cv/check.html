@@ -912,8 +912,8 @@ function previewResume(){
 
   gen();
 
-  // IMPORTANT: CV होइन, Resume layout use गर
-  let resumeHTML = document.getElementById("cv").innerHTML || document.querySelector(".right").innerHTML;
+  // सही resume content (RIGHT side only)
+  let resumeHTML = document.querySelector(".right").innerHTML;
 
   document.getElementById("previewContent").innerHTML = `
     <div id="resumePDF">
@@ -929,7 +929,6 @@ function closePreview(){
 }
 function printPreview(){
 
-  // Resume content (IMPORTANT: .cv होइन)
   let resumeHTML = document.getElementById("previewContent").innerHTML;
 
   let printWindow = window.open("", "", "width=900,height=700");
@@ -943,16 +942,12 @@ function printPreview(){
           margin:0;
           padding:20px;
           font-family:Segoe UI, Arial;
-          background:white;
         }
 
-        /* Resume clean print style */
         #resumePDF{
           width:210mm;
           min-height:297mm;
-          margin:auto;
           padding:20px;
-          box-sizing:border-box;
         }
 
         h1,h2,h3{
@@ -960,6 +955,7 @@ function printPreview(){
         }
 
         img{
+          max-width:120px;
           border-radius:50%;
         }
       </style>
