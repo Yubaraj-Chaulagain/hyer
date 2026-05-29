@@ -177,7 +177,44 @@ Download Professional Resume PDF
 </div>
 </div>
   <h3>Saved CV List</h3>
-<div id="dataList"></div>  
+<div id="dataList"></div> 
+<div id="previewModal" style="
+display:none;
+position:fixed;
+top:0; left:0;
+width:100%; height:100%;
+background:rgba(0,0,0,0.7);
+z-index:9999;
+overflow:auto;
+">
+
+  <div style="
+  width:90%;
+  max-width:900px;
+  margin:40px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  position:relative;
+  ">
+
+    <button onclick="closePreview()" style="
+      position:absolute;
+      right:10px;
+      top:10px;
+      background:red;
+      color:#fff;
+      border:none;
+      padding:8px 12px;
+      border-radius:5px;
+      cursor:pointer;
+    ">Close</button>
+
+    <div id="previewContent"></div>
+
+  </div>
+</div>
+ </body>
     <script>
 let workCount = 0;
 
@@ -873,29 +910,20 @@ document.body.removeChild(tempDiv);
 }
 function previewResume(){
 
-  // 1. पहिले CV update गर
+  // CV update गर
   gen();
 
-  // 2. CV देखिने ठाउँमा scroll
-  const cv = document.querySelector(".cv");
+  // CV HTML copy गर
+  let cvHTML = document.querySelector(".cv").innerHTML;
 
-  cv.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  // modal मा show गर
+  document.getElementById("previewContent").innerHTML = cvHTML;
 
-  // 3. Strong highlight (visible effect)
-  cv.style.transform = "scale(1.02)";
-  cv.style.transition = "0.3s ease";
-  cv.style.boxShadow = "0 0 30px #0f766e";
+  document.getElementById("previewModal").style.display = "block";
+}
 
-  // 4. remove highlight after 2 sec
-  setTimeout(()=>{
-    cv.style.transform = "scale(1)";
-    cv.style.boxShadow = "0 10px 30px rgba(0,0,0,0.15)";
-  }, 2000);
-
+function closePreview(){
+  document.getElementById("previewModal").style.display = "none";
 }
 </script>
-</body>
 </html>
