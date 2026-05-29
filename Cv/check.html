@@ -30,7 +30,8 @@ body{ background:#fff; }
 </style></head><body><div class="form">
 <h2>Fill CV Details</h2>
 <Input Type="Number" Placeholder="Entry Amount" required>
-<input type="file" id="photo" Required><h3>Basic Info</h3>
+<input type="file" id="photo" Required><input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1">
+<h3>Basic Info</h3>
 <input id="name" placeholder="Full Name" Required>
 <input id="location" placeholder="Location" Required>
 <input id="phone" placeholder="Phone" Required>
@@ -55,8 +56,6 @@ body{ background:#fff; }
 <div class="photoWrap">
 <img id="cvPhoto">
 </div>
-
-<input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1">
 
 <h3><u>Contact</u></h3>
 <p><h5>Location:<p id="cvLocation"></p></h5></p> 
