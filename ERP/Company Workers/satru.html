@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance System</title>
+
+<style>
+body{font-family:Arial;margin:10px}
+input,select,button{width:100%;padding:10px;margin:5px 0}
+button{background:#2563eb;color:#fff;border:none;border-radius:5px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #333;padding:8px;text-align:left}
+th{background:#f2f2f2}
+</style>
+</head>
+
+<body>
+
+<h2>Member Registration</h2>
+
+<input id="mid" placeholder="Member ID">
+<input id="mname" placeholder="Member Name">
+
+<select id="mcom">
+<option value="">Select Company</option>
+<option>SKM</option>
+<option>SUBAS</option>
+<option>WORLD STAR</option>
+<option>SALEH</option>
+<option>CITY MADINA</option>
+<option>OTHER</option>
+</select>
+
+<input id="mprof" placeholder="Profession">
+
+<button onclick="saveMember()">Save Member</button>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Company</th>
+<th>Profession</th>
+<th>Auto</th>
+</tr>
+</thead>
+<tbody id="memberTable"></tbody>
+</table>
+
+<hr>
+
+<h2>Manual Attendance</h2>
+
+<select id="manualMember"></select>
+<button onclick="saveManual()">Save Manual Attendance</button>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Company</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="manualTable"></tbody>
+</table>
+
+<hr>
+
+<h2>Automatic Attendance</h2>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Company</th>
+<th>Mark</th>
+</tr>
+</thead>
+<tbody id="autoTable"></tbody>
+</table>
+
+<hr>
+
+<h2>Today Auto Attendance</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Company</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="autoRecord"></tbody>
+</table>
+
+<script>
+let db;
+let req = indexedDB.open("ATT_DB",1);
+
+req.onupgradeneeded=e=>{
+db=e.target.result;
+
+db.createObjectStore("members",{keyPath:"id"});
+db.createObjectStore("manual",{keyPath:"id"});
+db.createObjectStore("auto",{keyPath:"id"});
+};
+
+req.onsuccess=e=>{
+db=e.target.result;
+loadAll();
+};
+
+function saveMember(){
+let obj={
+id:crypto.randomUUID(),
+mid:mid.value,
+name:mname.value,
+company:mcom.value,
+prof:mprof.value
+};
+
+db.transaction("members","readwrite").objectStore("members").put(obj);
+loadAll();
+}
+
+function loadMembers(){
+db.transaction("members").objectStore("members").getAll().onsuccess=e=>{
+let data=e.target.result;
+
+memberTable.innerHTML=data.map(m=>`
+<tr>
+<td>${m.mid}</td>
+<td>${m.name}</td>
+<td>${m.company}</td>
+<td>${m.prof}</td>
+<td><input type="checkbox" onchange="markAuto('${m.id}')"></td>
+</tr>
+`).join("");
+
+manualMember.innerHTML=data.map(m=>
+`<option value="${m.id}">${m.mid} - ${m.name}</option>`
+).join("");
+
+autoTable.innerHTML=data.map(m=>`
+<tr>
+<td>${m.mid}</td>
+<td>${m.name}</td>
+<td>${m.company}</td>
+<td><input type="checkbox" onchange="markAuto('${m.id}')"></td>
+</tr>
+`).join("");
+};
+}
+
+// ---------- MANUAL ----------
+function saveManual(){
+
+let id = manualMember.value;
+
+db.transaction("members").objectStore("members").get(id).onsuccess=e=>{
+let m=e.target.result;
+
+let obj={
+id:crypto.randomUUID(),
+mid:m.mid,
+name:m.name,
+company:m.company,
+date:new Date().toLocaleString()
+};
+
+db.transaction("manual","readwrite").objectStore("manual").put(obj);
+loadManual();
+};
+}
+
+function loadManual(){
+db.transaction("manual").objectStore("manual").getAll().onsuccess=e=>{
+manualTable.innerHTML=e.target.result.map(a=>`
+<tr>
+<td>${a.mid}</td>
+<td>${a.name}</td>
+<td>${a.company}</td>
+<td>${a.date}</td>
+</tr>
+`).join("");
+};
+}
+
+// ---------- AUTO ----------
+function markAuto(id){
+
+db.transaction("members").objectStore("members").get(id).onsuccess=e=>{
+let m=e.target.result;
+
+let today = new Date().toDateString();
+
+db.transaction("auto").objectStore("auto").getAll().onsuccess=ev=>{
+let exists = ev.target.result.find(x=>x.mid==m.mid && x.date==today);
+
+if(exists){
+alert("Already marked today");
+return;
+}
+
+let obj={
+id:crypto.randomUUID(),
+mid:m.mid,
+name:m.name,
+company:m.company,
+date:today
+};
+
+db.transaction("auto","readwrite").objectStore("auto").put(obj);
+loadAuto();
+};
+};
+}
+
+function loadAuto(){
+db.transaction("auto").objectStore("auto").getAll().onsuccess=e=>{
+autoRecord.innerHTML=e.target.result.map(a=>`
+<tr>
+<td>${a.mid}</td>
+<td>${a.name}</td>
+<td>${a.company}</td>
+<td>${a.date}</td>
+</tr>
+`).join("");
+};
+}
+
+function loadAll(){
+loadMembers();
+loadManual();
+loadAuto();
+}
+</script>
+
+</body>
+</html>
