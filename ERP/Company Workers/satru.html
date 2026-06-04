@@ -44,6 +44,7 @@ th{background:#f2f2f2}
 <th>Company</th>
 <th>Profession</th>
 <th>Auto</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody id="memberTable"></tbody>
@@ -63,6 +64,7 @@ th{background:#f2f2f2}
 <th>Name</th>
 <th>Company</th>
 <th>Date</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody id="manualTable"></tbody>
@@ -79,6 +81,7 @@ th{background:#f2f2f2}
 <th>Name</th>
 <th>Company</th>
 <th>Mark</th>
+<th>Action</th>
 </tr>
 </thead>
 <tbody id="autoTable"></tbody>
@@ -140,6 +143,11 @@ memberTable.innerHTML=data.map(m=>`
 <td>${m.company}</td>
 <td>${m.prof}</td>
 <td><input type="checkbox" onchange="markAuto('${m.id}')"></td>
+<td><input type="checkbox" onchange="markAuto('${m.id}')"></td>
+<td>
+<button onclick="editMember('${m.id}')">Edit</button>
+<button onclick="deleteMember('${m.id}')">Delete</button>
+</td>
 </tr>
 `).join("");
 
@@ -187,6 +195,9 @@ manualTable.innerHTML=e.target.result.map(a=>`
 <td>${a.name}</td>
 <td>${a.company}</td>
 <td>${a.date}</td>
+<td>
+<button onclick="deleteManual('${a.id}')">Delete</button>
+</td>
 </tr>
 `).join("");
 };
@@ -230,10 +241,97 @@ autoRecord.innerHTML=e.target.result.map(a=>`
 <td>${a.name}</td>
 <td>${a.company}</td>
 <td>${a.date}</td>
+<td>
+<button onclick="editAuto('${a.id}')">Edit</button>
+<button onclick="deleteAuto('${a.id}')">Delete</button>
+</td>
 </tr>
 `).join("");
 };
 }
+
+function editMember(id){
+
+let tx=db.transaction("members","readonly");
+let store=tx.objectStore("members");
+
+store.get(id).onsuccess=e=>{
+
+let m=e.target.result;
+
+let name=prompt("Member Name",m.name);
+if(name===null) return;
+
+let company=prompt("Company",m.company);
+let prof=prompt("Profession",m.prof);
+
+m.name=name;
+m.company=company;
+m.prof=prof;
+
+db.transaction("members","readwrite")
+.objectStore("members")
+.put(m);
+
+loadAll();
+};
+}
+
+function deleteMember(id){
+
+if(!confirm("Delete this member?")) return;
+
+db.transaction("members","readwrite")
+.objectStore("members")
+.delete(id);
+
+loadAll();
+}
+
+function deleteManual(id){
+
+if(!confirm("Delete attendance?")) return;
+
+db.transaction("manual","readwrite")
+.objectStore("manual")
+.delete(id);
+
+loadManual();
+}
+
+function deleteAuto(id){
+
+if(!confirm("Delete attendance?")) return;
+
+db.transaction("auto","readwrite")
+.objectStore("auto")
+.delete(id);
+
+loadAuto();
+}
+
+function editAuto(id){
+
+let tx=db.transaction("auto","readonly");
+let store=tx.objectStore("auto");
+
+store.get(id).onsuccess=e=>{
+
+let a=e.target.result;
+
+let date=prompt("Date",a.date);
+if(date===null) return;
+
+a.date=date;
+
+db.transaction("auto","readwrite")
+.objectStore("auto")
+.put(a);
+
+loadAuto();
+};
+}
+
 
 function loadAll(){
 loadMembers();
