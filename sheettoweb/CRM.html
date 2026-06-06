@@ -10,21 +10,25 @@
 <style>
 body{
     padding:15px;
-    background:#f5f5f5;
+    background:#f8f9fa;
 }
 .table-responsive{
     max-height:85vh;
     overflow:auto;
 }
+h3{
+    margin-bottom:15px;
+}
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid">
 
-    <h3 class="mb-3">Member List</h3>
+    <h3>Member List</h3>
 
     <input
+        type="text"
         id="memberSearch"
         class="form-control mb-3"
         placeholder="Search Member..."
@@ -34,7 +38,7 @@ body{
         <table class="table table-bordered table-striped table-sm">
             <tbody id="tbl">
                 <tr>
-                    <td>Loading Members...</td>
+                    <td>Loading...</td>
                 </tr>
             </tbody>
         </table>
@@ -48,12 +52,10 @@ const API = "https://script.google.com/macros/s/AKfycbxQ8vujV7sUyBx_4DqYICc2czRB
 
 let members = [];
 
-// Auto Load
 window.onload = function(){
     loadMembers();
 };
 
-// Load Members
 function loadMembers(){
 
     fetch(API,{
@@ -62,64 +64,60 @@ function loadMembers(){
             action:"getMembers"
         })
     })
-    .then(r=>r.json())
-    .then(data=>{
+    .then(response => response.json())
+    .then(data => {
 
         members = data;
-
         drawMembers(data);
 
     })
-    .catch(err=>{
+    .catch(error => {
 
-        console.error(err);
+        console.error(error);
 
         document.getElementById("tbl").innerHTML =
-        "<tr><td>Failed to load members</td></tr>";
+        "<tr><td>Unable to load members</td></tr>";
 
     });
 
 }
 
-// Draw Table
 function drawMembers(data){
 
     const tbl = document.getElementById("tbl");
 
     if(!data || data.length === 0){
-
         tbl.innerHTML =
         "<tr><td>No Members Found</td></tr>";
-
         return;
     }
 
     let html = "<tr>";
 
-    Object.keys(data[0]).forEach(key=>{
+    Object.keys(data[0]).forEach(key => {
 
         if(
             key !== "Member PhotoURL" &&
             key !== "Identy PhotoURL"
         ){
-            html += `<th>${key}</th>`;
+            html += "<th>" + key + "</th>";
         }
 
     });
 
     html += "</tr>";
 
-    data.forEach(member=>{
+    data.forEach(member => {
 
         html += "<tr>";
 
-        Object.entries(member).forEach(([key,val])=>{
+        Object.entries(member).forEach(([key,val]) => {
 
             if(
                 key !== "Member PhotoURL" &&
                 key !== "Identy PhotoURL"
             ){
-                html += `<td>${val || ""}</td>`;
+                html += "<td>" + (val || "") + "</td>";
             }
 
         });
@@ -132,17 +130,16 @@ function drawMembers(data){
 
 }
 
-// Search
 function searchMembers(){
 
-    const q =
-    document.getElementById("memberSearch")
-    .value
-    .toLowerCase();
+    const q = document
+        .getElementById("memberSearch")
+        .value
+        .toLowerCase();
 
-    const filtered = members.filter(m =>
-        Object.values(m).some(v =>
-            String(v)
+    const filtered = members.filter(member =>
+        Object.values(member).some(value =>
+            String(value)
             .toLowerCase()
             .includes(q)
         )
