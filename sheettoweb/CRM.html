@@ -1,154 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Member List</title>
+<title>Member Table</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">   
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<style>
-body{
-    padding:15px;
-    background:#f8f9fa;
-}
-.table-responsive{
-    max-height:85vh;
-    overflow:auto;
-}
-h3{
-    margin-bottom:15px;
-}
-</style>
 </head>
-<body>
 
-<div class="container-fluid">
+<body class="p-3">
 
-    <h3>Member List</h3>
+<h4 class="mb-3">📋 Members List</h4>
 
-    <input
-        type="text"
-        id="memberSearch"
-        class="form-control mb-3"
-        placeholder="Search Member..."
-        onkeyup="searchMembers()">
+<!-- SEARCH -->
+<input id="search" class="form-control mb-3" placeholder="Search member..." onkeyup="searchMembers()">
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-sm">
-            <tbody id="tbl">
-                <tr>
-                    <td>Loading...</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<!-- TABLE -->
+<div class="table-responsive">
+<table class="table table-bordered table-sm">
+<thead class="table-dark">
+<tr>
+  <th>Member ID</th>
+  <th>Name</th>
+  <th>Phone</th>
+  <th>Address</th>
+  <th>Email</th>
+  <th>Photo</th>
+</tr>
+</thead>
 
+<tbody id="tbl"></tbody>
+</table>
 </div>
 
 <script>
-
 const API = "https://script.google.com/macros/s/AKfycbxQ8vujV7sUyBx_4DqYICc2czRBvNqkiTSu0PYLKcypaUAKqdQWOBMJQwsJTJFCS2zS/exec";
 
 let members = [];
 
-window.onload = function(){
-    loadMembers();
-};
-
+// LOAD MEMBERS
 function loadMembers(){
-
-    fetch(API,{
-        method:"POST",
-        body:JSON.stringify({
-            action:"getMembers"
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        members = data;
-        drawMembers(data);
-
-    })
-    .catch(error => {
-
-        console.error(error);
-
-        document.getElementById("tbl").innerHTML =
-        "<tr><td>Unable to load members</td></tr>";
-
-    });
-
+  fetch(API,{
+    method:"POST",
+    body: JSON.stringify({ action:"getMembers" })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    members = data;
+    drawTable(data);
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Failed to load members");
+  });
 }
 
-function drawMembers(data){
+// DRAW TABLE
+function drawTable(data){
+  const tbl = document.getElementById("tbl");
+  tbl.innerHTML = "";
 
-    const tbl = document.getElementById("tbl");
+  if(!data || data.length === 0){
+    tbl.innerHTML = "<tr><td colspan='6'>No Members Found</td></tr>";
+    return;
+  }
 
-    if(!data || data.length === 0){
-        tbl.innerHTML =
-        "<tr><td>No Members Found</td></tr>";
-        return;
-    }
-
-    let html = "<tr>";
-
-    Object.keys(data[0]).forEach(key => {
-
-        if(
-            key !== "Member PhotoURL" &&
-            key !== "Identy PhotoURL"
-        ){
-            html += "<th>" + key + "</th>";
-        }
-
-    });
-
-    html += "</tr>";
-
-    data.forEach(member => {
-
-        html += "<tr>";
-
-        Object.entries(member).forEach(([key,val]) => {
-
-            if(
-                key !== "Member PhotoURL" &&
-                key !== "Identy PhotoURL"
-            ){
-                html += "<td>" + (val || "") + "</td>";
-            }
-
-        });
-
-        html += "</tr>";
-
-    });
-
-    tbl.innerHTML = html;
-
+  data.forEach(m=>{
+    tbl.innerHTML += `
+      <tr>
+        <td>${m.MemberID || ""}</td>
+        <td>${m.Name || ""}</td>
+        <td>${m.Phone || ""}</td>
+        <td>${m.Address || ""}</td>
+        <td>${m.Email || ""}</td>
+        <td>
+          ${m["Member PhotoURL"] 
+            ? `<img src="${m["Member PhotoURL"]}" width="40" height="40" style="border-radius:50%">`
+            : ""}
+        </td>
+      </tr>
+    `;
+  });
 }
 
+// SEARCH
 function searchMembers(){
+  const q = document.getElementById("search").value.toLowerCase();
 
-    const q = document
-        .getElementById("memberSearch")
-        .value
-        .toLowerCase();
+  const filtered = members.filter(m =>
+    Object.values(m).some(v =>
+      String(v).toLowerCase().includes(q)
+    )
+  );
 
-    const filtered = members.filter(member =>
-        Object.values(member).some(value =>
-            String(value)
-            .toLowerCase()
-            .includes(q)
-        )
-    );
-
-    drawMembers(filtered);
-
+  drawTable(filtered);
 }
 
+// INIT
+loadMembers();
 </script>
 
 </body>
