@@ -1,20 +1,218 @@
-<div class="d-flex justify-content-between mb-2">
-    <h5>Members</h5>
-    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member System</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+    padding:15px;
+    background:#f5f5f5;
+}
+.table-responsive{
+    max-height:80vh;
+    overflow:auto;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h3 class="mb-3">Member Management System</h3>
+
+<!-- Login -->
+<div id="loginBox">
+
+    <input id="u"
+           class="form-control mb-2"
+           placeholder="Username">
+
+    <input id="p"
+           type="password"
+           class="form-control mb-2"
+           placeholder="Password">
+
+    <button class="btn btn-primary w-100"
+            onclick="login()">
+        Login
+    </button>
+
 </div>
 
-<input
-    id="memberSearch"
-    class="form-control mb-2"
-    placeholder="Search Member..."
-    onkeyup="searchMembers()">
+<!-- App -->
+<div id="app" style="display:none;">
 
-<div class="table-responsive">
-    <table class="table table-bordered table-sm">
-        <tbody id="tbl"></tbody>
-    </table>
+    <div class="d-flex justify-content-between mb-2">
+        <h5>Members</h5>
+
+        <button class="btn btn-danger btn-sm"
+                onclick="logout()">
+            Logout
+        </button>
+    </div>
+
+    <input id="memberSearch"
+           class="form-control mb-2"
+           placeholder="Search Member..."
+           onkeyup="searchMembers()">
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-sm">
+            <tbody id="tbl"></tbody>
+        </table>
+    </div>
+
 </div>
+
+</div>
+
 <script>
-�
-// YOUR GOOGLE APPS SCRIPT URL const API = "https://script.google.com/macros/s/AKfycbxQ8vujV7sUyBx_4DqYICc2czRBvNqkiTSu0PYLKcypaUAKqdQWOBMJQwsJTJFCS2zS/exec"; let members = []; // LOGIN function login(){ const username = document.getElementById("u").value.trim(); const password = document.getElementById("p").value.trim(); if(!username || !password){ alert("Enter Username and Password"); return; } fetch(API,{ method:"POST", body:JSON.stringify({ action:"login", username:username, password:password }) }) .then(r=>r.json()) .then(res=>{ if(!res.status){ alert("Invalid Login"); return; } document.getElementById("loginBox").style.display="none"; document.getElementById("app").style.display="block"; loadMembers(); }) .catch(err=>{ console.error(err); alert("Login Error"); }); } // LOGOUT function logout(){ location.reload(); } // LOAD MEMBERS function loadMembers(){ fetch(API,{ method:"POST", body:JSON.stringify({ action:"getMembers" }) }) .then(r=>r.json()) .then(data=>{ members = data; drawMembers(data); }) .catch(err=>{ console.error(err); alert("Failed to load members"); }); } // DRAW TABLE function drawMembers(data){ if(!data || data.length===0){ document.getElementById("tbl").innerHTML = "<tr><td>No Members Found</td></tr>"; return; } let html = "<tr>"; Object.keys(data[0]).forEach(key=>{ if( key !== "Member PhotoURL" && key !== "Identy PhotoURL" ){ html += `<th>${key}</th>`; } }); html += "</tr>"; data.forEach(member=>{ html += "<tr>"; Object.entries(member).forEach(([key,val])=>{ if( key !== "Member PhotoURL" && key !== "Identy PhotoURL" ){ html += `<td>${val || ""}</td>`; } }); html += "</tr>"; }); document.getElementById("tbl").innerHTML = html; } // SEARCH function searchMembers(){ const q = document.getElementById("memberSearch") .value .toLowerCase(); const filtered = members.filter(m => Object.values(m).some(v => String(v) .toLowerCase() .includes(q) ) ); drawMembers(filtered); } 
-<//script>
+
+const API = "https://script.google.com/macros/s/AKfycbxQ8vujV7sUyBx_4DqYICc2czRBvNqkiTSu0PYLKcypaUAKqdQWOBMJQwsJTJFCS2zS/exec";
+
+let members = [];
+
+// Login
+function login(){
+
+    const username = document.getElementById("u").value.trim();
+    const password = document.getElementById("p").value.trim();
+
+    if(!username || !password){
+        alert("Enter Username and Password");
+        return;
+    }
+
+    fetch(API,{
+        method:"POST",
+        body:JSON.stringify({
+            action:"login",
+            username:username,
+            password:password
+        })
+    })
+    .then(r=>r.json())
+    .then(res=>{
+
+        if(!res.status){
+            alert("Invalid Login");
+            return;
+        }
+
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("app").style.display = "block";
+
+        loadMembers();
+
+    })
+    .catch(err=>{
+        console.error(err);
+        alert("Login Error");
+    });
+
+}
+
+// Logout
+function logout(){
+    location.reload();
+}
+
+// Load Members
+function loadMembers(){
+
+    fetch(API,{
+        method:"POST",
+        body:JSON.stringify({
+            action:"getMembers"
+        })
+    })
+    .then(r=>r.json())
+    .then(data=>{
+
+        members = data;
+        drawMembers(data);
+
+    })
+    .catch(err=>{
+        console.error(err);
+        alert("Failed To Load Members");
+    });
+
+}
+
+// Draw Table
+function drawMembers(data){
+
+    const tbl = document.getElementById("tbl");
+
+    if(!data || data.length === 0){
+        tbl.innerHTML = "<tr><td>No Members Found</td></tr>";
+        return;
+    }
+
+    let html = "<tr>";
+
+    Object.keys(data[0]).forEach(key=>{
+
+        if(
+            key !== "Member PhotoURL" &&
+            key !== "Identy PhotoURL"
+        ){
+            html += `<th>${key}</th>`;
+        }
+
+    });
+
+    html += "</tr>";
+
+    data.forEach(member=>{
+
+        html += "<tr>";
+
+        Object.entries(member).forEach(([key,val])=>{
+
+            if(
+                key !== "Member PhotoURL" &&
+                key !== "Identy PhotoURL"
+            ){
+                html += `<td>${val || ""}</td>`;
+            }
+
+        });
+
+        html += "</tr>";
+
+    });
+
+    tbl.innerHTML = html;
+
+}
+
+// Search
+function searchMembers(){
+
+    const q = document
+        .getElementById("memberSearch")
+        .value
+        .toLowerCase();
+
+    const filtered = members.filter(m =>
+        Object.values(m).some(v =>
+            String(v)
+            .toLowerCase()
+            .includes(q)
+        )
+    );
+
+    drawMembers(filtered);
+
+}
+
+</script>
+
+</body>
+</html>
