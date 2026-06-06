@@ -1,0 +1,20 @@
+<div class="d-flex justify-content-between mb-2">
+    <h5>Members</h5>
+    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+</div>
+
+<input
+    id="memberSearch"
+    class="form-control mb-2"
+    placeholder="Search Member..."
+    onkeyup="searchMembers()">
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm">
+        <tbody id="tbl"></tbody>
+    </table>
+</div>
+<script>
+�
+// YOUR GOOGLE APPS SCRIPT URL const API = "https://script.google.com/macros/s/AKfycbxQ8vujV7sUyBx_4DqYICc2czRBvNqkiTSu0PYLKcypaUAKqdQWOBMJQwsJTJFCS2zS/exec"; let members = []; // LOGIN function login(){ const username = document.getElementById("u").value.trim(); const password = document.getElementById("p").value.trim(); if(!username || !password){ alert("Enter Username and Password"); return; } fetch(API,{ method:"POST", body:JSON.stringify({ action:"login", username:username, password:password }) }) .then(r=>r.json()) .then(res=>{ if(!res.status){ alert("Invalid Login"); return; } document.getElementById("loginBox").style.display="none"; document.getElementById("app").style.display="block"; loadMembers(); }) .catch(err=>{ console.error(err); alert("Login Error"); }); } // LOGOUT function logout(){ location.reload(); } // LOAD MEMBERS function loadMembers(){ fetch(API,{ method:"POST", body:JSON.stringify({ action:"getMembers" }) }) .then(r=>r.json()) .then(data=>{ members = data; drawMembers(data); }) .catch(err=>{ console.error(err); alert("Failed to load members"); }); } // DRAW TABLE function drawMembers(data){ if(!data || data.length===0){ document.getElementById("tbl").innerHTML = "<tr><td>No Members Found</td></tr>"; return; } let html = "<tr>"; Object.keys(data[0]).forEach(key=>{ if( key !== "Member PhotoURL" && key !== "Identy PhotoURL" ){ html += `<th>${key}</th>`; } }); html += "</tr>"; data.forEach(member=>{ html += "<tr>"; Object.entries(member).forEach(([key,val])=>{ if( key !== "Member PhotoURL" && key !== "Identy PhotoURL" ){ html += `<td>${val || ""}</td>`; } }); html += "</tr>"; }); document.getElementById("tbl").innerHTML = html; } // SEARCH function searchMembers(){ const q = document.getElementById("memberSearch") .value .toLowerCase(); const filtered = members.filter(m => Object.values(m).some(v => String(v) .toLowerCase() .includes(q) ) ); drawMembers(filtered); } 
+<//script>
