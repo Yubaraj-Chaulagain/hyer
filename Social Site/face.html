@@ -1,174 +1,107 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Auto Face Capture</title>
-
-<style>
-body{
-font-family:Arial,sans-serif;
-text-align:center;
-padding:10px;
-}
-
-video{
-width:100%;
-max-width:500px;
-border:2px solid #333;
-border-radius:10px;
-}
-
-#status{
-margin:10px;
-font-size:20px;
-font-weight:bold;
-}
-
-img{
-width:120px;
-margin:5px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-</style>
-</head>
 <body>
 
-<h2>Auto Face Capture</h2>
+<h3>Auto Capture + Local Save</h3>
 
-<video id="video" autoplay playsinline></video>
+<video id="video" autoplay playsinline width="320"></video>
+<div id="status">Starting...</div>
 
-<div id="status">Starting camera...</div>
-
-<canvas id="canvas" style="display:none"></canvas>
-
-<div id="photos"></div>
+<button onclick="showPhotos()">Show Saved Photos</button>
+<div id="gallery"></div>
 
 <script>
 
 const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
 const statusBox = document.getElementById("status");
-const photosDiv = document.getElementById("photos");
+const gallery = document.getElementById("gallery");
 
-let faceCaptured = false;
+let previousFrame = null;
 
-async function startCamera(){
-
-const stream =
-await navigator.mediaDevices.getUserMedia({
-video:{
-facingMode:"user"
-}
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+  video.srcObject = stream;
 });
 
-video.srcObject = stream;
+function savePhoto(data){
+
+  let photos = JSON.parse(localStorage.getItem("photos") || "[]");
+
+  photos.push({
+    time: Date.now(),
+    img: data
+  });
+
+  localStorage.setItem("photos", JSON.stringify(photos));
 
 }
 
-async function detectFace(){
+function capturePhoto(){
 
-try{
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
 
-const detector = new FaceDetector();
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video,0,0);
 
-const faces =
-await detector.detect(video);
+  const data = canvas.toDataURL("image/jpeg",0.7);
 
-if(faces.length > 0){
+  savePhoto(data);
 
-statusBox.innerHTML = "😀 Face Detected";
+  statusBox.innerHTML = "📸 Photo Saved in Local Storage";
+}
 
-if(!faceCaptured){
+function detectMotion(){
 
-faceCaptured = true;
+  if(video.videoWidth === 0){
+    requestAnimationFrame(detectMotion);
+    return;
+  }
 
-capturePhotos();
+  const temp = document.createElement("canvas");
+  temp.width = 160;
+  temp.height = 120;
+
+  const tctx = temp.getContext("2d");
+  tctx.drawImage(video,0,0,160,120);
+
+  const current = tctx.getImageData(0,0,160,120).data;
+
+  if(previousFrame){
+
+    let diff = 0;
+
+    for(let i=0;i<current.length;i+=4){
+      diff += Math.abs(current[i] - previousFrame[i]);
+    }
+
+    if(diff > 90000){
+      capturePhoto();
+    }
+  }
+
+  previousFrame = new Uint8ClampedArray(current);
+
+  requestAnimationFrame(detectMotion);
+}
+
+function showPhotos(){
+
+  gallery.innerHTML = "";
+
+  let photos = JSON.parse(localStorage.getItem("photos") || "[]");
+
+  photos.forEach(p=>{
+    let img = document.createElement("img");
+    img.src = p.img;
+    img.width = 120;
+    gallery.appendChild(img);
+  });
 
 }
 
-}else{
-
-statusBox.innerHTML = "❌ No Face";
-
-faceCaptured = false;
-
-}
-
-}catch(err){
-
-statusBox.innerHTML =
-"FaceDetector not supported";
-
-}
-
-requestAnimationFrame(detectFace);
-
-}
-
-function capturePhotos(){
-
-let count = 0;
-
-const interval = setInterval(()=>{
-
-canvas.width = video.videoWidth;
-canvas.height = video.videoHeight;
-
-const ctx = canvas.getContext("2d");
-
-ctx.drawImage(
-video,
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-const imgData =
-canvas.toDataURL("image/jpeg");
-
-const img =
-document.createElement("img");
-
-img.src = imgData;
-
-photosDiv.appendChild(img);
-
-const a =
-document.createElement("a");
-
-a.href = imgData;
-a.download =
-"capture_"+Date.now()+".jpg";
-
-a.innerHTML =
-"<br>Download";
-
-photosDiv.appendChild(a);
-
-photosDiv.appendChild(
-document.createElement("hr")
-);
-
-count++;
-
-if(count >= 3){
-
-clearInterval(interval);
-
-}
-
-},1000);
-
-}
-
-startCamera();
-
-video.addEventListener(
-"playing",
-detectFace
-);
+video.addEventListener("playing",detectMotion);
 
 </script>
 
