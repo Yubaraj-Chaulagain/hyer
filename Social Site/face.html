@@ -1,41 +1,66 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline Camera Storage</title>
+</head>
 <body>
 
-<h3>Auto Capture + Local Save</h3>
+<h3>Offline Auto Save Camera</h3>
 
 <video id="video" autoplay playsinline width="320"></video>
-<div id="status">Starting...</div>
+<br><br>
 
-<button onclick="showPhotos()">Show Saved Photos</button>
+<button onclick="showPhotos()">Show Photos</button>
+<button onclick="clearPhotos()">Clear All</button>
+
 <div id="gallery"></div>
 
 <script>
 
 const video = document.getElementById("video");
-const statusBox = document.getElementById("status");
 const gallery = document.getElementById("gallery");
 
 let previousFrame = null;
+let db;
 
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>{
-  video.srcObject = stream;
-});
+// -------------------- OPEN DATABASE --------------------
+const request = indexedDB.open("PhotoDB", 1);
 
-function savePhoto(data){
+request.onupgradeneeded = function(e){
+  db = e.target.result;
+  db.createObjectStore("photos", { keyPath: "id", autoIncrement:true });
+};
 
-  let photos = JSON.parse(localStorage.getItem("photos") || "[]");
+request.onsuccess = function(e){
+  db = e.target.result;
+  startCamera();
+};
 
-  photos.push({
-    time: Date.now(),
-    img: data
+// -------------------- CAMERA --------------------
+function startCamera(){
+  navigator.mediaDevices.getUserMedia({video:true})
+  .then(stream=>{
+    video.srcObject = stream;
   });
 
-  localStorage.setItem("photos", JSON.stringify(photos));
+  video.addEventListener("playing", detectMotion);
+}
+
+// -------------------- SAVE PHOTO --------------------
+function savePhoto(data){
+
+  const tx = db.transaction("photos","readwrite");
+  const store = tx.objectStore("photos");
+
+  store.add({
+    image: data,
+    time: Date.now()
+  });
 
 }
 
+// -------------------- CAPTURE --------------------
 function capturePhoto(){
 
   const canvas = document.createElement("canvas");
@@ -45,19 +70,15 @@ function capturePhoto(){
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video,0,0);
 
-  const data = canvas.toDataURL("image/jpeg",0.7);
+  const img = canvas.toDataURL("image/jpeg",0.7);
 
-  savePhoto(data);
+  savePhoto(img);
 
-  statusBox.innerHTML = "📸 Photo Saved in Local Storage";
+  console.log("Saved to IndexedDB");
 }
 
+// -------------------- MOTION DETECT --------------------
 function detectMotion(){
-
-  if(video.videoWidth === 0){
-    requestAnimationFrame(detectMotion);
-    return;
-  }
 
   const temp = document.createElement("canvas");
   temp.width = 160;
@@ -86,22 +107,33 @@ function detectMotion(){
   requestAnimationFrame(detectMotion);
 }
 
+// -------------------- SHOW PHOTOS --------------------
 function showPhotos(){
 
   gallery.innerHTML = "";
 
-  let photos = JSON.parse(localStorage.getItem("photos") || "[]");
+  const tx = db.transaction("photos","readonly");
+  const store = tx.objectStore("photos");
 
-  photos.forEach(p=>{
-    let img = document.createElement("img");
-    img.src = p.img;
-    img.width = 120;
-    gallery.appendChild(img);
-  });
+  store.getAll().onsuccess = function(e){
 
+    e.target.result.forEach(p=>{
+      const img = document.createElement("img");
+      img.src = p.image;
+      img.width = 120;
+      img.style.margin = "5px";
+      gallery.appendChild(img);
+    });
+
+  };
 }
 
-video.addEventListener("playing",detectMotion);
+// -------------------- CLEAR --------------------
+function clearPhotos(){
+  const tx = db.transaction("photos","readwrite");
+  tx.objectStore("photos").clear();
+  gallery.innerHTML = "";
+}
 
 </script>
 
