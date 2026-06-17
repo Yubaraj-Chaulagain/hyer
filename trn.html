@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+<table id="myTable" class="display" style="width:100%"></table>
+
+<script>
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=0&single=true&output=csv";
+
+Papa.parse(csvUrl, {
+    download: true,
+    complete: function(results) {
+
+        const data = results.data;
+        const headers = data[0].map(h => ({ title: h }));
+
+        $('#myTable').DataTable({
+            data: data.slice(1),
+            columns: headers,
+            pageLength: 25,
+            searching: true,
+            ordering: true,
+            info: true,
+            responsive: true
+        });
+
+    }
+});
+</script>
+
+</body>
+</html>
