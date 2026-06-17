@@ -18,22 +18,25 @@ Papa.parse(csvUrl, {
     download: true,
     complete: function(results) {
 
-        const data = results.data;
-        const headers = data[0].map(h => ({ title: h }));
+        const cols = [0, 1, 2, 6, 13]; // Columns 1,2,3,7,14 (0-based index)
+
+        const headers = cols.map(i => ({
+            title: results.data[0][i]
+        }));
+
+        const data = results.data.slice(1).map(row =>
+            cols.map(i => row[i])
+        );
 
         $('#myTable').DataTable({
-            data: data.slice(1),
+            data: data,
             columns: headers,
             pageLength: 25,
             searching: true,
             ordering: true,
-            info: true,
             responsive: true
         });
 
     }
 });
 </script>
-
-</body>
-</html>
