@@ -15,6 +15,28 @@ body{
     overflow-x:auto;
 }
 
+.card{
+    max-width:320px;
+    margin:15px auto;
+    padding:15px;
+    background:#1976d2;
+    color:#fff;
+    text-align:center;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+.card h3{
+    margin:0;
+    font-size:18px;
+}
+
+.card h2{
+    margin:10px 0 0;
+    font-size:32px;
+    font-weight:bold;
+}
+
 table.dataTable{
     width:100%!important;
     border-collapse:collapse;
@@ -62,6 +84,21 @@ table.dataTable tbody td{
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 </head>
 <body>
+<div style="
+background:#1976d2;
+color:white;
+padding:15px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+border-radius:10px 10px 0 0;
+font-family:Arial,sans-serif;">
+Yubaraj Personal Business
+</div>
+<div id="totalCard" class="card">
+    <h3>Total Amount</h3>
+    <h2 id="grandTotal">0</h2>
+</div>
 
 <table id="myTable" class="display" style="width:100%"></table>
 
@@ -93,6 +130,16 @@ Papa.parse(csvUrl, {
 
     }
 });
+
+
+// Calculate total of displayed column 14
+let total = data.reduce((sum, row) => {
+    return sum + (parseFloat(String(row[4]).replace(/,/g,'')) || 0);
+}, 0);
+
+// Show in card
+document.getElementById("grandTotal").textContent =
+    total.toLocaleString();
 </script>
 </body>
 </html>
