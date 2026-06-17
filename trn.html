@@ -3,6 +3,60 @@
 <head>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
 
+<style>
+body{
+    font-family:Arial,sans-serif;
+    margin:10px;
+    background:#f5f5f5;
+}
+
+.dataTables_wrapper{
+    width:100%;
+    overflow-x:auto;
+}
+
+table.dataTable{
+    width:100%!important;
+    border-collapse:collapse;
+    font-size:14px;
+    background:#fff;
+}
+
+table.dataTable thead th{
+    background:#1976d2;
+    color:#fff;
+    text-align:center;
+    white-space:nowrap;
+}
+
+table.dataTable tbody td{
+    text-align:center;
+    white-space:nowrap;
+}
+
+.dataTables_filter input,
+.dataTables_length select{
+    padding:6px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+@media(max-width:768px){
+    table.dataTable{
+        font-size:12px;
+    }
+
+    .dataTables_filter,
+    .dataTables_length,
+    .dataTables_info,
+    .dataTables_paginate{
+        text-align:center!important;
+        float:none!important;
+        margin:8px 0;
+    }
+}
+</style>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
