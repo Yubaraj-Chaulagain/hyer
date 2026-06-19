@@ -1,0 +1,33 @@
+<button onclick="exportExcel()">Export Excel</button>
+
+<table id="billTable" border="1">
+  <tr>
+    <th>Bill No</th>
+    <th>Item</th>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Total</th>
+  </tr>
+  <tr>
+    <td>B001</td>
+    <td>Rice</td>
+    <td>2</td>
+    <td>50</td>
+    <td>100</td>
+  </tr>
+</table>
+<script>
+function exportExcel() {
+  let table = document.getElementById("billTable");
+  let html = table.outerHTML;
+
+  let url = 'data:application/vnd.ms-excel,' + encodeURIComponent(html);
+
+  let a = document.createElement("a");
+  a.href = url;
+  a.download = "Bill.xls";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
