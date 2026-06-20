@@ -79,7 +79,22 @@ th{background:#f4f4f4}
     <input type="text" id="workerId" placeholder="Worker ID">
     <input type="text" id="role" placeholder="Role">
     <button onclick="addWorker()">Add Worker</button>
-</div><button onclick="downloadAllCards()">📄 Download All Worker Cards</button>
+</div>
+<div class="card">
+    <h3>👷 Worker List</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+        <tbody id="workerTable"></tbody>
+    </table>
+</div>
+
+<button onclick="downloadAllCards()">📄 Download All Worker Cards</button><button onclick="downloadWorkerCards()">👷 Individual Worker Cards</button>
 
 <!-- TIME CARD -->
 <div class="card">
@@ -88,6 +103,8 @@ th{background:#f4f4f4}
     <input type="date" id="workDate">
 
     <select id="workerSelect"></select>
+
+<input type="number" id="otHours" placeholder="OT Hours (Manual)">
 
     <button onclick="timeIn()">Time In</button>
     <button onclick="timeOut()">Time Out</button>
@@ -144,15 +161,60 @@ function addWorker(){
     alert("Worker Added!");
 }
 
+function downloadWorkerCards(){
+    let workers = JSON.parse(localStorage.getItem("workers")) || [];
+
+    workers.forEach(w=>{
+        let win = window.open("", "", "width=500,height=600");
+
+        win.document.write(`
+        <html>
+        <head>
+        <title>${w.name} Card</title>
+        <style>
+            body{font-family:Arial;text-align:center;padding:20px}
+            .card{border:2px solid #ff9800;padding:20px;border-radius:10px}
+        </style>
+        </head>
+        <body>
+
+        <div class="card">
+            <h2>${w.name}</h2>
+            <p><b>ID:</b> ${w.id}</p>
+            <p><b>Role:</b> ${w.role}</p>
+            <hr>
+            <p>Construction Worker Card</p>
+        </div>
+
+        </body>
+        </html>
+        `);
+
+        win.document.close();
+        win.print();
+    });
+}
+
 // LOAD WORKERS
 function loadWorkers(){
     let workers = JSON.parse(localStorage.getItem("workers")) || [];
 
     let select = document.getElementById("workerSelect");
-    select.innerHTML = "";
+    let table = document.getElementById("workerTable");
 
-    workers.forEach(w=>{
+    select.innerHTML = "";
+    table.innerHTML = "";
+
+    workers.forEach((w, index)=>{
         select.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+
+        table.innerHTML += `
+        <tr>
+            <td>${w.name}</td>
+            <td>${w.id}</td>
+            <td>${w.role}</td>
+        </tr>
+        `;
     });
 }
 
@@ -174,6 +236,7 @@ function timeIn(){
 function timeOut(){
     let worker = document.getElementById("workerSelect").value;
     let date = document.getElementById("workDate").value;
+    let otInput = document.getElementById("otHours").value || 0;
 
     let key = worker + date;
 
@@ -184,7 +247,6 @@ function timeOut(){
 
     let diff = (outTime - inTime) / (1000*60*60);
 
-    let ot = diff > 8 ? (diff - 8).toFixed(2) : 0;
     let total = diff.toFixed(2);
 
     let record = {
@@ -193,7 +255,7 @@ function timeOut(){
         in: inTime.toLocaleTimeString(),
         out: outTime.toLocaleTimeString(),
         total,
-        ot,
+        ot: otInput,   // 🔥 MANUAL OT
         sign:"____"
     };
 
