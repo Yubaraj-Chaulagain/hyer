@@ -43,7 +43,7 @@ Papa.parse(csvUrl,{
   download:true,
   complete:function(results){
 
-    const cols=[0,1,2,6,13];
+    const cols=[0,1,2,6,10,13];
 
     const headers = cols.map(i => ({
       title: results.data[0][i]
