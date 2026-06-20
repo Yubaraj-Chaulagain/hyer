@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Attendance Card System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construction Attendance System</title>
+
 <style>
 body{
     font-family: Arial;
-    background:#f2f2f2;
-    padding:20px;
+    background:#eef2f7;
+    margin:0;
+    padding:15px;
 }
 
 .container{
@@ -15,57 +18,50 @@ body{
     margin:auto;
 }
 
-input,button{
+h1{text-align:center}
+
+.card{
+    background:#fff;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+input,select,button{
+    width:100%;
     padding:10px;
-    margin:5px;
+    margin:5px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 
 button{
-    cursor:pointer;
-}
-
-.card{
-    background:white;
-    padding:15px;
-    margin-top:20px;
-    border:1px solid #000;
-}
-
-.header{
-    text-align:center;
+    background:#ff9800;
+    color:#fff;
+    border:none;
     font-weight:bold;
-    font-size:18px;
-    margin-bottom:10px;
 }
+
+button:hover{background:#e68900}
 
 table{
     width:100%;
     border-collapse:collapse;
-}
-
-table,th,td{
-    border:1px solid black;
+    margin-top:10px;
 }
 
 th,td{
-    padding:5px;
+    border:1px solid #ddd;
+    padding:8px;
     text-align:center;
-    font-size:12px;
 }
 
-@media print{
-    body *{
-        visibility:hidden;
-    }
-    .print-area, .print-area *{
-        visibility:visible;
-    }
-    .print-area{
-        position:absolute;
-        left:0;
-        top:0;
-        width:100%;
-    }
+th{background:#f4f4f4}
+
+.status{
+    font-weight:bold;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -74,68 +70,233 @@ th,td{
 
 <div class="container">
 
-<h2>Attendance Card Generator</h2>
+<h1>🏗️ Construction Attendance System</h1>
 
-<input type="text" id="name" placeholder="Member Name">
-<input type="text" id="month" placeholder="Month">
-<input type="text" id="year" placeholder="Year">
+<!-- ADD WORKER -->
+<div class="card">
+    <h3>Add Worker</h3>
+    <input type="text" id="workerName" placeholder="Worker Name">
+    <input type="text" id="workerId" placeholder="Worker ID">
+    <input type="text" id="role" placeholder="Role">
+    <button onclick="addWorker()">Add Worker</button>
+</div><button onclick="downloadAllCards()">📄 Download All Worker Cards</button>
 
-<button onclick="generate()">Generate Card</button>
-<button onclick="window.print()">Download / Print</button>
+<!-- TIME CARD -->
+<div class="card">
+    <h3>Time Card</h3>
 
-<div id="output" class="print-area"></div>
+    <input type="date" id="workDate">
+
+    <select id="workerSelect"></select>
+
+    <button onclick="timeIn()">Time In</button>
+    <button onclick="timeOut()">Time Out</button>
+
+    <div class="status" id="status">Status: Ready</div>
+</div>
+
+<!-- TABLE -->
+<div class="card">
+    <h3>Attendance Records</h3>
+
+<table>
+<thead>
+<tr>
+    <th>Date</th>
+    <th>Worker</th>
+    <th>In</th>
+    <th>Out</th>
+    <th>Total Hrs</th>
+    <th>OT</th>
+    <th>Signature</th>
+</tr>
+</thead>
+
+<tbody id="records"></tbody>
+
+</table>
+
+</div>
 
 </div>
 
 <script>
+let timeInData = {};
 
-function generate(){
-
-let name = document.getElementById("name").value;
-let month = document.getElementById("month").value;
-let year = document.getElementById("year").value;
-
-let html = `
-<div class="card">
-<div class="header">
-SKM TECHNICAL WORKS L.L.C<br>
-Attendance Card
-</div>
-
-<p><b>Name:</b> ${name} &nbsp;&nbsp; 
-<b>Month:</b> ${month} &nbsp;&nbsp; 
-<b>Year:</b> ${year}</p>
-
-<table>
-<tr>
-<th>Date</th>
-<th>Time In</th>
-<th>Time Out</th>
-<th>Over Time</th>
-<th>Total Hours</th>
-<th>Sign</th>
-</tr>
-`;
-
-for(let i=1;i<=31;i++){
-html += `
-<tr>
-<td>${i}</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-`;
+// LOAD
+function loadAll(){
+    loadWorkers();
+    loadRecords();
 }
 
-html += `</table></div>`;
+// ADD WORKER
+function addWorker(){
+    let name = document.getElementById("workerName").value;
+    let id = document.getElementById("workerId").value;
+    let role = document.getElementById("role").value;
 
-document.getElementById("output").innerHTML = html;
+    let workers = JSON.parse(localStorage.getItem("workers")) || [];
 
+    workers.push({name,id,role});
+    localStorage.setItem("workers", JSON.stringify(workers));
+
+    loadWorkers();
+    alert("Worker Added!");
 }
 
+// LOAD WORKERS
+function loadWorkers(){
+    let workers = JSON.parse(localStorage.getItem("workers")) || [];
+
+    let select = document.getElementById("workerSelect");
+    select.innerHTML = "";
+
+    workers.forEach(w=>{
+        select.innerHTML += `<option value="${w.name}">${w.name}</option>`;
+    });
+}
+
+// TIME IN
+function timeIn(){
+    let worker = document.getElementById("workerSelect").value;
+    let date = document.getElementById("workDate").value;
+
+    if(!date) return alert("Select date");
+
+    let key = worker + date;
+    timeInData[key] = new Date();
+
+    document.getElementById("status").innerText =
+    "Time In: " + worker + " at " + timeInData[key].toLocaleTimeString();
+}
+
+// TIME OUT
+function timeOut(){
+    let worker = document.getElementById("workerSelect").value;
+    let date = document.getElementById("workDate").value;
+
+    let key = worker + date;
+
+    if(!timeInData[key]) return alert("Time In first!");
+
+    let inTime = timeInData[key];
+    let outTime = new Date();
+
+    let diff = (outTime - inTime) / (1000*60*60);
+
+    let ot = diff > 8 ? (diff - 8).toFixed(2) : 0;
+    let total = diff.toFixed(2);
+
+    let record = {
+        date,
+        worker,
+        in: inTime.toLocaleTimeString(),
+        out: outTime.toLocaleTimeString(),
+        total,
+        ot,
+        sign:"____"
+    };
+
+    saveRecord(record);
+    loadRecords();
+
+    document.getElementById("status").innerText =
+    "Saved Successfully!";
+}
+
+// SAVE
+function saveRecord(r){
+    let data = JSON.parse(localStorage.getItem("records")) || [];
+    data.push(r);
+    localStorage.setItem("records", JSON.stringify(data));
+}
+
+function downloadAllCards(){
+
+    let workers = JSON.parse(localStorage.getItem("workers")) || [];
+
+    if(workers.length === 0){
+        alert("No workers found!");
+        return;
+    }
+
+    let win = window.open("", "", "width=900,height=700");
+
+    win.document.write(`
+    <html>
+    <head>
+    <title>Worker Cards</title>
+    <style>
+        body{font-family:Arial;padding:20px;background:#f4f4f4}
+        .card{
+            width:300px;
+            background:white;
+            padding:15px;
+            margin:10px;
+            display:inline-block;
+            border-radius:10px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.2);
+        }
+        h3{margin:0;color:#ff9800}
+        .row{margin:5px 0}
+        .badge{
+            background:#333;
+            color:#fff;
+            padding:5px;
+            border-radius:5px;
+            font-size:12px;
+        }
+    </style>
+    </head>
+    <body>
+
+    <h2>🏗️ Construction Worker Cards</h2>
+    `);
+
+    workers.forEach(w=>{
+        win.document.write(`
+        <div class="card">
+            <h3>${w.name}</h3>
+            <div class="row"><b>ID:</b> ${w.id}</div>
+            <div class="row"><b>Role:</b> ${w.role}</div>
+            <div class="row"><span class="badge">Construction Worker</span></div>
+        </div>
+        `);
+    });
+
+    win.document.write(`
+    </body>
+    </html>
+    `);
+
+    win.document.close();
+    win.print();
+}
+
+
+// LOAD RECORDS
+function loadRecords(){
+    let data = JSON.parse(localStorage.getItem("records")) || [];
+    let table = document.getElementById("records");
+
+    table.innerHTML = "";
+
+    data.forEach(r=>{
+        table.innerHTML += `
+        <tr>
+            <td>${r.date}</td>
+            <td>${r.worker}</td>
+            <td>${r.in}</td>
+            <td>${r.out}</td>
+            <td>${r.total}</td>
+            <td>${r.ot}</td>
+            <td>${r.sign}</td>
+        </tr>
+        `;
+    });
+}
+
+window.onload = loadAll;
 </script>
 
 </body>
