@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yubaraj Personal Business</title>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body{font-family:Arial,sans-serif;margin:10px;background:#f5f5f5}
+.header{background:#1976d2;color:#fff;padding:15px;text-align:center;font-size:28px;font-weight:bold;border-radius:10px}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;margin:20px 0}
+.card{padding:18px;border-radius:12px;color:#fff;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.blue{background:#1976d2}.green{background:#2e7d32}.orange{background:#ef6c00}
+.card h3{margin:0;font-size:18px}.card h2{margin:10px 0 0;font-size:30px}
+.dataTables_wrapper{overflow-x:auto}
+table.dataTable{width:100%!important;background:#fff}
+table.dataTable thead th{background:#1976d2;color:#fff;text-align:center}
+table.dataTable tbody td{text-align:center;white-space:nowrap}
+</style>
+</head>
+
+<body>
+
+<div class="header">Yubaraj Personal Business</div>
+
+<div class="dashboard">
+  <div class="card blue"><h3>Total Records</h3><h2 id="totalRows">0</h2></div>
+  <div class="card green"><h3>Grand Total</h3><h2 id="grandTotal">0</h2></div>
+  <div class="card orange"><h3>Last Updated</h3><h2 id="lastUpdated">-</h2></div>
+</div>
+
+<table id="myTable" class="display" style="width:100%"></table>
+
+<script>
+const csvUrl="https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?gid=0&single=true&output=csv";
+
+Papa.parse(csvUrl,{
+  download:true,
+  complete:function(results){
+
+    const cols=[0,1,2,6,13];
+
+    const headers = cols.map(i => ({
+      title: results.data[0][i]
+    }));
+
+    const data = results.data
+      .slice(1)
+      .filter(r => r.length && r.some(c => c !== ""))
+      .map(r => cols.map(i => r[i]));
+
+    document.getElementById("totalRows").textContent = data.length;
+
+    let total = data.reduce((s,r) =>
+      s + (parseFloat(String(r[4]).replace(/,/g,"")) || 0), 0);
+
+    document.getElementById("grandTotal").textContent = total.toLocaleString();
+    document.getElementById("lastUpdated").textContent = new Date().toLocaleDateString();
+
+    $('#myTable').DataTable({
+      data: data,
+      columns: [
+        { title: headers[0].title },
+        { title: headers[1].title },
+        { title: headers[2].title },
+        { title: headers[3].title },
+
+        // PHOTO COLUMN
+        {
+          title: headers[4].title,
+          render: function(data){
+            return data
+              ? `<img src="${data}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">`
+              : "No Image";
+          }
+        }
+      ],
+      responsive:true,
+      autoWidth:false,
+      scrollX:true,
+      pageLength:25,
+      searching:true,
+      ordering:true
+    });
+
+  }
+});
+</script>
+
+</body>
+</html>
