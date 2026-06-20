@@ -47,7 +47,7 @@ Papa.parse(csvUrl,{
 download:true,
 complete:function(results){
 
-const cols=[0,1,2,6,13];
+const cols=[0,1,2,6,10,13];
 
 const headers=cols.map(i=>({title:results.data[0][i]}));
 
@@ -55,7 +55,7 @@ const data=results.data.slice(1).filter(r=>r.length&&r.some(c=>c!=="")).map(r=>c
 
 document.getElementById("totalRows").textContent=data.length;
 
-let total=data.reduce((s,r)=>s+(parseFloat(String(r[4]).replace(/,/g,""))||0),0);
+let total=data.reduce((s,r)=>s+(parseFloat(String(r[5]).replace(/,/g,""))||0),0);
 document.getElementById("grandTotal").textContent=total.toLocaleString();
 
 document.getElementById("lastUpdated").textContent=new Date().toLocaleDateString();
