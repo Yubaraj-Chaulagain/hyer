@@ -61,14 +61,25 @@ document.getElementById("grandTotal").textContent=total.toLocaleString();
 document.getElementById("lastUpdated").textContent=new Date().toLocaleDateString();
 
 $('#myTable').DataTable({
-data:data,
-columns:headers,
-responsive:true,
-autoWidth:false,
-scrollX:true,
-pageLength:25,
-searching:true,
-ordering:true
+  data: data,
+  columns: [
+    { title: headers[0].title },
+    { title: headers[1].title },
+    { title: headers[2].title },
+    { title: headers[3].title },
+
+    // PHOTO COLUMN
+    {
+      title: headers[4].title,
+      render: function(data){
+        return data
+          ? `<img src="${data}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">`
+          : "No Image";
+      }
+    },
+
+    { title: headers[5].title }
+  ]
 });
 
 }
