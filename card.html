@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Attendance Card System</title>
+<style>
+body{
+    font-family: Arial;
+    background:#f2f2f2;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+input,button{
+    padding:10px;
+    margin:5px;
+}
+
+button{
+    cursor:pointer;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin-top:20px;
+    border:1px solid #000;
+}
+
+.header{
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table,th,td{
+    border:1px solid black;
+}
+
+th,td{
+    padding:5px;
+    text-align:center;
+    font-size:12px;
+}
+
+@media print{
+    body *{
+        visibility:hidden;
+    }
+    .print-area, .print-area *{
+        visibility:visible;
+    }
+    .print-area{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Attendance Card Generator</h2>
+
+<input type="text" id="name" placeholder="Member Name">
+<input type="text" id="month" placeholder="Month">
+<input type="text" id="year" placeholder="Year">
+
+<button onclick="generate()">Generate Card</button>
+<button onclick="window.print()">Download / Print</button>
+
+<div id="output" class="print-area"></div>
+
+</div>
+
+<script>
+
+function generate(){
+
+let name = document.getElementById("name").value;
+let month = document.getElementById("month").value;
+let year = document.getElementById("year").value;
+
+let html = `
+<div class="card">
+<div class="header">
+SKM TECHNICAL WORKS L.L.C<br>
+Attendance Card
+</div>
+
+<p><b>Name:</b> ${name} &nbsp;&nbsp; 
+<b>Month:</b> ${month} &nbsp;&nbsp; 
+<b>Year:</b> ${year}</p>
+
+<table>
+<tr>
+<th>Date</th>
+<th>Time In</th>
+<th>Time Out</th>
+<th>Over Time</th>
+<th>Total Hours</th>
+<th>Sign</th>
+</tr>
+`;
+
+for(let i=1;i<=31;i++){
+html += `
+<tr>
+<td>${i}</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+`;
+}
+
+html += `</table></div>`;
+
+document.getElementById("output").innerHTML = html;
+
+}
+
+</script>
+
+</body>
+</html>
