@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auto Reply System</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#f1f5f9;display:flex;justify-content:center;padding:20px}
+.card{width:100%;max-width:480px;background:#fff;padding:20px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+h2{text-align:center;color:#2563eb}
+select,button{width:100%;padding:12px;margin-top:12px;border-radius:8px;font-size:16px}
+button{background:#2563eb;color:#fff;border:none;cursor:pointer}
+#refresh{background:#10b981}
+#answer{margin-top:16px;border:1px solid #ddd;border-radius:8px;padding:12px;min-height:70px;background:#fafafa;white-space:pre-wrap}
+small{color:#666}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Auto Reply System</h2>
+<small>Select a question</small>
+<select id="q"><option>Loading...</option></select>
+<button id="send">Send</button>
+<button id="refresh">Refresh</button>
+<div id="answer">Please select a question.</div>
+</div>
+
+<script>
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?output=csv";
+const q=document.getElementById("q");
+const ans=document.getElementById("answer");
+let data=[];
+
+function parseCSV(text){
+ const rows=[], re=/(,|\r?\n|^)(?:"([^"]*(?:""[^"]*)*)"|([^",\r\n]*))/g;
+ let row=[];
+ let m;
+ while((m=re.exec(text))!==null){
+   const delim=m[1];
+   if(delim.length && delim!=","){rows.push(row); row=[];}
+   let val=m[2]!==undefined?m[2].replace(/""/g,'"'):m[3];
+   row.push(val);
+ }
+ rows.push(row);
+ return rows.filter(r=>r.length>1);
+}
+
+async function load(){
+ q.innerHTML="<option>Loading...</option>";
+ data=[];
+ try{
+   const t=await (await fetch(CSV_URL)).text();
+   const rows=parseCSV(t);
+   q.innerHTML='<option value="">-- Select Question --</option>';
+   for(let i=1;i<rows.length;i++){
+      const question=(rows[i][0]||"").trim();
+      const reply=(rows[i][1]||"").trim();
+      if(!question) continue;
+      data.push({question,reply});
+      const o=document.createElement("option");
+      o.value=question;o.textContent=question;
+      q.appendChild(o);
+   }
+ }catch(e){
+   q.innerHTML="<option>Load failed</option>";
+ }
+}
+load();
+
+document.getElementById("send").onclick=()=>{
+ const item=data.find(x=>x.question===q.value);
+ ans.textContent=item?item.reply:"Please select a valid question.";
+};
+document.getElementById("refresh").onclick=load;
+</script>
+</body>
+</html>
