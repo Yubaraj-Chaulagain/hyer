@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Auto Reply System</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  display:flex;
+  justify-content:center;
+  padding:20px;
+}
+
+.card{
+  width:100%;
+  max-width:500px;
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+h2{
+  text-align:center;
+  color:#2563eb;
+}
+
+input, select, button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  font-size:16px;
+}
+
+input{
+  border:1px solid #ccc;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+}
+
+#send{
+  background:#2563eb;
+  color:#fff;
+}
+
+#refresh{
+  background:#10b981;
+  color:#fff;
+}
+
+#answer{
+  margin-top:15px;
+  background:#f1f5f9;
+  padding:12px;
+  border-radius:10px;
+  min-height:70px;
+  white-space:pre-wrap;
+}
+
+small{
+  color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Smart Auto Reply</h2>
+
+  <input type="text" id="search" placeholder="Search question...">
+
+  <select id="q">
+    <option>Loading...</option>
+  </select>
+
+  <button id="send">Get Answer</button>
+  <button id="refresh">Refresh Data</button>
+
+  <div id="answer">Please select a question.</div>
+</div>
+
+<script>
+const CSV_URL = "https://docs.google.com/spreadsheets/d/1A3pSW98XyKW3bF1_1IJTxMiyUOU38XfZdHzXqXJOmzQ/export?format=csv&gid=1647220227";
+
+const q = document.getElementById("q");
+const search = document.getElementById("search");
+const ans = document.getElementById("answer");
+
+let data = [];
+
+// Simple safe CSV parser
+function parseCSV(text){
+  return text.split("\n").map(r => r.split(","));
+}
+
+// Load data
+async function load(){
+  q.innerHTML = "<option>Loading...</option>";
+  data = [];
+
+  try{
+    const res = await fetch(CSV_URL);
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    q.innerHTML = '<option value="">-- Select Question --</option>';
+
+    for(let i=1;i<rows.length;i++){
+      let question = (rows[i][0] || "").trim();
+      let reply = (rows[i][1] || "").trim();
+
+      if(!question) continue;
+
+      data.push({question, reply});
+
+      let opt = document.createElement("option");
+      opt.value = question;
+      opt.textContent = question;
+      q.appendChild(opt);
+    }
+
+    // cache
+    localStorage.setItem("auto_reply_data", JSON.stringify(data));
+
+  }catch(e){
+    // offline fallback
+    let cached = localStorage.getItem("auto_reply_data");
+    if(cached){
+      data = JSON.parse(cached);
+      q.innerHTML = '<option value="">-- Offline Mode --</option>';
+
+      data.forEach(d=>{
+        let opt = document.createElement("option");
+        opt.value = d.question;
+        opt.textContent = d.question;
+        q.appendChild(opt);
+      });
+    }else{
+      q.innerHTML = "<option>Load failed</option>";
+    }
+  }
+}
+
+load();
+
+// Search filter
+search.addEventListener("input", ()=>{
+  let val = search.value.toLowerCase();
+  q.innerHTML = '<option value="">-- Filtered --</option>';
+
+  data
+    .filter(x => x.question.toLowerCase().includes(val))
+    .forEach(x=>{
+      let opt = document.createElement("option");
+      opt.value = x.question;
+      opt.textContent = x.question;
+      q.appendChild(opt);
+    });
+});
+
+// Get answer
+document.getElementById("send").onclick = ()=>{
+  const item = data.find(x =>
+    x.question.trim().toLowerCase() === q.value.trim().toLowerCase()
+  );
+
+  ans.textContent = item ? item.reply : "No answer found.";
+};
+
+// Refresh
+document.getElementById("refresh").onclick = load;
+</script>
+
+</body>
+</html>
