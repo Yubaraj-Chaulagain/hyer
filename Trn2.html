@@ -2,177 +2,198 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Auto Reply System</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Auto Reply Chat</title>
 
 <style>
+:root{
+  --bg:#f4f6f9;
+  --card:#fff;
+  --text:#222;
+  --accent:#007bff;
+}
+body.dark{
+  --bg:#1e1e1e;
+  --card:#2a2a2a;
+  --text:#fff;
+}
 body{
   margin:0;
   font-family:Arial;
-  background:#0b1220;
-  display:flex;
-  justify-content:center;
+  background:var(--bg);
+  color:var(--text);
 }
-
-.app{
-  width:100%;
-  max-width:500px;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:#fff;
-}
-
-.header{
-  background:#2563eb;
-  color:#fff;
-  padding:15px;
+header{
+  padding:10px;
   text-align:center;
-  font-weight:bold;
+  background:var(--accent);
+  color:white;
 }
-
-.chat{
-  flex:1;
+.container{
   padding:10px;
-  overflow-y:auto;
-  background:#f1f5f9;
+  max-width:900px;
+  margin:auto;
 }
-
-.msg{
-  max-width:80%;
+input,button,textarea{
+  width:100%;
   padding:10px;
-  margin:8px 0;
-  border-radius:10px;
-  white-space:pre-wrap;
-}
-
-.user{
-  background:#2563eb;
-  color:#fff;
-  margin-left:auto;
-}
-
-.bot{
-  background:#e2e8f0;
-}
-
-.inputBox{
-  display:flex;
-  padding:10px;
-  border-top:1px solid #ddd;
-}
-
-input{
-  flex:1;
-  padding:12px;
-  font-size:16px;
+  margin:5px 0;
+  border-radius:5px;
   border:1px solid #ccc;
-  border-radius:8px;
 }
-
 button{
-  margin-left:8px;
-  padding:12px;
+  background:var(--accent);
+  color:white;
   border:none;
-  background:#2563eb;
-  color:#fff;
-  border-radius:8px;
   cursor:pointer;
+}
+.card{
+  background:var(--card);
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+  box-shadow:0 0 5px rgba(0,0,0,0.1);
+}
+.row{
+  display:flex;
+  gap:10px;
+}
+.row button{
+  flex:1;
+}
+.small{
+  font-size:13px;
+  opacity:0.8;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<header>
+Auto Reply System (CSV + Live Search + WhatsApp)
+</header>
 
-  <div class="header">💬 Pro Auto Reply System</div>
+<div class="container">
 
-  <div id="chat" class="chat"></div>
+<button onclick="toggleDark()">🌙 Dark Mode</button>
 
-  <div class="inputBox">
-    <input id="input" placeholder="Type question...">
-    <button onclick="send()">Send</button>
-  </div>
+<input id="search" placeholder="Search question..." oninput="render()">
+
+<input id="q" placeholder="Question">
+<input id="a" placeholder="Answer">
+
+<div class="row">
+<button onclick="addData()">Add</button>
+<button onclick="updateData()">Update</button>
+</div>
+
+<button onclick="exportCSV()">Export CSV</button>
+<input type="file" onchange="importCSV(event)">
+
+<div id="list"></div>
 
 </div>
 
 <script>
+let data = JSON.parse(localStorage.getItem("data")||"[]");
+let editIndex = -1;
 
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQOtSNDD7aXPK2sFvWtFZL_GNonYJyvcP6JMKuVB9bbO88sFq9D_g4MekAIzSUwZthsICeStMrm2GbU/pub?output=csv";
-
-let data = [];
-
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
-
-// simple CSV parser
-function parseCSV(text){
-  return text.split("\n").map(r => r.split(","));
+function save(){
+  localStorage.setItem("data",JSON.stringify(data));
 }
 
-// add message
-function addMsg(text, type){
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+function addData(){
+  let q=document.getElementById("q").value;
+  let a=document.getElementById("a").value;
+  if(!q||!a) return alert("Fill both");
+  data.push({q,a});
+  save(); render();
 }
 
-// load sheet
-async function load(){
-  try{
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
-    const rows = parseCSV(text);
+function updateData(){
+  if(editIndex==-1) return alert("Select item first");
+  data[editIndex].q=document.getElementById("q").value;
+  data[editIndex].a=document.getElementById("a").value;
+  editIndex=-1;
+  save(); render();
+}
 
-    data = [];
+function del(i){
+  data.splice(i,1);
+  save(); render();
+}
 
-    for(let i=1;i<rows.length;i++){
-      let q = (rows[i][0]||"").trim();
-      let a = (rows[i][1]||"").trim();
+function fill(i){
+  document.getElementById("q").value=data[i].q;
+  document.getElementById("a").value=data[i].a;
+  editIndex=i;
+}
 
-      if(q){
-        data.push({q,a});
-      }
-    }
+function copyText(t){
+  navigator.clipboard.writeText(t);
+  alert("Copied!");
+}
 
-    localStorage.setItem("chat_data", JSON.stringify(data));
+function whatsapp(t){
+  window.open("https://wa.me/?text="+encodeURIComponent(t));
+}
 
-  }catch(e){
-    let cache = localStorage.getItem("chat_data");
-    if(cache) data = JSON.parse(cache);
+function render(){
+  let s=document.getElementById("search").value.toLowerCase();
+  let list=document.getElementById("list");
+  list.innerHTML="";
+  data.filter(x=>x.q.toLowerCase().includes(s)).forEach((x,i)=>{
+    let div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <b>${x.q}</b><br>
+      <span class="small">${x.a}</span><br><br>
+      <div class="row">
+        <button onclick="fill(${i})">Edit</button>
+        <button onclick="del(${i})">Delete</button>
+      </div>
+      <div class="row">
+        <button onclick="copyText('${x.a}')">Copy</button>
+        <button onclick="whatsapp('${x.a}')">WhatsApp</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function exportCSV(){
+  let csv="Question,Answer\n";
+  data.forEach(x=>{
+    csv+=`"${x.q}","${x.a}"\n`;
+  });
+  let blob=new Blob([csv],{type:"text/csv"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="data.csv";
+  a.click();
+}
+
+function importCSV(e){
+  let file=e.target.files[0];
+  let reader=new FileReader();
+  reader.onload=function(){
+    let lines=reader.result.split("\n");
+    data=[];
+    lines.forEach(l=>{
+      let [q,a]=l.split(",");
+      if(q&&a) data.push({q:q.replace(/"/g,""),a:a.replace(/"/g,"")});
+    });
+    save(); render();
   }
+  reader.readAsText(file);
 }
 
-load();
-
-// send function
-function send(){
-  const text = input.value.trim();
-  if(!text) return;
-
-  addMsg(text,"user");
-
-  let found = data.find(x =>
-    x.q.toLowerCase().includes(text.toLowerCase())
-  );
-
-  if(found){
-    addMsg(found.a || "No answer found","bot");
-  }else{
-    addMsg("Sorry, no match found","bot");
-  }
-
-  input.value = "";
+function toggleDark(){
+  document.body.classList.toggle("dark");
 }
 
-// Enter key support
-input.addEventListener("keypress", (e)=>{
-  if(e.key==="Enter") send();
-});
-
+render();
 </script>
 
 </body>
