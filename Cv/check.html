@@ -240,76 +240,117 @@ document.getElementById('workContainer').appendChild(div);
 
 function gen(){
 
+// Basic Info
 document.getElementById("cvName").innerText =
 document.getElementById("name").value || "Your Name";
 
 document.getElementById("cvLocation").innerText =
-document.getElementById("location").value || "";
+document.getElementById("location").value;
 
 document.getElementById("cvPhone").innerText =
-document.getElementById("phone").value || "";
+document.getElementById("phone").value;
 
 document.getElementById("cvEmail").innerText =
-document.getElementById("email").value || "";
+document.getElementById("email").value;
 
 document.getElementById("cvDob").innerText =
-document.getElementById("dob").value || "";
-    
+document.getElementById("dob").value;
+
 document.getElementById("cvgender").innerText =
-document.getElementById("gender").value || "";
+document.getElementById("gender").value;
 
 document.getElementById("cvNationality").innerText =
-document.getElementById("nationality").value || "";
+document.getElementById("nationality").value;
 
-document.getElementById("cvSummary").innerText =
-document.getElementById("summary").value || "";
+// Summary
+document.getElementById("cvSummary").innerHTML =
+document.getElementById("summary").value.replace(/\n/g,"<br>");
 
-document.getElementById("cvSkills").innerText =
-document.getElementById("skills").value || "";
+// Skills
+document.getElementById("cvSkills").innerHTML =
+document.getElementById("skills").value.replace(/\n/g,"<br>");
 
-document.getElementById("cvLang").innerText =
-document.getElementById("languages").value || "";
+// Languages
+document.getElementById("cvLang").innerHTML =
+document.getElementById("languages").value.replace(/\n/g,"<br>");
 
-document.getElementById("cvEdu").innerText =
-document.getElementById("education").value || "";
+// Education
+document.getElementById("cvEdu").innerHTML =
+document.getElementById("education").value.replace(/\n/g,"<br>");
 
-document.getElementById("cvRespons").innerText =
-document.getElementById("Responsbiliti").value || "";
+// Responsibilities
+document.getElementById("cvRespons").innerHTML =
+document.getElementById("Responsbiliti").value.replace(/\n/g,"<br>");
 
-/* WORK HISTORY */
-let workHTML = "";
+// Small Font
+document.getElementById("cvSummary").style.fontSize="12px";
+document.getElementById("cvSkills").style.fontSize="12px";
+document.getElementById("cvLang").style.fontSize="12px";
+document.getElementById("cvEdu").style.fontSize="12px";
+document.getElementById("cvRespons").style.fontSize="12px";
+document.getElementById("cvWork").style.fontSize="12px";
+
+// Work History
+let workHTML="";
 
 for(let i=1;i<=workCount;i++){
-let job=document.getElementById('job'+i)?.value||"";
-let company=document.getElementById('company'+i)?.value||"";
-let start=document.getElementById('start'+i)?.value||"";
-let end=document.getElementById('end'+i)?.value||"";
-let address=document.getElementById('address'+i)?.value||"";
-let desc=document.getElementById('desc'+i)?.value||"";
+
+let job=document.getElementById("job"+i)?.value||"";
+let company=document.getElementById("company"+i)?.value||"";
+let start=document.getElementById("start"+i)?.value||"";
+let end=document.getElementById("end"+i)?.value||"";
+let address=document.getElementById("address"+i)?.value||"";
+let desc=document.getElementById("desc"+i)?.value||"";
 
 if(job || company){
+
 workHTML += `
-<p><b>${job}</b> (${start} - ${end})</p>
-<p>${company} | ${address}</p>
-<p class='small'>${desc}</p><br>
+<div style="margin-bottom:8px;">
+<b style="font-size:13px;color:#0f766e;">
+${job}
+</b><br>
+
+<span style="font-size:12px;">
+${company}
+</span><br>
+
+<span style="font-size:11px;color:#555;">
+${start} - ${end}
+</span><br>
+
+<span style="font-size:11px;">
+${address}
+</span><br>
+
+<span style="font-size:12px;line-height:1.3;">
+${desc.replace(/\n/g,"<br>")}
+</span>
+</div>
 `;
+
 }
+
 }
 
 document.getElementById("cvWork").innerHTML = workHTML;
 
-/* PHOTO */
-let file = document.getElementById("photo").files[0];
+// Photo
+let file=document.getElementById("photo").files[0];
+
 if(file){
-let reader = new FileReader();
-reader.onload = function(e){
-document.getElementById("cvPhoto").src = e.target.result;
+let reader=new FileReader();
+
+reader.onload=function(e){
+document.getElementById("cvPhoto").src=e.target.result;
 };
+
 reader.readAsDataURL(file);
 }
 
 }
-    </script>
+
+</script>
+
     <script>
 
 async function downloadPDF(){
