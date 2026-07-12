@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSV Data Table</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    margin:20px;
+}
+h2{
+    text-align:center;
+}
+.controls{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+}
+select,input{
+    padding:10px;
+    font-size:16px;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:left;
+}
+th{
+    background:#007bff;
+    color:#fff;
+}
+tr:nth-child(even){
+    background:#f2f2f2;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+</head>
+<body>
+
+<h2>CSV Data</h2>
+
+<div class="controls">
+<select id="filter">
+<option value="">All</option>
+</select>
+
+<input type="text" id="search" placeholder="Search...">
+</div>
+
+<table id="table">
+<thead></thead>
+<tbody></tbody>
+</table>
+
+<script>
+
+const csvUrl="https://docs.google.com/spreadsheets/d/1rmkfGkGVqGkOba-eWgIAxVV15n6IJeyCSnB6l9WJVrs/export?format=csv&gid=0";
+
+let allData=[];
+
+Papa.parse(csvUrl,{
+download:true,
+header:true,
+complete:function(results){
+
+allData=results.data.filter(r=>Object.keys(r).length);
+
+createDropdown();
+
+showTable(allData);
+
+}
+});
+
+function createDropdown(){
+
+const select=document.getElementById("filter");
+
+const column=Object.keys(allData[0])[2];
+
+const values=[...new Set(allData.map(r=>r[column]).filter(Boolean))].sort();
+
+values.forEach(v=>{
+
+let op=document.createElement("option");
+
+op.value=v;
+
+op.textContent=v;
+
+select.appendChild(op);
+
+});
+
+select.onchange=filterData;
+
+document.getElementById("search").oninput=filterData;
+
+}
+
+function filterData(){
+
+const value=document.getElementById("filter").value;
+
+const search=document.getElementById("search").value.toLowerCase();
+
+const col3=Object.keys(allData[0])[2];
+
+const filtered=allData.filter(r=>{
+
+const matchDropdown=!value || r[col3]==value;
+
+const matchSearch=Object.values(r).join(" ").toLowerCase().includes(search);
+
+return matchDropdown && matchSearch;
+
+});
+
+showTable(filtered);
+
+}
+
+function showTable(data){
+
+const thead=document.querySelector("#table thead");
+
+const tbody=document.querySelector("#table tbody");
+
+thead.innerHTML="";
+tbody.innerHTML="";
+
+if(data.length==0){
+
+tbody.innerHTML="<tr><td>No Data</td></tr>";
+
+return;
+
+}
+
+const headers=Object.keys(data[0]);
+
+let tr=document.createElement("tr");
+
+headers.forEach(h=>{
+
+let th=document.createElement("th");
+
+th.textContent=h;
+
+tr.appendChild(th);
+
+});
+
+thead.appendChild(tr);
+
+data.forEach(r=>{
+
+let tr=document.createElement("tr");
+
+headers.forEach(h=>{
+
+let td=document.createElement("td");
+
+td.textContent=r[h];
+
+tr.appendChild(td);
+
+});
+
+tbody.appendChild(tr);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
