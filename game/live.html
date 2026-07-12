@@ -70,17 +70,22 @@ const csvUrl="https://docs.google.com/spreadsheets/d/1rmkfGkGVqGkOba-eWgIAxVV15n
 let allData=[];
 
 Papa.parse(csvUrl,{
-download:true,
-header:true,
-complete:function(results){
+  download:true,
+  header:true,
+  complete:function(results){
 
-allData=results.data.filter(r=>Object.keys(r).length);
+    allData = results.data.filter(r=>Object.keys(r).length);
 
-createDropdown();
+    // Status column बनाउने
+    allData.forEach(row=>{
+      row.Status = getStatus(row.Balance);
+    });
 
-showTable(allData);
+    createDropdown();
 
-}
+    showTable(allData);
+
+  }
 });
 
 function createDropdown(){
@@ -129,6 +134,16 @@ return matchDropdown && matchSearch;
 
 showTable(filtered);
 
+}
+
+function getStatus(balance){
+    balance = parseFloat(balance);
+
+    if (isNaN(balance)) return "";
+
+    if (balance > 0) return "Received Balance";
+    if (balance < 0) return "Return Balance";
+    return "Settled";
 }
 
 function showTable(data){
