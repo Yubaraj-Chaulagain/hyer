@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Members Dashboard</title>
+<style>
+body{font-family:Arial;margin:16px;background:#f5f5f5}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border:1px solid #ccc;padding:6px}
+th{position:sticky;top:0;background:#1976d2;color:#fff;cursor:pointer}
+.pos{color:red;font-weight:bold}.neg{color:green;font-weight:bold}.zero{color:blue;font-weight:bold}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head><body>
+<h2>Members Dashboard</h2>
+<div class="controls">
+<select id="address"><option value="">All Address</option></select>
+<select id="status"><option value="">All Status</option><option>Received Balance</option><option>Return Balance</option><option>Settled</option></select>
+<input id="search" placeholder="Search">
+</div>
+<table><thead></thead><tbody></tbody></table>
+<script>
+const csvUrl="https://docs.google.com/spreadsheets/d/1A3pSW98XyKW3bF1_1IJTxMiyUOU38XfZdHzXqXJOmzQ/export?format=csv&gid=0";
+let allData=[];
+function getStatus(b){b=parseFloat(b);if(isNaN(b))return "";if(b>0)return"Received Balance";if(b<0)return"Return Balance";return"Settled";}
+Papa.parse(csvUrl,{download:true,header:true,complete:r=>{
+allData=r.data.filter(x=>Object.keys(x).length);
+allData.forEach(row=>row.Status=getStatus(row["Balance"]));
+let vals=[...new Set(allData.map(r=>r["Address"]).filter(Boolean))].sort();
+vals.forEach(v=>address.add(new Option(v,v)));
+address.onchange=filter;status.onchange=filter;search.oninput=filter;
+filter();
+}});
+function filter(){
+let a=address.value,s=status.value,q=search.value.toLowerCase();
+let d=allData.filter(r=>(!a||r.Address==a)&&(!s||r.Status==s)&&Object.values(r).join(" ").toLowerCase().includes(q));
+show(d);
+}
+function show(data){
+let h=document.querySelector("thead"),b=document.querySelector("tbody");
+h.innerHTML="";b.innerHTML="";
+if(!data.length){b.innerHTML="<tr><td>No Data</td></tr>";return;}
+let heads=Object.keys(data[0]);
+let tr=document.createElement("tr");
+heads.forEach(x=>{let th=document.createElement("th");th.textContent=x;tr.appendChild(th);});
+h.appendChild(tr);
+data.forEach(r=>{
+let tr=document.createElement("tr");
+heads.forEach(k=>{let td=document.createElement("td");td.textContent=r[k];
+if(k==="Balance"){let n=parseFloat(r[k]);td.className=n>0?"pos":n<0?"neg":"zero";}
+tr.appendChild(td);});
+b.appendChild(tr);
+});
+}
+setInterval(()=>location.reload(),30000);
+</script></body></html>
