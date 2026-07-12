@@ -51,6 +51,12 @@ tr:nth-child(even){
 <h2>CSV Data</h2>
 
 <div class="controls">
+<select id="statusFilter">
+    <option value="">All Status</option>
+    <option value="Received Balance">Received Balance</option>
+    <option value="Return Balance">Return Balance</option>
+    <option value="Settled">Settled</option>
+</select>
 <select id="filter">
 <option value="">All</option>
 </select>
@@ -76,9 +82,9 @@ Papa.parse(csvUrl,{
 
     allData = results.data.filter(r=>Object.keys(r).length);
 
-    // Status column बनाउने
     allData.forEach(row=>{
-      row.Status = getStatus(row.Balance);
+        const balanceColumn = Object.keys(row)[3];
+        row.Status = getStatus(row[balanceColumn]);
     });
 
     createDropdown();
@@ -112,12 +118,14 @@ select.onchange=filterData;
 
 document.getElementById("search").oninput=filterData;
 
+document.getElementById("statusFilter").onchange = filterData;
+
 }
 
 function filterData(){
 
 const value=document.getElementById("filter").value;
-
+const status=document.getElementById("statusFilter").value;
 const search=document.getElementById("search").value.toLowerCase();
 
 const col3=Object.keys(allData[0])[2];
@@ -125,10 +133,10 @@ const col3=Object.keys(allData[0])[2];
 const filtered=allData.filter(r=>{
 
 const matchDropdown=!value || r[col3]==value;
-
+const matchStatus=!status || r.Status==status;
 const matchSearch=Object.values(r).join(" ").toLowerCase().includes(search);
 
-return matchDropdown && matchSearch;
+return matchDropdown && matchStatus && matchSearch;
 
 });
 
