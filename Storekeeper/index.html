@@ -29,7 +29,167 @@ th{background:#007bff;color:#fff}
 <tbody id="memberTable"></tbody>
 </table>
 </div>
+<hr>
+
+<div class="container">
+<h2>Store Item Entry (Stock Master)</h2>
+
+<input id="itemName" placeholder="Item Name">
+<input id="itemQty" type="number" placeholder="Quantity">
+<input id="itemPrice" type="number" placeholder="Unit Price">
+
+<input id="itemSearch" placeholder="Search Item..." onkeyup="showItems()">
+
+<button class="add" onclick="addItem()">Add Item</button>
+<button class="export" onclick="exportItemsCSV()">Export CSV</button>
+
+<table>
+<thead>
+<tr>
+<th>SN</th>
+<th>Item Name</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="itemTable"></tbody>
+
+</table>
+</div>
+
+
 <script>
+
+let items=JSON.parse(localStorage.getItem("items")||"[]");
+
+
+function saveItems(){
+localStorage.setItem("items",JSON.stringify(items));
+}
+
+
+function addItem(){
+
+let name=itemName.value.trim();
+let qty=parseInt(itemQty.value);
+let price=parseFloat(itemPrice.value);
+
+
+if(!name || !qty || !price){
+alert("Fill all item details");
+return;
+}
+
+
+items.push({
+name:name,
+qty:qty,
+price:price,
+status:"Available"
+});
+
+
+saveItems();
+showItems();
+
+
+itemName.value="";
+itemQty.value="";
+itemPrice.value="";
+
+}
+
+
+
+function deleteItem(index){
+
+items.splice(index,1);
+saveItems();
+showItems();
+
+}
+
+
+
+function showItems(){
+
+let key=itemSearch.value.toLowerCase();
+
+itemTable.innerHTML="";
+
+
+items.filter(x=>
+x.name.toLowerCase().includes(key)
+)
+.forEach((x,i)=>{
+
+
+itemTable.innerHTML+=`
+
+<tr>
+
+<td>${i+1}</td>
+
+<td>${x.name}</td>
+
+<td>${x.qty}</td>
+
+<td>${x.price}</td>
+
+<td>${x.qty*x.price}</td>
+
+<td>${x.status}</td>
+
+
+<td>
+<button class="delete" onclick="deleteItem(${i})">
+Delete
+</button>
+</td>
+
+</tr>
+
+`;
+
+});
+
+
+}
+
+
+
+function exportItemsCSV(){
+
+let csv="SN,Item Name,Qty,Price,Total,Status\n";
+
+
+items.forEach((x,i)=>{
+
+csv+=`${i+1},"${x.name}",${x.qty},${x.price},${x.qty*x.price},"${x.status}"\n`;
+
+});
+
+
+let blob=new Blob([csv],{type:"text/csv"});
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="Store_Items.csv";
+
+a.click();
+
+}
+
+
+showItems();
+
+
 let members=JSON.parse(localStorage.getItem("members")||"[]");
 function save(){localStorage.setItem("members",JSON.stringify(members));}
 function addMember(){
