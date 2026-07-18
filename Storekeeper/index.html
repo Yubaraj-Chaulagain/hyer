@@ -60,6 +60,337 @@ th{background:#007bff;color:#fff}
 
 </table>
 </div>
+<hr>
+
+<div class="container">
+
+<h2>Member Item Issue / Return System</h2>
+
+<input id="issueID" placeholder="Member Emirates ID">
+
+<input id="issueItem" placeholder="Item Name">
+
+<input id="issueQty" type="number" placeholder="Issue Quantity">
+
+
+<button class="add" onclick="issueItem()">
+Issue Item
+</button>
+
+
+<br><br>
+
+<input id="returnID" placeholder="Member Emirates ID">
+
+<input id="returnItem" placeholder="Return Item Name">
+
+<input id="returnQty" type="number" placeholder="Return Quantity">
+
+
+<button class="export" onclick="returnItem()">
+Return Item
+</button>
+
+
+<h3>Member Item History</h3>
+
+<input id="historySearch" 
+placeholder="Search Member ID..." 
+onkeyup="showHistory()">
+
+
+
+<table>
+
+<thead>
+
+<tr>
+<th>SN</th>
+<th>Member ID</th>
+<th>Item</th>
+<th>Qty</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+
+<tbody id="historyTable"></tbody>
+
+</table>
+
+
+<h3>Member Status</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>Member ID</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="statusTable"></tbody>
+
+</table>
+
+
+</div>
+
+
+<script>
+
+
+let transactions =
+JSON.parse(localStorage.getItem("transactions")||"[]");
+
+
+
+function saveTransactions(){
+
+localStorage.setItem(
+"transactions",
+JSON.stringify(transactions)
+);
+
+}
+
+
+
+
+// ISSUE ITEM
+
+function issueItem(){
+
+let id=issueID.value.trim();
+let item=issueItem.value.trim();
+let qty=parseInt(issueQty.value);
+
+
+if(!id || !item || !qty){
+
+alert("Fill all details");
+return;
+
+}
+
+
+// Check stock
+
+let stock=items.find(
+x=>x.name==item
+);
+
+
+if(!stock || stock.qty<qty){
+
+alert("Stock not available");
+return;
+
+}
+
+
+// reduce stock
+
+stock.qty-=qty;
+
+
+
+transactions.push({
+
+id:id,
+item:item,
+qty:qty,
+type:"ISSUE",
+date:new Date().toLocaleString()
+
+});
+
+
+saveItems();
+saveTransactions();
+
+showItems();
+showHistory();
+showStatus();
+
+
+alert("Item Issued");
+
+
+}
+
+
+
+// RETURN ITEM
+
+function returnItem(){
+
+let id=returnID.value.trim();
+let item=returnItem.value.trim();
+let qty=parseInt(returnQty.value);
+
+
+if(!id||!item||!qty){
+
+alert("Fill all details");
+return;
+
+}
+
+
+// add stock back
+
+let stock=items.find(
+x=>x.name==item
+);
+
+
+if(stock){
+
+stock.qty+=qty;
+
+}
+
+
+
+transactions.push({
+
+id:id,
+item:item,
+qty:qty,
+type:"RETURN",
+date:new Date().toLocaleString()
+
+});
+
+
+saveItems();
+saveTransactions();
+
+
+showItems();
+showHistory();
+showStatus();
+
+
+alert("Item Returned");
+
+}
+
+
+
+
+
+// HISTORY
+
+function showHistory(){
+
+
+let key=
+historySearch.value.toLowerCase();
+
+
+historyTable.innerHTML="";
+
+
+transactions
+.filter(x=>
+x.id.toLowerCase()
+.includes(key)
+)
+.forEach((x,i)=>{
+
+
+historyTable.innerHTML+=`
+
+<tr>
+
+<td>${i+1}</td>
+
+<td>${x.id}</td>
+
+<td>${x.item}</td>
+
+<td>${x.qty}</td>
+
+<td>${x.date}</td>
+
+<td>${x.type}</td>
+
+</tr>
+
+`;
+
+});
+
+
+}
+
+
+
+
+// STATUS CHECK
+
+function showStatus(){
+
+
+statusTable.innerHTML="";
+
+
+members.forEach(m=>{
+
+
+let pending=0;
+
+
+transactions
+.filter(t=>t.id==m.eid)
+.forEach(t=>{
+
+
+if(t.type=="ISSUE")
+pending+=t.qty;
+
+
+if(t.type=="RETURN")
+pending-=t.qty;
+
+
+});
+
+
+
+let status=
+pending>0?
+"BLOCKED - Item Not Returned":
+"CLEAR";
+
+
+
+statusTable.innerHTML+=`
+
+<tr>
+
+<td>${m.eid}</td>
+
+<td>${status}</td>
+
+</tr>
+
+`;
+
+});
+
+
+}
+
+
+showHistory();
+showStatus();
+
 
 
 <script>
