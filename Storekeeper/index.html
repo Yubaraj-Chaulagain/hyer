@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Entry</title>
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:20px}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 10px #ccc}
+input{width:100%;padding:10px;margin:8px 0;box-sizing:border-box}
+button{padding:10px 16px;margin:5px;border:none;border-radius:4px;cursor:pointer}
+.add{background:#28a745;color:#fff}.export{background:#007bff;color:#fff}.delete{background:#dc3545;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #ccc;padding:8px;text-align:center}
+th{background:#007bff;color:#fff}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Member Entry</h2>
+<input id="eid" placeholder="Emirates ID">
+<input id="name" placeholder="Name">
+<input id="company" placeholder="Company">
+<input id="search" placeholder="Search..." onkeyup="showMembers()">
+<button class="add" onclick="addMember()">Add Member</button>
+<button class="export" onclick="exportCSV()">Export CSV</button>
+<table>
+<thead><tr><th>SN</th><th>Emirates ID</th><th>Name</th><th>Company</th><th>Action</th></tr></thead>
+<tbody id="memberTable"></tbody>
+</table>
+</div>
+<script>
+let members=JSON.parse(localStorage.getItem("members")||"[]");
+function save(){localStorage.setItem("members",JSON.stringify(members));}
+function addMember(){
+const eid=eidEl.value.trim(),name=nameEl.value.trim(),company=companyEl.value.trim();
+if(!eid||!name||!company){alert("Fill all fields");return;}
+if(members.some(x=>x.eid===eid)){alert("Duplicate Emirates ID");return;}
+members.push({eid,name,company});save();showMembers();
+eidEl.value="";nameEl.value="";companyEl.value="";
+}
+function deleteMember(id){members=members.filter(x=>x.eid!==id);save();showMembers();}
+function showMembers(){
+const k=search.value.toLowerCase();
+memberTable.innerHTML="";
+members.filter(x=>x.eid.toLowerCase().includes(k)||x.name.toLowerCase().includes(k)||x.company.toLowerCase().includes(k))
+.forEach((m,i)=>{
+memberTable.innerHTML+=`<tr><td>${i+1}</td><td>${m.eid}</td><td>${m.name}</td><td>${m.company}</td><td><button class="delete" onclick="deleteMember('${m.eid}')">Delete</button></td></tr>`;
+});
+}
+function exportCSV(){
+let csv="SN,Emirates ID,Name,Company\n";
+members.forEach((m,i)=>csv+=`${i+1},"${m.eid}","${m.name}","${m.company}"\n`);
+const blob=new Blob([csv],{type:"text/csv"});
+const a=document.createElement("a");
+a.href=URL.createObjectURL(blob);a.download="Members.csv";a.click();
+}
+const eidEl=document.getElementById("eid");
+const nameEl=document.getElementById("name");
+const companyEl=document.getElementById("company");
+showMembers();
+</script>
+</body></html>
