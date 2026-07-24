@@ -1,1 +1,671 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Employee Attendance System</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f5f5;
+padding:20px;
+}
+
+.status{
+margin-top:8px;
+font-size:12px;
+font-weight:bold;
+text-align:center;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+h1{
+text-align:center;
+color:#0077cc;
+margin-bottom:20px;
+}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-bottom:5px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:15px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#0077cc;
+color:white;
+cursor:pointer;
+font-size:15px;
+}
+
+button:hover{
+background:#005fa3;
+}
+
+.top-buttons{
+margin-top:20px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.calendar{
+margin-top:20px;
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:5px;
+}
+
+.day-name{
+background:#0077cc;
+color:#fff;
+text-align:center;
+padding:10px;
+font-weight:bold;
+border-radius:5px;
+}
+
+.day{
+min-height:90px;
+background:#fafafa;
+border:1px solid #ddd;
+border-radius:6px;
+padding:5px;
+position:relative;
+cursor:pointer;
+transition:.2s;
+}
+
+.day:hover{
+transform:scale(1.02);
+}
+
+.day-number{
+font-weight:bold;
+margin-bottom:8px;
+}
+
+.present{
+background:#4CAF50 !important;
+color:#fff;
+}
+
+.absent{
+background:#F44336 !important;
+color:#fff;
+}
+
+.holiday{
+background:#FFC107 !important;
+color:#000;
+}
+
+.summary{
+margin-top:25px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:10px;
+}
+
+.card{
+background:#0077cc;
+color:#fff;
+padding:15px;
+border-radius:8px;
+text-align:center;
+}
+
+@media(max-width:700px){
+
+.calendar{
+grid-template-columns:repeat(7,1fr);
+font-size:12px;
+}
+
+.day{
+min-height:65px;
+padding:3px;
+}
+
+button{
+width:100%;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Employee Attendance System</h1>
+
+<div class="form-grid">
+
+<div>
+<label>Company</label>
+<select id="company">
+<option>Company A</option>
+<option>Company B</option>
+<option>Company C</option>
+</select>
+</div>
+
+<div>
+<label>Employee Name</label>
+<input type="text" id="employeeName" placeholder="Enter employee name">
+</div>
+
+<div>
+<label>Employee ID</label>
+<input type="text" id="employeeId" placeholder="Employee ID">
+</div>
+
+<div>
+<label>Department</label>
+<input type="text" id="department" placeholder="Department">
+</div>
+
+<div>
+<label>Year</label>
+<select id="year"></select>
+</div>
+
+<div>
+<label>Month</label>
+<select id="month">
+<option value="0">January</option>
+<option value="1">February</option>
+<option value="2">March</option>
+<option value="3">April</option>
+<option value="4">May</option>
+<option value="5">June</option>
+<option value="6">July</option>
+<option value="7">August</option>
+<option value="8">September</option>
+<option value="9">October</option>
+<option value="10">November</option>
+<option value="11">December</option>
+</select>
+</div>
+
+</div>
+
+<div class="top-buttons">
+<button id="generateBtn">Generate Calendar</button>
+<button id="saveBtn">Save</button>
+<button id="printBtn">Print</button>
+</div>
+
+<hr style="margin:20px 0;">
+
+<div id="calendar">
+
+<div class="calendar">
+
+<div class="day-name">Sun</div>
+<div class="day-name">Mon</div>
+<div class="day-name">Tue</div>
+<div class="day-name">Wed</div>
+<div class="day-name">Thu</div>
+<div class="day-name">Fri</div>
+<div class="day-name">Sat</div>
+
+<!-- JavaScript ले सबै दिनहरू यहाँ बनाउनेछ -->
+
+</div>
+
+</div>
+
+<div class="summary">
+
+<div class="card">
+<h3 id="workingDays">0</h3>
+<p>Working Days</p>
+</div>
+
+<div class="card">
+<h3 id="presentDays">0</h3>
+<p>Present</p>
+</div>
+
+<div class="card">
+<h3 id="absentDays">0</h3>
+<p>Absent</p>
+</div>
+
+<div class="card">
+<h3 id="holidayDays">0</h3>
+<p>Holiday</p>
+</div>
+
+<div class="card">
+<h3 id="totalHours">0</h3>
+<p>Total Hours</p>
+</div>
+
+</div>
+
+
+</div>
+
+<h2>Attendance Table</h2>
+
+<table id="attendanceTable" border="1" width="100%">
+<thead>
+<tr>
+<th>Date</th>
+<th>Status</th>
+<th>Hours</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody>
+
+</tbody>
+</table>
+
+
+
+
+<script>
+const yearSelect = document.getElementById("year");
+const monthSelect = document.getElementById("month");
+const calendar = document.querySelector(".calendar");
+
+const weekDays = [
+"Sun",
+"Mon",
+"Tue",
+"Wed",
+"Thu",
+"Fri",
+"Sat"
+];
+
+// Load Years
+function loadYears(){
+
+yearSelect.innerHTML="";
+
+for(let y=2025;y<=2035;y++){
+
+const option=document.createElement("option");
+
+option.value=y;
+option.textContent=y;
+
+yearSelect.appendChild(option);
+
+}
+
+yearSelect.value=new Date().getFullYear();
+
+}
+
+// Load Current Month
+<script>
+function loadCurrentMonth(){
+
+monthSelect.value=new Date().getMonth();
+
+}
+
+// Storage Key
+function storageKey(){
+
+return `${yearSelect.value}_${monthSelect.value}`;
+
+}
+
+// Initialize
+loadYears();
+
+loadCurrentMonth();
+
+// ===============================
+// Generate Calendar
+// ===============================
+
+function generateCalendar(){
+
+calendar.innerHTML="";
+
+// Week Header
+weekDays.forEach(day=>{
+
+calendar.innerHTML += `
+<div class="day-name">${day}</div>
+`;
+
+});
+
+const year=parseInt(yearSelect.value);
+const month=parseInt(monthSelect.value);
+
+const firstDay=new Date(year,month,1).getDay();
+
+const totalDays=new Date(year,month+1,0).getDate();
+
+// Empty Boxes
+for(let i=0;i<firstDay;i++){
+
+const empty=document.createElement("div");
+
+empty.className="empty";
+
+calendar.appendChild(empty);
+
+}
+
+// Days
+for(let d=1; d<=totalDays; d++){
+
+const box=document.createElement("div");
+
+box.className="day";
+
+box.dataset.day=d;
+
+box.innerHTML=`
+<div class="day-number">${d}</div>
+<div class="status"></div>
+`;
+
+calendar.appendChild(box);
+
+}
+
+}
+
+// Generate Button
+document.getElementById("generateBtn")
+.addEventListener("click",generateCalendar);
+
+// Change Month
+monthSelect.addEventListener("change",generateCalendar);
+
+// Change Year
+yearSelect.addEventListener("change",generateCalendar);
+
+// First Load
+generateCalendar();
+
+
+// ===============================
+// Attendance Click Event
+// ===============================
+
+calendar.addEventListener("click",function(e){
+
+const box=e.target.closest(".day");
+
+if(!box) return;
+
+if(!box.dataset.day) return;
+
+// Remove old classes
+box.classList.remove(
+"present",
+"absent",
+"holiday"
+);
+
+// Status Cycle
+
+if(box.dataset.status=="present"){
+
+box.dataset.status="absent";
+
+box.classList.add("absent");
+
+}
+else if(box.dataset.status=="absent"){
+
+box.dataset.status="holiday";
+
+box.classList.add("holiday");
+
+}
+else if(box.dataset.status=="holiday"){
+
+box.dataset.status="";
+
+}
+else{
+
+box.dataset.status="present";
+
+box.classList.add("present");
+
+}
+
+// Auto Save
+saveAttendance();
+
+});
+
+// ===============================
+// Save & Load Attendance
+// ===============================
+
+function storageKey(){
+    return `attendance_${yearSelect.value}_${monthSelect.value}`;
+}
+
+function saveAttendance(){
+
+    const attendance={};
+
+    document.querySelectorAll(".day").forEach(day=>{
+
+        if(!day.dataset.day) return;
+
+        attendance[day.dataset.day]={
+            status:day.dataset.status || ""
+        };
+
+    });
+
+    localStorage.setItem(
+        storageKey(),
+        JSON.stringify(attendance)
+    );
+
+}
+
+function updateSummary(){
+
+let present=0;
+let absent=0;
+let holiday=0;
+
+document.querySelectorAll(".day").forEach(day=>{
+
+switch(day.dataset.status){
+
+case "present":
+present++;
+break;
+
+case "absent":
+absent++;
+break;
+
+case "holiday":
+holiday++;
+break;
+
+}
+
+});
+
+document.getElementById("presentDays").textContent=present;
+
+document.getElementById("absentDays").textContent=absent;
+
+document.getElementById("holidayDays").textContent=holiday;
+
+document.getElementById("workingDays").textContent=
+present+absent;
+
+document.getElementById("totalHours").textContent=
+present*8+" hrs";
+
+}
+
+function loadAttendance(){
+
+    const saved=localStorage.getItem(storageKey());
+
+    if(!saved) return;
+
+    const attendance=JSON.parse(saved);
+
+    document.querySelectorAll(".day").forEach(day=>{
+
+        if(!day.dataset.day) return;
+
+        const item=attendance[day.dataset.day];
+
+        if(!item) return;
+
+        day.dataset.status=item.status;
+
+        day.classList.remove(
+            "present",
+            "absent",
+            "holiday"
+        );
+
+        if(item.status=="present"){
+            day.classList.add("present");
+        }
+        else if(item.status=="absent"){
+            day.classList.add("absent");
+        }
+        else if(item.status=="holiday"){
+            day.classList.add("holiday");
+        }
+
+    });
+
+}
+
+// Calendar Generate भएपछि Load गर्ने
+const oldGenerateCalendar=generateCalendar;
+
+generateCalendar=function(){
+
+    oldGenerateCalendar();
+
+    loadAttendance();
+
+};
+
+// पहिलो पटक पनि Load
+generateCalendar();
+
+// ===============================
+// Attendance Table
+// ===============================
+
+function updateTable(){
+
+const tbody=document.querySelector("#attendanceTable tbody");
+
+tbody.innerHTML="";
+
+document.querySelectorAll(".day").forEach(day=>{
+
+if(!day.dataset.day) return;
+
+const status=day.dataset.status || "";
+
+if(status=="") return;
+
+let hours=0;
+
+if(status=="present"){
+hours=8;
+}
+
+tbody.innerHTML += `
+<tr>
+<td>${day.dataset.day}/${parseInt(monthSelect.value)+1}/${yearSelect.value}</td>
+<td>${status.toUpperCase()}</td>
+<td>${hours}</td>
+<td>
+<button onclick="clearAttendance(${day.dataset.day})">
+Delete
+</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function clearAttendance(day){
+
+const box=document.querySelector(
+`.day[data-day="${day}"]`
+);
+
+if(!box) return;
+
+box.dataset.status="";
+
+box.classList.remove(
+"present",
+"absent",
+"holiday"
+);
+
+saveAttendance();
+
+updateTable();
+
+updateSummary();
+
+}
+
+
+</script>
