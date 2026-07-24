@@ -507,6 +507,9 @@ function saveAttendance(){
         JSON.stringify(attendance)
     );
 
+    updateTable();
+    updateSummary();
+
 }
 
 function updateSummary(){
@@ -584,13 +587,14 @@ function loadAttendance(){
         }
 
     });
+updateTable();
+updateSummary();
 
 }
 
-// Calendar Generate भएपछि Load गर्ने
-const oldGenerateCalendar=generateCalendar;
+const oldGenerateCalendar = generateCalendar;
 
-generateCalendar=function(){
+generateCalendar = function(){
 
     oldGenerateCalendar();
 
@@ -659,12 +663,19 @@ box.classList.remove(
 );
 
 saveAttendance();
-
+generateCalendar();
+loadAttendance();
 updateTable();
-
 updateSummary();
 
 }
+document.getElementById("saveBtn").addEventListener("click", function () {
+    saveAttendance();
+    alert("Attendance Saved");
+});
 
+document.getElementById("printBtn").addEventListener("click", function () {
+    window.print();
+});
 
 </script>
