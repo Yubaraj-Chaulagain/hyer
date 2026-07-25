@@ -492,20 +492,18 @@ function storageKey(){
 
 function saveAttendance(){
 
-    const attendance={};
+    updateTable();
 
-    document.querySelectorAll(".day").forEach(day=>{
+    const attendance = {};
+
+    document.querySelectorAll(".day").forEach(day => {
 
         if(!day.dataset.day) return;
 
-        attendance[day.dataset.day]={
-            status:day.dataset.status || ""
+        attendance[day.dataset.day] = {
+            status: day.dataset.status || "",
+            overtime: document.getElementById(`ot_${day.dataset.day}`)?.value || 0
         };
-attendance[day.dataset.day] = {
-    status: day.dataset.status || "",
-    overtime: document.getElementById(`ot_${day.dataset.day}`)?.value || 0
-};
-
 
     });
 
@@ -514,8 +512,8 @@ attendance[day.dataset.day] = {
         JSON.stringify(attendance)
     );
 
-    updateTable();
-    updateSummary();
+updateTable();
+updateSummary();
 
 }
 
@@ -554,18 +552,24 @@ document.getElementById("holidayDays").textContent=holiday;
 document.getElementById("workingDays").textContent=
 present+absent;
 
-let totalOT = 0;
+let totalHours = 0;
 
-document.querySelectorAll(".day").forEach(day => {
-    const ot = parseFloat(
+document.querySelectorAll(".day").forEach(day=>{
+
+    if(day.dataset.status=="present"){
+
+        totalHours += 8;
+
+    }
+
+    totalHours += parseFloat(
         document.getElementById(`ot_${day.dataset.day}`)?.value || 0
     );
-    totalOT += ot;
+
 });
 
 document.getElementById("totalHours").textContent =
-    (present * 8 + totalOT) + " hrs";
-
+totalHours + " hrs";
 }
 
 function loadAttendance(){
@@ -606,9 +610,10 @@ if (otInput && item.overtime) {
         }
 
     });
-updateTable();
-updateSummary();
-
+setTimeout(() => {
+    updateTable();
+    updateSummary();
+}, 50);
 }
 
 const oldGenerateCalendar = generateCalendar;
@@ -641,8 +646,6 @@ if(!day.dataset.day) return;
 const status=day.dataset.status || "";
 const saved = JSON.parse(localStorage.getItem(storageKey()) || "{}");
 const item = saved[day.dataset.day] || {};
-const ot = document.getElementById("overtime").value || 0;
-
 if(status=="") return;
 
 let hours=0;
