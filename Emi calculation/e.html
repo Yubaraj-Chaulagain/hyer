@@ -478,6 +478,7 @@ box.classList.add("present");
 }
 
 // Auto Save
+updateTable();
 saveAttendance();
 
 });
@@ -492,8 +493,6 @@ function storageKey(){
 
 function saveAttendance(){
 
-    updateTable();
-
     const attendance = {};
 
     document.querySelectorAll(".day").forEach(day => {
@@ -507,14 +506,9 @@ function saveAttendance(){
 
     });
 
-    localStorage.setItem(
-        storageKey(),
-        JSON.stringify(attendance)
-    );
+    localStorage.setItem(storageKey(), JSON.stringify(attendance));
 
-updateTable();
-updateSummary();
-
+    updateSummary();
 }
 
 function updateSummary(){
@@ -628,6 +622,8 @@ generateCalendar = function(){
 
 // पहिलो पटक पनि Load
 generateCalendar();
+updateTable();
+updateSummary();
 
 // ===============================
 // Attendance Table
@@ -680,6 +676,9 @@ Delete
 </tr>
 `;
 
+});
+document.querySelectorAll("[id^='ot_']").forEach(input=>{
+    input.addEventListener("change", saveAttendance);
 });
 
 }
