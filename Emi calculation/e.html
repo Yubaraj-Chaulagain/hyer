@@ -426,53 +426,56 @@ generateCalendar();
 // Attendance Click Event
 // ===============================
 
-calendar.addEventListener("click",function(e){
+calendar.addEventListener("click", function(e){
 
-const box=e.target.closest(".day");
+    const box = e.target.closest(".day");
 
-if(!box) return;
+    if(!box) return;
+    if(!box.dataset.day) return;
 
-if(!box.dataset.day) return;
+    // पुरानो class हटाउने
+    box.classList.remove("present","absent","holiday");
 
-// Remove old classes
-box.classList.remove(
-"present",
-"absent",
-"holiday"
-);
+    // Status परिवर्तन
+    if(box.dataset.status == "present"){
 
-// Status Cycle
+        box.dataset.status = "absent";
+        box.classList.add("absent");
+        box.dataset.overtime = 0;
 
-if(box.dataset.status=="present"){
+    }
+    else if(box.dataset.status == "absent"){
 
-box.dataset.status="absent";
+        box.dataset.status = "holiday";
+        box.classList.add("holiday");
+        box.dataset.overtime = 0;
 
-box.classList.add("absent");
+    }
+    else if(box.dataset.status == "holiday"){
 
-}
-else if(box.dataset.status=="absent"){
+        box.dataset.status = "";
+        box.dataset.overtime = 0;
 
-box.dataset.status="holiday";
+    }
+    else{
 
-box.classList.add("holiday");
+        box.dataset.status = "present";
+        box.classList.add("present");
 
-}
-else if(box.dataset.status=="holiday"){
+        // Overtime सोध्ने
+        let ot = 0;
 
-box.dataset.status="";
+        const input = prompt("Enter Overtime Hours (0 if none):", "0");
 
-}
-else{
+        if(input !== null){
+            ot = parseFloat(input) || 0;
+        }
 
-box.dataset.status="present";
+        box.dataset.overtime = ot;
+    }
 
-box.classList.add("present");
-
-}
-
-// Auto Save
-updateTable();
-saveAttendance();
+    updateTable();
+    saveAttendance();
 
 });
 
@@ -494,7 +497,7 @@ function saveAttendance(){
 
         attendance[day.dataset.day] = {
             status: day.dataset.status || "",
-            overtime: document.getElementById(`ot_${day.dataset.day}`)?.value || 0
+            overtime: overtime: day.dataset.overtime || 0
         };
 
     });
