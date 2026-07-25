@@ -251,6 +251,10 @@ width:100%;
 </div>
 
 </div>
+<div>
+<label>Overtime (Hours)</label>
+<input type="number" id="overtime" value="0" min="0" step="0.5">
+</div>
 
 <div class="summary">
 
@@ -291,6 +295,7 @@ width:100%;
 <tr>
 <th>Date</th>
 <th>Status</th>
+<th>OT</th>
 <th>Hours</th>
 <th>Action</th>
 </tr>
@@ -499,6 +504,11 @@ function saveAttendance(){
         attendance[day.dataset.day]={
             status:day.dataset.status || ""
         };
+attendance[day.dataset.day] = {
+    status: day.dataset.status || "",
+    overtime: document.getElementById(`ot_${day.dataset.day}`)?.value || 0
+};
+
 
     });
 
@@ -547,8 +557,17 @@ document.getElementById("holidayDays").textContent=holiday;
 document.getElementById("workingDays").textContent=
 present+absent;
 
-document.getElementById("totalHours").textContent=
-present*8+" hrs";
+let totalOT = 0;
+
+document.querySelectorAll(".day").forEach(day => {
+    const ot = parseFloat(
+        document.getElementById(`ot_${day.dataset.day}`)?.value || 0
+    );
+    totalOT += ot;
+});
+
+document.getElementById("totalHours").textContent =
+    (present * 8 + totalOT) + " hrs";
 
 }
 
@@ -569,7 +588,10 @@ function loadAttendance(){
         if(!item) return;
 
         day.dataset.status=item.status;
-
+const otInput = document.getElementById(`ot_${day.dataset.day}`);
+if (otInput && item.overtime) {
+    otInput.value = item.overtime;
+}
         day.classList.remove(
             "present",
             "absent",
@@ -620,6 +642,7 @@ document.querySelectorAll(".day").forEach(day=>{
 if(!day.dataset.day) return;
 
 const status=day.dataset.status || "";
+const ot = document.getElementById("overtime").value || 0;
 
 if(status=="") return;
 
@@ -634,6 +657,15 @@ tbody.innerHTML += `
 <td>${day.dataset.day}/${parseInt(monthSelect.value)+1}/${yearSelect.value}</td>
 <td>${status.toUpperCase()}</td>
 <td>${hours}</td>
+<td>
+<input type="number"
+id="ot_${day.dataset.day}"
+value="${item?.overtime || 0}"
+min="0"
+step="0.5"
+onchange="saveAttendance()"
+style="width:70px;">
+</td>
 <td>
 <button onclick="clearAttendance(${day.dataset.day})">
 Delete
