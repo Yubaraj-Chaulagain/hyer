@@ -194,6 +194,20 @@ width:100%;
 <input type="text" id="department" placeholder="Department">
 </div>
 <div>
+<label>Trade</label>
+<select id="trade">
+<option value="">Select Trade</option>
+<option value="helper">Helper</option>
+<option value="mason">Mason</option>
+<option value="steelfixer">Steel Fixer</option>
+<option value="carpenter">Carpenter</option>
+<option value="electrician">Electrician</option>
+<option value="plumber">Plumber</option>
+<option value="painter">Painter</option>
+<option value="scaffolder">Scaffolder</option>
+</select>
+</div>
+<div>
 <label>Pay Type</label>
 <select id="payType">
     <option value="monthly">Monthly Salary</option>
@@ -575,32 +589,50 @@ document.querySelectorAll(".day").forEach(day => {
     totalOT += parseFloat(day.dataset.overtime || 0);
 });
 
-const basicSalary = 1100;
-const foodAllowance = 200;
-const basicHours = 208;
+const payType = document.getElementById("payType").value;
 
-const hourlyRate = basicSalary / basicHours;
-const overtimeRate = hourlyRate * 1.25;
+const basicSalary =
+    Number(document.getElementById("basicSalary").value);
 
-const overtimePay = totalOT * overtimeRate;
+const foodAllowance =
+    Number(document.getElementById("foodAllowance").value);
 
-const dailySalary = (basicSalary + foodAllowance) / 30;
+const hourlyRateInput =
+    Number(document.getElementById("hourlyRate").value);
 
-let deductionDays = absent;
+let totalSalary = 0;
 
-if (absent === 3) {
-    deductionDays = 4;
-} else if (absent >= 4) {
-    deductionDays = 6;
+if (payType === "monthly") {
+
+    const basicHours = 208;
+    const overtimeRate = (basicSalary / basicHours) * 1.25;
+
+    const overtimePay = totalOT * overtimeRate;
+
+    const dailySalary = (basicSalary + foodAllowance) / 30;
+
+    let deductionDays = absent;
+
+    if (absent === 3) deductionDays = 4;
+    else if (absent >= 4) deductionDays = 6;
+
+    const deductionAmount = deductionDays * dailySalary;
+
+    totalSalary =
+        basicSalary +
+        foodAllowance +
+        overtimePay -
+        deductionAmount;
+
+} else {
+
+    const normalPay = present * 8 * hourlyRateInput;
+
+    const overtimePay =
+        totalOT * (hourlyRateInput * 1.25);
+
+    totalSalary = normalPay + overtimePay;
 }
-
-const deductionAmount = deductionDays * dailySalary;
-
-const totalSalary =
-    basicSalary +
-    foodAllowance +
-    overtimePay -
-    deductionAmount;
 
 document.getElementById("totalSalary").textContent =
     totalSalary.toFixed(2) + " AED";
