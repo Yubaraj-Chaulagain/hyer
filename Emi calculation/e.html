@@ -493,7 +493,8 @@ function saveAttendance(){
 
     localStorage.setItem(storageKey(), JSON.stringify(attendance));
 
-    updateSummary();
+updateTable();
+updateSummary();
 }
 
 function updateSummary(){
@@ -648,8 +649,23 @@ Delete
 `;
 
 });
-document.querySelectorAll("[id^='ot_']").forEach(input=>{
-    input.addEventListener("change", saveAttendance);
+document.querySelectorAll("[id^='ot_']").forEach(input => {
+
+    input.addEventListener("change", function () {
+
+        const day = this.id.replace("ot_", "");
+
+        const box = document.querySelector(`.day[data-day="${day}"]`);
+
+        if (box) {
+            box.dataset.overtime = this.value;
+        }
+
+        saveAttendance();
+        updateSummary();
+
+    });
+
 });
 
 }
