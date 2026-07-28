@@ -334,6 +334,56 @@ width:100%;
 
 
 <script>
+const tradeData = {
+    helper: {
+        payType: "monthly",
+        basic: 1100,
+        food: 200,
+        hourly: 8
+    },
+    mason: {
+        payType: "monthly",
+        basic: 1500,
+        food: 250,
+        hourly: 11
+    },
+    steelfixer: {
+        payType: "monthly",
+        basic: 1400,
+        food: 250,
+        hourly: 10
+    },
+    carpenter: {
+        payType: "monthly",
+        basic: 1600,
+        food: 300,
+        hourly: 12
+    },
+    electrician: {
+        payType: "monthly",
+        basic: 1800,
+        food: 300,
+        hourly: 14
+    },
+    plumber: {
+        payType: "monthly",
+        basic: 1700,
+        food: 300,
+        hourly: 13
+    },
+    painter: {
+        payType: "monthly",
+        basic: 1400,
+        food: 250,
+        hourly: 10
+    },
+    scaffolder: {
+        payType: "hourly",
+        basic: 0,
+        food: 0,
+        hourly: 9
+    }
+};
 const yearSelect = document.getElementById("year");
 const monthSelect = document.getElementById("month");
 const calendar = document.querySelector(".calendar");
@@ -379,6 +429,20 @@ monthSelect.value=new Date().getMonth();
 loadYears();
 
 loadCurrentMonth();
+
+document.getElementById("trade").addEventListener("change", function () {
+
+    const t = tradeData[this.value];
+
+    if (!t) return;
+
+    document.getElementById("payType").value = t.payType;
+    document.getElementById("basicSalary").value = t.basic;
+    document.getElementById("foodAllowance").value = t.food;
+    document.getElementById("hourlyRate").value = t.hourly;
+
+    updateSummary();
+});
 
 // ===============================
 // Generate Calendar
