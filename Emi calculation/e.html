@@ -341,13 +341,6 @@ monthSelect.value=new Date().getMonth();
 
 }
 
-// Storage Key
-function storageKey(){
-
-return `${yearSelect.value}_${monthSelect.value}`;
-
-}
-
 // Initialize
 loadYears();
 
@@ -357,55 +350,48 @@ loadCurrentMonth();
 // Generate Calendar
 // ===============================
 
-function generateCalendar(){
+function generateCalendar() {
 
-calendar.innerHTML="";
+    calendar.innerHTML = "";
 
-// Week Header
-weekDays.forEach(day=>{
+    // Week Header
+    weekDays.forEach(day => {
+        calendar.innerHTML += `<div class="day-name">${day}</div>`;
+    });
 
-calendar.innerHTML += `
-<div class="day-name">${day}</div>
-`;
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
 
-});
+    const firstDay = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
 
-const year=parseInt(yearSelect.value);
-const month=parseInt(monthSelect.value);
+    // Empty Boxes
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        calendar.appendChild(empty);
+    }
 
-const firstDay=new Date(year,month,1).getDay();
+    // Days
+    for (let d = 1; d <= totalDays; d++) {
 
-const totalDays=new Date(year,month+1,0).getDate();
+        const box = document.createElement("div");
 
-// Empty Boxes
-for(let i=0;i<firstDay;i++){
+        box.className = "day";
+        box.dataset.day = d;
+        box.dataset.status = "";
+        box.dataset.overtime = 0;
 
-const empty=document.createElement("div");
+        box.innerHTML = `
+            <div class="day-number">${d}</div>
+            <div class="status"></div>
+        `;
 
-empty.className="empty";
+        calendar.appendChild(box);
+    }
 
-calendar.appendChild(empty);
-
-}
-
-// Days
-for(let d=1; d<=totalDays; d++){
-
-const box=document.createElement("div");
-
-box.className="day";
-
-box.dataset.day=d;
-
-box.innerHTML=`
-<div class="day-number">${d}</div>
-<div class="status"></div>
-`;
-
-calendar.appendChild(box);
-
-}
-
+    // Saved Attendance Load
+    loadAttendance();
 }
 
 // Generate Button
@@ -483,7 +469,10 @@ calendar.addEventListener("click", function(e){
 // Save & Load Attendance
 // ===============================
 
-function storageKey(){
+// ===============================
+// Storage Key
+// ===============================
+function storageKey() {
     return `attendance_${yearSelect.value}_${monthSelect.value}`;
 }
 
