@@ -495,10 +495,10 @@ function saveAttendance(){
 
         if(!day.dataset.day) return;
 
-        attendance[day.dataset.day] = {
-            status: day.dataset.status || "",
-            overtime: overtime: day.dataset.overtime || 0
-        };
+       attendance[day.dataset.day] = {
+    status: day.dataset.status || "",
+    overtime: day.dataset.overtime || 0
+};
 
     });
 
@@ -552,9 +552,7 @@ document.querySelectorAll(".day").forEach(day=>{
 
     }
 
-    totalHours += parseFloat(
-        document.getElementById(`ot_${day.dataset.day}`)?.value || 0
-    );
+    totalHours += parseFloat(day.dataset.overtime || 0);
 
 });
 
@@ -562,65 +560,53 @@ document.getElementById("totalHours").textContent =
 totalHours + " hrs";
 }
 
-function loadAttendance(){
+function loadAttendance() {
 
-    const saved=localStorage.getItem(storageKey());
+    const saved = localStorage.getItem(storageKey());
 
-    if(!saved) return;
+    if (!saved) {
+        updateTable();
+        updateSummary();
+        return;
+    }
 
-    const attendance=JSON.parse(saved);
+    const attendance = JSON.parse(saved);
 
-    document.querySelectorAll(".day").forEach(day=>{
+    document.querySelectorAll(".day").forEach(day => {
 
-        if(!day.dataset.day) return;
+        if (!day.dataset.day) return;
 
-        const item=attendance[day.dataset.day];
+        // सबै पुरानो data हटाउने
+        day.dataset.status = "";
+        day.dataset.overtime = 0;
 
-        if(!item) return;
+        day.classList.remove("present", "absent", "holiday");
 
-        day.dataset.status=item.status;
-const otInput = document.getElementById(`ot_${day.dataset.day}`);
-if (otInput && item.overtime) {
-    otInput.value = item.overtime;
-}
-        day.classList.remove(
-            "present",
-            "absent",
-            "holiday"
-        );
+        const item = attendance[day.dataset.day];
 
-        if(item.status=="present"){
+        if (!item) return;
+
+        // Status Restore
+        day.dataset.status = item.status || "";
+
+        // OT Restore
+        day.dataset.overtime = item.overtime || 0;
+
+        // Colour Restore
+        if (item.status === "present") {
             day.classList.add("present");
-        }
-        else if(item.status=="absent"){
+        } else if (item.status === "absent") {
             day.classList.add("absent");
-        }
-        else if(item.status=="holiday"){
+        } else if (item.status === "holiday") {
             day.classList.add("holiday");
         }
 
     });
-setTimeout(() => {
+
+    // Table र Summary Update
     updateTable();
     updateSummary();
-}, 50);
 }
-
-const oldGenerateCalendar = generateCalendar;
-
-generateCalendar = function(){
-
-    oldGenerateCalendar();
-
-    loadAttendance();
-
-};
-
-// पहिलो पटक पनि Load
-generateCalendar();
-updateTable();
-updateSummary();
-
 // ===============================
 // Attendance Table
 // ===============================
@@ -687,8 +673,8 @@ const box=document.querySelector(
 
 if(!box) return;
 
-box.dataset.status="";
-
+box.dataset.status = "";
+box.dataset.overtime = 0;
 box.classList.remove(
 "present",
 "absent",
