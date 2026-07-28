@@ -552,12 +552,22 @@ document.querySelectorAll(".day").forEach(day=>{
 
 document.getElementById("totalHours").textContent =
 totalHours + " hrs";
+document.getElementById("totalHours").textContent =
+totalHours + " hrs";
+
+let totalOT = 0;
+
+document.querySelectorAll(".day").forEach(day => {
+    totalOT += parseFloat(day.dataset.overtime || 0);
+});
+
 const basicSalary = 1100;
 const foodAllowance = 200;
 const basicHours = 208;
 
 const hourlyRate = basicSalary / basicHours;
 const overtimeRate = hourlyRate * 1.25;
+
 const overtimePay = totalOT * overtimeRate;
 
 const dailySalary = (basicSalary + foodAllowance) / 30;
@@ -580,7 +590,6 @@ const totalSalary =
 
 document.getElementById("totalSalary").textContent =
     totalSalary.toFixed(2) + " AED";
-}
 
 function loadAttendance() {
 
