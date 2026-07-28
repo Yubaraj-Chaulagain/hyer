@@ -272,6 +272,10 @@ width:100%;
 <h3 id="totalHours">0</h3>
 <p>Total Hours</p>
 </div>
+<div class="card">
+    <h3 id="totalSalary">0 AED</h3>
+    <p>Total Salary</p>
+</div>
 
 </div>
 
@@ -548,6 +552,34 @@ document.querySelectorAll(".day").forEach(day=>{
 
 document.getElementById("totalHours").textContent =
 totalHours + " hrs";
+const basicSalary = 1100;
+const foodAllowance = 200;
+const basicHours = 208;
+
+const hourlyRate = basicSalary / basicHours;
+const overtimeRate = hourlyRate * 1.25;
+const overtimePay = totalOT * overtimeRate;
+
+const dailySalary = (basicSalary + foodAllowance) / 30;
+
+let deductionDays = absent;
+
+if (absent === 3) {
+    deductionDays = 4;
+} else if (absent >= 4) {
+    deductionDays = 6;
+}
+
+const deductionAmount = deductionDays * dailySalary;
+
+const totalSalary =
+    basicSalary +
+    foodAllowance +
+    overtimePay -
+    deductionAmount;
+
+document.getElementById("totalSalary").textContent =
+    totalSalary.toFixed(2) + " AED";
 }
 
 function loadAttendance() {
