@@ -202,15 +202,15 @@ width:100%;
 
 <div>
 
-<button>
+<button onclick="showSection('info')">
 Employee Information
 </button>
 
-<button>
+<button onclick="showSection('calendar')">
 Calendar
 </button>
 
-<button>
+<button onclick="showSection('table')">
 Attendance Table
 </button>
 
@@ -354,7 +354,8 @@ Calendar Section
 ========================= -->
 
 
-<div id="calendarSection">
+<div id="calendarSection" style="display:none;">
+
 
 
 <h2>Attendance Calendar</h2>
@@ -362,12 +363,24 @@ Calendar Section
 
 <div id="calendar">
 
+<div class="calendar">
 
 <!-- Calendar Days Will Load Here -->
 
+</div>
+<button id="generateBtn">
+Generate Calendar
+</button>
+
+<button id="saveBtn">
+Save
+</button>
+
+<button id="printBtn">
+Print
+</button>
 
 </div>
-
 
 
 
@@ -448,7 +461,7 @@ Attendance Table Section
 ========================= -->
 
 
-<div id="tableSection">
+<div id="tableSection" style="display:none;">
 
 
 <h2>
@@ -1091,6 +1104,31 @@ payTypeSelect.addEventListener("change", togglePayFields);
 
 // First Load
 togglePayFields();
+
+function showSection(section){
+
+document.getElementById("infoSection").style.display="none";
+document.getElementById("calendarSection").style.display="none";
+document.getElementById("tableSection").style.display="none";
+
+
+if(section=="info"){
+document.getElementById("infoSection").style.display="block";
+}
+
+
+if(section=="calendar"){
+document.getElementById("calendarSection").style.display="block";
+generateCalendar();
+}
+
+
+if(section=="table"){
+document.getElementById("tableSection").style.display="block";
+updateTable();
+}
+
+}
 
 </script>
 </html>
