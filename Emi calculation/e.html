@@ -604,105 +604,90 @@ updateTable();
 updateSummary();
 }
 
-function updateSummary(){
+function updateSummary() {
 
-let present = 0;
-let absent = 0;
-let holiday = 0;
+    let present = 0;
+    let absent = 0;
+    let holiday = 0;
 
-document.querySelectorAll(".day").forEach(day => {
+    document.querySelectorAll(".day").forEach(day => {
+        switch (day.dataset.status) {
+            case "present":
+                present++;
+                break;
+            case "absent":
+                absent++;
+                break;
+            case "holiday":
+                holiday++;
+                break;
+        }
+    });
 
-    switch(day.dataset.status){
+    document.getElementById("presentDays").textContent = present;
+    document.getElementById("absentDays").textContent = absent;
+    document.getElementById("holidayDays").textContent = holiday;
+    document.getElementById("workingDays").textContent = present + absent;
 
-        case "present":
-            present++;
-            break;
+    // Inputs
+    const payType = document.getElementById("payType").value;
+    const workHours = Number(document.getElementById("workHours").value);
+    const basicSalary = Number(document.getElementById("basicSalary").value);
+    const foodAllowance = Number(document.getElementById("foodAllowance").value);
+    const hourlyRate = Number(document.getElementById("hourlyRate").value);
+    const bonus = Number(document.getElementById("bonus").value);
+    const advance = Number(document.getElementById("advance").value);
 
-        case "absent":
-            absent++;
-            break;
+    // Hours
+    let totalHours = present * workHours;
+    let totalOT = 0;
 
-        case "holiday":
-            holiday++;
-            break;
+    document.querySelectorAll(".day").forEach(day => {
+        totalOT += Number(day.dataset.overtime || 0);
+    });
+
+    if (payType === "monthly") {
+        document.getElementById("totalHours").textContent =
+            (totalHours + totalOT).toFixed(1) + " hrs";
+    } else {
+        document.getElementById("totalHours").textContent =
+            totalHours.toFixed(1) + " hrs";
     }
 
-});
+    // Salary Calculation
+    let totalSalary = 0;
 
-document.getElementById("presentDays").textContent = present;
-document.getElementById("absentDays").textContent = absent;
-document.getElementById("holidayDays").textContent = holiday;
-document.getElementById("workingDays").textContent = present + absent;
+    if (payType === "monthly") {
 
-const workHours = Number(document.getElementById("workHours").value);
+        // OT Rate
+        const basicHours = 26 * workHours;
+        const hourlyBasicRate = basicSalary / basicHours;
+        const overtimePay = totalOT * hourlyBasicRate * 1.25;
 
-let totalHours = present * workHours;
-let totalOT = 0;
+        // Absent Deduction
+        const dailySalary = (basicSalary + foodAllowance) / 30;
+        const deduction = absent * dailySalary;
 
-// OT Monthly कर्मचारीका लागि मात्र
-document.querySelectorAll(".day").forEach(day => {
-    totalOT += Number(day.dataset.overtime || 0);
-});
+        totalSalary =
+            basicSalary +
+            foodAllowance +
+            overtimePay +
+            bonus -
+            deduction -
+            advance;
 
-// Total Hours
-if (payType === "monthly") {
-    document.getElementById("totalHours").textContent =
-        (totalHours + totalOT) + " hrs";
-} else {
-    document.getElementById("totalHours").textContent =
-        totalHours + " hrs";
+    } else {
+
+        totalSalary =
+            (totalHours * hourlyRate) +
+            bonus -
+            advance;
+
+    }
+
+    document.getElementById("totalSalary").textContent =
+        totalSalary.toFixed(2) + " AED";
 }
-
-const payType = document.getElementById("payType").value;
-const basicSalary = Number(document.getElementById("basicSalary").value);
-const foodAllowance = Number(document.getElementById("foodAllowance").value);
-const hourlyRate = Number(document.getElementById("hourlyRate").value);
-const bonus = Number(document.getElementById("bonus").value);
-const advance = Number(document.getElementById("advance").value);
-
-// Total Hours
-if (payType === "monthly") {
-    document.getElementById("totalHours").textContent =
-        (totalHours + totalOT) + " hrs";
-} else {
-    document.getElementById("totalHours").textContent =
-        totalHours + " hrs";
-}
-
-let totalSalary = 0;
-
-if (payType === "monthly") {
-
-    const basicHours = 26 * workHours;
-    const hourlyBasicRate = basicSalary / basicHours;
-    const overtimePay = totalOT * hourlyBasicRate * 1.25;
-
-    const dailySalary = (basicSalary + foodAllowance) / 30;
-    const deduction = absent * dailySalary;
-
-    totalSalary =
-        basicSalary +
-        foodAllowance +
-        overtimePay +
-        bonus -
-        deduction -
-        advance;
-
-} else {
-
-    // Hourly कर्मचारीमा OT हुँदैन
-    totalSalary =
-        (totalHours * hourlyRate) +
-        bonus -
-        advance;
-
-}
-
-document.getElementById("totalSalary").textContent =
-    totalSalary.toFixed(2) + " AED";
-}
-
-
 
 function loadAttendance() {
 
