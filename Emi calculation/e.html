@@ -633,7 +633,22 @@ function updateSummary() {
     document.getElementById("presentDays").textContent = present;
     document.getElementById("absentDays").textContent = absent;
     document.getElementById("holidayDays").textContent = holiday;
-    document.getElementById("workingDays").textContent = present + absent;
+    let workingDays = 0;
+
+const year = Number(yearSelect.value);
+const month = Number(monthSelect.value);
+const totalDays = new Date(year, month + 1, 0).getDate();
+
+for (let d = 1; d <= totalDays; d++) {
+    const date = new Date(year, month, d);
+
+    // Sunday बाहेक सबै दिन
+    if (date.getDay() !== 0) {
+        workingDays++;
+    }
+}
+
+document.getElementById("workingDays").textContent = workingDays;
 
     // Inputs
     const payType = document.getElementById("payType").value;
