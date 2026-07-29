@@ -573,10 +573,12 @@ calendar.addEventListener("click", function(e){
         }
 
         box.dataset.overtime = ot;
+saveAttendance();
+updateTable();
+updateSummary();
     }
 
-    updateTable();
-    saveAttendance();
+    
 
 });
 
