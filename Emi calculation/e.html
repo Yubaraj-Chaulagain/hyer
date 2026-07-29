@@ -924,6 +924,34 @@ document.getElementById("saveBtn").addEventListener("click", function () {
 document.getElementById("printBtn").addEventListener("click", function () {
     window.print();
 });
+const payTypeSelect = document.getElementById("payType");
+
+function togglePayFields(){
+
+    const monthlyFields = document.getElementById("monthlyFields");
+    const hourlyFields = document.getElementById("hourlyFields");
+
+    if(payTypeSelect.value === "monthly"){
+
+        monthlyFields.style.display = "block";
+        hourlyFields.style.display = "none";
+
+    }else{
+
+        monthlyFields.style.display = "none";
+        hourlyFields.style.display = "block";
+
+    }
+
+    updateSummary();
+}
+
+
+payTypeSelect.addEventListener("change", togglePayFields);
+
+
+// First Load
+togglePayFields();
 
 </script>
 </html>
