@@ -644,8 +644,14 @@ document.querySelectorAll(".day").forEach(day => {
     totalOT += Number(day.dataset.overtime || 0);
 });
 
-document.getElementById("totalHours").textContent =
-    (totalHours + totalOT) + " hrs";
+// Total Hours
+if (payType === "monthly") {
+    document.getElementById("totalHours").textContent =
+        (totalHours + totalOT) + " hrs";
+} else {
+    document.getElementById("totalHours").textContent =
+        totalHours + " hrs";
+}
 
 const payType = document.getElementById("payType").value;
 const basicSalary = Number(document.getElementById("basicSalary").value);
