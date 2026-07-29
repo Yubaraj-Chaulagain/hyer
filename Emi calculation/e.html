@@ -606,84 +606,63 @@ updateSummary();
 
 function updateSummary(){
 
-let present=0;
-let absent=0;
-let holiday=0;
+let present = 0;
+let absent = 0;
+let holiday = 0;
 
-document.querySelectorAll(".day").forEach(day=>{
+document.querySelectorAll(".day").forEach(day => {
 
-switch(day.dataset.status){
+    switch(day.dataset.status){
 
-case "present":
-present++;
-break;
+        case "present":
+            present++;
+            break;
 
-case "absent":
-absent++;
-break;
+        case "absent":
+            absent++;
+            break;
 
-case "holiday":
-holiday++;
-break;
-
-}
+        case "holiday":
+            holiday++;
+            break;
+    }
 
 });
 
-document.getElementById("presentDays").textContent=present;
+document.getElementById("presentDays").textContent = present;
+document.getElementById("absentDays").textContent = absent;
+document.getElementById("holidayDays").textContent = holiday;
+document.getElementById("workingDays").textContent = present + absent;
 
-document.getElementById("absentDays").textContent=absent;
+const workHours = Number(document.getElementById("workHours").value);
 
-document.getElementById("holidayDays").textContent=holiday;
+let totalHours = present * workHours;
+let totalOT = 0;
 
-document.getElementById("workingDays").textContent=
-present+absent;
-
-let totalHours = 0;
-
-document.querySelectorAll(".day").forEach(day=>{
-
-    if(day.dataset.status=="present"){
-
-        totalHours += 8;
-
-    }
-
-    totalHours += parseFloat(day.dataset.overtime || 0);
-
+// OT Monthly कर्मचारीका लागि मात्र
+document.querySelectorAll(".day").forEach(day => {
+    totalOT += Number(day.dataset.overtime || 0);
 });
 
 document.getElementById("totalHours").textContent =
-totalHours + " hrs";
-
-let totalOT = 0;
-
-document.querySelectorAll(".day").forEach(day => {
-    totalOT += parseFloat(day.dataset.overtime || 0);
-});
+    (totalHours + totalOT) + " hrs";
 
 const payType = document.getElementById("payType").value;
-
 const basicSalary = Number(document.getElementById("basicSalary").value);
 const foodAllowance = Number(document.getElementById("foodAllowance").value);
-const hourlyRateInput = Number(document.getElementById("hourlyRate").value);
-
-const workHours = Number(document.getElementById("workHours").value);
-const otMultiplier = 1.25;
-
-const advance = Number(document.getElementById("advance").value);
+const hourlyRate = Number(document.getElementById("hourlyRate").value);
 const bonus = Number(document.getElementById("bonus").value);
+const advance = Number(document.getElementById("advance").value);
 
 let totalSalary = 0;
-let overtimePay = 0;
 
-if (payType === "monthly") {
+if(payType === "monthly"){
 
     const basicHours = 26 * workHours;
 
-    const hourlyRate = basicSalary / basicHours;
+    const hourlyBasicRate = basicSalary / basicHours;
 
-    overtimePay = totalOT * hourlyRate * otMultiplier;
+    const overtimePay = totalOT * hourlyBasicRate * 1.25;
 
     const dailySalary = (basicSalary + foodAllowance) / 30;
 
@@ -697,22 +676,19 @@ if (payType === "monthly") {
         deduction -
         advance;
 
-} else {
+}else{
 
-    const normalPay = present * workHours * hourlyRateInput;
-
-    overtimePay =
-        totalOT * hourlyRateInput * otMultiplier;
-
+    // Hourly Employee (No OT)
     totalSalary =
-        normalPay +
-        overtimePay +
+        (totalHours * hourlyRate) +
         bonus -
         advance;
+
 }
 
 document.getElementById("totalSalary").textContent =
     totalSalary.toFixed(2) + " AED";
+
 }
 
 function loadAttendance() {
