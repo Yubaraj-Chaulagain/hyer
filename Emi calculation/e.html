@@ -684,10 +684,18 @@ function updateSummary() {
 
     } else {
 
-        totalSalary =
-            (totalHours * hourlyRate) +
-            bonus -
-            advance;
+        let totalHours = 0;
+
+document.querySelectorAll(".day").forEach(day => {
+    if (day.dataset.status === "present") {
+        totalHours += workHours + Number(day.dataset.overtime || 0);
+    }
+});
+
+totalSalary =
+    (totalHours * hourlyRate) +
+    bonus -
+    advance;
 
     }
 
