@@ -197,10 +197,9 @@ width:100%;
 
 <h1>Employee Attendance Calculate System</h1>
 
-
 <!-- Menu Buttons -->
 
-<div>
+<div class="menu">
 
 <button onclick="showSection('info')">
 Employee Information
@@ -208,6 +207,10 @@ Employee Information
 
 <button onclick="showSection('calendar')">
 Calendar
+</button>
+
+<button onclick="showSection('salary')">
+Salary Summary
 </button>
 
 <button onclick="showSection('table')">
@@ -224,7 +227,7 @@ Attendance Table
 Employee Information Section
 ========================= -->
 
-<div id="infoSection">
+<div id="infoSection" class="section-box">
 
 <h2>Employee Information</h2>
 
@@ -244,17 +247,15 @@ Employee Information Section
 <label>Trade</label>
 
 <select id="trade">
-
-<option>Select Trade</option>
-<option>Helper</option>
-<option>Mason</option>
-<option>Steel Fixer</option>
-<option>Carpenter</option>
-<option>Electrician</option>
-<option>Plumber</option>
-<option>Painter</option>
-<option>Scaffolder</option>
-
+<option value="">Select Trade</option>
+<option value="helper">Helper</option>
+<option value="mason">Mason</option>
+<option value="steelfixer">Steel Fixer</option>
+<option value="carpenter">Carpenter</option>
+<option value="electrician">Electrician</option>
+<option value="plumber">Plumber</option>
+<option value="painter">Painter</option>
+<option value="scaffolder">Scaffolder</option>
 </select>
 
 
@@ -274,43 +275,46 @@ Hourly Rate
 </select>
 
 
+<!-- Monthly Fields -->
 
 <div id="monthlyFields">
 
 <h3>Monthly Salary Details</h3>
 
 <label>Basic Salary (AED)</label>
-<input type="number" id="basicSalary">
+<input type="number" id="basicSalary" value="1100">
 
 
 <label>Food Allowance (AED)</label>
-<input type="number" id="foodAllowance">
+<input type="number" id="foodAllowance" value="200">
 
 </div>
 
 
+
+<!-- Hourly Fields -->
 
 <div id="hourlyFields">
 
 <h3>Hourly Details</h3>
 
 <label>Hourly Rate (AED)</label>
-<input type="number" id="hourlyRate">
+<input type="number" id="hourlyRate" value="8">
 
 
 <label>Working Hours / Day</label>
-<input type="number" id="workHours">
+<input type="number" id="workHours" value="8">
 
 </div>
 
 
 
-<label>Advance / Deduction</label>
-<input type="number" id="advance">
+<label>Advance / Deduction (AED)</label>
+<input type="number" id="advance" value="0">
 
 
-<label>Bonus</label>
-<input type="number" id="bonus">
+<label>Bonus (AED)</label>
+<input type="number" id="bonus" value="0">
 
 
 
@@ -325,18 +329,18 @@ Hourly Rate
 
 <select id="month">
 
-<option>January</option>
-<option>February</option>
-<option>March</option>
-<option>April</option>
-<option>May</option>
-<option>June</option>
-<option>July</option>
-<option>August</option>
-<option>September</option>
-<option>October</option>
-<option>November</option>
-<option>December</option>
+<option value="0">January</option>
+<option value="1">February</option>
+<option value="2">March</option>
+<option value="3">April</option>
+<option value="4">May</option>
+<option value="5">June</option>
+<option value="6">July</option>
+<option value="7">August</option>
+<option value="8">September</option>
+<option value="9">October</option>
+<option value="10">November</option>
+<option value="11">December</option>
 
 </select>
 
@@ -345,29 +349,18 @@ Hourly Rate
 
 
 
-<hr>
-
-
 
 <!-- =========================
 Calendar Section
 ========================= -->
 
-
-<div id="calendarSection" style="display:none;">
-
-
+<div id="calendarSection" class="section-box" style="display:none;">
 
 <h2>Attendance Calendar</h2>
 
 
-<div id="calendar">
+<div class="top-buttons">
 
-<div class="calendar">
-
-<!-- Calendar Days Will Load Here -->
-
-</div>
 <button id="generateBtn">
 Generate Calendar
 </button>
@@ -383,76 +376,76 @@ Print
 </div>
 
 
+<div class="calendar">
+
+<!-- JavaScript Calendar Load Here -->
+
+</div>
+
+
+</div>
+
+
+
+
+<!-- =========================
+Salary Summary Section
+========================= -->
+
+
+<div id="salarySection" class="section-box" style="display:none;">
+
 
 <h2>Salary Summary</h2>
 
 
-<div>
+<div class="summary">
 
 
-<h3 id="workingDays">
-0
-</h3>
-
-<p>
-Working Days
-</p>
+<div class="card">
+<h3 id="workingDays">0</h3>
+<p>Working Days</p>
+</div>
 
 
-<h3 id="presentDays">
-0
-</h3>
-
-<p>
-Present
-</p>
+<div class="card">
+<h3 id="presentDays">0</h3>
+<p>Present</p>
+</div>
 
 
-<h3 id="absentDays">
-0
-</h3>
-
-<p>
-Absent
-</p>
+<div class="card">
+<h3 id="absentDays">0</h3>
+<p>Absent</p>
+</div>
 
 
-<h3 id="holidayDays">
-0
-</h3>
-
-<p>
-Holiday
-</p>
+<div class="card">
+<h3 id="holidayDays">0</h3>
+<p>Holiday</p>
+</div>
 
 
-<h3 id="totalHours">
-0
-</h3>
-
-<p>
-Total Hours
-</p>
+<div class="card">
+<h3 id="totalHours">0</h3>
+<p>Total Hours</p>
+</div>
 
 
-
+<div class="card">
 <h3 id="totalSalary">
 0 AED
 </h3>
-
-<p>
-Total Salary
-</p>
-
-
+<p>Total Salary</p>
 </div>
 
 
 </div>
 
 
+</div>
 
-<hr>
+
 
 
 
@@ -461,7 +454,7 @@ Attendance Table Section
 ========================= -->
 
 
-<div id="tableSection" style="display:none;">
+<div id="tableSection" class="section-box" style="display:none;">
 
 
 <h2>
@@ -469,8 +462,7 @@ Attendance Table
 </h2>
 
 
-
-<table border="1" width="100%" id="attendanceTable">
+<table id="attendanceTable" border="1" width="100%">
 
 
 <thead>
@@ -487,15 +479,12 @@ Attendance Table
 
 <th>Action</th>
 
-
 </tr>
 
 </thead>
 
 
-
 <tbody>
-
 
 </tbody>
 
@@ -504,7 +493,6 @@ Attendance Table
 
 
 </div>
-
 
 
 
