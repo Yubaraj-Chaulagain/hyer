@@ -583,25 +583,31 @@ function storageKey() {
     return `attendance_${yearSelect.value}_${monthSelect.value}`;
 }
 
-function saveAttendance(){
+function saveAttendance() {
 
     const attendance = {};
 
     document.querySelectorAll(".day").forEach(day => {
 
-        if(!day.dataset.day) return;
+        if (!day.dataset.day) return;
 
-       attendance[day.dataset.day] = {
-    status: day.dataset.status || "",
-    overtime: day.dataset.overtime || 0
-};
+        const otInput = document.getElementById("ot_" + day.dataset.day);
+
+        if (otInput) {
+            day.dataset.overtime = Number(otInput.value) || 0;
+        }
+
+        attendance[day.dataset.day] = {
+            status: day.dataset.status || "",
+            overtime: Number(day.dataset.overtime) || 0
+        };
 
     });
 
     localStorage.setItem(storageKey(), JSON.stringify(attendance));
 
-updateTable();
-updateSummary();
+    updateTable();
+    updateSummary();
 }
 
 function updateSummary() {
