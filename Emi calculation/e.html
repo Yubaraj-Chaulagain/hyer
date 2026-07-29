@@ -225,9 +225,6 @@ width:100%;
 <label>Working Hours / Day</label>
 <input type="number" id="workHours" value="8">
 
-<label>OT Multiplier</label>
-<input type="number" id="otMultiplier" value="1.25" step="0.25">
-
 <label>Advance / Deduction (AED)</label>
 <input type="number" id="advance" value="0">
 
@@ -672,7 +669,7 @@ const foodAllowance = Number(document.getElementById("foodAllowance").value);
 const hourlyRateInput = Number(document.getElementById("hourlyRate").value);
 
 const workHours = Number(document.getElementById("workHours").value);
-const otMultiplier = Number(document.getElementById("otMultiplier").value);
+const otMultiplier = 1.25;
 
 const advance = Number(document.getElementById("advance").value);
 const bonus = Number(document.getElementById("bonus").value);
