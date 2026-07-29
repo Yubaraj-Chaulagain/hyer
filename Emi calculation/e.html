@@ -692,12 +692,12 @@ document.querySelectorAll(".day").forEach(day => {
     }
 });
 
-totalSalary =
-    (totalHours * hourlyRate) +
-    bonus -
-    advance;
+document.getElementById("totalHours").textContent =
+    totalHours.toFixed(1) + " hrs";
 
-    }
+if (payType === "hourly") {
+    totalSalary = (totalHours * hourlyRate) + bonus - advance;
+}
 
     document.getElementById("totalSalary").textContent =
         totalSalary.toFixed(2) + " AED";
