@@ -19,6 +19,13 @@ background:#f5f5f5;
 padding:20px;
 }
 
+.hours{
+    margin-top:5px;
+    font-size:11px;
+    font-weight:bold;
+    text-align:center;
+}
+
 .status{
 margin-top:8px;
 font-size:12px;
@@ -490,9 +497,10 @@ function generateCalendar() {
         box.dataset.overtime = 0;
 
         box.innerHTML = `
-            <div class="day-number">${d}</div>
-            <div class="status"></div>
-        `;
+    <div class="day-number">${d}</div>
+    <div class="status"></div>
+    <div class="hours">0</div>
+`;
 
         calendar.appendChild(box);
     }
@@ -716,6 +724,37 @@ if (payType === "monthly") {
 
 document.getElementById("totalSalary").textContent =
     totalSalary.toFixed(2) + " AED";
+document.querySelectorAll(".day").forEach(day => {
+
+    const hoursDiv = day.querySelector(".hours");
+    if (!hoursDiv) return;
+
+    if (day.dataset.status === "present") {
+
+        const ot = Number(day.dataset.overtime || 0);
+
+        if (ot > 0) {
+            hoursDiv.textContent = workHours + " + " + ot + " OT";
+        } else {
+            hoursDiv.textContent = workHours + " Hrs";
+        }
+
+    } else if (day.dataset.status === "holiday") {
+
+        hoursDiv.textContent = "Holiday";
+
+    } else if (day.dataset.status === "absent") {
+
+        hoursDiv.textContent = "Absent";
+
+    } else {
+
+        hoursDiv.textContent = "";
+
+    }
+
+});
+
 }
 
 function loadAttendance() {
