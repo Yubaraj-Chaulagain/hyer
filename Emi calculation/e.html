@@ -526,61 +526,65 @@ generateCalendar();
 // ===============================
 // Attendance Click Event
 // ===============================
-
 calendar.addEventListener("click", function(e){
 
     const box = e.target.closest(".day");
 
-    if(!box) return;
-    if(!box.dataset.day) return;
+    if(!box || !box.dataset.day) return;
 
-    // पुरानो class हटाउने
     box.classList.remove("present","absent","holiday");
 
-    // Status परिवर्तन
-    if(box.dataset.status == "present"){
+    if(box.dataset.status === "present"){
 
         box.dataset.status = "absent";
         box.classList.add("absent");
         box.dataset.overtime = 0;
 
-    }
-    else if(box.dataset.status == "absent"){
+    }else if(box.dataset.status === "absent"){
 
         box.dataset.status = "holiday";
         box.classList.add("holiday");
         box.dataset.overtime = 0;
 
-    }
-    else if(box.dataset.status == "holiday"){
+    }else if(box.dataset.status === "holiday"){
 
         box.dataset.status = "";
         box.dataset.overtime = 0;
 
-    }
-    else{
+    }else{
 
         box.dataset.status = "present";
         box.classList.add("present");
 
-        // Overtime सोध्ने
-        let ot = 0;
-
-        const input = prompt("Enter Overtime Hours (0 if none):", "0");
-
-        if(input !== null){
-            ot = parseFloat(input) || 0;
-        }
-
-        box.dataset.overtime = ot;
-saveAttendance();
-updateTable();
-updateSummary();
+        let ot = prompt("Enter OT Hours", "0");
+        box.dataset.overtime = Number(ot) || 0;
     }
+
+    // Calendar मा Hours देखाउने
+    const workHours = Number(document.getElementById("workHours").value);
+    const hoursDiv = box.querySelector(".hours");
+
+    if(box.dataset.status === "present"){
+        const ot = Number(box.dataset.overtime);
+        hoursDiv.textContent = ot > 0
+            ? `${workHours} + ${ot} OT`
+            : `${workHours} Hrs`;
+    }else if(box.dataset.status === "absent"){
+        hoursDiv.textContent = "Absent";
+    }else if(box.dataset.status === "holiday"){
+        hoursDiv.textContent = "Holiday";
+    }else{
+        hoursDiv.textContent = "";
+    }
+
+    saveAttendance();
+    updateTable();
+    updateSummary();
+
+});
 
     
 
-});
 
 // ===============================
 // Save & Load Attendance
