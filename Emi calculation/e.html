@@ -660,18 +660,24 @@ const hourlyRate = Number(document.getElementById("hourlyRate").value);
 const bonus = Number(document.getElementById("bonus").value);
 const advance = Number(document.getElementById("advance").value);
 
+// Total Hours
+if (payType === "monthly") {
+    document.getElementById("totalHours").textContent =
+        (totalHours + totalOT) + " hrs";
+} else {
+    document.getElementById("totalHours").textContent =
+        totalHours + " hrs";
+}
+
 let totalSalary = 0;
 
-if(payType === "monthly"){
+if (payType === "monthly") {
 
     const basicHours = 26 * workHours;
-
     const hourlyBasicRate = basicSalary / basicHours;
-
     const overtimePay = totalOT * hourlyBasicRate * 1.25;
 
     const dailySalary = (basicSalary + foodAllowance) / 30;
-
     const deduction = absent * dailySalary;
 
     totalSalary =
@@ -682,9 +688,9 @@ if(payType === "monthly"){
         deduction -
         advance;
 
-}else{
+} else {
 
-    // Hourly Employee (No OT)
+    // Hourly कर्मचारीमा OT हुँदैन
     totalSalary =
         (totalHours * hourlyRate) +
         bonus -
@@ -694,8 +700,9 @@ if(payType === "monthly"){
 
 document.getElementById("totalSalary").textContent =
     totalSalary.toFixed(2) + " AED";
-
 }
+
+
 
 function loadAttendance() {
 
