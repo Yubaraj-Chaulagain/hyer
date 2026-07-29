@@ -26,6 +26,23 @@ padding:20px;
     text-align:center;
 }
 
+.section-box{
+background:white;
+padding:20px;
+margin:20px auto;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.15);
+max-width:1200px;
+}
+
+.section-box h2{
+color:#0077cc;
+margin-bottom:15px;
+border-bottom:2px solid #ddd;
+padding-bottom:8px;
+}
+
+
 .status{
 margin-top:8px;
 font-size:12px;
@@ -182,8 +199,14 @@ width:100%;
 
 <h1>Employee Attendance Calculate System</h1>
 
-<div class="form-grid">
 
+<!-- ================= INPUT SECTION ================= -->
+
+<div class="section-box">
+
+<h2>Employee Information</h2>
+
+<div class="form-grid">
 
 
 <div>
@@ -191,15 +214,19 @@ width:100%;
 <input type="text" id="employeeName" placeholder="Enter employee name">
 </div>
 
+
 <div>
 <label>Employee ID</label>
 <input type="text" id="employeeId" placeholder="Employee ID">
 </div>
 
+
 <div>
 <label>Department</label>
 <input type="text" id="department" placeholder="Department">
 </div>
+
+
 <div>
 <label>Trade</label>
 <select id="trade">
@@ -214,17 +241,23 @@ width:100%;
 <option value="scaffolder">Scaffolder</option>
 </select>
 </div>
+
+
+
 <div>
 <label>Pay Type</label>
+
 <select id="payType">
-    <option value="monthly">Monthly Salary</option>
-    <option value="hourly">Hourly Rate</option>
+<option value="monthly">Monthly Salary</option>
+<option value="hourly">Hourly Rate</option>
 </select>
+
 
 <div id="monthlyFields">
 
 <label>Basic Salary (AED)</label>
 <input type="number" id="basicSalary" value="1100">
+
 
 <label>Food Allowance (AED)</label>
 <input type="number" id="foodAllowance" value="200">
@@ -232,22 +265,31 @@ width:100%;
 </div>
 
 
+
 <div id="hourlyFields">
 
 <label>Hourly Rate (AED)</label>
 <input type="number" id="hourlyRate" value="8">
+
 
 <label>Working Hours / Day</label>
 <input type="number" id="workHours" value="8">
 
 </div>
 
+
+
 <label>Advance / Deduction (AED)</label>
 <input type="number" id="advance" value="0">
 
+
 <label>Bonus (AED)</label>
 <input type="number" id="bonus" value="0">
+
+
 </div>
+
+
 
 
 <div>
@@ -255,8 +297,11 @@ width:100%;
 <select id="year"></select>
 </div>
 
+
+
 <div>
 <label>Month</label>
+
 <select id="month">
 <option value="0">January</option>
 <option value="1">February</option>
@@ -271,77 +316,124 @@ width:100%;
 <option value="10">November</option>
 <option value="11">December</option>
 </select>
-</div>
 
 </div>
+
+
+</div>
+
 
 <div class="top-buttons">
+
 <button id="generateBtn">Generate Calendar</button>
+
 <button id="saveBtn">Save</button>
+
 <button id="printBtn">Print</button>
+
 </div>
 
-<hr style="margin:20px 0;">
 
-<div id="calendar">
+</div>
+
+
+
+
+
+<!-- ================= CALENDAR SECTION ================= -->
+
+
+<div class="section-box">
+
+<h2>Attendance Calendar</h2>
+
 
 <div class="calendar">
 
-<div class="day-name">Sun</div>
-<div class="day-name">Mon</div>
-<div class="day-name">Tue</div>
-<div class="day-name">Wed</div>
-<div class="day-name">Thu</div>
-<div class="day-name">Fri</div>
-<div class="day-name">Sat</div>
 
-<!-- JavaScript ले सबै दिनहरू यहाँ बनाउनेछ -->
+<!-- JavaScript ले दिनहरू बनाउनेछ -->
+
 
 </div>
 
+
 </div>
+
+
+
+
+
+
+<!-- ================= SUMMARY SECTION ================= -->
+
+
+<div class="section-box">
+
+
+<h2>Salary Summary</h2>
 
 
 <div class="summary">
+
 
 <div class="card">
 <h3 id="workingDays">0</h3>
 <p>Working Days</p>
 </div>
 
+
 <div class="card">
 <h3 id="presentDays">0</h3>
 <p>Present</p>
 </div>
+
 
 <div class="card">
 <h3 id="absentDays">0</h3>
 <p>Absent</p>
 </div>
 
+
 <div class="card">
 <h3 id="holidayDays">0</h3>
 <p>Holiday</p>
 </div>
 
+
 <div class="card">
 <h3 id="totalHours">0</h3>
 <p>Total Hours</p>
 </div>
+
+
 <div class="card">
-    <h3 id="totalSalary">0 AED</h3>
-    <p>Total Salary</p>
+<h3 id="totalSalary">0 AED</h3>
+<p>Total Salary</p>
 </div>
 
-</div>
-
 
 </div>
 
-<h2>Attendance Table</h2>
+
+</div>
+
+
+
+
+
+<!-- ================= TABLE SECTION ================= -->
+
+
+<div class="section-box">
+
+
+<h2>Attendance Report</h2>
+
 
 <table id="attendanceTable" border="1" width="100%">
+
 <thead>
+
 <tr>
 <th>Date</th>
 <th>Status</th>
@@ -349,13 +441,22 @@ width:100%;
 <th>Hours</th>
 <th>Action</th>
 </tr>
+
 </thead>
+
 
 <tbody>
 
 </tbody>
+
+
 </table>
 
+
+</div>
+
+
+</div>
 </body>
 
 
