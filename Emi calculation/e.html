@@ -661,46 +661,46 @@ function updateSummary() {
     }
 
     // Salary Calculation
-    let totalSalary = 0;
+let totalSalary = 0;
 
-    if (payType === "monthly") {
+if (payType === "monthly") {
 
-        // OT Rate
-        const basicHours = 26 * workHours;
-        const hourlyBasicRate = basicSalary / basicHours;
-        const overtimePay = totalOT * hourlyBasicRate * 1.25;
+    const basicHours = 26 * workHours;
+    const hourlyBasicRate = basicSalary / basicHours;
+    const overtimePay = totalOT * hourlyBasicRate * 1.25;
 
-        // Absent Deduction
-        const dailySalary = (basicSalary + foodAllowance) / 30;
-        const deduction = absent * dailySalary;
+    const dailySalary = (basicSalary + foodAllowance) / 30;
+    const deduction = absent * dailySalary;
 
-        totalSalary =
-            basicSalary +
-            foodAllowance +
-            overtimePay +
-            bonus -
-            deduction -
-            advance;
+    totalSalary =
+        basicSalary +
+        foodAllowance +
+        overtimePay +
+        bonus -
+        deduction -
+        advance;
 
-    } else {
+} else {
 
-        let totalHours = 0;
+    let totalWorkedHours = 0;
 
-document.querySelectorAll(".day").forEach(day => {
-    if (day.dataset.status === "present") {
-        totalHours += workHours + Number(day.dataset.overtime || 0);
-    }
-});
+    document.querySelectorAll(".day").forEach(day => {
+        if (day.dataset.status === "present") {
+            totalWorkedHours += workHours + Number(day.dataset.overtime || 0);
+        }
+    });
 
-document.getElementById("totalHours").textContent =
-    totalHours.toFixed(1) + " hrs";
+    document.getElementById("totalHours").textContent =
+        totalWorkedHours.toFixed(1) + " hrs";
 
-if (payType === "hourly") {
-    totalSalary = (totalHours * hourlyRate) + bonus - advance;
+    totalSalary =
+        (totalWorkedHours * hourlyRate) +
+        bonus -
+        advance;
 }
 
-    document.getElementById("totalSalary").textContent =
-        totalSalary.toFixed(2) + " AED";
+document.getElementById("totalSalary").textContent =
+    totalSalary.toFixed(2) + " AED";
 }
 
 function loadAttendance() {
