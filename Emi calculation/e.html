@@ -755,10 +755,12 @@ const saved = JSON.parse(localStorage.getItem(storageKey()) || "{}");
 const item = saved[day.dataset.day] || {};
 if(status=="") return;
 
-let hours=0;
+const workHours = Number(document.getElementById("workHours").value);
 
-if(status=="present"){
-hours=8;
+let hours = 0;
+
+if (status === "present") {
+    hours = workHours + Number(item.overtime || 0);
 }
 
 tbody.innerHTML += `
