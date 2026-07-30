@@ -299,6 +299,7 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
     <th>ID</th>
     <th>Name</th>
     <th>Country</th>
+    <th>Department</th>
     <th>Trade</th>
     <th>Basic Salary</th>
     <th>Food Allowance</th>
@@ -1278,6 +1279,7 @@ function loadEmployees(){
             <td>${e.id}</td>
             <td>${e.name}</td>
             <td>${e.country}</td>
+            <td>${e.department || ""}</td>
             <td>${e.trade}</td>
             <td>${e.salary} AED</td>
             <td>${e.food} AED</td>
