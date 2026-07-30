@@ -1316,15 +1316,13 @@ function loadEmployees(){
             <td>${e.whatsapp}</td>
 
             <td>
-<button onclick="selectEmployee(${index})">Select</button>
+<button onclick="viewEmployee(${index})">View</button>
 
-<button onclick="editEmployee(${index})">
-Update
-</button>
+<button onclick="confirmSelectEmployee(${index})">Select</button>
 
-<button onclick="deleteEmployee(${index})">
-Delete
-</button>
+<button onclick="editEmployee(${index})">Update</button>
+
+<button onclick="deleteEmployee(${index})">Delete</button>
 </td>
 
         </tr>
