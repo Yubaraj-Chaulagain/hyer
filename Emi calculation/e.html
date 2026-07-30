@@ -110,45 +110,29 @@ body{
    MOBILE RESPONSIVE
 =========================== */
 
-@media(max-width:768px){
+@media(max-width:992px){
 
 .menu-toggle{
     display:block;
 }
 
 .sidebar{
-    left:auto;
+    position:fixed;
+    top:0;
     right:-260px;
+    left:auto;
     width:250px;
-    transition:.35s;
+    height:100%;
+    transition:.3s;
 }
 
 .sidebar.active{
     right:0;
 }
 
-.close-btn{
-    display:block;
-    position:absolute;
-    top:10px;
-    right:10px;
-    width:40px;
-    background:red;
-    color:white;
-    border:none;
-    border-radius:5px;
-}
-
 .main-content{
     margin-left:0;
     width:100%;
-    padding:70px 15px 15px;
-}
-
-h1{
-    font-size:22px;
-    text-align:center;
-    margin-bottom:15px;
 }
 
 }
