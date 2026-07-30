@@ -2081,10 +2081,6 @@ const pdf = new jsPDF("p","mm","a4");
 
 let y = 10;
 
-//====================
-// Employee Details
-//====================
-
 const name = document.getElementById("employeeName").value;
 const id = document.getElementById("employeeId").value;
 const dept = document.getElementById("department").value;
@@ -2101,179 +2097,126 @@ const advance = document.getElementById("advance").value;
 const present = document.getElementById("presentDays").innerText;
 const absent = document.getElementById("absentDays").innerText;
 const holiday = document.getElementById("holidayDays").innerText;
-const totalHours = document.getElementById("totalHours").innerText;
-const totalSalary = document.getElementById("totalSalary").innerText;
+const hours = document.getElementById("totalHours").innerText;
+const salary = document.getElementById("totalSalary").innerText;
 
-if(name==""){
-alert("Please select employee");
-return;
-}
+pdf.setFontSize(14);
+pdf.text("EMPLOYEE PAY SLIP",70,y);
 
-//====================
-// Header
-//====================
-
-pdf.setFillColor(0,119,204);
-pdf.rect(10,10,190,12,"F");
-
-pdf.setTextColor(255,255,255);
-pdf.setFontSize(15);
-pdf.text("EMPLOYEE PAY SLIP",65,18);
-
-pdf.setTextColor(0,0,0);
-
-y=28;
-
-//====================
-// Employee Information Box
-//====================
-
-pdf.setDrawColor(0);
-pdf.rect(10,y,190,28);
+y += 10;
 
 pdf.setFontSize(8);
 
-pdf.text("Employee :",14,y+6);
-pdf.text(name,40,y+6);
+pdf.text("Employee : "+name,10,y);
+pdf.text("ID : "+id,110,y);
 
-pdf.text("Employee ID :",110,y+6);
-pdf.text(id,145,y+6);
+y += 5;
 
-pdf.text("Department :",14,y+12);
-pdf.text(dept,40,y+12);
+pdf.text("Department : "+dept,10,y);
+pdf.text("Trade : "+trade,110,y);
 
-pdf.text("Trade :",110,y+12);
-pdf.text(trade,145,y+12);
+y += 5;
 
-pdf.text("Month :",14,y+18);
-pdf.text(month+" "+year,40,y+18);
-
-pdf.text("Pay Type :",110,y+18);
-pdf.text(document.getElementById("payType").value,145,y+18);
-
-y+=35;
-
-//====================
-// Salary Summary
-//====================
-
-pdf.setFillColor(230,240,255);
-pdf.rect(10,y,190,30,"F");
-pdf.rect(10,y,190,30);
-
-pdf.setFontSize(9);
-
-pdf.text("Basic Salary",14,y+7);
-pdf.text(basic+" AED",55,y+7);
-
-pdf.text("Food Allowance",110,y+7);
-pdf.text(food+" AED",160,y+7);
-
-pdf.text("Bonus",14,y+15);
-pdf.text(bonus+" AED",55,y+15);
-
-pdf.text("Advance",110,y+15);
-pdf.text(advance+" AED",160,y+15);
-
-pdf.text("Net Salary",14,y+24);
-pdf.setFontSize(10);
-pdf.text(totalSalary,55,y+24);
-
-y+=38;
-
-//====================
-// Attendance Summary
-//====================
-
-pdf.setFontSize(9);
-
-pdf.rect(10,y,190,18);
-
-pdf.text("Present : "+present,15,y+7);
-pdf.text("Absent : "+absent,60,y+7);
-pdf.text("Holiday : "+holiday,105,y+7);
-pdf.text("Hours : "+totalHours,150,y+7);
-
-y+=25;
-
-//====================
-// Attendance Table
-//====================
-
-pdf.setFontSize(8);
-
-// Header
-pdf.setFillColor(0,119,204);
-pdf.setTextColor(255,255,255);
-
-pdf.rect(10,y,40,7,"F");
-pdf.rect(50,y,55,7,"F");
-pdf.rect(105,y,25,7,"F");
-pdf.rect(130,y,30,7,"F");
-pdf.rect(160,y,40,7,"F");
-
-pdf.text("Date",23,y+5);
-pdf.text("Status",68,y+5);
-pdf.text("OT",114,y+5);
-pdf.text("Hours",138,y+5);
-pdf.text("Remarks",171,y+5);
-
-pdf.setTextColor(0,0,0);
-
-y += 7;
-
-// Rows
-document.querySelectorAll("#attendanceTable tbody tr").forEach(row=>{
-
-    const td=row.querySelectorAll("td");
-
-    if(td.length<4) return;
-
-    let ot = td[2].querySelector("input")
-        ? td[2].querySelector("input").value
-        : td[2].innerText;
-
-    // नयाँ page आवश्यक भए
-    if(y>270){
-        pdf.addPage();
-        y=15;
-    }
-
-    pdf.rect(10,y,40,6);
-    pdf.rect(50,y,55,6);
-    pdf.rect(105,y,25,6);
-    pdf.rect(130,y,30,6);
-    pdf.rect(160,y,40,6);
-
-    pdf.setFontSize(7);
-
-    pdf.text(td[0].innerText,12,y+4);
-    pdf.text(td[1].innerText,52,y+4);
-    pdf.text(String(ot),112,y+4);
-    pdf.text(td[3].innerText,138,y+4);
-
-    y += 6;
-
-});
-
-//====================
-// Footer
-//====================
+pdf.text("Month : "+month+" "+year,10,y);
 
 y += 8;
 
+pdf.line(10,y,200,y);
+
+y += 5;
+
+pdf.text("Basic Salary : "+basic+" AED",10,y);
+pdf.text("Food : "+food+" AED",110,y);
+
+y += 5;
+
+pdf.text("Bonus : "+bonus+" AED",10,y);
+pdf.text("Advance : "+advance+" AED",110,y);
+
+y += 5;
+
+pdf.text("Present : "+present,10,y);
+pdf.text("Absent : "+absent,55,y);
+pdf.text("Holiday : "+holiday,100,y);
+pdf.text("Hours : "+hours,150,y);
+
+y += 8;
+
+pdf.line(10,y,200,y);
+
+y += 5;
+
+// Attendance Table Header
+// Attendance Table
+
+pdf.setFontSize(7);
+
+let x = 10;
+let rowH = 6;
+
+// Header
+pdf.rect(x, y, 35, rowH);
+pdf.text("Date", x+2, y+4);
+
+pdf.rect(45, y, 45, rowH);
+pdf.text("Status", 47, y+4);
+
+pdf.rect(90, y, 25, rowH);
+pdf.text("OT", 98, y+4);
+
+pdf.rect(115, y, 30, rowH);
+pdf.text("Hours", 122, y+4);
+
+pdf.rect(145, y, 55, rowH);
+pdf.text("Remark", 162, y+4);
+
+y += rowH;
+
+document.querySelectorAll("#attendanceTable tbody tr").forEach(row=>{
+
+const td = row.querySelectorAll("td");
+if(td.length < 4) return;
+
+let ot = td[2].querySelector("input")
+? td[2].querySelector("input").value
+: td[2].innerText;
+
+let remark = "";
+
+if(td[1].innerText=="PRESENT") remark="Present";
+if(td[1].innerText=="ABSENT") remark="Absent";
+if(td[1].innerText=="HOLIDAY") remark="Holiday";
+
+pdf.rect(x, y, 35, rowH);
+pdf.text(td[0].innerText, x+2, y+4);
+
+pdf.rect(45, y, 45, rowH);
+pdf.text(td[1].innerText, 47, y+4);
+
+pdf.rect(90, y, 25, rowH);
+pdf.text(String(ot), 98, y+4);
+
+pdf.rect(115, y, 30, rowH);
+pdf.text(td[3].innerText, 122, y+4);
+
+pdf.rect(145, y, 55, rowH);
+pdf.text(remark, 147, y+4);
+
+y += rowH;
+
+});
+y += 6;
+
 pdf.setFontSize(10);
-pdf.text("TOTAL SALARY : " + totalSalary,10,y);
+
+pdf.text("TOTAL SALARY : "+salary,10,y);
 
 y += 15;
 
-pdf.line(15,y,70,y);
-pdf.line(130,y,185,y);
-
 pdf.setFontSize(8);
 
-pdf.text("Employee Signature",18,y+5);
-pdf.text("HR Signature",145,y+5);
+pdf.text("Employee Signature",10,y);
+pdf.text("HR Signature",140,y);
 
 pdf.save("Payslip_"+id+"_"+month+".pdf");
 
