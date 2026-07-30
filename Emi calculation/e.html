@@ -301,6 +301,7 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
     <th>Country</th>
     <th>Department</th>
     <th>Trade</th>
+    <th>Pay Type</th>
     <th>Home Address</th>
     <th>Current Address</th>
     <th>Date of Birth</th>
@@ -1303,6 +1304,7 @@ function loadEmployees(){
             <td>${e.country}</td>
             <td>${e.department || ""}</td>
             <td>${e.trade}</td>
+           <td>${e.payType || "monthly"}</td>
             <td>${e.address || ""}</td>
             <td>${e.current || ""}</td>
             <td>${e.dob || ""}</td>
@@ -1344,11 +1346,15 @@ function addEmployee(){
         current: prompt("Current Address"),
         dob: prompt("Date of Birth"),
         trade: prompt("Trade"),
+        payType: prompt("Pay Type (monthly/hourly)", "monthly"),
         department: prompt("Department"),
         salary: Number(prompt("Basic Salary", "1100")) || 0,
+
         food: Number(prompt("Food Allowance", "200")) || 0,
 
         days: Number(prompt("Working Days Per Month", "26")) || 26,
+
+hourlyRate: Number(prompt("Hourly Rate", "8")) || 8,
         hours: Number(prompt("Daily Working Hours", "8")) || 8,
 
         email: prompt("Email"),
@@ -1376,11 +1382,13 @@ function editEmployee(index){
     e.current = prompt("Current Address", e.current);
     e.dob = prompt("Date of Birth", e.dob);
     e.trade = prompt("Trade", e.trade);
+e.payType = prompt("Pay Type", e.payType);
 e.department = prompt("Department", e.department);
     e.salary = Number(prompt("Basic Salary", e.salary)) || 0;
     e.food = Number(prompt("Food Allowance", e.food)) || 0;
 
     e.days = Number(prompt("Working Days", e.days)) || 26;
+e.hourlyRate = Number(prompt("Hourly Rate", e.hourlyRate || 8)) || 8;
     e.hours = Number(prompt("Daily Working Hours", e.hours)) || 8;
 
     e.email = prompt("Email", e.email);
@@ -1520,6 +1528,9 @@ document.getElementById("employeeName").value = e.name || "";
 document.getElementById("employeeId").value = e.id || "";
 document.getElementById("department").value = e.department || "";
 document.getElementById("trade").value = e.trade || "";
+
+document.getElementById("payType").value = e.payType || "monthly";
+togglePayFields();
 
 document.getElementById("basicSalary").value = e.salary || 0;
 document.getElementById("foodAllowance").value = e.food || 0;
