@@ -1530,25 +1530,19 @@ document.getElementById("department").value = e.department || "";
 document.getElementById("trade").value = e.trade || "";
 
 document.getElementById("payType").value = e.payType || "monthly";
-togglePayFields();
-
 document.getElementById("basicSalary").value = e.salary || 0;
 document.getElementById("foodAllowance").value = e.food || 0;
+document.getElementById("hourlyRate").value = e.hourlyRate || 8;
 document.getElementById("workHours").value = e.hours || 8;
 
-
-// Trade अनुसार salary update
-document.getElementById("trade")
-.dispatchEvent(new Event("change"));
+togglePayFields();
 
 generateCalendar();
 loadAttendance();
 updateSummary();
 updateTable();
 
-
 alert("Employee Selected Successfully");
-
 }
 </script>
 </html>
