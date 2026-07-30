@@ -579,59 +579,67 @@ Attendance Table
 
 
 <script>
-let employees = JSON.parse(localStorage.getItem("employees") || "[]");
+let employees = JSON.parse(localStorage.getItem("employees")) || [];
 
-function saveEmployees(){
+function saveEmployees() {
     localStorage.setItem("employees", JSON.stringify(employees));
 }
 const tradeData = {
-    helper: {
-        payType: "monthly",
-        basic: 1100,
-        food: 200,
-        hourly: 8
-    },
+    helper:{
+payType:"monthly",
+basic:1100,
+food:200,
+hourly:8,
+workHours:8
+}
     mason: {
         payType: "monthly",
         basic: 1500,
         food: 250,
         hourly: 11
+workHours:8
     },
     steelfixer: {
         payType: "monthly",
         basic: 1400,
         food: 250,
         hourly: 10
+workHours:8
     },
     carpenter: {
         payType: "monthly",
         basic: 1600,
         food: 300,
         hourly: 12
+workHours:8
     },
     electrician: {
         payType: "monthly",
         basic: 1800,
         food: 300,
         hourly: 14
+workHours:8
     },
     plumber: {
         payType: "monthly",
         basic: 1700,
         food: 300,
         hourly: 13
+workHours:8
     },
     painter: {
         payType: "monthly",
         basic: 1400,
         food: 250,
         hourly: 10
+workHours:8
     },
     scaffolder: {
         payType: "hourly",
         basic: 0,
         food: 0,
         hourly: 9
+workHours:8
     }
 };
 const yearSelect = document.getElementById("year");
@@ -690,6 +698,7 @@ document.getElementById("trade").addEventListener("change", function () {
     document.getElementById("basicSalary").value = t.basic;
     document.getElementById("foodAllowance").value = t.food;
     document.getElementById("hourlyRate").value = t.hourly;
+document.getElementById("workHours").value=t.workHours;
 
     updateSummary();
 });
@@ -1352,13 +1361,13 @@ loadEmployees();
 
 function getEmployeeID(){
 
-    let last = Number(localStorage.getItem("lastEmployeeID")) || 1000;
+let last=Number(localStorage.getItem("lastEmployeeID"))||0;
 
-    last++;
+last++;
 
-    localStorage.setItem("lastEmployeeID", last);
+localStorage.setItem("lastEmployeeID",last);
 
-    return "EMP" + last;
+return "EMP-"+new Date().getFullYear()+"-"+String(last).padStart(4,"0");
 
 }
 
@@ -1373,7 +1382,7 @@ function searchEmployee(){
 
     rows.forEach(row=>{
 
-        if(row.innerText.toLowerCase().includes(keyword)){
+        if(row.textContent.toLowerCase().includes(keyword)){
             row.style.display="";
         }else{
             row.style.display="none";
@@ -1389,7 +1398,9 @@ function selectEmployee(index){
 
     document.getElementById("employeeName").value = e.name || "";
     document.getElementById("trade").value = e.trade || "";
-    document.getElementById("basicSalary").value = e.salary || 0;
+document.getElementById("department").value =
+e.department || "";
+document.getElementById("basicSalary").value = e.salary || 0;
     document.getElementById("foodAllowance").value = e.food || 0;
     document.getElementById("workHours").value = e.hours || 8;
 
