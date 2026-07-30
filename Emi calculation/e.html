@@ -1316,7 +1316,7 @@ function addEmployee(){
         current: prompt("Current Address"),
         dob: prompt("Date of Birth"),
         trade: prompt("Trade"),
-
+        department: prompt("Department"),
         salary: Number(prompt("Basic Salary", "1100")) || 0,
         food: Number(prompt("Food Allowance", "200")) || 0,
 
@@ -1348,7 +1348,7 @@ function editEmployee(index){
     e.current = prompt("Current Address", e.current);
     e.dob = prompt("Date of Birth", e.dob);
     e.trade = prompt("Trade", e.trade);
-
+e.department = prompt("Department", e.department);
     e.salary = Number(prompt("Basic Salary", e.salary)) || 0;
     e.food = Number(prompt("Food Allowance", e.food)) || 0;
 
