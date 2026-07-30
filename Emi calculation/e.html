@@ -1435,135 +1435,141 @@ function updateSummary() {
     let present = 0;
     let absent = 0;
     let holiday = 0;
+    let totalOT = 0;
 
     document.querySelectorAll(".day").forEach(day => {
+
         switch (day.dataset.status) {
             case "present":
                 present++;
+                totalOT += Number(day.dataset.overtime || 0);
                 break;
+
             case "absent":
                 absent++;
                 break;
+
             case "holiday":
                 holiday++;
                 break;
         }
+
     });
 
     document.getElementById("presentDays").textContent = present;
     document.getElementById("absentDays").textContent = absent;
     document.getElementById("holidayDays").textContent = holiday;
+
+    const year = Number(yearSelect.value);
+    const month = Number(monthSelect.value);
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    // Weekly Holiday
+    let weeklyHoliday = 0;
+    const holidaySelect = document.getElementById("weeklyHoliday");
+
+    if (holidaySelect) {
+        weeklyHoliday = Number(holidaySelect.value);
+    }
+
     let workingDays = 0;
 
-const year = Number(yearSelect.value);
-const month = Number(monthSelect.value);
-const totalDays = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= totalDays; d++) {
 
-for (let d = 1; d <= totalDays; d++) {
-    const date = new Date(year, month, d);
+        const date = new Date(year, month, d);
 
-    // Sunday बाहेक सबै दिन
-    if (date.getDay() !== 0) {
-        workingDays++;
+        if (date.getDay() !== weeklyHoliday) {
+            workingDays++;
+        }
+
     }
-}
 
-document.getElementById("workingDays").textContent = workingDays;
+    document.getElementById("workingDays").textContent = workingDays;
 
-    // Inputs
     const payType = document.getElementById("payType").value;
-    const workHours = Number(document.getElementById("workHours").value);
     const basicSalary = Number(document.getElementById("basicSalary").value);
     const foodAllowance = Number(document.getElementById("foodAllowance").value);
     const hourlyRate = Number(document.getElementById("hourlyRate").value);
+    const workHours = Number(document.getElementById("workHours").value);
     const bonus = Number(document.getElementById("bonus").value);
     const advance = Number(document.getElementById("advance").value);
 
-    // Hours
-    let totalHours = present * workHours;
-    let totalOT = 0;
+    let totalHours = (present * workHours) + totalOT;
 
-    document.querySelectorAll(".day").forEach(day => {
-        totalOT += Number(day.dataset.overtime || 0);
-    });
+    document.getElementById("totalHours").textContent =
+        totalHours.toFixed(1) + " hrs";
+
+    let totalSalary = 0;
 
     if (payType === "monthly") {
-        document.getElementById("totalHours").textContent =
-            (totalHours + totalOT).toFixed(1) + " hrs";
-    } else {
-        document.getElementById("totalHours").textContent =
-            totalHours.toFixed(1) + " hrs";
+
+    const dailyBasic = basicSalary / workingDays;
+    const dailyFood = foodAllowance / workingDays;
+
+    // Absent Deduction Rule
+    let deductionDays = absent;
+
+    if (absent === 3) {
+        deductionDays = 4;
+    } else if (absent >= 4) {
+        deductionDays = 6;
     }
 
-    // Salary Calculation
-let totalSalary = 0;
+    const hourlyBasic = dailyBasic / workHours;
 
-if (payType === "monthly") {
+    // OT Pay (125%)
+    const overtimePay = totalOT * hourlyBasic * 1.25;
 
-const foodPerDay = foodAllowance / workingDays;
-
-const overtimePay =
-    totalOT * ((basicSalary / workingDays) / workHours) * 1.25;
-
-totalSalary =
-    (dailyBasic * present) +
-    (foodPerDay * present) +
-    overtimePay +
-    bonus -
-    advance;
-
+    // Salary
+    totalSalary =
+        basicSalary +
+        foodAllowance +
+        overtimePay +
+        bonus -
+        advance -
+        ((dailyBasic + dailyFood) * deductionDays);
 
 } else {
 
-    let totalWorkedHours = 0;
-
-    document.querySelectorAll(".day").forEach(day => {
-        if (day.dataset.status === "present") {
-            totalWorkedHours += workHours + Number(day.dataset.overtime || 0);
-        }
-    });
-
-    document.getElementById("totalHours").textContent =
-        totalWorkedHours.toFixed(1) + " hrs";
-
-    totalSalary =
-        (totalWorkedHours * hourlyRate) +
-        bonus -
-        advance;
-}
-
-document.getElementById("totalSalary").textContent =
-    totalSalary.toFixed(2) + " AED";
-document.querySelectorAll(".day").forEach(day => {
-
-    const hoursDiv = day.querySelector(".hours");
-    if (!hoursDiv) return;
-
-    if (day.dataset.status === "present") {
-
-        const ot = Number(day.dataset.overtime || 0);
-
-        if (ot > 0) {
-            hoursDiv.textContent = workHours + " + " + ot + " OT";
-        } else {
-            hoursDiv.textContent = workHours + " Hrs";
-        }
-
-    } else if (day.dataset.status === "holiday") {
-
-        hoursDiv.textContent = "Holiday";
-
-    } else if (day.dataset.status === "absent") {
-
-        hoursDiv.textContent = "Absent";
-
-    } else {
-
-        hoursDiv.textContent = "";
+        totalSalary =
+            (totalHours * hourlyRate) +
+            bonus -
+            advance;
 
     }
 
-});
+    document.getElementById("totalSalary").textContent =
+        totalSalary.toFixed(2) + " AED";
+
+    document.querySelectorAll(".day").forEach(day => {
+
+        const hoursDiv = day.querySelector(".hours");
+
+        if (!hoursDiv) return;
+
+        if (day.dataset.status === "present") {
+
+            const ot = Number(day.dataset.overtime || 0);
+
+            hoursDiv.textContent =
+                ot > 0 ? `${workHours} + ${ot} OT`
+                       : `${workHours} Hrs`;
+
+        } else if (day.dataset.status === "absent") {
+
+            hoursDiv.textContent = "Absent";
+
+        } else if (day.dataset.status === "holiday") {
+
+            hoursDiv.textContent = "Holiday";
+
+        } else {
+
+            hoursDiv.textContent = "";
+
+        }
+
+    });
 
 }
 
