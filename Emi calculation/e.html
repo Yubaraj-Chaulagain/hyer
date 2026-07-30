@@ -262,7 +262,7 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
 
 <br><br>
 
-<button onclick="openEmployeeForm()">
+<button onclick="addEmployee()">
 ➕ Add Employee
 </button>
 
@@ -579,6 +579,11 @@ Attendance Table
 
 
 <script>
+let employees = JSON.parse(localStorage.getItem("employees") || "[]");
+
+function saveEmployees(){
+    localStorage.setItem("employees", JSON.stringify(employees));
+}
 const tradeData = {
     helper: {
         payType: "monthly",
