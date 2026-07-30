@@ -1095,27 +1095,29 @@ togglePayFields();
 
 function showSection(section){
 
-document.getElementById("infoSection").style.display="none";
-document.getElementById("calendarSection").style.display="none";
-document.getElementById("tableSection").style.display="none";
+    document.getElementById("infoSection").style.display="none";
+    document.getElementById("calendarSection").style.display="none";
+    document.getElementById("salarySection").style.display="none";
+    document.getElementById("tableSection").style.display="none";
 
+    if(section=="info"){
+        document.getElementById("infoSection").style.display="block";
+    }
 
-if(section=="info"){
-document.getElementById("infoSection").style.display="block";
-}
+    if(section=="calendar"){
+        document.getElementById("calendarSection").style.display="block";
+        generateCalendar();
+    }
 
+    if(section=="salary"){
+        document.getElementById("salarySection").style.display="block";
+        updateSummary();
+    }
 
-if(section=="calendar"){
-document.getElementById("calendarSection").style.display="block";
-generateCalendar();
-}
-
-
-if(section=="table"){
-document.getElementById("tableSection").style.display="block";
-updateTable();
-}
-
+    if(section=="table"){
+        document.getElementById("tableSection").style.display="block";
+        updateTable();
+    }
 }
 
 </script>
