@@ -1753,45 +1753,7 @@ payTypeSelect.addEventListener("change", togglePayFields);
 // First Load
 togglePayFields();
 
-function showSection(section){
 
-    // सबै Section Hide
-    document.getElementById("infoSection").style.display = "none";
-    document.getElementById("employeesSection").style.display = "none";
-    document.getElementById("calendarSection").style.display = "none";
-    document.getElementById("salarySection").style.display = "none";
-    document.getElementById("tableSection").style.display = "none";
-
-    // Employee Information
-    if(section === "info"){
-        document.getElementById("infoSection").style.display = "block";
-    }
-
-    // Employees
-    if(section === "employees"){
-        document.getElementById("employeesSection").style.display = "block";
-        loadEmployees();
-    }
-
-    // Calendar
-    if(section === "calendar"){
-        document.getElementById("calendarSection").style.display = "block";
-        generateCalendar();
-    }
-
-    // Salary Summary
-    if(section === "salary"){
-        document.getElementById("salarySection").style.display = "block";
-        updateSummary();
-    }
-
-    // Attendance Table
-    if(section === "table"){
-        document.getElementById("tableSection").style.display = "block";
-        updateTable();
-    }
-
-}
 
 function loadEmployees(){
 
@@ -2046,12 +2008,48 @@ updateTable();
 alert("Employee Selected Successfully");
 }
 
-function toggleMenu(){
+// Sidebar Menu
+function toggleMenu() {
     document.getElementById("sidebar").classList.toggle("active");
 }
 
-function toggleMenu(){
-    document.getElementById("sidebar").classList.toggle("active");
+// Menu button थिच्दा Section खुल्ने र Sidebar स्वतः बन्द हुने
+function showSection(section) {
+
+    document.getElementById("infoSection").style.display = "none";
+    document.getElementById("employeesSection").style.display = "none";
+    document.getElementById("calendarSection").style.display = "none";
+    document.getElementById("salarySection").style.display = "none";
+    document.getElementById("tableSection").style.display = "none";
+
+    if(section=="info"){
+        document.getElementById("infoSection").style.display="block";
+    }
+
+    if(section=="employees"){
+        document.getElementById("employeesSection").style.display="block";
+        loadEmployees();
+    }
+
+    if(section=="calendar"){
+        document.getElementById("calendarSection").style.display="block";
+        generateCalendar();
+    }
+
+    if(section=="salary"){
+        document.getElementById("salarySection").style.display="block";
+        updateSummary();
+    }
+
+    if(section=="table"){
+        document.getElementById("tableSection").style.display="block";
+        updateTable();
+    }
+
+    // Mobile मा section खोलेपछि sidebar आफै बन्द हुन्छ
+    if(window.innerWidth <= 1024){
+        document.getElementById("sidebar").classList.remove("active");
+    }
 }
 
 </script>
