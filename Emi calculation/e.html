@@ -1502,5 +1502,33 @@ Department: ${e.department || ""}
 });
 
 }
+
+function confirmSelectEmployee(index){
+
+const e = employees[index];
+
+document.getElementById("employeeName").value = e.name || "";
+document.getElementById("employeeId").value = e.id || "";
+document.getElementById("department").value = e.department || "";
+document.getElementById("trade").value = e.trade || "";
+
+document.getElementById("basicSalary").value = e.salary || 0;
+document.getElementById("foodAllowance").value = e.food || 0;
+document.getElementById("workHours").value = e.hours || 8;
+
+
+// Trade अनुसार salary update
+document.getElementById("trade")
+.dispatchEvent(new Event("change"));
+
+generateCalendar();
+loadAttendance();
+updateSummary();
+updateTable();
+
+
+alert("Employee Selected Successfully");
+
+}
 </script>
 </html>
