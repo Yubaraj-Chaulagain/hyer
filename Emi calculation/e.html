@@ -221,7 +221,42 @@ Attendance Table
 
 
 <hr>
+<hr>
 
+<h2>Employer / Employee Records</h2>
+
+<div style="overflow-x:auto;">
+
+<table border="1" width="100%" id="employeeTable">
+<thead>
+<tr>
+<th>Name</th>
+<th>Country</th>
+<th>Home Address</th>
+<th>Current Address</th>
+<th>DOB</th>
+<th>Trade</th>
+<th>Basic Salary</th>
+<th>Month Days</th>
+<th>Daily Hours</th>
+<th>Email</th>
+<th>WhatsApp</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="employeeBody">
+</tbody>
+
+</table>
+
+</div>
+
+<br>
+
+<button onclick="addEmployee()">
+Add New Employee
+</button>
 
 <!-- =========================
 Employee Information Section
@@ -1119,6 +1154,117 @@ function showSection(section){
         updateTable();
     }
 }
+
+let employees = JSON.parse(localStorage.getItem("employees") || "[]");
+
+function saveEmployees(){
+    localStorage.setItem("employees", JSON.stringify(employees));
+}
+
+function loadEmployees(){
+
+    const tbody=document.getElementById("employeeBody");
+    tbody.innerHTML="";
+
+    employees.forEach((e,index)=>{
+
+        tbody.innerHTML+=`
+        <tr>
+
+        <td>${e.name}</td>
+        <td>${e.country}</td>
+        <td>${e.address}</td>
+        <td>${e.current}</td>
+        <td>${e.dob}</td>
+        <td>${e.trade}</td>
+        <td>${e.salary}</td>
+        <td>${e.days}</td>
+        <td>${e.hours}</td>
+        <td>${e.email}</td>
+        <td>${e.whatsapp}</td>
+
+        <td>
+
+        <button onclick="editEmployee(${index})">
+        Update
+        </button>
+
+        <button onclick="deleteEmployee(${index})">
+        Delete
+        </button>
+
+        </td>
+
+        </tr>
+        `;
+
+    });
+
+}
+
+function addEmployee(){
+
+    const emp={
+
+        name:prompt("Name"),
+        country:prompt("Country"),
+        address:prompt("Home Address"),
+        current:prompt("Current Address"),
+        dob:prompt("Date of Birth"),
+        trade:prompt("Trade"),
+        salary:prompt("Basic Salary"),
+        days:prompt("Per Month Working Days"),
+        hours:prompt("Daily Working Hours"),
+        email:prompt("Email"),
+        whatsapp:prompt("WhatsApp Number")
+
+    };
+
+    employees.push(emp);
+
+    saveEmployees();
+
+    loadEmployees();
+
+}
+
+function editEmployee(index){
+
+    let e=employees[index];
+
+    e.name=prompt("Name",e.name);
+    e.country=prompt("Country",e.country);
+    e.address=prompt("Home Address",e.address);
+    e.current=prompt("Current Address",e.current);
+    e.dob=prompt("DOB",e.dob);
+    e.trade=prompt("Trade",e.trade);
+    e.salary=prompt("Basic Salary",e.salary);
+    e.days=prompt("Working Days",e.days);
+    e.hours=prompt("Daily Hours",e.hours);
+    e.email=prompt("Email",e.email);
+    e.whatsapp=prompt("WhatsApp",e.whatsapp);
+
+    saveEmployees();
+
+    loadEmployees();
+
+}
+
+function deleteEmployee(index){
+
+    if(confirm("Delete this employee?")){
+
+        employees.splice(index,1);
+
+        saveEmployees();
+
+        loadEmployees();
+
+    }
+
+}
+
+loadEmployees();
 
 </script>
 </html>
