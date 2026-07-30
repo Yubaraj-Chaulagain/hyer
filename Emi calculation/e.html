@@ -1266,14 +1266,16 @@ function loadEmployees(){
             <td>${e.whatsapp}</td>
 
             <td>
-                <button onclick="editEmployee(${index})">
-                    Update
-                </button>
+<button onclick="selectEmployee(${index})">Select</button>
 
-                <button onclick="deleteEmployee(${index})">
-                    Delete
-                </button>
-            </td>
+<button onclick="editEmployee(${index})">
+Update
+</button>
+
+<button onclick="deleteEmployee(${index})">
+Delete
+</button>
+</td>
 
         </tr>
         `;
@@ -1318,26 +1320,30 @@ function addEmployee(){
 
 function editEmployee(index){
 
-    let e=employees[index];
+    let e = employees[index];
 
-    e.name=prompt("Name",e.name);
-    e.country=prompt("Country",e.country);
-    e.address=prompt("Home Address",e.address);
-    e.current=prompt("Current Address",e.current);
-    e.dob=prompt("DOB",e.dob);
-    e.trade=prompt("Trade",e.trade);
-    e.salary=prompt("Basic Salary",e.salary);
-    e.days=prompt("Working Days",e.days);
-    e.hours=prompt("Daily Hours",e.hours);
-    e.email=prompt("Email",e.email);
-    e.whatsapp=prompt("WhatsApp",e.whatsapp);
+    e.name = prompt("Employee Name", e.name);
+    e.country = prompt("Country", e.country);
+    e.address = prompt("Home Address", e.address);
+    e.current = prompt("Current Address", e.current);
+    e.dob = prompt("Date of Birth", e.dob);
+    e.trade = prompt("Trade", e.trade);
+
+    e.salary = Number(prompt("Basic Salary", e.salary)) || 0;
+    e.food = Number(prompt("Food Allowance", e.food)) || 0;
+
+    e.days = Number(prompt("Working Days", e.days)) || 26;
+    e.hours = Number(prompt("Daily Working Hours", e.hours)) || 8;
+
+    e.email = prompt("Email", e.email);
+    e.whatsapp = prompt("WhatsApp Number", e.whatsapp);
 
     saveEmployees();
-
     loadEmployees();
 
-}
+    alert("Employee Updated Successfully");
 
+}
 function deleteEmployee(index){
 
     if(confirm("Delete this employee?")){
@@ -1387,5 +1393,31 @@ function searchEmployee(){
 
 }
 
+function selectEmployee(index){
+
+    const e = employees[index];
+
+    document.getElementById("employeeName").value = e.name || "";
+    document.getElementById("trade").value = e.trade || "";
+    document.getElementById("basicSalary").value = e.salary || 0;
+    document.getElementById("foodAllowance").value = e.food || 0;
+    document.getElementById("workHours").value = e.hours || 8;
+
+    // यदि Employee ID field छ भने
+    if(document.getElementById("employeeId")){
+        document.getElementById("employeeId").value = e.id || "";
+    }
+
+    // Employee Information Section खोल्ने
+    showSection("info");
+
+    // Trade अनुसार Pay Type Update
+    document.getElementById("trade").dispatchEvent(new Event("change"));
+
+    updateSummary();
+
+    alert("Employee Selected Successfully");
+
+}
 </script>
 </html>
