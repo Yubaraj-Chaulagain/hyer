@@ -1500,25 +1500,18 @@ let totalSalary = 0;
 
 if (payType === "monthly") {
 
-    const basicHours = 26 * workHours;
-    const hourlyBasicRate = basicSalary / basicHours;
-    const overtimePay = totalOT * hourlyBasicRate * 1.25;
-
-    const dailySalary = (basicSalary + foodAllowance) / 30;
-    const deduction = absent * dailySalary;
-
-    const dailyBasic = basicSalary / workingDays;
-const earnedBasic = dailyBasic * present;
-
-const overtimePay = totalOT * ((basicSalary / workingDays) / workHours) * 1.25;
 const foodPerDay = foodAllowance / workingDays;
 
+const overtimePay =
+    totalOT * ((basicSalary / workingDays) / workHours) * 1.25;
+
 totalSalary =
-    (basicSalary / workingDays) * present +
-    foodPerDay * present +
+    (dailyBasic * present) +
+    (foodPerDay * present) +
     overtimePay +
     bonus -
     advance;
+
 
 } else {
 
