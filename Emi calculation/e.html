@@ -7,100 +7,765 @@
 <title>Employee Attendance System</title>
 
 <style>
+/* ===========================
+   RESET
+=========================== */
+
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-background:#f5f5f5;
-padding:20px;
-margin:0;
+    background:#f5f5f5;
+    color:#333;
+    margin:0;
+    padding:0;
 }
 
+/* ===========================
+   SIDEBAR
+=========================== */
+
 .sidebar{
-width:240px;
-height:100vh;
-background:#0077cc;
-color:#fff;
-position:fixed;
-left:0;
-top:0;
-padding:20px;
-overflow:auto;
+    position:fixed;
+    left:0;
+    top:0;
+    width:240px;
+    height:100vh;
+    background:#0077cc;
+    color:#fff;
+    overflow-y:auto;
+    padding:20px;
+    box-shadow:2px 0 10px rgba(0,0,0,.15);
+    z-index:1000;
 }
 
 .sidebar h2{
-text-align:center;
-margin-bottom:20px;
+    text-align:center;
+    margin-bottom:20px;
+    font-size:22px;
 }
 
 .sidebar button{
-width:100%;
-margin-bottom:10px;
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:6px;
+    background:#fff;
+    color:#0077cc;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
 }
+
+.sidebar button:hover{
+    background:#eaf5ff;
+    transform:translateX(3px);
+}
+
+/* ===========================
+   MAIN CONTENT
+=========================== */
 
 .main-content{
-margin-left:260px;
-width:calc(100% - 260px);
-padding:20px;
+    margin-left:260px;
+    padding:20px;
+    width:calc(100% - 260px);
 }
 
+/* ===========================
+   MENU BUTTON
+=========================== */
+
 .menu-toggle{
-display:none;
+    display:none;
+    position:fixed;
+    top:15px;
+    right:15px;
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:8px;
+    background:#0077cc;
+    color:#fff;
+    font-size:26px;
+    cursor:pointer;
+    z-index:1100;
 }
 
 .close-btn{
-display:none;
+    display:none;
+}
+
+/* ===========================
+   MOBILE RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.menu-toggle{
+    display:block;
+}
+
+.sidebar{
+    left:auto;
+    right:-260px;
+    width:250px;
+    transition:.35s;
+}
+
+.sidebar.active{
+    right:0;
+}
+
+.close-btn{
+    display:block;
+    position:absolute;
+    top:10px;
+    right:10px;
+    width:40px;
+    background:red;
+    color:white;
+    border:none;
+    border-radius:5px;
+}
+
+.main-content{
+    margin-left:0;
+    width:100%;
+    padding:70px 15px 15px;
+}
+
+h1{
+    font-size:22px;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+}
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.section-box{
+    background:#fff;
+    padding:20px;
+    margin:20px 0;
+    border-radius:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.12);
+}
+
+.section-box h2{
+    color:#0077cc;
+    margin-bottom:15px;
+    border-bottom:2px solid #ddd;
+    padding-bottom:8px;
+}
+
+/* ===========================
+   HEADING
+=========================== */
+
+h1{
+    text-align:center;
+    color:#0077cc;
+    margin-bottom:20px;
+    font-size:30px;
+}
+
+/* ===========================
+   FORM GRID
+=========================== */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+/* ===========================
+   LABEL
+=========================== */
+
+label{
+    display:block;
+    font-weight:bold;
+    margin-top:12px;
+    margin-bottom:6px;
+    color:#333;
+}
+
+/* ===========================
+   INPUT & SELECT
+=========================== */
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+    outline:none;
+    transition:.3s;
+    background:#fff;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#0077cc;
+    box-shadow:0 0 5px rgba(0,119,204,.3);
+}
+
+/* ===========================
+   BUTTON
+=========================== */
+
+button{
+    padding:10px 15px;
+    border:none;
+    border-radius:6px;
+    background:#0077cc;
+    color:#fff;
+    cursor:pointer;
+    font-size:15px;
+    transition:.3s;
+}
+
+button:hover{
+    background:#005fa3;
+}
+
+/* ===========================
+   TOP BUTTON GROUP
+=========================== */
+
+.top-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:15px;
+    margin-bottom:15px;
+}
+
+.top-buttons button{
+    flex:1;
+    min-width:130px;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.container,
+.section-box{
+    padding:15px;
+}
+
+.form-grid{
+    grid-template-columns:1fr;
+}
+
+.top-buttons{
+    flex-direction:column;
+}
+
+.top-buttons button{
+    width:100%;
+}
+
+button{
+    width:100%;
+}
+
+input,
+select,
+textarea{
+    font-size:16px;
+}
+
+}
+/* ===========================
+   CALENDAR
+=========================== */
+
+.calendar{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+}
+
+/* Week Header */
+
+.day-name{
+    background:#0077cc;
+    color:#fff;
+    text-align:center;
+    padding:10px;
+    border-radius:6px;
+    font-weight:bold;
+    font-size:14px;
+}
+
+/* Day Box */
+
+.day{
+    min-height:95px;
+    background:#fafafa;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:6px;
+    cursor:pointer;
+    transition:.25s;
+    position:relative;
+}
+
+.day:hover{
+    transform:scale(1.02);
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+/* Day Number */
+
+.day-number{
+    font-size:15px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+/* Status */
+
+.status{
+    text-align:center;
+    font-size:12px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+/* Hours */
+
+.hours{
+    text-align:center;
+    margin-top:6px;
+    font-size:11px;
+    font-weight:bold;
+}
+
+/* Attendance Colors */
+
+.present{
+    background:#4CAF50 !important;
+    color:#fff;
+}
+
+.absent{
+    background:#F44336 !important;
+    color:#fff;
+}
+
+.holiday{
+    background:#FFC107 !important;
+    color:#000;
+}
+
+/* ===========================
+   SUMMARY
+=========================== */
+
+.summary{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:#0077cc;
+    color:#fff;
+    border-radius:10px;
+    padding:20px;
+    text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+.card h3{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.card p{
+    font-size:15px;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.calendar{
+    gap:3px;
+}
+
+.day-name{
+    padding:6px;
+    font-size:11px;
+}
+
+.day{
+    min-height:70px;
+    padding:4px;
+}
+
+.day-number{
+    font-size:13px;
+}
+
+.status{
+    font-size:10px;
+}
+
+.hours{
+    font-size:9px;
+}
+
+.summary{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.card{
+    padding:15px;
+}
+
+.card h3{
+    font-size:22px;
+}
+
+.card p{
+    font-size:13px;
+}
+
+}
+
+/* ===========================
+   SEARCH BOX
+=========================== */
+
+#searchEmployee,
+#memberSearch{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+    margin-bottom:15px;
+}
+
+#searchEmployee:focus,
+#memberSearch:focus{
+    border-color:#0077cc;
+    box-shadow:0 0 5px rgba(0,119,204,.3);
+    outline:none;
+}
+
+/* ===========================
+   TABLE WRAPPER
+=========================== */
+
+.table-responsive{
+    width:100%;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+}
+
+/* ===========================
+   EMPLOYEE TABLE
+=========================== */
+
+#employeeTable,
+#attendanceTable{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    min-width:900px;
+}
+
+#employeeTable th,
+#employeeTable td,
+#attendanceTable th,
+#attendanceTable td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+    vertical-align:middle;
+}
+
+#employeeTable th,
+#attendanceTable th{
+    background:#0077cc;
+    color:#fff;
+    font-weight:bold;
+    position:sticky;
+    top:0;
+}
+
+#employeeTable tr:nth-child(even),
+#attendanceTable tr:nth-child(even){
+    background:#f8f8f8;
+}
+
+#employeeTable tr:hover,
+#attendanceTable tr:hover{
+    background:#eef7ff;
+}
+
+/* ===========================
+   TABLE BUTTONS
+=========================== */
+
+#employeeTable button,
+#attendanceTable button{
+    padding:6px 10px;
+    margin:2px;
+    font-size:13px;
+}
+
+/* ===========================
+   OT INPUT
+=========================== */
+
+#attendanceTable input[type="number"]{
+    width:70px;
+    padding:5px;
+    text-align:center;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+#employeeTable,
+#attendanceTable{
+    min-width:900px;
+}
+
+#employeeTable th,
+#employeeTable td,
+#attendanceTable th,
+#attendanceTable td{
+    padding:8px;
+    font-size:12px;
+}
+
+#employeeTable button,
+#attendanceTable button{
+    font-size:12px;
+    padding:5px 8px;
+}
+
+#attendanceTable input[type="number"]{
+    width:60px;
+}
+
+}
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+}
+
+::-webkit-scrollbar-track{
+    background:#f1f1f1;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#0077cc;
+    border-radius:10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#005fa3;
+}
+
+/* ===========================
+   ANIMATION
+=========================== */
+
+.section-box,
+.card,
+.day{
+    animation:fadeIn .3s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ===========================
+   IMAGE
+=========================== */
+
+img{
+    max-width:100%;
+    height:auto;
+    display:block;
+}
+
+/* ===========================
+   RESPONSIVE FIX
+=========================== */
+
+@media (max-width:992px){
+
+.main-content{
+    padding:15px;
+}
+
+.summary{
+    grid-template-columns:repeat(2,1fr);
+}
+
 }
 
 @media (max-width:768px){
 
-.menu-toggle{
-display:block;
-position:fixed;
-top:15px;
-right:15px;
-z-index:1002;
-font-size:24px;
-background:#0077cc;
-color:#fff;
-border:none;
-padding:10px 15px;
-border-radius:6px;
+h1{
+    font-size:22px;
 }
 
-.sidebar{
-left:auto;
-right:-260px;
-width:250px;
-height:100%;
-padding-top:60px;
-transition:.3s;
-z-index:1001;
+.section-box{
+    margin:10px 0;
+    padding:15px;
 }
 
-.sidebar.active{
-right:0;
+.summary{
+    grid-template-columns:1fr;
 }
 
-.close-btn{
-display:block;
-position:absolute;
-top:10px;
-right:10px;
-background:red;
-color:#fff;
+.card{
+    width:100%;
+}
+
+.calendar{
+    overflow-x:auto;
+}
+
+.top-buttons{
+    display:flex;
+    flex-direction:column;
+}
+
+.top-buttons button{
+    width:100%;
+}
+
+input,
+select,
+button{
+    font-size:16px;
+}
+
+}
+
+/* ===========================
+   LARGE SCREEN
+=========================== */
+
+@media (min-width:1200px){
+
+.container{
+    max-width:1400px;
+}
+
+}
+
+/* ===========================
+   PRINT
+=========================== */
+
+@media print{
+
+.menu-toggle,
+.sidebar,
+.close-btn,
+.top-buttons,
+button{
+    display:none !important;
+}
+
+body{
+    background:#fff;
+    padding:0;
 }
 
 .main-content{
-margin-left:0;
-width:100%;
-padding:15px;
+    margin:0;
+    width:100%;
 }
+
+.section-box{
+    box-shadow:none;
+    border:1px solid #ccc;
+    page-break-inside:avoid;
 }
+
+.calendar{
+    page-break-inside:avoid;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,
+td{
+    border:1px solid #000;
+    padding:6px;
+}
+
+}
+
 
 </style>
 
