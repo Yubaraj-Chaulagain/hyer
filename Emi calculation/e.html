@@ -336,6 +336,17 @@ Employee Information Section
 
 <h2>Employee Information</h2>
 
+<!-- Member List -->
+<button onclick="loadMemberList()">
+👥 Member List
+</button>
+
+<br><br>
+
+<div id="memberList"></div>
+
+<br>
+
 
 <label>Employee Name</label>
 <input type="text" id="employeeName">
@@ -1423,37 +1434,68 @@ function searchEmployee(){
 
 }
 
-function selectEmployee(index){
+let selectedEmployeeIndex = null;
+
+function viewEmployee(index){
 
     const e = employees[index];
 
+    selectedEmployeeIndex = index;
+
     document.getElementById("employeeName").value = e.name || "";
+    document.getElementById("employeeId").value = e.id || "";
+    document.getElementById("department").value = e.department || "";
     document.getElementById("trade").value = e.trade || "";
-document.getElementById("department").value =
-e.department || "";
-document.getElementById("basicSalary").value = e.salary || 0;
+    document.getElementById("basicSalary").value = e.salary || 0;
     document.getElementById("foodAllowance").value = e.food || 0;
     document.getElementById("workHours").value = e.hours || 8;
 
-    // यदि Employee ID field छ भने
-    if(document.getElementById("employeeId")){
-        document.getElementById("employeeId").value = e.id || "";
-    }
 
-    // Employee Information Section खोल्ने
-    showSection("info");
-generateCalendar();
-loadAttendance();
-updateSummary();
-updateTable();
+    alert(
+`Employee Details Check:
 
-    // Trade अनुसार Pay Type Update
-    document.getElementById("trade").dispatchEvent(new Event("change"));
+ID: ${e.id}
+Name: ${e.name}
+Country: ${e.country}
+Department: ${e.department}
+Trade: ${e.trade}
+Salary: ${e.salary} AED
 
-    updateSummary();
+Check details and press Confirm Select`
+    );
 
-    alert("Employee Selected Successfully");
+}
+function loadMemberList(){
 
+let div = document.getElementById("memberList");
+
+div.innerHTML="";
+
+employees.forEach((e,index)=>{
+
+div.innerHTML += `
+<div style="
+border:1px solid #ccc;
+padding:10px;
+margin:5px;
+border-radius:6px;
+">
+
+<b>${e.name}</b><br>
+ID: ${e.id}<br>
+Trade: ${e.trade}<br>
+Department: ${e.department || ""}
+
+<br><br>
+
+<button onclick="viewEmployee(${index})">
+View Details
+</button>
+
+</div>
+`;
+
+});
 
 }
 </script>
