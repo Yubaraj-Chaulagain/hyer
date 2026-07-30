@@ -6,6 +6,7 @@
 
 <title>Employee Attendance System</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <style>
 /* ===========================
@@ -794,9 +795,10 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
 <button onclick="addEmployee()">
 ➕ Add Employee
 </button>
-<input type="file" id="csvFile" accept=".csv">
-<button onclick="importCSV()">
-📥 Import CSV
+<input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
+
+<button onclick="importExcel()">
+📥 Import Excel
 </button>
 <br><br>
 
@@ -2370,6 +2372,67 @@ alert("Employees Imported Successfully.");
 reader.readAsText(file);
 
 }
+function importExcel(){
+
+const file=document.getElementById("excelFile").files[0];
+
+if(!file){
+alert("Please select an Excel file.");
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+const data=new Uint8Array(e.target.result);
+
+const workbook=XLSX.read(data,{type:"array"});
+
+const sheet=workbook.Sheets[workbook.SheetNames[0]];
+
+const rows=XLSX.utils.sheet_to_json(sheet,{header:1});
+
+rows.shift(); // Remove Header
+
+rows.forEach(c=>{
+
+if(!c.length) return;
+
+employees.push({
+
+id:getEmployeeID(),
+name:c[0]||"",
+country:c[1]||"",
+department:c[2]||"",
+trade:c[3]||"",
+payType:c[4]||"monthly",
+address:c[5]||"",
+current:c[6]||"",
+dob:c[7]||"",
+email:c[8]||"",
+salary:Number(c[9])||0,
+food:Number(c[10])||0,
+days:Number(c[11])||26,
+hours:Number(c[12])||8,
+hourlyRate:Number(c[13])||8,
+whatsapp:c[14]||""
+
+});
+
+});
+
+saveEmployees();
+loadEmployees();
+
+alert("Employees Imported Successfully.");
+
+};
+
+reader.readAsArrayBuffer(file);
+
+}
+
 
 </script>
 </html>
