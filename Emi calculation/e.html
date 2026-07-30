@@ -343,6 +343,13 @@ Employee Information Section
 
 <br><br>
 
+<input
+type="text"
+id="memberSearch"
+placeholder="Search by ID, Name, Department, Trade..."
+onkeyup="loadMemberList()"
+style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:6px;">
+
 <div id="memberList"></div>
 
 <br>
@@ -1468,32 +1475,34 @@ Check details and press Confirm Select`
 function loadMemberList(){
 
 let div = document.getElementById("memberList");
+let keyword = document.getElementById("memberSearch").value.toLowerCase();
 
-div.innerHTML="";
+div.innerHTML = "";
 
 employees.forEach((e,index)=>{
 
-div.innerHTML += `
-<div style="
-border:1px solid #ccc;
-padding:10px;
-margin:5px;
-border-radius:6px;
-">
+if(
+!(e.name || "").toLowerCase().includes(keyword) &&
+!(e.id || "").toLowerCase().includes(keyword) &&
+!(e.department || "").toLowerCase().includes(keyword) &&
+!(e.trade || "").toLowerCase().includes(keyword)
+){
+return;
+}
 
+div.innerHTML += `
+<div style="border:1px solid #ccc;padding:10px;margin:5px;border-radius:6px;">
 <b>${e.name}</b><br>
 ID: ${e.id}<br>
-Trade: ${e.trade}<br>
-Department: ${e.department || ""}
-
-<br><br>
+Department: ${e.department}<br>
+Trade: ${e.trade}<br><br>
 
 <button onclick="viewEmployee(${index})">
 👁 View Details
 </button>
 
 <button onclick="confirmSelectEmployee(${index})">
-✅ Confirm Select
+✅ Select
 </button>
 
 </div>
