@@ -1196,6 +1196,7 @@ Attendance Table
 
 
 <script>
+let editIndex = -1;
 let employees = JSON.parse(localStorage.getItem("employees")) || [];
 
 function saveEmployees() {
@@ -1910,31 +1911,21 @@ hourlyRate: Number(prompt("Hourly Rate", "8")) || 8,
 
 function editEmployee(index){
 
-    let e = employees[index];
+    editIndex = index;
 
-    e.name = prompt("Employee Name", e.name);
-    e.country = prompt("Country", e.country);
-    e.address = prompt("Home Address", e.address);
-    e.current = prompt("Current Address", e.current);
-    e.dob = prompt("Date of Birth", e.dob);
-    e.trade = prompt("Trade", e.trade);
-e.payType = prompt("Pay Type", e.payType);
-e.department = prompt("Department", e.department);
-    e.salary = Number(prompt("Basic Salary", e.salary)) || 0;
-    e.food = Number(prompt("Food Allowance", e.food)) || 0;
+    const e = employees[index];
 
-    e.days = Number(prompt("Working Days", e.days)) || 26;
-e.hourlyRate = Number(prompt("Hourly Rate", e.hourlyRate || 8)) || 8;
-    e.hours = Number(prompt("Daily Working Hours", e.hours)) || 8;
+    openEmployeeForm();
 
-    e.email = prompt("Email", e.email);
-    e.whatsapp = prompt("WhatsApp Number", e.whatsapp);
-
-    saveEmployees();
-    loadEmployees();
-
-    alert("Employee Updated Successfully");
-
+    document.getElementById("newName").value = e.name || "";
+    document.getElementById("newCountry").value = e.country || "";
+    document.getElementById("newDepartment").value = e.department || "";
+    document.getElementById("newTrade").value = e.trade || "";
+    document.getElementById("newPayType").value = e.payType || "monthly";
+    document.getElementById("newSalary").value = e.salary || 0;
+    document.getElementById("newFood").value = e.food || 0;
+    document.getElementById("newHours").value = e.hours || 8;
+    document.getElementById("newWhatsapp").value = e.whatsapp || "";
 }
 function deleteEmployee(index){
 
@@ -2484,45 +2475,49 @@ document.getElementById("employeeForm").style.display="block";
 }
 
 function closeEmployeeForm(){
-document.getElementById("employeeForm").style.display="none";
+
+    editIndex = -1;
+
+    document.getElementById("employeeForm").reset();
+
+    document.getElementById("employeeForm").style.display = "none";
 }
 
 function saveNewEmployee(){
 
-const emp={
+    const emp = {
+        id: editIndex==-1 ? getEmployeeID() : employees[editIndex].id,
+        name: document.getElementById("newName").value,
+        country: document.getElementById("newCountry").value,
+        department: document.getElementById("newDepartment").value,
+        trade: document.getElementById("newTrade").value,
+        payType: document.getElementById("newPayType").value,
+        salary: Number(document.getElementById("newSalary").value)||0,
+        food: Number(document.getElementById("newFood").value)||0,
+        hours: Number(document.getElementById("newHours").value)||8,
+        days: 26,
+        hourlyRate: 8,
+        whatsapp: document.getElementById("newWhatsapp").value,
+        address:"",
+        current:"",
+        dob:"",
+        email:""
+    };
 
-id:getEmployeeID(),
+    if(editIndex==-1){
+        employees.push(emp);
+    }else{
+        employees[editIndex]=emp;
+    }
 
-name:document.getElementById("newName").value,
-country:document.getElementById("newCountry").value,
-department:document.getElementById("newDepartment").value,
-trade:document.getElementById("newTrade").value,
-payType:document.getElementById("newPayType").value,
+    saveEmployees();
+    loadEmployees();
 
-salary:Number(document.getElementById("newSalary").value)||0,
-food:Number(document.getElementById("newFood").value)||0,
-hours:Number(document.getElementById("newHours").value)||8,
-days:26,
-hourlyRate:8,
+    editIndex=-1;
 
-whatsapp:document.getElementById("newWhatsapp").value,
+    closeEmployeeForm();
 
-address:"",
-current:"",
-dob:"",
-email:""
-
-};
-
-employees.push(emp);
-
-saveEmployees();
-loadEmployees();
-
-closeEmployeeForm();
-
-alert("Employee Added Successfully");
-
+    alert("Employee Saved Successfully");
 }
 
 </script>
