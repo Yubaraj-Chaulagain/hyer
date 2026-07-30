@@ -301,6 +301,10 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
     <th>Country</th>
     <th>Department</th>
     <th>Trade</th>
+    <th>Home Address</th>
+    <th>Current Address</th>
+    <th>Date of Birth</th>
+    <th>Email</th>
     <th>Basic Salary</th>
     <th>Food Allowance</th>
     <th>Working Days</th>
@@ -1281,6 +1285,10 @@ function loadEmployees(){
             <td>${e.country}</td>
             <td>${e.department || ""}</td>
             <td>${e.trade}</td>
+            <td>${e.address || ""}</td>
+            <td>${e.current || ""}</td>
+            <td>${e.dob || ""}</td>
+            <td>${e.email || ""}</td>
             <td>${e.salary} AED</td>
             <td>${e.food} AED</td>
             <td>${e.days}</td>
