@@ -30,6 +30,71 @@ table{
 font-size:12px;
 }
 
+body{
+    margin:0;
+    display:flex;
+    background:#f5f5f5;
+}
+
+.sidebar{
+    width:240px;
+    height:100vh;
+    background:#0077cc;
+    color:#fff;
+    position:fixed;
+    left:0;
+    top:0;
+    padding:20px;
+    overflow:auto;
+}
+
+.sidebar h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.sidebar button{
+    width:100%;
+    margin-bottom:10px;
+    background:#fff;
+    color:#0077cc;
+    border:none;
+    padding:12px;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.sidebar button:hover{
+    background:#e6f3ff;
+}
+
+.main-content{
+    margin-left:260px;
+    width:calc(100% - 260px);
+    padding:20px;
+}
+
+@media(max-width:768px){
+
+    body{
+        display:block;
+    }
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .main-content{
+        margin-left:0;
+        width:100%;
+    }
+
+}
+
+
 th,td{
 padding:6px;
 }
@@ -245,28 +310,23 @@ margin-bottom:10px;
 
 <!-- Menu Buttons -->
 
-<div class="menu">
-<button onclick="showSection('employees')">
-Employees
-</button>
+<div class="sidebar">
 
-<button onclick="showSection('info')">
-Employee Information
-</button>
+<h2>Menu</h2>
 
-<button onclick="showSection('calendar')">
-Calendar
-</button>
+<button onclick="showSection('employees')">👥 Employees</button>
 
-<button onclick="showSection('salary')">
-Salary Summary
-</button>
+<button onclick="showSection('info')">📝 Employee Information</button>
 
-<button onclick="showSection('table')">
-Attendance Table
-</button>
+<button onclick="showSection('calendar')">📅 Calendar</button>
+
+<button onclick="showSection('salary')">💰 Salary Summary</button>
+
+<button onclick="showSection('table')">📋 Attendance Table</button>
 
 </div>
+
+<div class="main-content">
 
 
 <hr>
@@ -619,7 +679,7 @@ Attendance Table
 </div>
 
 
-
+</div>
 </body>
 
 
