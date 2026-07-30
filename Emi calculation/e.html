@@ -189,6 +189,31 @@ width:100%;
 }
 
 }
+#employeeTable{
+width:100%;
+border-collapse:collapse;
+font-size:14px;
+}
+
+#employeeTable th,
+#employeeTable td{
+border:1px solid #ddd;
+padding:8px;
+text-align:center;
+}
+
+#employeeTable th{
+background:#0077cc;
+color:white;
+}
+
+#employeeTable tr:nth-child(even){
+background:#f8f8f8;
+}
+
+#searchEmployee{
+margin-bottom:10px;
+}
 
 </style>
 
@@ -200,6 +225,9 @@ width:100%;
 <!-- Menu Buttons -->
 
 <div class="menu">
+<button onclick="showSection('employees')">
+Employees
+</button>
 
 <button onclick="showSection('info')">
 Employee Information
@@ -221,6 +249,55 @@ Attendance Table
 
 
 <hr>
+<div id="employeesSection" class="section-box" style="display:none;">
+
+<h2>Employees</h2>
+
+<input
+type="text"
+id="searchEmployee"
+placeholder="Search by Employee ID, Name, Trade or Country..."
+onkeyup="searchEmployee()"
+style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-radius:6px;">
+
+<br><br>
+
+<button onclick="openEmployeeForm()">
+➕ Add Employee
+</button>
+
+<br><br>
+
+<div style="overflow-x:auto;">
+
+<table id="employeeTable">
+
+<thead>
+
+<tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Country</th>
+    <th>Trade</th>
+    <th>Basic Salary</th>
+    <th>Food Allowance</th>
+    <th>Working Days</th>
+    <th>Daily Hours</th>
+    <th>WhatsApp</th>
+    <th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="employeeBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
 <hr>
 
 <h2>Employer / Employee Records</h2>
@@ -1130,70 +1207,73 @@ togglePayFields();
 
 function showSection(section){
 
-    document.getElementById("infoSection").style.display="none";
-    document.getElementById("calendarSection").style.display="none";
-    document.getElementById("salarySection").style.display="none";
-    document.getElementById("tableSection").style.display="none";
+    // सबै Section Hide
+    document.getElementById("infoSection").style.display = "none";
+    document.getElementById("employeesSection").style.display = "none";
+    document.getElementById("calendarSection").style.display = "none";
+    document.getElementById("salarySection").style.display = "none";
+    document.getElementById("tableSection").style.display = "none";
 
-    if(section=="info"){
-        document.getElementById("infoSection").style.display="block";
+    // Employee Information
+    if(section === "info"){
+        document.getElementById("infoSection").style.display = "block";
     }
 
-    if(section=="calendar"){
-        document.getElementById("calendarSection").style.display="block";
+    // Employees
+    if(section === "employees"){
+        document.getElementById("employeesSection").style.display = "block";
+        loadEmployees();
+    }
+
+    // Calendar
+    if(section === "calendar"){
+        document.getElementById("calendarSection").style.display = "block";
         generateCalendar();
     }
 
-    if(section=="salary"){
-        document.getElementById("salarySection").style.display="block";
+    // Salary Summary
+    if(section === "salary"){
+        document.getElementById("salarySection").style.display = "block";
         updateSummary();
     }
 
-    if(section=="table"){
-        document.getElementById("tableSection").style.display="block";
+    // Attendance Table
+    if(section === "table"){
+        document.getElementById("tableSection").style.display = "block";
         updateTable();
     }
-}
 
-let employees = JSON.parse(localStorage.getItem("employees") || "[]");
-
-function saveEmployees(){
-    localStorage.setItem("employees", JSON.stringify(employees));
 }
 
 function loadEmployees(){
 
-    const tbody=document.getElementById("employeeBody");
-    tbody.innerHTML="";
+    const tbody = document.getElementById("employeeBody");
+    tbody.innerHTML = "";
 
     employees.forEach((e,index)=>{
 
-        tbody.innerHTML+=`
+        tbody.innerHTML += `
         <tr>
 
-        <td>${e.name}</td>
-        <td>${e.country}</td>
-        <td>${e.address}</td>
-        <td>${e.current}</td>
-        <td>${e.dob}</td>
-        <td>${e.trade}</td>
-        <td>${e.salary}</td>
-        <td>${e.days}</td>
-        <td>${e.hours}</td>
-        <td>${e.email}</td>
-        <td>${e.whatsapp}</td>
+            <td>${e.id}</td>
+            <td>${e.name}</td>
+            <td>${e.country}</td>
+            <td>${e.trade}</td>
+            <td>${e.salary} AED</td>
+            <td>${e.food} AED</td>
+            <td>${e.days}</td>
+            <td>${e.hours}</td>
+            <td>${e.whatsapp}</td>
 
-        <td>
+            <td>
+                <button onclick="editEmployee(${index})">
+                    Update
+                </button>
 
-        <button onclick="editEmployee(${index})">
-        Update
-        </button>
-
-        <button onclick="deleteEmployee(${index})">
-        Delete
-        </button>
-
-        </td>
+                <button onclick="deleteEmployee(${index})">
+                    Delete
+                </button>
+            </td>
 
         </tr>
         `;
@@ -1204,19 +1284,25 @@ function loadEmployees(){
 
 function addEmployee(){
 
-    const emp={
+    const emp = {
 
-        name:prompt("Name"),
-        country:prompt("Country"),
-        address:prompt("Home Address"),
-        current:prompt("Current Address"),
-        dob:prompt("Date of Birth"),
-        trade:prompt("Trade"),
-        salary:prompt("Basic Salary"),
-        days:prompt("Per Month Working Days"),
-        hours:prompt("Daily Working Hours"),
-        email:prompt("Email"),
-        whatsapp:prompt("WhatsApp Number")
+        id: getEmployeeID(),
+
+        name: prompt("Employee Name"),
+        country: prompt("Country"),
+        address: prompt("Home Address"),
+        current: prompt("Current Address"),
+        dob: prompt("Date of Birth"),
+        trade: prompt("Trade"),
+
+        salary: Number(prompt("Basic Salary", "1100")) || 0,
+        food: Number(prompt("Food Allowance", "200")) || 0,
+
+        days: Number(prompt("Working Days Per Month", "26")) || 26,
+        hours: Number(prompt("Daily Working Hours", "8")) || 8,
+
+        email: prompt("Email"),
+        whatsapp: prompt("WhatsApp Number")
 
     };
 
@@ -1225,6 +1311,8 @@ function addEmployee(){
     saveEmployees();
 
     loadEmployees();
+
+    alert("Employee Added Successfully");
 
 }
 
@@ -1265,6 +1353,39 @@ function deleteEmployee(index){
 }
 
 loadEmployees();
+
+function getEmployeeID(){
+
+    let last = Number(localStorage.getItem("lastEmployeeID")) || 1000;
+
+    last++;
+
+    localStorage.setItem("lastEmployeeID", last);
+
+    return "EMP" + last;
+
+}
+
+function searchEmployee(){
+
+    const keyword = document
+        .getElementById("searchEmployee")
+        .value
+        .toLowerCase();
+
+    const rows = document.querySelectorAll("#employeeBody tr");
+
+    rows.forEach(row=>{
+
+        if(row.innerText.toLowerCase().includes(keyword)){
+            row.style.display="";
+        }else{
+            row.style.display="none";
+        }
+
+    });
+
+}
 
 </script>
 </html>
