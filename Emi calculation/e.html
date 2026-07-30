@@ -856,10 +856,21 @@ calendar.addEventListener("click", function(e){
 // Storage Key
 // ===============================
 function storageKey() {
-    return `attendance_${yearSelect.value}_${monthSelect.value}`;
+
+    const employeeId = document.getElementById("employeeId").value || "NO_EMPLOYEE";
+
+    return `attendance_${employeeId}_${yearSelect.value}_${monthSelect.value}`;
+
 }
 
 function saveAttendance() {
+if(document.getElementById("employeeId").value==""){
+
+    alert("Please select an employee first.");
+
+    return;
+
+}
 
     const attendance = {};
 
@@ -1149,6 +1160,13 @@ document.querySelectorAll("[id^='ot_']").forEach(input => {
 
 function clearAttendance(day){
 
+if(document.getElementById("employeeId").value==""){
+
+    alert("Please select an employee first.");
+
+    return;
+
+}
 const box=document.querySelector(
 `.day[data-day="${day}"]`
 );
@@ -1410,6 +1428,10 @@ function selectEmployee(index){
 
     // Employee Information Section खोल्ने
     showSection("info");
+generateCalendar();
+loadAttendance();
+updateSummary();
+updateTable();
 
     // Trade अनुसार Pay Type Update
     document.getElementById("trade").dispatchEvent(new Event("change"));
@@ -1417,6 +1439,7 @@ function selectEmployee(index){
     updateSummary();
 
     alert("Employee Selected Successfully");
+
 
 }
 </script>
