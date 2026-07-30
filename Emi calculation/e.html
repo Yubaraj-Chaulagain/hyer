@@ -792,7 +792,7 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
 
 <br><br>
 
-<button onclick="addEmployee()">
+<button onclick="openEmployeeForm()">
 ➕ Add Employee
 </button>
 <input type="file" id="excelFile" accept=".xlsx,.xls,.csv">
@@ -801,6 +801,53 @@ style="width:100%;padding:10px;margin-bottom:10px;border:1px solid #ccc;border-r
 📥 Import Excel
 </button>
 <br><br>
+<div id="employeeForm" style="display:none;border:1px solid #ccc;padding:15px;margin-top:10px;border-radius:8px;">
+
+<label>Name</label>
+<input type="text" id="newName">
+
+<label>Country</label>
+<input type="text" id="newCountry">
+
+<label>Department</label>
+<input type="text" id="newDepartment">
+
+<label>Trade</label>
+<select id="newTrade">
+<option value="helper">Helper</option>
+<option value="mason">Mason</option>
+<option value="steelfixer">Steel Fixer</option>
+<option value="carpenter">Carpenter</option>
+<option value="electrician">Electrician</option>
+<option value="plumber">Plumber</option>
+<option value="painter">Painter</option>
+<option value="scaffolder">Scaffolder</option>
+</select>
+
+<label>Pay Type</label>
+<select id="newPayType">
+<option value="monthly">Monthly</option>
+<option value="hourly">Hourly</option>
+</select>
+
+<label>Basic Salary</label>
+<input type="number" id="newSalary">
+
+<label>Food Allowance</label>
+<input type="number" id="newFood">
+
+<label>Daily Hours</label>
+<input type="number" id="newHours" value="8">
+
+<label>WhatsApp</label>
+<input type="text" id="newWhatsapp">
+
+<br><br>
+
+<button onclick="saveNewEmployee()">💾 Save Employee</button>
+<button onclick="closeEmployeeForm()">❌ Cancel</button>
+
+</div>
 
 <div style="overflow-x:auto;">
 
@@ -2432,7 +2479,51 @@ alert("Employees Imported Successfully.");
 reader.readAsArrayBuffer(file);
 
 }
+function openEmployeeForm(){
+document.getElementById("employeeForm").style.display="block";
+}
 
+function closeEmployeeForm(){
+document.getElementById("employeeForm").style.display="none";
+}
+
+function saveNewEmployee(){
+
+const emp={
+
+id:getEmployeeID(),
+
+name:document.getElementById("newName").value,
+country:document.getElementById("newCountry").value,
+department:document.getElementById("newDepartment").value,
+trade:document.getElementById("newTrade").value,
+payType:document.getElementById("newPayType").value,
+
+salary:Number(document.getElementById("newSalary").value)||0,
+food:Number(document.getElementById("newFood").value)||0,
+hours:Number(document.getElementById("newHours").value)||8,
+days:26,
+hourlyRate:8,
+
+whatsapp:document.getElementById("newWhatsapp").value,
+
+address:"",
+current:"",
+dob:"",
+email:""
+
+};
+
+employees.push(emp);
+
+saveEmployees();
+loadEmployees();
+
+closeEmployeeForm();
+
+alert("Employee Added Successfully");
+
+}
 
 </script>
 </html>
