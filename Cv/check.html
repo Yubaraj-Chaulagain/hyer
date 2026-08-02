@@ -413,6 +413,7 @@ pdf.save(fileName + ".pdf");
 
 
         function loadList(){
+console.log(localStorage.getItem("cvData"));
   let all = JSON.parse(localStorage.getItem("cvData") || "[]");
   let html = "";
 
