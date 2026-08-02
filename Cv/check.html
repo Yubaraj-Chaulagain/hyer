@@ -225,6 +225,8 @@ overflow:auto;
 </div>
  </body>
     <script>
+let editId = null;
+let displayZoomEnabled = false;
 let workCount = 0;
 
 function addWork(){
@@ -1240,8 +1242,6 @@ function autoSaveDraft(){
 }
 
 window.addEventListener("load", function(){
-
-    openDB();
 
     let draft = JSON.parse(localStorage.getItem("draftCV") || "{}");
 
