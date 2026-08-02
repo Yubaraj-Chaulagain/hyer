@@ -385,7 +385,16 @@ async function downloadPDF(){
     imgHeight -= pageHeight;
   }
 
-  pdf.save("cv-design.pdf");
+  let fileName = document.getElementById("name").value.trim();
+
+if(fileName === ""){
+    fileName = "CV";
+}
+
+// Invalid filename characters हटाउने
+fileName = fileName.replace(/[\\/:*?"<>|]/g, "_");
+
+pdf.save(fileName + ".pdf");
 }
 
         async function syncToSheet(){
@@ -946,7 +955,15 @@ imgWidth,
 imgHeight
 );
 
-pdf.save("Professional-Resume.pdf");
+let fileName = document.getElementById("name").value.trim();
+
+if(fileName === ""){
+    fileName = "Resume";
+}
+
+fileName = fileName.replace(/[\\/:*?"<>|]/g, "_");
+
+pdf.save(fileName + "_Resume.pdf");
 
 /* REMOVE TEMP */
 document.body.removeChild(tempDiv);
