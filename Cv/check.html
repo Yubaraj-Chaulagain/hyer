@@ -578,9 +578,7 @@ document.getElementById("desc"+workCount).value = w.desc || "";
 
 }
 
-if(d.photo){
-document.getElementById("cvPhoto").src = d.photo;
-}
+
 
 editId = id;
 
@@ -645,10 +643,7 @@ let newData = {
     education: document.getElementById("education").value,
     Responsbiliti: document.getElementById("Responsbiliti").value,
 
-    works: works,
-
-    // Photo पनि IndexedDB मा सुरक्षित हुन्छ
-    photo: document.getElementById("cvPhoto").src || ""
+    works: works
 
 };
 
@@ -688,7 +683,8 @@ tx.onerror = function(){
   languages.value = "";
   education.value = "";
   Responsbiliti.value = "";
-
+document.getElementById("cvPhoto").src = "";
+document.getElementById("photo").value = "";
   document.getElementById("workContainer").innerHTML = "";
   document.getElementById("cvPhoto").src = "";
 
