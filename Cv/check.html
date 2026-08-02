@@ -611,9 +611,7 @@ alert("CV Saved Successfully ✅");
   editId = null;
 }
         
-        window.onload = function(){
-  loadList();
-};
+        
         
         
         </script>
@@ -1160,12 +1158,17 @@ function autoSaveDraft(){
     }));
 }
 
-window.addEventListener("load", ()=>{
+window.addEventListener("load", function(){
+
+    loadList();
+
     let draft = JSON.parse(localStorage.getItem("draftCV") || "{}");
-    if(draft.name) document.getElementById("name").value = draft.name;
-    if(draft.phone) document.getElementById("phone").value = draft.phone;
-    if(draft.location) document.getElementById("location").value = draft.location;
-    if(draft.summary) document.getElementById("summary").value = draft.summary;
+
+    if(draft.name) name.value = draft.name;
+    if(draft.phone) phone.value = draft.phone;
+    if(draft.location) location.value = draft.location;
+    if(draft.summary) summary.value = draft.summary;
+
 });
 </script>
 </html>
