@@ -1089,5 +1089,27 @@ Return JSON only like:
 
   alert("AI Content Generated ✅");
 }
+
+// 👇 यहीँबाट Auto Save कोड राख
+document.querySelectorAll("input, textarea, select").forEach(el=>{
+    el.addEventListener("input", autoSaveDraft);
+});
+
+function autoSaveDraft(){
+    localStorage.setItem("draftCV", JSON.stringify({
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        location: document.getElementById("location").value,
+        summary: document.getElementById("summary").value
+    }));
+}
+
+window.addEventListener("load", ()=>{
+    let draft = JSON.parse(localStorage.getItem("draftCV") || "{}");
+    if(draft.name) document.getElementById("name").value = draft.name;
+    if(draft.phone) document.getElementById("phone").value = draft.phone;
+    if(draft.location) document.getElementById("location").value = draft.location;
+    if(draft.summary) document.getElementById("summary").value = draft.summary;
+});
 </script>
 </html>
