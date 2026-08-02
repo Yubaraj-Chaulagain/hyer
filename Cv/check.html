@@ -1,6 +1,8 @@
 <!DOCTYPE html><html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta id="viewportMeta"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <title>Pro CV Builder Advanced</title><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><style>.photoWrap{ width:120px; height:120px; overflow:hidden; border-radius:10px; position:relative; border:2px solid #fff; touch-action:none; margin:auto; }
 .cv{
@@ -121,6 +123,9 @@ box-shadow:0 10px 30px rgba(0,0,0,0.15);
 }
 </style></head><body><div class="form">
 <h2>Fill CV Details</h2>
+<button type="button" onclick="toggleDisplayZoom()">
+    Enable / Disable Display Zoom
+</button>
 <Input Type="Number" Placeholder="Entry Amount" required>
 <input type="file" id="photo" Required><input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1">
 <h3>Basic Info</h3>
@@ -1170,5 +1175,36 @@ window.addEventListener("load", function(){
     if(draft.summary) summary.value = draft.summary;
 
 });
+let displayZoomEnabled = false;
+
+function toggleDisplayZoom(){
+
+    const viewport = document.getElementById("viewportMeta");
+
+    if(displayZoomEnabled){
+
+        // Zoom OFF
+        viewport.setAttribute(
+            "content",
+            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        );
+
+        displayZoomEnabled = false;
+        alert("Display Zoom Disabled");
+
+    }else{
+
+        // Zoom ON
+        viewport.setAttribute(
+            "content",
+            "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+        );
+
+        displayZoomEnabled = true;
+        alert("Display Zoom Enabled");
+
+    }
+
+}
 </script>
 </html>
