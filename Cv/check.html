@@ -584,11 +584,8 @@ editId = null;
 alert("CV Saved Successfully ✅");
 
 }catch(err){
-
     console.error(err);
-
-    alert("Save Failed!\nDraft is still available.");
-
+    alert(err.message);
 }
 
 }
