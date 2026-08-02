@@ -481,71 +481,6 @@ document.getElementById("Responsbiliti").value = d.Responsbiliti;
   editId = id;
   alert("Editing Mode ✏️");
 }
-function saveOffline(){
-
-try{
-
-let all;
-
-try{
-    all = JSON.parse(localStorage.getItem("cvData") || "[]");
-}catch(e){
-    all = [];
-}
-
-// ===== Collect Work Data =====
-let works = [];
-
-for(let i=1;i<=workCount;i++){
-
-    let job = document.getElementById("job"+i)?.value || "";
-    let company = document.getElementById("company"+i)?.value || "";
-    let start = document.getElementById("start"+i)?.value || "";
-    let end = document.getElementById("end"+i)?.value || "";
-    let address = document.getElementById("address"+i)?.value || "";
-    let desc = document.getElementById("desc"+i)?.value || "";
-
-    if(job || company){
-
-        works.push({
-            job,
-            company,
-            start,
-            end,
-            address,
-            desc
-        });
-
-    }
-
-}
-
-// ===== Photo =====
-let photoData = document.getElementById("cvPhoto").src || "";
-
-// ===== Create Object =====
-let newData = {
-
-    id: editId || Date.now(),
-
-    name: document.getElementById("name").value,
-    location: document.getElementById("location").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    dob: document.getElementById("dob").value,
-    gender: document.getElementById("gender").value,
-    nationality: document.getElementById("nationality").value,
-
-    summary: document.getElementById("summary").value,
-    skills: document.getElementById("skills").value,
-    languages: document.getElementById("languages").value,
-    education: document.getElementById("education").value,
-    Responsbiliti: document.getElementById("Responsbiliti").value,
-
-    works: works,
-    photo: photoData
-
-};
 
 function saveOffline(){
 
@@ -611,8 +546,7 @@ let newData = {
     works: works,
     photo: photoData
 
-};
-// ===== Update or New Save =====
+};// ===== Update or New Save =====
 if(editId){
 
     all = all.map(item =>
@@ -652,7 +586,6 @@ alert("CV Saved Successfully ✅");
 }
 
 }
-
 
   
         
