@@ -481,58 +481,180 @@ document.getElementById("Responsbiliti").value = d.Responsbiliti;
   editId = id;
   alert("Editing Mode ✏️");
 }
-  function saveOffline(){
-  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
+function saveOffline(){
 
-  // ✅ collect WORK DATA
-  let works = [];
-  for(let i=1;i<=workCount;i++){
-    let job = document.getElementById('job'+i)?.value || "";
-    let company = document.getElementById('company'+i)?.value || "";
-    let start = document.getElementById('start'+i)?.value || "";
-    let end = document.getElementById('end'+i)?.value || "";
-    let address = document.getElementById('address'+i)?.value || "";
-    let desc = document.getElementById('desc'+i)?.value || "";
+try{
+
+let all;
+
+try{
+    all = JSON.parse(localStorage.getItem("cvData") || "[]");
+}catch(e){
+    all = [];
+}
+
+// ===== Collect Work Data =====
+let works = [];
+
+for(let i=1;i<=workCount;i++){
+
+    let job = document.getElementById("job"+i)?.value || "";
+    let company = document.getElementById("company"+i)?.value || "";
+    let start = document.getElementById("start"+i)?.value || "";
+    let end = document.getElementById("end"+i)?.value || "";
+    let address = document.getElementById("address"+i)?.value || "";
+    let desc = document.getElementById("desc"+i)?.value || "";
 
     if(job || company){
-      works.push({job, company, start, end, address, desc});
+
+        works.push({
+            job,
+            company,
+            start,
+            end,
+            address,
+            desc
+        });
+
     }
-  }
 
-  // ✅ photo (base64)
-  let photoData = document.getElementById("cvPhoto").src || "";
+}
 
-  let newData = {
-  id: editId || Date.now(),
-  name: document.getElementById("name").value,
-  location: document.getElementById("location").value,
-  phone: document.getElementById("phone").value,
-  email: document.getElementById("email").value,
-  dob: document.getElementById("dob").value,
-  gender: document.getElementById("gender").value,
-  nationality: document.getElementById("nationality").value,
-  summary: document.getElementById("summary").value,
-  skills: document.getElementById("skills").value,
-  languages: document.getElementById("languages").value,
-  education: document.getElementById("education").value,
-  Responsbiliti: document.getElementById("Responsbiliti").value,
-  works: works,
-  photo: photoData
+// ===== Photo =====
+let photoData = document.getElementById("cvPhoto").src || "";
+
+// ===== Create Object =====
+let newData = {
+
+    id: editId || Date.now(),
+
+    name: document.getElementById("name").value,
+    location: document.getElementById("location").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    dob: document.getElementById("dob").value,
+    gender: document.getElementById("gender").value,
+    nationality: document.getElementById("nationality").value,
+
+    summary: document.getElementById("summary").value,
+    skills: document.getElementById("skills").value,
+    languages: document.getElementById("languages").value,
+    education: document.getElementById("education").value,
+    Responsbiliti: document.getElementById("Responsbiliti").value,
+
+    works: works,
+    photo: photoData
+
 };
 
-  if(editId){
-    all = all.map(d => d.id === editId ? newData : d);
-  } else {
-    all.push(newData);
-  }
+function saveOffline(){
 
-  localStorage.setItem("cvData", JSON.stringify(all));
+try{
 
-  clearForm();
-  loadList();
+let all;
 
-  alert(editId ? "Updated ✅" : "Saved ✅");
+try{
+    all = JSON.parse(localStorage.getItem("cvData") || "[]");
+}catch(e){
+    all = [];
 }
+
+// ===== Collect Work Data =====
+let works = [];
+
+for(let i=1;i<=workCount;i++){
+
+    let job = document.getElementById("job"+i)?.value || "";
+    let company = document.getElementById("company"+i)?.value || "";
+    let start = document.getElementById("start"+i)?.value || "";
+    let end = document.getElementById("end"+i)?.value || "";
+    let address = document.getElementById("address"+i)?.value || "";
+    let desc = document.getElementById("desc"+i)?.value || "";
+
+    if(job || company){
+
+        works.push({
+            job,
+            company,
+            start,
+            end,
+            address,
+            desc
+        });
+
+    }
+
+}
+
+// ===== Photo =====
+let photoData = document.getElementById("cvPhoto").src || "";
+
+// ===== Create Object =====
+let newData = {
+
+    id: editId || Date.now(),
+
+    name: document.getElementById("name").value,
+    location: document.getElementById("location").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    dob: document.getElementById("dob").value,
+    gender: document.getElementById("gender").value,
+    nationality: document.getElementById("nationality").value,
+
+    summary: document.getElementById("summary").value,
+    skills: document.getElementById("skills").value,
+    languages: document.getElementById("languages").value,
+    education: document.getElementById("education").value,
+    Responsbiliti: document.getElementById("Responsbiliti").value,
+
+    works: works,
+    photo: photoData
+
+};
+// ===== Update or New Save =====
+if(editId){
+
+    all = all.map(item =>
+        item.id === editId ? newData : item
+    );
+
+}else{
+
+    all.push(newData);
+
+}
+
+// ===== Permanent Save =====
+localStorage.setItem("cvData", JSON.stringify(all));
+
+// ===== Draft हटाउने (Save सफल भएपछि मात्र) =====
+localStorage.removeItem("cvDraft");
+
+// ===== Form Reset =====
+clearForm();
+
+// ===== Reload Saved List =====
+loadList();
+
+// ===== Reset Edit Mode =====
+editId = null;
+
+// ===== Success =====
+alert("CV Saved Successfully ✅");
+
+}catch(err){
+
+    console.error(err);
+
+    alert("Save Failed!\nDraft is still available.");
+
+}
+
+}
+
+
+  
         
    function clearForm(){
   name.value = "";
