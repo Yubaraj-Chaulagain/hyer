@@ -403,104 +403,207 @@ pdf.save(fileName + ".pdf");
 }
 
         async function syncToSheet(){
-  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
 
-  for(let data of all){
-    await fetch("YOUR_WEB_APP_URL", {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-  }
+if(!db){
+    alert("Database not ready.");
+    return;
+}
 
-  localStorage.removeItem("cvData");
-  alert("Synced to Google Sheets 🚀");
+let tx = db.transaction("cvData","readonly");
+let store = tx.objectStore("cvData");
+
+let request = store.getAll();
+
+request.onsuccess = async function(){
+
+    let all = request.result;
+
+    if(all.length === 0){
+        alert("No Data Found");
+        return;
+    }
+
+    for(const data of all){
+
+        await fetch("YOUR_WEB_APP_URL",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(data)
+        });
+
+    }
+
+    alert("All CV Synced Successfully ✅");
+
+};
+
+request.onerror = function(){
+
+    alert("Failed to Read Database");
+
+};
+
 }
 
 
         function loadList(){
-console.log(localStorage.getItem("cvData"));
-  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
-  let html = "";
 
-  all.forEach(d => {
-    html += `
-      <div class="workBox">
-        <b>${d.name}</b><br>
-        ${d.phone}<br><br>
+if(!db) return;
 
-        <button onclick="editData(${d.id})">Edit</button>
-        <button onclick="deleteData(${d.id})">Delete</button>
-      </div>
-    `;
-  });
+let tx = db.transaction("cvData","readonly");
+let store = tx.objectStore("cvData");
 
-  document.getElementById("dataList").innerHTML = html;
+let request = store.getAll();
+
+request.onsuccess = function(){
+
+    let all = request.result;
+
+    let html = "";
+
+    all.sort((a,b)=>b.id-a.id);
+
+    all.forEach(d=>{
+
+        html += `
+        <div class="workBox">
+
+            <b>${d.name}</b><br>
+
+            ${d.phone}<br>
+
+            ${d.location}<br><br>
+
+            <button onclick="editData(${d.id})">
+            Edit
+            </button>
+
+            <button onclick="deleteData(${d.id})">
+            Delete
+            </button>
+
+        </div>
+        `;
+
+    });
+
+    document.getElementById("dataList").innerHTML = html;
+
+};
+
+request.onerror = function(){
+
+    alert("Failed to Load Data");
+
+};
+
 }
 function deleteData(id){
-  if(!confirm("Delete this CV?")) return;
 
-  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
-  all = all.filter(d => d.id !== id);
+if(!confirm("Delete this CV?")) return;
 
-  localStorage.setItem("cvData", JSON.stringify(all));
-  loadList();
+if(!db) return;
+
+let tx = db.transaction("cvData","readwrite");
+let store = tx.objectStore("cvData");
+
+let request = store.delete(id);
+
+request.onsuccess = function(){
+
+    alert("Deleted Successfully ✅");
+
+    loadList();
+
+};
+
+request.onerror = function(){
+
+    alert("Delete Failed ❌");
+
+};
+
+}
+   
+function editData(id){
+
+if(!db) return;
+
+let tx = db.transaction("cvData","readonly");
+let store = tx.objectStore("cvData");
+
+let request = store.get(id);
+
+request.onsuccess = function(){
+
+let d = request.result;
+
+if(!d){
+alert("Data not found");
+return;
 }
 
-let editId = null; // ✅ ADD THIS        
-function editData(id){
-  let all = JSON.parse(localStorage.getItem("cvData") || "[]");
-  let d = all.find(x => x.id === id);
-  if(!d) return;
+document.getElementById("name").value = d.name || "";
+document.getElementById("location").value = d.location || "";
+document.getElementById("phone").value = d.phone || "";
+document.getElementById("email").value = d.email || "";
+document.getElementById("dob").value = d.dob || "";
+document.getElementById("gender").value = d.gender || "";
+document.getElementById("nationality").value = d.nationality || "";
+document.getElementById("summary").value = d.summary || "";
+document.getElementById("skills").value = d.skills || "";
+document.getElementById("languages").value = d.languages || "";
+document.getElementById("education").value = d.education || "";
+document.getElementById("Responsbiliti").value = d.Responsbiliti || "";
 
- document.getElementById("name").value = d.name;
-document.getElementById("location").value = d.location;
-document.getElementById("phone").value = d.phone;
-document.getElementById("email").value = d.email;
-document.getElementById("dob").value = d.dob;
-document.getElementById("gender").value = d.gender;
-document.getElementById("nationality").value = d.nationality;
-document.getElementById("summary").value = d.summary;
-document.getElementById("skills").value = d.skills;
-document.getElementById("languages").value = d.languages;
-document.getElementById("education").value = d.education;
-document.getElementById("Responsbiliti").value = d.Responsbiliti;
+document.getElementById("workContainer").innerHTML = "";
+workCount = 0;
 
-  // ✅ load WORKS
-  document.getElementById("workContainer").innerHTML = "";
-  workCount = 0;
+if(d.works){
 
-  d.works?.forEach(w => {
-    addWork();
-    document.getElementById('job'+workCount).value = w.job;
-    document.getElementById('company'+workCount).value = w.company;
-    document.getElementById('start'+workCount).value = w.start;
-    document.getElementById('end'+workCount).value = w.end;
-    document.getElementById('address'+workCount).value = w.address;
-    document.getElementById('desc'+workCount).value = w.desc;
-  });
+d.works.forEach(w=>{
 
-  // ✅ load PHOTO
-  if(d.photo){
-    document.getElementById("cvPhoto").src = d.photo;
-  }
+addWork();
 
-  editId = id;
-  alert("Editing Mode ✏️");
+document.getElementById("job"+workCount).value = w.job || "";
+document.getElementById("company"+workCount).value = w.company || "";
+document.getElementById("start"+workCount).value = w.start || "";
+document.getElementById("end"+workCount).value = w.end || "";
+document.getElementById("address"+workCount).value = w.address || "";
+document.getElementById("desc"+workCount).value = w.desc || "";
+
+});
+
+}
+
+if(d.photo){
+document.getElementById("cvPhoto").src = d.photo;
+}
+
+editId = id;
+
+alert("Editing Mode ✏️");
+
+};
+
+request.onerror = function(){
+
+alert("Failed to Load Record");
+
+};
+
 }
 
 function saveOffline(){
 
-try{
-
-let all;
-
-try{
-    all = JSON.parse(localStorage.getItem("cvData") || "[]");
-}catch(e){
-    all = [];
+if(!db){
+    alert("Database not ready. Please wait...");
+    return;
 }
 
-// ===== Collect Work Data =====
+// ===== Work History =====
 let works = [];
 
 for(let i=1;i<=workCount;i++){
@@ -513,7 +616,6 @@ for(let i=1;i<=workCount;i++){
     let desc = document.getElementById("desc"+i)?.value || "";
 
     if(job || company){
-
         works.push({
             job,
             company,
@@ -522,15 +624,9 @@ for(let i=1;i<=workCount;i++){
             address,
             desc
         });
-
     }
-
 }
 
-// ===== Photo =====
-let photoData = document.getElementById("cvPhoto").src || "";
-
-// ===== Create Object =====
 let newData = {
 
     id: editId || Date.now(),
@@ -550,47 +646,34 @@ let newData = {
     Responsbiliti: document.getElementById("Responsbiliti").value,
 
     works: works,
-    photo: photoData
 
-};// ===== Update or New Save =====
-if(editId){
+    // Photo पनि IndexedDB मा सुरक्षित हुन्छ
+    photo: document.getElementById("cvPhoto").src || ""
 
-    all = all.map(item =>
-        item.id === editId ? newData : item
-    );
+};
 
-}else{
+let tx = db.transaction("cvData","readwrite");
+let store = tx.objectStore("cvData");
 
-    all.push(newData);
+store.put(newData);
 
-}
+tx.oncomplete = function(){
 
-// ===== Permanent Save =====
-localStorage.setItem("cvData", JSON.stringify(all));
+    clearForm();
+    editId = null;
+    loadList();
 
-// ===== Draft हटाउने (Save सफल भएपछि मात्र) =====
-localStorage.removeItem("draftCV");
+    alert("CV Saved Successfully ✅");
 
-// ===== Form Reset =====
-clearForm();
+};
 
-// ===== Reload Saved List =====
-loadList();
+tx.onerror = function(){
 
-// ===== Reset Edit Mode =====
-editId = null;
+    alert("Save Failed!");
 
-// ===== Success =====
-alert("CV Saved Successfully ✅");
-
-}catch(err){
-    console.error(err);
-    alert(err.message);
-}
+};
 
 }
-
-  
         
    function clearForm(){
   name.value = "";
@@ -1162,17 +1245,16 @@ function autoSaveDraft(){
 
 window.addEventListener("load", function(){
 
-    loadList();
+    openDB();
 
     let draft = JSON.parse(localStorage.getItem("draftCV") || "{}");
 
-    if(draft.name) name.value = draft.name;
-    if(draft.phone) phone.value = draft.phone;
-    if(draft.location) location.value = draft.location;
-    if(draft.summary) summary.value = draft.summary;
+    if(draft.name) document.getElementById("name").value = draft.name;
+    if(draft.phone) document.getElementById("phone").value = draft.phone;
+    if(draft.location) document.getElementById("location").value = draft.location;
+    if(draft.summary) document.getElementById("summary").value = draft.summary;
 
 });
-let displayZoomEnabled = false;
 
 function toggleDisplayZoom(){
 
@@ -1203,5 +1285,31 @@ function toggleDisplayZoom(){
     }
 
 }
+// ==========================
+// IndexedDB Setup
+// ==========================
+let db;
+
+const request = indexedDB.open("CVDatabase", 1);
+
+request.onupgradeneeded = function(e){
+    db = e.target.result;
+
+    if(!db.objectStoreNames.contains("cvData")){
+        db.createObjectStore("cvData", {
+            keyPath: "id"
+        });
+    }
+};
+
+request.onsuccess = function(e){
+    db = e.target.result;
+    console.log("IndexedDB Ready");
+    loadList();
+};
+
+request.onerror = function(e){
+    console.log("Database Error", e);
+};
 </script>
 </html>
