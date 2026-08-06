@@ -1,177 +1,479 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>yubaraj Passport Photo Maker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<script type="module">
-import { removeBackground } from 
-"https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm";
-
-window.removeBG = removeBackground;
-window.aiReady = true;
-</script>
+<title>AI Passport Photo Maker</title>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
 body{
-    font-family:Arial;
-    text-align:center;
+background:#f5f5f5;
+padding:15px;
 }
 
-#preview{
-    width:350px;
-    height:450px;
-    object-fit:cover;
-    background:white;
-    border:1px solid #999;
+.container{
+
+max-width:500px;
+margin:auto;
+background:#fff;
+padding:15px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.15);
+
 }
 
-button{
-    padding:10px 20px;
-    margin:10px;
+h2{
+
+text-align:center;
+margin-bottom:15px;
+
+}
+
+input[type=file]{
+
+width:100%;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
+
+}
+
+.btn{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+background:#0066ff;
+color:#fff;
+font-size:16px;
+cursor:pointer;
+
+}
+
+.btn:hover{
+
+background:#004dcc;
+
+}
+
+.controls{
+
+display:flex;
+gap:8px;
+margin-top:10px;
+
+}
+
+.controls button{
+
+flex:1;
+padding:10px;
+font-size:18px;
+
+}
+
+.preview{
+
+margin-top:15px;
+display:flex;
+justify-content:center;
+
 }
 
 canvas{
-    display:none;
+
+width:245px;
+height:315px;
+background:#fff;
+border:2px solid #444;
+touch-action:none;
+
 }
+
+#status{
+
+margin-top:10px;
+text-align:center;
+color:#006600;
+font-weight:bold;
+
+}
+
 </style>
 
 </head>
 
 <body>
 
-<h2>AI Passport Photo Maker</h2>
+<div class="container">
 
-<input type="file" id="file" accept="image/*">
+<h2>Passport Photo Maker</h2>
 
-<br>
+<input
+type="file"
+id="photo"
+accept="image/*">
 
-<button onclick="processPhoto()">
+<button
+class="btn"
+onclick="removeBackground()">
+
 Remove Background
+
 </button>
 
-<br>
+<div class="controls">
 
-<img id="preview">
+<button onclick="zoomIn()">
++
+</button>
 
-<br>
+<button onclick="zoomOut()">
+−
+</button>
 
-<button onclick="downloadPhoto()">
+<button onclick="rotateLeft()">
+⟲
+</button>
+
+<button onclick="rotateRight()">
+⟳
+</button>
+
+</div>
+
+<div class="preview">
+
+<canvas
+id="canvas"
+width="413"
+height="531">
+</canvas>
+
+</div>
+
+<div id="status">
+
+Select Photo
+
+</div>
+
+<button
+class="btn"
+onclick="downloadPhoto()">
+
 Download Passport Photo
+
 </button>
 
-
-<canvas id="canvas" width="413" height="531"></canvas>
-
-
+</div>
 <script>
 
-let finalImage="";
+let canvas=document.getElementById("canvas");
+let ctx=canvas.getContext("2d");
 
-async function processPhoto(){
+let img=new Image();
 
-    if(!window.removeBG){
-        alert("AI model loading... Please wait");
-        return;
-    }
+let scale=1;
+let rotation=0;
+let posX=0;
+let posY=0;
 
-    let file = document.getElementById("file").files[0];
+let dragging=false;
+let startX=0;
+let startY=0;
 
-    if(!file){
-        alert("Select Photo");
-        return;
-    }
+function drawImage(){
 
-    try {
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-        // Remove background using AI
-        let result = await window.removeBG(file);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
 
-        let img = new Image();
+if(!img.src)return;
 
-        img.onload = function(){
+ctx.save();
 
-            let canvas = document.getElementById("canvas");
-            let ctx = canvas.getContext("2d");
+ctx.translate(canvas.width/2+posX,canvas.height/2+posY);
 
-            // Clear canvas
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
+ctx.rotate(rotation*Math.PI/180);
 
+ctx.scale(scale,scale);
 
-            // White passport background
-            ctx.fillStyle = "white";
-            ctx.fillRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
+let w=img.width;
+let h=img.height;
 
+let fit=Math.min(canvas.width/w,canvas.height/h);
 
-            // Passport photo fit
-            let scale = Math.min(
-                canvas.width / img.width,
-                canvas.height / img.height
-            );
+ctx.drawImage(
+img,
+-w*fit/2,
+-h*fit/2,
+w*fit,
+h*fit
+);
 
-
-            let w = img.width * scale;
-            let h = img.height * scale;
-
-
-            // Center position
-            let x = (canvas.width - w) / 2;
-            let y = (canvas.height - h) / 2;
-
-
-            ctx.drawImage(
-                img,
-                x,
-                y,
-                w,
-                h
-            );
-
-
-            // Save final image
-            finalImage = canvas.toDataURL(
-                "image/jpeg",
-                0.95
-            );
-
-
-            document.getElementById("preview").src =
-            finalImage;
-
-        };
-
-
-        img.src = URL.createObjectURL(result);
-
-
-    } catch(error){
-
-        console.error(error);
-        alert("Background remove failed. Try another photo.");
-
-    }
+ctx.restore();
 
 }
+
+async function removeBackground(){
+
+let file=document.getElementById("photo").files[0];
+
+if(!file){
+alert("Select Photo");
+return;
+}
+
+document.getElementById("status").innerHTML="Removing Background...";
+
+let fd=new FormData();
+fd.append("image",file);
+
+try{
+
+const res=await fetch(
+"https://clearbackdrop.com/api/v1/remove-background",
+{
+method:"POST",
+body:fd
+});
+
+if(!res.ok){
+throw new Error(await res.text());
+}
+
+const blob=await res.blob();
+
+img.onload=function(){
+
+scale=1;
+rotation=0;
+posX=0;
+posY=0;
+
+drawImage();
+
+document.getElementById("status").innerHTML="Done";
+
+};
+
+img.src=URL.createObjectURL(blob);
+
+}catch(err){
+
+console.error(err);
+
+document.getElementById("status").innerHTML="Failed";
+
+alert(err.message);
+
+}
+
+}
+
+function zoomIn(){
+
+scale+=0.05;
+drawImage();
+
+}
+
+function zoomOut(){
+
+scale=Math.max(0.2,scale-0.05);
+drawImage();
+
+}
+
+function rotateLeft(){
+
+rotation-=5;
+drawImage();
+
+}
+
+function rotateRight(){
+
+rotation+=5;
+drawImage();
+
+}
+
+canvas.addEventListener("mousedown",e=>{
+
+dragging=true;
+
+startX=e.offsetX-posX;
+startY=e.offsetY-posY;
+
+});
+
+canvas.addEventListener("mousemove",e=>{
+
+if(!dragging)return;
+
+posX=e.offsetX-startX;
+posY=e.offsetY-startY;
+
+drawImage();
+
+});
+
+canvas.addEventListener("mouseup",()=>{
+
+dragging=false;
+
+});
+
+canvas.addEventListener("mouseleave",()=>{
+
+dragging=false;
+
+});
+
+canvas.addEventListener("touchstart",e=>{
+
+dragging=true;
+
+let t=e.touches[0];
+
+let rect=canvas.getBoundingClientRect();
+
+startX=t.clientX-rect.left-posX;
+startY=t.clientY-rect.top-posY;
+
+});
+
+canvas.addEventListener("touchmove",e=>{
+
+if(!dragging)return;
+
+e.preventDefault();
+
+let t=e.touches[0];
+
+let rect=canvas.getBoundingClientRect();
+
+posX=t.clientX-rect.left-startX;
+posY=t.clientY-rect.top-startY;
+
+drawImage();
+
+});
+
+canvas.addEventListener("touchend",()=>{
+
+dragging=false;
+
+});
+
+</script>
+<script>
+
 function downloadPhoto(){
 
-let a=document.createElement("a");
+    let out=document.createElement("canvas");
+    out.width=413;
+    out.height=531;
 
-a.href=finalImage;
+    let octx=out.getContext("2d");
 
-a.download="passport_photo.jpg";
+    // White background
+    octx.fillStyle="#ffffff";
+    octx.fillRect(0,0,out.width,out.height);
 
-a.click();
+    // Draw edited image
+    octx.save();
+
+    octx.translate(
+        out.width/2+posX,
+        out.height/2+posY
+    );
+
+    octx.rotate(
+        rotation*Math.PI/180
+    );
+
+    octx.scale(
+        scale,
+        scale
+    );
+
+    let fit=Math.min(
+        out.width/img.width,
+        out.height/img.height
+    );
+
+    octx.drawImage(
+        img,
+        -img.width*fit/2,
+        -img.height*fit/2,
+        img.width*fit,
+        img.height*fit
+    );
+
+    octx.restore();
+
+    // JPG download
+    let link=document.createElement("a");
+
+    link.download="passport_photo.jpg";
+
+    link.href=out.toDataURL(
+        "image/jpeg",
+        1.0
+    );
+
+    link.click();
 
 }
+
+// Mouse wheel zoom
+canvas.addEventListener("wheel",function(e){
+
+    e.preventDefault();
+
+    if(e.deltaY<0){
+
+        scale+=0.05;
+
+    }else{
+
+        scale=Math.max(
+            0.2,
+            scale-0.05
+        );
+
+    }
+
+    drawImage();
+
+});
+
+// Double click reset
+canvas.addEventListener("dblclick",function(){
+
+    scale=1;
+    rotation=0;
+    posX=0;
+    posY=0;
+
+    drawImage();
+
+});
 
 </script>
 
