@@ -8,6 +8,7 @@ import { removeBackground } from
 "https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm";
 
 window.removeBG = removeBackground;
+window.aiReady = true;
 </script>
 
 <style>
@@ -68,74 +69,98 @@ let finalImage="";
 
 async function processPhoto(){
 
-let file=document.getElementById("file").files[0];
+    if(!window.removeBG){
+        alert("AI model loading... Please wait");
+        return;
+    }
 
-if(!file){
-alert("Select Photo");
-return;
+    let file = document.getElementById("file").files[0];
+
+    if(!file){
+        alert("Select Photo");
+        return;
+    }
+
+    try {
+
+        // Remove background using AI
+        let result = await window.removeBG(file);
+
+        let img = new Image();
+
+        img.onload = function(){
+
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext("2d");
+
+            // Clear canvas
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            // White passport background
+            ctx.fillStyle = "white";
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            // Passport photo fit
+            let scale = Math.min(
+                canvas.width / img.width,
+                canvas.height / img.height
+            );
+
+
+            let w = img.width * scale;
+            let h = img.height * scale;
+
+
+            // Center position
+            let x = (canvas.width - w) / 2;
+            let y = (canvas.height - h) / 2;
+
+
+            ctx.drawImage(
+                img,
+                x,
+                y,
+                w,
+                h
+            );
+
+
+            // Save final image
+            finalImage = canvas.toDataURL(
+                "image/jpeg",
+                0.95
+            );
+
+
+            document.getElementById("preview").src =
+            finalImage;
+
+        };
+
+
+        img.src = URL.createObjectURL(result);
+
+
+    } catch(error){
+
+        console.error(error);
+        alert("Background remove failed. Try another photo.");
+
+    }
+
 }
-
-
-let result = await window.removeBG(file);
-
-
-// Create image
-let img=new Image();
-
-img.onload=function(){
-
-let canvas=document.getElementById("canvas");
-let ctx=canvas.getContext("2d");
-
-
-// White background
-ctx.fillStyle="white";
-ctx.fillRect(
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-
-// Fit person image
-
-let scale=Math.max(
-canvas.width/img.width,
-canvas.height/img.height
-);
-
-let w=img.width*scale;
-let h=img.height*scale;
-
-
-ctx.drawImage(
-img,
-(canvas.width-w)/2,
-(canvas.height-h)/2,
-w,
-h
-);
-
-
-finalImage=canvas.toDataURL(
-"image/jpeg",
-0.95
-);
-
-
-document.getElementById("preview").src=
-finalImage;
-
-};
-
-
-img.src=URL.createObjectURL(result);
-
-}
-
-
-
 function downloadPhoto(){
 
 let a=document.createElement("a");
