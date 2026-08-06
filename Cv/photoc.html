@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Passport Photo Maker</title>
+
+<script type="module">
+import { removeBackground } from 
+"https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm";
+
+window.removeBG = removeBackground;
+</script>
+
+<style>
+body{
+    font-family:Arial;
+    text-align:center;
+}
+
+#preview{
+    width:350px;
+    height:450px;
+    object-fit:cover;
+    background:white;
+    border:1px solid #999;
+}
+
+button{
+    padding:10px 20px;
+    margin:10px;
+}
+
+canvas{
+    display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>AI Passport Photo Maker</h2>
+
+<input type="file" id="file" accept="image/*">
+
+<br>
+
+<button onclick="processPhoto()">
+Remove Background
+</button>
+
+<br>
+
+<img id="preview">
+
+<br>
+
+<button onclick="downloadPhoto()">
+Download Passport Photo
+</button>
+
+
+<canvas id="canvas" width="413" height="531"></canvas>
+
+
+<script>
+
+let finalImage="";
+
+async function processPhoto(){
+
+let file=document.getElementById("file").files[0];
+
+if(!file){
+alert("Select Photo");
+return;
+}
+
+
+let result = await window.removeBG(file);
+
+
+// Create image
+let img=new Image();
+
+img.onload=function(){
+
+let canvas=document.getElementById("canvas");
+let ctx=canvas.getContext("2d");
+
+
+// White background
+ctx.fillStyle="white";
+ctx.fillRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+// Fit person image
+
+let scale=Math.max(
+canvas.width/img.width,
+canvas.height/img.height
+);
+
+let w=img.width*scale;
+let h=img.height*scale;
+
+
+ctx.drawImage(
+img,
+(canvas.width-w)/2,
+(canvas.height-h)/2,
+w,
+h
+);
+
+
+finalImage=canvas.toDataURL(
+"image/jpeg",
+0.95
+);
+
+
+document.getElementById("preview").src=
+finalImage;
+
+};
+
+
+img.src=URL.createObjectURL(result);
+
+}
+
+
+
+function downloadPhoto(){
+
+let a=document.createElement("a");
+
+a.href=finalImage;
+
+a.download="passport_photo.jpg";
+
+a.click();
+
+}
+
+</script>
+
+</body>
+</html>
