@@ -1799,11 +1799,6 @@ async function syncToSheet(){
 
     let all = [];
 
-
-    /* =========================
-       GET LOCAL DATA
-    ========================= */
-
     try{
 
         all =
@@ -1820,24 +1815,7 @@ async function syncToSheet(){
     }
 
 
-    /* =========================
-       IF LOCAL EMPTY, GET DB
-    ========================= */
-
-    if(
-        all.length === 0 &&
-        db
-    ){
-
-        all =
-            await getAllFromIndexedDB();
-
-    }
-
-
-    if(
-        all.length === 0
-    ){
+    if(all.length === 0){
 
         alert(
             "No Offline CV Found."
@@ -1849,51 +1827,48 @@ async function syncToSheet(){
 
 
     setStatus(
-        "Google Sheet Sync हुँदैछ..."
+        "Syncing Offline CVs to Google Sheet..."
     );
 
 
     let successCount = 0;
-
     let failedCount = 0;
 
 
-    for(
-        const data of all
-    ){
+    for(const data of all){
 
         try{
 
             const payload = {
 
-                action:"save",
+                action: "save",
 
-                id:data.id,
+                id: data.id,
 
-                name:data.name,
+                name: data.name,
 
-                location:data.location,
+                location: data.location,
 
-                phone:data.phone,
+                phone: data.phone,
 
-                email:data.email,
+                email: data.email,
 
-                dob:data.dob,
+                dob: data.dob,
 
-                gender:data.gender,
+                gender: data.gender,
 
-                nationality:data.nationality,
+                nationality: data.nationality,
 
-                summary:data.summary,
+                summary: data.summary,
 
-                skills:data.skills,
+                skills: data.skills,
 
-                languages:data.languages,
+                languages: data.languages,
 
-                education:data.education,
+                education: data.education,
 
                 Responsbiliti:
-                    data.Responsbiliti,
+                    data.Responsbiliti || "",
 
                 works:
                     data.works || []
@@ -1905,9 +1880,9 @@ async function syncToSheet(){
                 await fetch(
                     WEB_APP_URL,
                     {
-                        method:"POST",
+                        method: "POST",
 
-                        headers:{
+                        headers: {
                             "Content-Type":
                                 "application/json"
                         },
@@ -1924,25 +1899,22 @@ async function syncToSheet(){
                 await response.json();
 
 
-            if(
-                result.success
-            ){
+            console.log(
+                "Sync Result:",
+                result
+            );
+
+
+            if(result.success){
 
                 successCount++;
 
-
-                data.synced =
-                    true;
-
+                data.synced = true;
 
                 data.syncDate =
-                    new Date()
-                    .toISOString();
+                    new Date().toISOString();
 
-
-                updateLocalData(
-                    data
-                );
+                updateLocalData(data);
 
             }else{
 
@@ -1953,7 +1925,7 @@ async function syncToSheet(){
         }catch(error){
 
             console.error(
-                "Sync Error:",
+                "Sync error:",
                 error
             );
 
@@ -1968,7 +1940,7 @@ async function syncToSheet(){
 
 
     setStatus(
-        "Sync complete: " +
+        "Sync completed: " +
         successCount +
         " success, " +
         failedCount +
@@ -1984,11 +1956,12 @@ async function syncToSheet(){
     );
 
 
-    loadGoogleList();
+    /* IMPORTANT:
+       Google list is separate */
+
+    await loadGoogleList();
 
 }
-
-
 /* =====================================================
    GET ALL INDEXED DB
 ===================================================== */
@@ -2141,7 +2114,11 @@ async function loadGoogleList(){
         const response =
             await fetch(
                 WEB_APP_URL +
-                "?action=list"
+                "?action=list&t=" +
+                Date.now(),
+                {
+                    cache: "no-store"
+                }
             );
 
 
@@ -2149,12 +2126,19 @@ async function loadGoogleList(){
             await response.json();
 
 
-        if(
-            !result.success
-        ){
+        console.log(
+            "GOOGLE LIST:",
+            result
+        );
+
+
+        if(!result.success){
 
             box.innerHTML =
-                "Google Sheet load failed.";
+                "Google Sheet error: " +
+                escapeHTML(
+                    result.message || ""
+                );
 
             return;
 
@@ -2162,12 +2146,12 @@ async function loadGoogleList(){
 
 
         const all =
-            result.data || [];
+            Array.isArray(result.data)
+                ? result.data
+                : [];
 
 
-        if(
-            all.length === 0
-        ){
+        if(all.length === 0){
 
             box.innerHTML =
                 "No CV Found in Google Sheet.";
@@ -2180,65 +2164,65 @@ async function loadGoogleList(){
         let html = "";
 
 
-        all.forEach(
-            function(d){
+        all.forEach(function(d){
 
-                html += `
+            const id =
+                String(d.id || "");
 
-                    <div class="workBox">
 
-                        <b>
-                            ${escapeHTML(
-                                d.name
-                            )}
-                        </b>
+            html += `
 
-                        <br>
+                <div class="workBox">
 
+                    <b>
                         ${escapeHTML(
-                            d.phone
+                            d.name || "Unnamed CV"
                         )}
+                    </b>
 
-                        <br>
+                    <br>
 
-                        ${escapeHTML(
-                            d.location
-                        )}
+                    ${escapeHTML(
+                        d.phone || ""
+                    )}
 
-                        <br>
+                    <br>
 
-                        <small>
-                            Google ID:
-                            ${escapeHTML(
-                                d.id
-                            )}
-                        </small>
+                    ${escapeHTML(
+                        d.location || ""
+                    )}
 
-                        <br><br>
+                    <br>
 
-                        <button
-                            type="button"
-                            onclick="editGoogleCV('${d.id}')">
+                    <small>
+                        Google ID:
+                        ${escapeHTML(id)}
+                    </small>
 
-                            Edit
+                    <br><br>
 
-                        </button>
+                    <button
+                        type="button"
+                        onclick="editGoogleCV('${id}')">
 
-                        <button
-                            type="button"
-                            style="background:#dc2626;"
-                            onclick="deleteGoogleCV('${d.id}')">
+                        Edit
 
-                            Delete
+                    </button>
 
-                        </button>
+                    <button
+                        type="button"
+                        style="background:#dc2626;"
+                        onclick="deleteGoogleCV('${id}')">
 
-                    </div>
+                        Delete
 
-                `;
+                    </button>
 
-            }
-        );
+                </div>
+
+            `;
+
+        });
 
 
         box.innerHTML =
@@ -2248,6 +2232,7 @@ async function loadGoogleList(){
     }catch(error){
 
         console.error(
+            "Google list error:",
             error
         );
 
@@ -2258,8 +2243,6 @@ async function loadGoogleList(){
     }
 
 }
-
-
 /* =====================================================
    EDIT GOOGLE CV
 ===================================================== */
@@ -2272,7 +2255,9 @@ async function editGoogleCV(id){
             await fetch(
                 WEB_APP_URL +
                 "?action=get&id=" +
-                encodeURIComponent(id)
+                encodeURIComponent(id) +
+                "&t=" +
+                Date.now()
             );
 
 
@@ -2280,9 +2265,7 @@ async function editGoogleCV(id){
             await response.json();
 
 
-        if(
-            !result.success
-        ){
+        if(!result.success){
 
             alert(
                 result.message ||
@@ -2299,17 +2282,24 @@ async function editGoogleCV(id){
         );
 
 
+        editId =
+            result.data.id;
+
+
         setStatus(
             "Google Sheet CV loaded ✏️"
         );
 
 
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+
     }catch(error){
 
-        console.error(
-            error
-        );
-
+        console.error(error);
 
         alert(
             "Google Sheet बाट CV load गर्न सकिएन।"
@@ -2318,8 +2308,6 @@ async function editGoogleCV(id){
     }
 
 }
-
-
 /* =====================================================
    DELETE GOOGLE CV
 ===================================================== */
@@ -2332,21 +2320,21 @@ async function deleteGoogleCV(id){
 
     if(!id){
 
-        alert("CV ID not found.");
+        alert(
+            "CV ID not found."
+        );
 
         return;
 
     }
 
 
-    const confirmDelete =
-        confirm(
-            "Delete this CV from Google Sheet?\n\n" +
-            "ID: " + id
-        );
-
-
-    if(!confirmDelete){
+    if(
+        !confirm(
+            "Delete this CV from Google Sheet?\n\nID: " +
+            id
+        )
+    ){
 
         return;
 
@@ -2354,38 +2342,24 @@ async function deleteGoogleCV(id){
 
 
     setStatus(
-        "Deleting CV from Google Sheet..."
+        "Deleting Google Sheet CV..."
     );
 
 
     try{
 
-        const url =
-            WEB_APP_URL +
-            "?action=delete&id=" +
-            encodeURIComponent(
-                String(id)
-            );
-
-
         const response =
             await fetch(
-                url,
+                WEB_APP_URL +
+                "?action=delete&id=" +
+                encodeURIComponent(id) +
+                "&t=" +
+                Date.now(),
                 {
-                    method:"GET",
-                    cache:"no-store"
+                    method: "GET",
+                    cache: "no-store"
                 }
             );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "Server error: " +
-                response.status
-            );
-
-        }
 
 
         const result =
@@ -2393,7 +2367,7 @@ async function deleteGoogleCV(id){
 
 
         console.log(
-            "Delete Result:",
+            "DELETE RESULT:",
             result
         );
 
@@ -2401,30 +2375,22 @@ async function deleteGoogleCV(id){
         if(result.success){
 
             alert(
-                "CV deleted successfully from Google Sheet ✅"
+                "Google Sheet CV deleted successfully ✅"
             );
 
 
             setStatus(
-                "CV deleted successfully ✅"
+                "Google Sheet CV deleted ✅"
             );
 
 
-            /* Refresh Google Sheet list */
-
             await loadGoogleList();
-
 
         }else{
 
             alert(
                 result.message ||
-                "CV delete failed."
-            );
-
-
-            setStatus(
-                "Delete failed ❌"
+                "Delete failed."
             );
 
         }
@@ -2433,19 +2399,18 @@ async function deleteGoogleCV(id){
     }catch(error){
 
         console.error(
-            "Delete Error:",
+            "Delete error:",
             error
+        );
+
+
+        alert(
+            "Google Sheet delete failed."
         );
 
 
         setStatus(
             "Delete failed ❌"
-        );
-
-
-        alert(
-            "CV delete failed.\n\n" +
-            "Please check internet connection and Apps Script deployment."
         );
 
     }
