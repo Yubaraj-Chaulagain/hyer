@@ -225,6 +225,7 @@ overflow:auto;
 </div>
  </body>
     <script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwY3ABUxl_PIUmofy-W-R5Ot07dPOmEE3gQnvmkUHxFp-ThJoEXuTcGW0fOu-NopRaG/exec";
 let editId = null;
 let displayZoomEnabled = false;
 let workCount = 0;
@@ -356,9 +357,8 @@ reader.readAsDataURL(file);
 
 }
 
-</script>
 
-    <script>
+   
 
 async function downloadPDF(){
   const { jsPDF } = window.jspdf;
@@ -406,100 +406,335 @@ pdf.save(fileName + ".pdf");
 
         async function syncToSheet(){
 
-if(!db){
-    alert("Database not ready.");
-    return;
+    if(!db){
+
+        alert("Database not ready.");
+        return;
+
+    }
+
+    const tx =
+        db.transaction(
+            "cvData",
+            "readonly"
+        );
+
+    const store =
+        tx.objectStore("cvData");
+
+    const request =
+        store.getAll();
+
+    request.onsuccess =
+        async function(){
+
+            const all =
+                request.result;
+
+            if(all.length === 0){
+
+                alert("No Data Found");
+                return;
+
+            }
+
+            let successCount = 0;
+
+            for(const data of all){
+
+                try{
+
+                    const res =
+                        await fetch(
+                            WEB_APP_URL,
+                            {
+                                method:"POST",
+
+                                headers:{
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify({
+                                        ...data,
+                                        action:
+                                            "save"
+                                    })
+                            }
+                        );
+
+                    const result =
+                        await res.json();
+
+                    if(result.success){
+
+                        successCount++;
+
+                    }
+
+                }
+
+                catch(error){
+
+                    console.error(
+                        "Sync error:",
+                        error
+                    );
+
+                }
+
+            }
+
+            alert(
+                successCount +
+                " CV Google Sheet मा Sync भयो ✅"
+            );
+
+            loadList();
+
+        };
+
 }
 
-let tx = db.transaction("cvData","readonly");
-let store = tx.objectStore("cvData");
 
-let request = store.getAll();
+        async function loadList(){
 
-request.onsuccess = async function(){
+    try{
 
-    let all = request.result;
+        const res = await fetch(
+            WEB_APP_URL + "?action=list"
+        );
 
-    if(all.length === 0){
-        alert("No Data Found");
+        const result = await res.json();
+
+        if(!result.success){
+
+            alert(result.message || "Failed to load CV list");
+            return;
+
+        }
+
+        const all = result.data || [];
+
+        let html = "";
+
+        all.forEach(d => {
+
+            html += `
+            <div class="workBox">
+
+                <b>${d.name || ""}</b><br>
+
+                ${d.phone || ""}<br>
+
+                ${d.location || ""}<br>
+
+                <small>ID: ${d.id || ""}</small><br><br>
+
+                <button onclick="editGoogleCV('${d.id}')">
+                    Edit
+                </button>
+
+                <button onclick="deleteGoogleCV('${d.id}')">
+                    Delete
+                </button>
+
+            </div>
+            `;
+
+        });
+
+        document.getElementById("dataList").innerHTML =
+            html || "No CV Found";
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Google Sheet बाट CV load गर्न सकिएन."
+        );
+
+    }
+
+}
+async function editGoogleCV(id){
+
+    try{
+
+        const res = await fetch(
+            WEB_APP_URL +
+            "?action=get&id=" +
+            encodeURIComponent(id)
+        );
+
+        const result = await res.json();
+
+        if(!result.success){
+
+            alert(result.message || "CV not found");
+            return;
+
+        }
+
+        const d = result.data;
+
+        document.getElementById("name").value =
+            d.name || "";
+
+        document.getElementById("location").value =
+            d.location || "";
+
+        document.getElementById("phone").value =
+            d.phone || "";
+
+        document.getElementById("email").value =
+            d.email || "";
+
+        document.getElementById("dob").value =
+            d.dob || "";
+
+        document.getElementById("gender").value =
+            d.gender || "";
+
+        document.getElementById("nationality").value =
+            d.nationality || "";
+
+        document.getElementById("summary").value =
+            d.summary || "";
+
+        document.getElementById("skills").value =
+            d.skills || "";
+
+        document.getElementById("languages").value =
+            d.languages || "";
+
+        document.getElementById("education").value =
+            d.education || "";
+
+        document.getElementById("Responsbiliti").value =
+            d.Responsbiliti || "";
+
+        // =========================
+        // WORK HISTORY
+        // =========================
+
+        document.getElementById(
+            "workContainer"
+        ).innerHTML = "";
+
+        workCount = 0;
+
+        if(Array.isArray(d.works)){
+
+            d.works.forEach(w => {
+
+                addWork();
+
+                document.getElementById(
+                    "job" + workCount
+                ).value = w.job || "";
+
+                document.getElementById(
+                    "company" + workCount
+                ).value = w.company || "";
+
+                document.getElementById(
+                    "start" + workCount
+                ).value = w.start || "";
+
+                document.getElementById(
+                    "end" + workCount
+                ).value = w.end || "";
+
+                document.getElementById(
+                    "address" + workCount
+                ).value = w.address || "";
+
+                document.getElementById(
+                    "desc" + workCount
+                ).value = w.desc || "";
+
+            });
+
+        }
+
+        // VERY IMPORTANT
+        editId = d.id;
+
+        gen();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        alert("CV loaded for editing ✏️");
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Google Sheet बाट CV load गर्न समस्या भयो."
+        );
+
+    }
+
+}
+async function deleteGoogleCV(id){
+
+    if(!confirm("Delete this CV from Google Sheet?")) {
         return;
     }
 
-    for(const data of all){
+    try{
 
-        await fetch("YOUR_WEB_APP_URL",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(data)
-        });
+        const res = await fetch(
+            WEB_APP_URL,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "delete",
+                    id: id
+                })
+            }
+        );
+
+        const result = await res.json();
+
+        if(result.success){
+
+            alert("CV Deleted Successfully ✅");
+
+            loadList();
+
+        }else{
+
+            alert(
+                result.message ||
+                "Delete failed"
+            );
+
+        }
 
     }
 
-    alert("All CV Synced Successfully ✅");
+    catch(error){
 
-};
+        console.error(error);
 
-request.onerror = function(){
+        alert("Delete failed ❌");
 
-    alert("Failed to Read Database");
-
-};
-
-}
-
-
-        function loadList(){
-
-if(!db) return;
-
-let tx = db.transaction("cvData","readonly");
-let store = tx.objectStore("cvData");
-
-let request = store.getAll();
-
-request.onsuccess = function(){
-
-    let all = request.result;
-
-    let html = "";
-
-    all.sort((a,b)=>b.id-a.id);
-
-    all.forEach(d=>{
-
-        html += `
-        <div class="workBox">
-
-            <b>${d.name}</b><br>
-
-            ${d.phone}<br>
-
-            ${d.location}<br><br>
-
-            <button onclick="editData(${d.id})">
-            Edit
-            </button>
-
-            <button onclick="deleteData(${d.id})">
-            Delete
-            </button>
-
-        </div>
-        `;
-
-    });
-
-    document.getElementById("dataList").innerHTML = html;
-
-};
-
-request.onerror = function(){
-
-    alert("Failed to Load Data");
-
-};
+    }
 
 }
 function deleteData(id){
@@ -697,9 +932,7 @@ document.getElementById("photo").value = "";
         
         
         
-        </script>
-
-<script>
+      
 function copyAllData(){
 
   // collect work history
@@ -760,8 +993,7 @@ ${works}
 
   alert("All Entry Data Copied ✅");
 }
-</script>
-<script>
+
 let scale = 1;
 let posX = 0;
 let posY = 0;
