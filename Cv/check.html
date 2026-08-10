@@ -1088,51 +1088,30 @@ function gen(){
 
 function saveOffline(){
 
-    const data =
-        collectCVData();
-
+    const data = collectCVData();
 
     if(!data.name){
 
-        alert(
-            "Please enter Full Name first."
-        );
+        alert("Please enter Full Name first.");
 
-        document
-            .getElementById("name")
-            .focus();
+        document.getElementById("name").focus();
 
         return;
-
     }
-
-
-    /* =========================
-       LOCAL STORAGE
-    ========================= */
 
     try{
 
-        let list =
-            JSON.parse(
-                localStorage.getItem(
-                    "offlineCVs"
-                ) || "[]"
-            );
+        let list = JSON.parse(
+            localStorage.getItem("offlineCVs") || "[]"
+        );
 
-
-        const index =
-            list.findIndex(
-                x =>
-                String(x.id) ===
-                String(data.id)
-            );
-
+        const index = list.findIndex(
+            x => String(x.id) === String(data.id)
+        );
 
         if(index >= 0){
 
-            list[index] =
-                data;
+            list[index] = data;
 
         }else{
 
@@ -1140,20 +1119,23 @@ function saveOffline(){
 
         }
 
-
         localStorage.setItem(
             "offlineCVs",
             JSON.stringify(list)
         );
 
+        console.log("Saved LocalStorage:", list);
 
     }catch(error){
 
         console.error(
-            "LocalStorage error:",
+            "LocalStorage Save Error:",
             error
         );
 
+        alert("Offline save failed: " + error.message);
+
+        return;
     }
 
 
@@ -1165,49 +1147,69 @@ function saveOffline(){
 
         try{
 
-            const tx =
-                db.transaction(
-                    "cvData",
-                    "readwrite"
-                );
+            const tx = db.transaction(
+                "cvData",
+                "readwrite"
+            );
 
-            const store =
-                tx.objectStore(
-                    "cvData"
-                );
+            const store = tx.objectStore("cvData");
 
             store.put(data);
+
+            tx.oncomplete = function(){
+
+                console.log(
+                    "IndexedDB Save Success"
+                );
+
+                loadOfflineList();
+
+            };
+
+            tx.onerror = function(){
+
+                console.error(
+                    "IndexedDB Save Error:",
+                    tx.error
+                );
+
+                loadOfflineList();
+
+            };
 
         }catch(error){
 
             console.error(
-                "IndexedDB error:",
+                "IndexedDB Error:",
                 error
             );
 
+            loadOfflineList();
+
         }
+
+    }else{
+
+        /* IndexedDB नभए पनि LocalStorage बाट list देखाउने */
+
+        loadOfflineList();
 
     }
 
 
     editId = data.id;
 
-
-    loadOfflineList();
-
+    gen();
 
     setStatus(
         "CV Offline Save भयो ✅"
     );
-
 
     alert(
         "CV Offline Save भयो ✅"
     );
 
 }
-
-
 /* =====================================================
    LOAD OFFLINE LIST
 ===================================================== */
@@ -1216,112 +1218,160 @@ function loadOfflineList(){
 
     let localData = [];
 
+    /* =========================
+       GET LOCAL STORAGE
+    ========================= */
 
     try{
 
-        localData =
-            JSON.parse(
-                localStorage.getItem(
-                    "offlineCVs"
-                ) || "[]"
-            );
+        localData = JSON.parse(
+            localStorage.getItem("offlineCVs") || "[]"
+        );
+
+        if(!Array.isArray(localData)){
+
+            localData = [];
+
+        }
 
     }catch(error){
+
+        console.error(
+            "LocalStorage Load Error:",
+            error
+        );
 
         localData = [];
 
     }
 
 
+    /* =========================
+       IF INDEXED DB NOT READY
+    ========================= */
+
     if(!db){
 
-        displayOfflineList(
-            localData
-        );
+        displayOfflineList(localData);
 
         return;
-
     }
 
 
+    /* =========================
+       GET INDEXED DB
+    ========================= */
+
     try{
 
-        const tx =
-            db.transaction(
-                "cvData",
-                "readonly"
+        const tx = db.transaction(
+            "cvData",
+            "readonly"
+        );
+
+        const store = tx.objectStore(
+            "cvData"
+        );
+
+        const request = store.getAll();
+
+
+        request.onsuccess = function(){
+
+            const dbData =
+                Array.isArray(request.result)
+                ? request.result
+                : [];
+
+
+            /* =========================
+               COMBINE BOTH LISTS
+            ========================= */
+
+            const combined = [];
+
+
+            /* First IndexedDB */
+
+            dbData.forEach(function(item){
+
+                combined.push(item);
+
+            });
+
+
+            /* Then LocalStorage */
+
+            localData.forEach(function(item){
+
+                const exists =
+                    combined.some(function(x){
+
+                        return String(x.id) ===
+                               String(item.id);
+
+                    });
+
+
+                if(!exists){
+
+                    combined.push(item);
+
+                }
+
+            });
+
+
+            /* =========================
+               SORT NEWEST FIRST
+            ========================= */
+
+            combined.sort(function(a,b){
+
+                return Number(b.id || 0) -
+                       Number(a.id || 0);
+
+            });
+
+
+            console.log(
+                "FINAL OFFLINE CV LIST:",
+                combined
             );
 
-        const store =
-            tx.objectStore(
-                "cvData"
+
+            displayOfflineList(combined);
+
+        };
+
+
+        request.onerror = function(){
+
+            console.error(
+                "IndexedDB Read Error:",
+                request.error
             );
 
-        const request =
-            store.getAll();
+            /* fallback */
 
+            displayOfflineList(localData);
 
-        request.onsuccess =
-            function(){
-
-                const dbData =
-                    request.result || [];
-
-
-                let combined =
-                    [...dbData];
-
-
-                localData.forEach(
-                    localItem => {
-
-                        const exists =
-                            combined.some(
-                                x =>
-                                String(x.id) ===
-                                String(localItem.id)
-                            );
-
-
-                        if(!exists){
-
-                            combined.push(
-                                localItem
-                            );
-
-                        }
-
-                    }
-                );
-
-
-                displayOfflineList(
-                    combined
-                );
-
-            };
-
-
-        request.onerror =
-            function(){
-
-                displayOfflineList(
-                    localData
-                );
-
-            };
+        };
 
     }catch(error){
 
-        displayOfflineList(
-            localData
+        console.error(
+            "IndexedDB Transaction Error:",
+            error
         );
+
+        /* fallback */
+
+        displayOfflineList(localData);
 
     }
 
 }
-
-
 /* =====================================================
    DISPLAY OFFLINE LIST
 ===================================================== */
@@ -1329,15 +1379,37 @@ function loadOfflineList(){
 function displayOfflineList(all){
 
     const box =
-        document.getElementById(
-            "offlineList"
+        document.getElementById("offlineList");
+
+
+    if(!box){
+
+        console.error(
+            "offlineList element not found."
         );
 
+        return;
 
-    if(!all.length){
+    }
 
-        box.innerHTML =
-            "No Offline CV Found";
+
+    if(!Array.isArray(all)){
+
+        all = [];
+
+    }
+
+
+    if(all.length === 0){
+
+        box.innerHTML = `
+            <div class="workBox">
+                <b>No Offline CV Found</b>
+                <br>
+                Save a CV using
+                <b>💾 Save Offline</b>
+            </div>
+        `;
 
         return;
 
@@ -1347,86 +1419,111 @@ function displayOfflineList(all){
     let html = "";
 
 
-    all.forEach(
-        function(d){
+    all.forEach(function(d){
 
-            html += `
+        const id =
+            String(d.id || "");
 
-                <div class="workBox">
 
-                    <b>
-                        ${escapeHTML(
-                            d.name
-                        )}
-                    </b>
+        const savedDate =
+            d.savedAt
+            ? new Date(d.savedAt).toLocaleString()
+            : "";
 
-                    <br>
 
+        html += `
+
+            <div class="workBox">
+
+                <h3 style="margin:0 0 8px 0;">
                     ${escapeHTML(
-                        d.phone
+                        d.name || "Unnamed CV"
                     )}
+                </h3>
 
-                    <br>
 
-                    ${escapeHTML(
-                        d.location
+                <div>
+                    📞 ${escapeHTML(
+                        d.phone || ""
                     )}
+                </div>
 
-                    <br>
 
-                    <small>
-                        ID:
-                        ${escapeHTML(
-                            d.id
-                        )}
-                    </small>
+                <div>
+                    📍 ${escapeHTML(
+                        d.location || ""
+                    )}
+                </div>
 
-                    <br>
 
-                    <small>
+                <div>
+                    ✉️ ${escapeHTML(
+                        d.email || ""
+                    )}
+                </div>
 
-                        ${
-                            d.synced
-                            ? "☁️ Synced"
-                            : "📱 Not Synced"
 
-                        }
+                <div style="
+                    margin-top:6px;
+                    font-size:12px;
+                    color:#666;
+                ">
 
-                    </small>
+                    ID:
+                    ${escapeHTML(id)}
 
-                    <br><br>
-
-                    <button
-                        type="button"
-                        onclick="editOfflineData('${d.id}')">
-
-                        Edit
-
-                    </button>
-
-                    <button
-                        type="button"
-                        style="background:#dc2626;"
-                        onclick="deleteOfflineData('${d.id}')">
-
-                        Delete
-
-                    </button>
+                    ${
+                        savedDate
+                        ? "<br>Saved: " +
+                          escapeHTML(savedDate)
+                        : ""
+                    }
 
                 </div>
 
-            `;
 
-        }
-    );
+                <div style="
+                    margin-top:8px;
+                    font-weight:bold;
+                ">
+
+                    ${
+                        d.synced
+                        ? "☁️ Google Sheet Synced"
+                        : "📱 Offline Only"
+                    }
+
+                </div>
 
 
-    box.innerHTML =
-        html;
+                <button
+                    type="button"
+                    onclick="editOfflineData('${id}')">
+
+                    ✏️ Edit
+
+                </button>
+
+
+                <button
+                    type="button"
+                    style="background:#dc2626;"
+                    onclick="deleteOfflineData('${id}')">
+
+                    🗑️ Delete
+
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+
+    box.innerHTML = html;
 
 }
-
-
 /* =====================================================
    EDIT OFFLINE
 ===================================================== */
