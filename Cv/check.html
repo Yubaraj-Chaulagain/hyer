@@ -833,77 +833,171 @@ alert("Failed to Load Record");
 
 function saveOffline(){
 
-if(!db){
-    alert("Database not ready. Please wait...");
-    return;
-}
-
-// ===== Work History =====
-let works = [];
-
-for(let i=1;i<=workCount;i++){
-
-    let job = document.getElementById("job"+i)?.value || "";
-    let company = document.getElementById("company"+i)?.value || "";
-    let start = document.getElementById("start"+i)?.value || "";
-    let end = document.getElementById("end"+i)?.value || "";
-    let address = document.getElementById("address"+i)?.value || "";
-    let desc = document.getElementById("desc"+i)?.value || "";
-
-    if(job || company){
-        works.push({
-            job,
-            company,
-            start,
-            end,
-            address,
-            desc
-        });
+    if(!db){
+        alert("Database अझै ready भएको छैन। 1-2 second wait गरेर फेरि Save गर्नुहोस्.");
+        return;
     }
-}
 
-let newData = {
+    // ==========================
+    // Collect Work History
+    // ==========================
+    let works = [];
 
-    id: editId || Date.now(),
+    for(let i = 1; i <= workCount; i++){
 
-    name: document.getElementById("name").value,
-    location: document.getElementById("location").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    dob: document.getElementById("dob").value,
-    gender: document.getElementById("gender").value,
-    nationality: document.getElementById("nationality").value,
+        let job = document.getElementById("job" + i)?.value || "";
+        let company = document.getElementById("company" + i)?.value || "";
+        let start = document.getElementById("start" + i)?.value || "";
+        let end = document.getElementById("end" + i)?.value || "";
+        let address = document.getElementById("address" + i)?.value || "";
+        let desc = document.getElementById("desc" + i)?.value || "";
 
-    summary: document.getElementById("summary").value,
-    skills: document.getElementById("skills").value,
-    languages: document.getElementById("languages").value,
-    education: document.getElementById("education").value,
-    Responsbiliti: document.getElementById("Responsbiliti").value,
+        if(job || company || start || end || address || desc){
 
-    works: works
+            works.push({
+                job: job,
+                company: company,
+                start: start,
+                end: end,
+                address: address,
+                desc: desc
+            });
 
-};
+        }
+    }
 
-let tx = db.transaction("cvData","readwrite");
-let store = tx.objectStore("cvData");
+    // ==========================
+    // CV DATA
+    // ==========================
+    let newData = {
 
-store.put(newData);
+        id: editId || Date.now(),
 
-tx.oncomplete = function(){
+        name: document.getElementById("name").value.trim(),
 
-    clearForm();
-    editId = null;
-    loadList();
+        location: document.getElementById("location").value.trim(),
 
-    alert("CV Saved Successfully ✅");
+        phone: document.getElementById("phone").value.trim(),
 
-};
+        email: document.getElementById("email").value.trim(),
 
-tx.onerror = function(){
+        dob: document.getElementById("dob").value.trim(),
 
-    alert("Save Failed!");
+        gender: document.getElementById("gender").value,
 
-};
+        nationality:
+            document.getElementById("nationality").value.trim(),
+
+        summary:
+            document.getElementById("summary").value.trim(),
+
+        skills:
+            document.getElementById("skills").value.trim(),
+
+        languages:
+            document.getElementById("languages").value.trim(),
+
+        education:
+            document.getElementById("education").value.trim(),
+
+        Responsbiliti:
+            document.getElementById("Responsbiliti").value.trim(),
+
+        works: works,
+
+        savedAt: new Date().toISOString()
+
+    };
+
+
+    // ==========================
+    // NAME REQUIRED
+    // ==========================
+    if(!newData.name){
+
+        alert("Please enter Full Name first.");
+
+        document.getElementById("name").focus();
+
+        return;
+    }
+
+
+    // ==========================
+    // SAVE TO INDEXEDDB
+    // ==========================
+    try{
+
+        let tx = db.transaction(
+            ["cvData"],
+            "readwrite"
+        );
+
+        let store = tx.objectStore("cvData");
+
+        let request = store.put(newData);
+
+
+        request.onsuccess = function(){
+
+            console.log("CV Saved:", newData);
+
+        };
+
+
+        request.onerror = function(e){
+
+            console.error(
+                "IndexedDB Save Error:",
+                e.target.error
+            );
+
+            alert(
+                "CV Save Failed ❌\n\n" +
+                e.target.error
+            );
+
+        };
+
+
+        tx.oncomplete = function(){
+
+            alert("CV Offline Save भयो ✅");
+
+            editId = null;
+
+            // Local list reload
+            loadOfflineList();
+
+        };
+
+
+        tx.onerror = function(e){
+
+            console.error(
+                "Transaction Error:",
+                e.target.error
+            );
+
+            alert(
+                "Save Failed ❌\n" +
+                e.target.error
+            );
+
+        };
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Save गर्दा error आयो ❌\n\n" +
+            error.message
+        );
+
+    }
 
 }
         
@@ -931,7 +1025,76 @@ document.getElementById("photo").value = "";
         
         
         
-        
+function loadOfflineList(){
+
+    if(!db){
+        return;
+    }
+
+    let tx = db.transaction(
+        "cvData",
+        "readonly"
+    );
+
+    let store = tx.objectStore("cvData");
+
+    let request = store.getAll();
+
+    request.onsuccess = function(){
+
+        let all = request.result || [];
+
+        let html = "";
+
+        all.forEach(function(d){
+
+            html += `
+            <div class="workBox">
+
+                <b>${d.name || ""}</b><br>
+
+                ${d.phone || ""}<br>
+
+                ${d.location || ""}<br>
+
+                <small>
+                    ID: ${d.id || ""}
+                </small>
+
+                <br><br>
+
+                <button
+                    type="button"
+                    onclick="editData(${d.id})">
+                    Edit
+                </button>
+
+                <button
+                    type="button"
+                    onclick="deleteData(${d.id})">
+                    Delete
+                </button>
+
+            </div>
+            `;
+
+        });
+
+        document.getElementById("dataList").innerHTML =
+            html || "No Offline CV Found";
+
+    };
+
+    request.onerror = function(e){
+
+        console.error(
+            "Load Offline Error:",
+            e.target.error
+        );
+
+    };
+
+}        
       
 function copyAllData(){
 
@@ -1532,8 +1695,8 @@ request.onupgradeneeded = function(e){
 
 request.onsuccess = function(e){
     db = e.target.result;
-    console.log("IndexedDB Ready");
-    loadList();
+    console.log("IndexedDB Ready ✅");
+    loadOfflineList();
 };
 
 request.onerror = function(e){
