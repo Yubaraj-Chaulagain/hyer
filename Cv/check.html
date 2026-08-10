@@ -2324,84 +2324,133 @@ async function editGoogleCV(id){
    DELETE GOOGLE CV
 ===================================================== */
 
+/* =====================================================
+   DELETE GOOGLE CV - FIXED
+===================================================== */
+
 async function deleteGoogleCV(id){
 
-    if(
-        !confirm(
-            "Delete this CV from Google Sheet?"
-        )
-    ){
+    if(!id){
+
+        alert("CV ID not found.");
 
         return;
 
     }
 
 
+    const confirmDelete =
+        confirm(
+            "Delete this CV from Google Sheet?\n\n" +
+            "ID: " + id
+        );
+
+
+    if(!confirmDelete){
+
+        return;
+
+    }
+
+
+    setStatus(
+        "Deleting CV from Google Sheet..."
+    );
+
+
     try{
+
+        const url =
+            WEB_APP_URL +
+            "?action=delete&id=" +
+            encodeURIComponent(
+                String(id)
+            );
+
 
         const response =
             await fetch(
-                WEB_APP_URL,
+                url,
                 {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            action:"delete",
-
-                            id:id
-
-                        })
+                    method:"GET",
+                    cache:"no-store"
                 }
             );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Server error: " +
+                response.status
+            );
+
+        }
 
 
         const result =
             await response.json();
 
 
-        if(
-            result.success
-        ){
+        console.log(
+            "Delete Result:",
+            result
+        );
+
+
+        if(result.success){
 
             alert(
-                "Google Sheet CV Deleted ✅"
+                "CV deleted successfully from Google Sheet ✅"
             );
 
 
-            loadGoogleList();
+            setStatus(
+                "CV deleted successfully ✅"
+            );
+
+
+            /* Refresh Google Sheet list */
+
+            await loadGoogleList();
+
 
         }else{
 
             alert(
                 result.message ||
-                "Delete failed."
+                "CV delete failed."
+            );
+
+
+            setStatus(
+                "Delete failed ❌"
             );
 
         }
 
+
     }catch(error){
 
         console.error(
+            "Delete Error:",
             error
         );
 
 
+        setStatus(
+            "Delete failed ❌"
+        );
+
+
         alert(
-            "Delete failed. Internet check गर्नुहोस्।"
+            "CV delete failed.\n\n" +
+            "Please check internet connection and Apps Script deployment."
         );
 
     }
 
 }
-
-
 /* =====================================================
    COPY ALL DATA
 ===================================================== */
