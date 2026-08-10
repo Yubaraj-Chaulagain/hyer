@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta id="viewportMeta"
-name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Pro CV Builder Advanced</title>
 
@@ -30,8 +31,6 @@ body{
 .form{
     padding:15px;
     background:#fff;
-    max-width:1000px;
-    margin:auto;
 }
 
 input,
@@ -40,9 +39,8 @@ select{
     width:100%;
     padding:10px;
     margin:5px 0;
-    border:1px solid #ccc;
     border-radius:6px;
-    box-sizing:border-box;
+    border:1px solid #ccc;
 }
 
 textarea{
@@ -57,39 +55,33 @@ button{
     color:#fff;
     border:none;
     border-radius:6px;
-    margin-top:6px;
+    margin-top:5px;
     font-size:16px;
     cursor:pointer;
 }
 
-button.red{
-    background:#dc2626;
+button:hover{
+    opacity:.9;
 }
 
-button.gray{
-    background:#475569;
-}
-
-.status{
-    padding:8px;
-    margin:8px 0;
-    background:#f1f5f9;
-    border-radius:6px;
-    font-size:14px;
+.workBox{
+    border:1px solid #ddd;
+    padding:10px;
+    margin:10px 0;
+    border-radius:8px;
+    background:#fafafa;
 }
 
 .cv{
     display:flex;
     width:794px;
-    height:1123px;
+    min-height:1123px;
     margin:20px auto;
     background:#fff;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
     overflow:hidden;
     border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
-
-/* LEFT */
 
 .left{
     width:35%;
@@ -102,13 +94,21 @@ button.gray{
     padding:25px;
 }
 
+.right{
+    width:65%;
+    padding:35px;
+    background:#fff;
+    font-family:'Segoe UI',sans-serif;
+}
+
 .photoWrap{
     width:130px;
     height:130px;
     border-radius:50%;
     border:4px solid #fff;
-    overflow:hidden;
+    box-shadow:0 0 10px rgba(0,0,0,.2);
     margin:auto;
+    overflow:hidden;
     position:relative;
     touch-action:none;
 }
@@ -118,10 +118,10 @@ button.gray{
     height:100%;
     object-fit:cover;
     position:absolute;
-    left:0;
     top:0;
-    transform-origin:center;
+    left:0;
     cursor:grab;
+    transform-origin:center;
 }
 
 .left h3{
@@ -130,39 +130,33 @@ button.gray{
     margin-top:20px;
 }
 
+.left p,
 .left h5{
     font-size:14px;
-    line-height:1.5;
-    margin:10px 0;
+    line-height:1.7;
     word-break:break-word;
 }
 
-.left h5 p{
-    margin:3px 0;
-}
-
-/* RIGHT */
-
-.right{
-    width:65%;
-    padding:35px;
-    background:#fff;
-    font-family:'Segoe UI',Arial,sans-serif;
+h1{
+    margin:0;
+    padding-bottom:5px;
+    word-break:break-word;
 }
 
 #cvName{
     font-size:34px;
     font-weight:bold;
     color:#0f172a;
-    margin:0 0 5px;
-    word-break:break-word;
+    border:none;
+    margin-bottom:5px;
+    letter-spacing:1px;
 }
 
-.section{
+.right .section{
     margin-top:22px;
 }
 
-.section h3{
+.right .section h3{
     background:#0f766e;
     color:#fff;
     padding:8px 12px;
@@ -177,53 +171,71 @@ button.gray{
 #cvRespons,
 #cvWork,
 #cvSkills{
-    font-size:12px;
-    line-height:1.55;
+    font-size:15px;
+    line-height:1.8;
     color:#333;
     text-align:justify;
 }
 
 #cvSkills{
-    color:white !important;
+    color:#fff !important;
 }
 
-.workBox{
-    border:1px solid #ddd;
-    padding:10px;
-    margin:10px 0;
-    border-radius:8px;
-    background:#fafafa;
+#cvWork b{
+    color:#0f766e;
+    font-size:16px;
 }
 
-#dataList{
-    max-width:1000px;
-    margin:10px auto 30px;
-}
-
-.listItem{
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:8px;
-    padding:12px;
-    margin:8px 0;
+.small{
+    font-size:14px;
+    line-height:1.5;
 }
 
 #previewModal{
     display:none;
     position:fixed;
-    inset:0;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
     background:rgba(0,0,0,.7);
     z-index:9999;
     overflow:auto;
 }
 
-#previewModal > div{
-    width:95%;
+#previewBox{
+    width:90%;
     max-width:900px;
-    margin:20px auto;
+    margin:40px auto;
     background:#fff;
     padding:20px;
     border-radius:10px;
+    position:relative;
+}
+
+.statusBox{
+    padding:12px;
+    margin:10px 0;
+    background:#e6fffa;
+    border:1px solid #99f6e4;
+    border-radius:6px;
+    color:#115e59;
+}
+
+.googleBox{
+    margin-top:30px;
+}
+
+.danger{
+    background:#dc2626 !important;
+}
+
+.secondary{
+    background:#475569 !important;
+}
+
+.info{
+    background:#2563eb !important;
 }
 
 @media(max-width:900px){
@@ -246,431 +258,551 @@ button.gray{
         background:#fff;
     }
 
-    .form,
-    #dataList,
-    #previewModal{
-        display:none !important;
-    }
-
     .cv{
         width:210mm;
         height:297mm;
         margin:0;
         box-shadow:none;
-        border-radius:0;
     }
 
 }
 
 </style>
+
 </head>
 
 <body>
 
-<!-- ================= FORM ================= -->
+
+<!-- =====================================================
+     FORM
+===================================================== -->
 
 <div class="form">
 
-<h2>Pro CV Builder Advanced</h2>
+<h2>Fill CV Details</h2>
 
-<div id="status" class="status">
-Ready
-</div>
 
-<button type="button"
-onclick="toggleDisplayZoom()">
-Enable / Disable Display Zoom
+<button
+    type="button"
+    onclick="toggleDisplayZoom()">
+
+    Enable / Disable Display Zoom
+
 </button>
 
-<input
-type="file"
-id="photo"
-accept="image/*"
->
 
-<label>
-Photo Zoom
-</label>
+<h3>Photo</h3>
 
 <input
-type="range"
-id="zoomRange"
-min="1"
-max="3"
-step="0.1"
-value="1"
->
+    type="file"
+    id="photo"
+    accept="image/*">
+
+
+<input
+    type="range"
+    id="zoomRange"
+    min="1"
+    max="3"
+    step="0.1"
+    value="1">
+
 
 <h3>Basic Info</h3>
 
-<input
-id="name"
-placeholder="Full Name"
->
 
 <input
-id="location"
-placeholder="Location"
->
+    id="name"
+    placeholder="Full Name">
+
 
 <input
-id="phone"
-placeholder="Phone"
->
+    id="location"
+    placeholder="Location">
+
 
 <input
-id="email"
-placeholder="Email"
->
+    id="phone"
+    placeholder="Phone">
+
 
 <input
-id="dob"
-placeholder="Date of Birth"
->
+    id="email"
+    placeholder="Email">
+
+
+<input
+    id="dob"
+    placeholder="Date of Birth">
+
 
 <select id="gender">
 
-<option value="">
-Select Gender
-</option>
+    <option value="">
+        Select Gender
+    </option>
 
-<option value="Male">
-Male
-</option>
+    <option value="Male">
+        Male
+    </option>
 
-<option value="Female">
-Female
-</option>
+    <option value="Female">
+        Female
+    </option>
 
 </select>
 
+
 <input
-id="nationality"
-placeholder="Nationality"
->
+    id="nationality"
+    placeholder="Nationality">
 
-<h3>
-Professional Summary
-</h3>
+
+<h3>Professional Summary</h3>
+
 
 <textarea
-id="summary"
-placeholder="Professional Summary"
-></textarea>
+    id="summary"
+    placeholder="Professional Summary">
+</textarea>
 
-<h3>
-Work History
-</h3>
 
-<div id="workContainer">
-</div>
+<h3>Work History</h3>
+
+
+<div id="workContainer"></div>
+
 
 <button
-type="button"
-onclick="addWork()"
->
-+ Add Work
+    type="button"
+    onclick="addWork()">
+
+    + Add Work
+
 </button>
 
-<h3>
-Skills
-</h3>
+
+<h3>Skills</h3>
+
 
 <textarea
-id="skills"
-placeholder="Skills"
-></textarea>
+    id="skills"
+    placeholder="Skills">
+</textarea>
 
-<h3>
-Languages
-</h3>
+
+<h3>Languages</h3>
+
 
 <textarea
-id="languages"
-placeholder="Languages"
-></textarea>
+    id="languages"
+    placeholder="Languages">
+</textarea>
 
-<h3>
-Education
-</h3>
+
+<h3>Education</h3>
+
 
 <textarea
-id="education"
-placeholder="Education"
-></textarea>
+    id="education"
+    placeholder="Education">
+</textarea>
 
-<h3>
-Responsibilities
-</h3>
+
+<h3>Responsibilities</h3>
+
 
 <textarea
-id="Responsbiliti"
-placeholder="Responsibilities"
-></textarea>
+    id="Responsbiliti"
+    placeholder="Responsibilities">
+</textarea>
+
+
+<hr>
 
 
 <button
-type="button"
-onclick="gen()"
->
-Generate CV
+    type="button"
+    onclick="gen()">
+
+    Generate CV
+
 </button>
 
 
 <button
-type="button"
-onclick="downloadTXT()"
->
-Download TXT
+    type="button"
+    onclick="generateResume()">
+
+    Generate Professional Resume
+
 </button>
 
 
 <button
-type="button"
-onclick="downloadPDF()"
->
-Download PDF
+    type="button"
+    onclick="downloadTXT()">
+
+    Download TXT
+
 </button>
 
 
 <button
-type="button"
-onclick="copyAllData()"
->
-Copy All Entry Data
+    type="button"
+    onclick="downloadPDF()">
+
+    Download PDF
+
 </button>
 
 
 <button
-type="button"
-onclick="saveOffline()"
->
-Save Offline
+    type="button"
+    onclick="downloadResumePDF()">
+
+    Download Professional Resume PDF
+
 </button>
 
 
 <button
-type="button"
-onclick="syncToSheet()"
->
-Sync to Google Sheet
+    type="button"
+    onclick="copyAllData()">
+
+    Copy All Entry Data
+
 </button>
 
 
 <button
-type="button"
-onclick="saveAndSync()"
->
-Save + Sync Google Sheet
+    type="button"
+    onclick="saveOffline()">
+
+    💾 Save Offline
+
 </button>
 
 
 <button
-type="button"
-onclick="previewResume()"
->
-Preview Resume
+    type="button"
+    onclick="syncToSheet()">
+
+    ☁️ Sync Offline CVs to Google Sheet
+
 </button>
 
 
 <button
-type="button"
-onclick="printPreview()"
->
-Print Preview
+    type="button"
+    onclick="loadGoogleList()">
+
+    🔄 Refresh Google Sheet
+
 </button>
 
 
 <button
-type="button"
-class="gray"
-onclick="clearForm()"
->
-New / Clear Form
+    type="button"
+    onclick="previewResume()">
+
+    Preview Resume
+
 </button>
 
-</div>
-
-
-<!-- ================= CV ================= -->
 
 <div
-class="cv"
-id="cv"
->
+    id="statusBox"
+    class="statusBox">
+
+    Ready
+
+</div>
+
+</div>
+
+
+
+<!-- =====================================================
+     CV PREVIEW
+===================================================== -->
+
+<div class="cv">
+
 
 <div class="left">
 
+
 <div class="photoWrap">
 
-<img
-id="cvPhoto"
-alt="Photo"
->
+    <img id="cvPhoto">
 
 </div>
 
 
 <h3>
-<u>Contact</u>
+    <u>Contact</u>
 </h3>
 
 
 <h5>
-Location:
-<p id="cvLocation"></p>
+
+    Location:
+
+    <p id="cvLocation"></p>
+
 </h5>
 
 
 <h5>
-Phone:
-<p id="cvPhone"></p>
+
+    Phone:
+
+    <p id="cvPhone"></p>
+
 </h5>
 
 
 <h5>
-Email:
-<p id="cvEmail"></p>
+
+    Email:
+
+    <p id="cvEmail"></p>
+
 </h5>
 
 
 <h5>
-DOB:
-<p id="cvDob"></p>
+
+    DOB:
+
+    <p id="cvDob"></p>
+
 </h5>
 
 
 <h5>
-Gender:
-<p id="cvgender"></p>
+
+    Gender:
+
+    <p id="cvgender"></p>
+
 </h5>
 
 
 <h5>
-Nationality:
-<p id="cvNationality"></p>
+
+    Nationality:
+
+    <p id="cvNationality"></p>
+
 </h5>
 
 
 <h3>
-<u>Skills</u>
+    <u>Skills</u>
 </h3>
+
 
 <p id="cvSkills"></p>
 
 
 <h3>
-<u>Languages</u>
+    <u>Languages</u>
 </h3>
 
+
 <p id="cvLang"></p>
+
 
 </div>
 
 
+
 <div class="right">
 
+
 <h1 id="cvName">
-Your Name
+    Your Name
 </h1>
 
 
 <div class="section">
 
 <h3>
-PROFESSIONAL SUMMARY
+    PROFESSIONAL SUMMARY
 </h3>
 
-<p id="cvSummary"></p>
+
+<p
+    id="cvSummary"
+    class="small">
+</p>
+
 
 </div>
+
 
 
 <div class="section">
 
 <h3>
-WORK HISTORY
+    WORK HISTORY
 </h3>
+
 
 <div id="cvWork"></div>
 
+
 </div>
+
 
 
 <div class="section">
 
 <h3>
-EDUCATION
+    EDUCATION
 </h3>
+
 
 <p id="cvEdu"></p>
 
+
 </div>
+
 
 
 <div class="section">
 
 <h3>
-RESPONSIBILITIES
+    RESPONSIBILITIES
 </h3>
+
 
 <p id="cvRespons"></p>
 
-</div>
 
 </div>
 
+
 </div>
 
 
-<!-- ================= SAVED LIST ================= -->
-
-<h3
-style="
-max-width:1000px;
-margin:auto;
-"
->
-Saved CV List
-</h3>
-
-<div id="dataList">
 </div>
 
 
-<!-- ================= PREVIEW ================= -->
+
+<!-- =====================================================
+     OFFLINE LIST
+===================================================== -->
+
+<div class="form">
+
+
+<h2>
+    📱 Offline Saved CVs
+</h2>
+
+
+<div id="offlineList">
+
+    No Offline CV Found
+
+</div>
+
+
+
+<!-- =====================================================
+     GOOGLE LIST
+===================================================== -->
+
+<div class="googleBox">
+
+
+<h2>
+    ☁️ Google Sheet CVs
+</h2>
+
+
+<div id="googleList">
+
+    Google Sheet list not loaded.
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     PREVIEW MODAL
+===================================================== -->
 
 <div id="previewModal">
 
-<div>
+
+<div id="previewBox">
+
 
 <button
-class="red"
-onclick="closePreview()"
->
-Close
+    type="button"
+    onclick="closePreview()"
+    style="
+        width:auto;
+        background:red;
+        position:absolute;
+        right:10px;
+        top:10px;
+    ">
+
+    Close
+
 </button>
 
-<div id="previewContent">
-</div>
+
+<div id="previewContent"></div>
+
 
 </div>
 
+
 </div>
+
 
 
 <script>
 
+
 /* =====================================================
-   GOOGLE APPS SCRIPT URL
+   GOOGLE APPS SCRIPT
 ===================================================== */
 
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbwY3ABUxl_PIUmofy-W-R5Ot07dPOmEE3gQnvmkUHxFp-ThJoEXuTcGW0fOu-NopRaG/exec";
+"https://script.google.com/macros/s/AKfycbw8fkZNNNDuhtL20uLDQor6mBPbC-eDq-9dGr9sN0XEZiLCYflyQAE2iMS1Um7qI4-1/exec";
+
 
 
 /* =====================================================
-   GLOBAL VARIABLES
+   INDEXED DB CONFIG
+===================================================== */
+
+const DB_NAME =
+"CVDatabase";
+
+const DB_VERSION =
+2;
+
+const STORE_NAME =
+"cvData";
+
+
+/* =====================================================
+   GLOBAL
 ===================================================== */
 
 let db = null;
@@ -678,8 +810,6 @@ let db = null;
 let editId = null;
 
 let workCount = 0;
-
-let photoData = "";
 
 let displayZoomEnabled = false;
 
@@ -690,136 +820,99 @@ let posX = 0;
 let posY = 0;
 
 
+
 /* =====================================================
-   HELPER
+   STATUS
 ===================================================== */
 
-function $(id){
+function setStatus(message){
 
-    return document.getElementById(id);
-
-}
-
-
-function esc(value){
-
-    return String(value ?? "")
-    .replace(/[&<>"']/g,function(m){
-
-        return {
-
-            "&":"&amp;",
-            "<":"&lt;",
-            ">":"&gt;",
-            '"':"&quot;",
-            "'":"&#039;"
-
-        }[m];
-
-    });
+    document.getElementById(
+        "statusBox"
+    ).innerText = message;
 
 }
 
 
-function nl(value){
 
-    return esc(value)
-    .replace(/\n/g,"<br>");
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(str){
+
+    return String(str ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
-
-function status(message){
-
-    $("status").textContent = message;
-
-}
 
 
 /* =====================================================
    ADD WORK
 ===================================================== */
 
-function addWork(work = {}){
+function addWork(){
 
     workCount++;
 
-    let n = workCount;
+    const div =
+        document.createElement("div");
 
-    let div = document.createElement("div");
+    div.className =
+        "workBox";
 
-    div.className = "workBox";
-
-    div.id = "workBox" + n;
 
     div.innerHTML = `
 
+        <strong>
+            Work Experience ${workCount}
+        </strong>
+
+
         <input
-            id="job${n}"
             placeholder="Job Title"
-            value="${esc(work.job || "")}"
-        >
+            id="job${workCount}">
+
 
         <input
-            id="company${n}"
             placeholder="Company"
-            value="${esc(work.company || "")}"
-        >
+            id="company${workCount}">
+
 
         <input
-            id="start${n}"
             placeholder="Start Date"
-            value="${esc(work.start || "")}"
-        >
+            id="start${workCount}">
+
 
         <input
-            id="end${n}"
             placeholder="End Date"
-            value="${esc(work.end || "")}"
-        >
+            id="end${workCount}">
+
 
         <input
-            id="address${n}"
             placeholder="Address"
-            value="${esc(work.address || "")}"
-        >
+            id="address${workCount}">
+
 
         <textarea
-            id="desc${n}"
             placeholder="Description"
-        >${esc(work.desc || "")}</textarea>
-
-        <button
-            type="button"
-            class="red"
-            onclick="removeWork(${n})"
-        >
-            Remove Work
-        </button>
+            id="desc${workCount}">
+        </textarea>
 
     `;
 
-    $("workContainer")
-    .appendChild(div);
+
+    document
+        .getElementById("workContainer")
+        .appendChild(div);
 
 }
 
-
-/* =====================================================
-   REMOVE WORK
-===================================================== */
-
-function removeWork(n){
-
-    let box = $("workBox" + n);
-
-    if(box){
-
-        box.remove();
-
-    }
-
-}
 
 
 /* =====================================================
@@ -830,32 +923,49 @@ function collectWorks(){
 
     let works = [];
 
-    document
-    .querySelectorAll(".workBox")
-    .forEach(function(box){
 
-        let n =
-            box.id.replace("workBox","");
+    for(
+        let i = 1;
+        i <= workCount;
+        i++
+    ){
 
-        let work = {
+        const work = {
 
             job:
-                $("job"+n)?.value || "",
+                document.getElementById(
+                    "job" + i
+                )?.value || "",
+
 
             company:
-                $("company"+n)?.value || "",
+                document.getElementById(
+                    "company" + i
+                )?.value || "",
+
 
             start:
-                $("start"+n)?.value || "",
+                document.getElementById(
+                    "start" + i
+                )?.value || "",
+
 
             end:
-                $("end"+n)?.value || "",
+                document.getElementById(
+                    "end" + i
+                )?.value || "",
+
 
             address:
-                $("address"+n)?.value || "",
+                document.getElementById(
+                    "address" + i
+                )?.value || "",
+
 
             desc:
-                $("desc"+n)?.value || ""
+                document.getElementById(
+                    "desc" + i
+                )?.value || ""
 
         };
 
@@ -863,6 +973,9 @@ function collectWorks(){
         if(
             work.job ||
             work.company ||
+            work.start ||
+            work.end ||
+            work.address ||
             work.desc
         ){
 
@@ -870,7 +983,7 @@ function collectWorks(){
 
         }
 
-    });
+    }
 
 
     return works;
@@ -878,67 +991,118 @@ function collectWorks(){
 }
 
 
+
 /* =====================================================
-   GET FORM DATA
+   COLLECT CV DATA
 ===================================================== */
 
-function getData(){
+function collectCVData(){
 
     return {
 
         id:
-            String(
-                editId ||
-                Date.now()
-            ),
+            editId ||
+            Date.now(),
+
 
         name:
-            $("name").value,
+            document
+            .getElementById("name")
+            .value
+            .trim(),
+
 
         location:
-            $("location").value,
+            document
+            .getElementById("location")
+            .value
+            .trim(),
+
 
         phone:
-            $("phone").value,
+            document
+            .getElementById("phone")
+            .value
+            .trim(),
+
 
         email:
-            $("email").value,
+            document
+            .getElementById("email")
+            .value
+            .trim(),
+
 
         dob:
-            $("dob").value,
+            document
+            .getElementById("dob")
+            .value
+            .trim(),
+
 
         gender:
-            $("gender").value,
+            document
+            .getElementById("gender")
+            .value,
+
 
         nationality:
-            $("nationality").value,
+            document
+            .getElementById("nationality")
+            .value
+            .trim(),
+
 
         summary:
-            $("summary").value,
+            document
+            .getElementById("summary")
+            .value
+            .trim(),
+
 
         skills:
-            $("skills").value,
+            document
+            .getElementById("skills")
+            .value
+            .trim(),
+
 
         languages:
-            $("languages").value,
+            document
+            .getElementById("languages")
+            .value
+            .trim(),
+
 
         education:
-            $("education").value,
+            document
+            .getElementById("education")
+            .value
+            .trim(),
+
 
         Responsbiliti:
-            $("Responsbiliti").value,
+            document
+            .getElementById("Responsbiliti")
+            .value
+            .trim(),
+
 
         works:
             collectWorks(),
 
-        photo:
-            photoData ||
-            $("cvPhoto").src ||
-            ""
+
+        savedAt:
+            new Date().toISOString(),
+
+
+        synced:
+            false
 
     };
 
 }
+
 
 
 /* =====================================================
@@ -947,147 +1111,246 @@ function getData(){
 
 function gen(){
 
-    let d = getData();
+    const name =
+        document.getElementById("name").value;
 
 
-    $("cvName").textContent =
-        d.name || "Your Name";
+    document.getElementById(
+        "cvName"
+    ).innerText =
+        name || "Your Name";
 
 
-    $("cvLocation").textContent =
-        d.location;
+    document.getElementById(
+        "cvLocation"
+    ).innerText =
+        document.getElementById(
+            "location"
+        ).value;
 
 
-    $("cvPhone").textContent =
-        d.phone;
+    document.getElementById(
+        "cvPhone"
+    ).innerText =
+        document.getElementById(
+            "phone"
+        ).value;
 
 
-    $("cvEmail").textContent =
-        d.email;
+    document.getElementById(
+        "cvEmail"
+    ).innerText =
+        document.getElementById(
+            "email"
+        ).value;
 
 
-    $("cvDob").textContent =
-        d.dob;
+    document.getElementById(
+        "cvDob"
+    ).innerText =
+        document.getElementById(
+            "dob"
+        ).value;
 
 
-    $("cvgender").textContent =
-        d.gender;
+    document.getElementById(
+        "cvgender"
+    ).innerText =
+        document.getElementById(
+            "gender"
+        ).value;
 
 
-    $("cvNationality").textContent =
-        d.nationality;
+    document.getElementById(
+        "cvNationality"
+    ).innerText =
+        document.getElementById(
+            "nationality"
+        ).value;
 
 
-    $("cvSummary").innerHTML =
-        nl(d.summary);
+    document.getElementById(
+        "cvSummary"
+    ).innerHTML =
+        escapeHTML(
+            document.getElementById(
+                "summary"
+            ).value
+        ).replace(/\n/g,"<br>");
 
 
-    $("cvSkills").innerHTML =
-        nl(d.skills);
+    document.getElementById(
+        "cvSkills"
+    ).innerHTML =
+        escapeHTML(
+            document.getElementById(
+                "skills"
+            ).value
+        ).replace(/\n/g,"<br>");
 
 
-    $("cvLang").innerHTML =
-        nl(d.languages);
+    document.getElementById(
+        "cvLang"
+    ).innerHTML =
+        escapeHTML(
+            document.getElementById(
+                "languages"
+            ).value
+        ).replace(/\n/g,"<br>");
 
 
-    $("cvEdu").innerHTML =
-        nl(d.education);
+    document.getElementById(
+        "cvEdu"
+    ).innerHTML =
+        escapeHTML(
+            document.getElementById(
+                "education"
+            ).value
+        ).replace(/\n/g,"<br>");
 
 
-    $("cvRespons").innerHTML =
-        nl(d.Responsbiliti);
+    document.getElementById(
+        "cvRespons"
+    ).innerHTML =
+        escapeHTML(
+            document.getElementById(
+                "Responsbiliti"
+            ).value
+        ).replace(/\n/g,"<br>");
 
 
-    $("cvWork").innerHTML =
-        d.works
-        .map(function(w){
+    let workHTML = "";
 
-            return `
 
-            <div
-                style="
-                margin-bottom:8px;
-                "
-            >
+    for(
+        let i = 1;
+        i <= workCount;
+        i++
+    ){
 
-                <b>
-                    ${esc(w.job)}
-                </b>
+        const job =
+            document.getElementById(
+                "job" + i
+            )?.value || "";
 
-                <br>
 
-                ${esc(w.company)}
+        const company =
+            document.getElementById(
+                "company" + i
+            )?.value || "";
 
-                <br>
 
-                <small>
-                    ${esc(w.start)}
-                    -
-                    ${esc(w.end)}
-                </small>
+        const start =
+            document.getElementById(
+                "start" + i
+            )?.value || "";
 
-                <br>
 
-                <small>
-                    ${esc(w.address)}
-                </small>
+        const end =
+            document.getElementById(
+                "end" + i
+            )?.value || "";
 
-                <br>
 
-                ${nl(w.desc)}
+        const address =
+            document.getElementById(
+                "address" + i
+            )?.value || "";
 
-            </div>
+
+        const desc =
+            document.getElementById(
+                "desc" + i
+            )?.value || "";
+
+
+        if(
+            job ||
+            company
+        ){
+
+            workHTML += `
+
+                <div
+                    style="margin-bottom:10px;">
+
+                    <b>
+                        ${escapeHTML(job)}
+                    </b>
+
+                    <br>
+
+                    <span>
+                        ${escapeHTML(company)}
+                    </span>
+
+                    <br>
+
+                    <span
+                        style="
+                            font-size:11px;
+                            color:#555;
+                        ">
+
+                        ${escapeHTML(start)}
+                        -
+                        ${escapeHTML(end)}
+
+                    </span>
+
+                    <br>
+
+                    <span
+                        style="font-size:11px;">
+
+                        ${escapeHTML(address)}
+
+                    </span>
+
+                    <br>
+
+                    <span
+                        style="font-size:12px;">
+
+                        ${escapeHTML(desc)
+                            .replace(/\n/g,"<br>")}
+
+                    </span>
+
+                </div>
 
             `;
 
-        })
-        .join("");
-
-
-    if(photoData){
-
-        $("cvPhoto").src =
-            photoData;
+        }
 
     }
 
 
-    status("CV Generated");
-
-}
-
-
-/* =====================================================
-   PHOTO
-===================================================== */
-
-$("photo")
-.addEventListener(
-    "change",
-    function(e){
-
-        let file =
-            e.target.files[0];
-
-        if(!file){
-
-            return;
-
-        }
+    document.getElementById(
+        "cvWork"
+    ).innerHTML =
+        workHTML;
 
 
-        let reader =
+    const file =
+        document.getElementById(
+            "photo"
+        ).files[0];
+
+
+    if(file){
+
+        const reader =
             new FileReader();
 
 
         reader.onload =
-            function(event){
+            function(e){
 
-                photoData =
-                    event.target.result;
-
-                $("cvPhoto").src =
-                    photoData;
+                document.getElementById(
+                    "cvPhoto"
+                ).src =
+                    e.target.result;
 
             };
 
@@ -1095,283 +1358,81 @@ $("photo")
         reader.readAsDataURL(file);
 
     }
-);
-
-
-/* =====================================================
-   FILL FORM
-===================================================== */
-
-function fillForm(
-    d,
-    showAlert = true
-){
-
-    [
-
-        "name",
-        "location",
-        "phone",
-        "email",
-        "dob",
-        "gender",
-        "nationality",
-        "summary",
-        "skills",
-        "languages",
-        "education",
-        "Responsbiliti"
-
-    ].forEach(function(key){
-
-        if($(key)){
-
-            $(key).value =
-                d[key] || "";
-
-        }
-
-    });
-
-
-    $("workContainer")
-        .innerHTML = "";
-
-    workCount = 0;
-
-
-    if(
-        Array.isArray(d.works)
-    ){
-
-        d.works
-        .forEach(function(w){
-
-            addWork(w);
-
-        });
-
-    }
-
-
-    editId =
-        d.id || null;
-
-
-    photoData =
-        d.photo || "";
-
-
-    if(photoData){
-
-        $("cvPhoto").src =
-            photoData;
-
-    }
-
-
-    gen();
-
-
-    if(showAlert){
-
-        alert(
-            "CV loaded for editing ✏️"
-        );
-
-    }
 
 }
 
 
-/* =====================================================
-   CLEAR FORM
-===================================================== */
-
-function clearForm(){
-
-    [
-
-        "name",
-        "location",
-        "phone",
-        "email",
-        "dob",
-        "gender",
-        "nationality",
-        "summary",
-        "skills",
-        "languages",
-        "education",
-        "Responsbiliti"
-
-    ].forEach(function(key){
-
-        $(key).value = "";
-
-    });
-
-
-    $("workContainer")
-        .innerHTML = "";
-
-    workCount = 0;
-
-    editId = null;
-
-    photoData = "";
-
-    $("photo").value = "";
-
-    $("cvPhoto").src = "";
-
-    gen();
-
-    status(
-        "New CV"
-    );
-
-}
-
 
 /* =====================================================
-   INDEXED DB
+   INDEXED DB OPEN
 ===================================================== */
 
 function initDB(){
 
-    let request =
-        indexedDB.open(
-            "CVDatabase",
-            1
-        );
-
-
-    request.onupgradeneeded =
-        function(e){
-
-            db =
-                e.target.result;
-
-
-            if(
-                !db.objectStoreNames.contains(
-                    "cvData"
-                )
-            ){
-
-                db.createObjectStore(
-                    "cvData",
-                    {
-                        keyPath:"id"
-                    }
-                );
-
-            }
-
-        };
-
-
-    request.onsuccess =
-        function(e){
-
-            db =
-                e.target.result;
-
-            loadList();
-
-        };
-
-
-    request.onerror =
-        function(){
-
-            status(
-                "Database error"
-            );
-
-        };
-
-}
-
-
-/* =====================================================
-   SAVE OFFLINE
-===================================================== */
-
-function saveOffline(
-    silent = false
-){
-
-    if(!db){
-
-        alert(
-            "Database not ready."
-        );
-
-        return Promise.reject();
-
-    }
-
-
-    let data =
-        getData();
-
-
     return new Promise(
         function(resolve,reject){
 
-            let tx =
-                db.transaction(
-                    "cvData",
-                    "readwrite"
+            const request =
+                indexedDB.open(
+                    DB_NAME,
+                    DB_VERSION
                 );
 
 
-            tx.objectStore(
-                "cvData"
-            ).put(data);
+            request.onupgradeneeded =
+                function(e){
+
+                    const database =
+                        e.target.result;
 
 
-            tx.oncomplete =
-                function(){
+                    if(
+                        !database.objectStoreNames.contains(
+                            STORE_NAME
+                        )
+                    ){
 
-                    editId =
-                        data.id;
-
-                    loadList();
-
-                    status(
-                        "Saved Offline ✅"
-                    );
-
-
-                    if(!silent){
-
-                        alert(
-                            "CV Saved Successfully ✅"
+                        database.createObjectStore(
+                            STORE_NAME,
+                            {
+                                keyPath:"id"
+                            }
                         );
 
                     }
-
-
-                    resolve(data);
 
                 };
 
 
-            tx.onerror =
-                function(){
+            request.onsuccess =
+                function(e){
 
-                    if(!silent){
+                    db =
+                        e.target.result;
 
-                        alert(
-                            "Save Failed"
-                        );
 
-                    }
+                    console.log(
+                        "IndexedDB Ready ✅"
+                    );
 
-                    reject();
+
+                    resolve(db);
+
+                };
+
+
+            request.onerror =
+                function(e){
+
+                    console.error(
+                        "IndexedDB Error:",
+                        e.target.error
+                    );
+
+
+                    reject(
+                        e.target.error
+                    );
 
                 };
 
@@ -1381,150 +1442,22 @@ function saveOffline(
 }
 
 
-/* =====================================================
-   SAVE + GOOGLE SHEET
-===================================================== */
-
-async function saveAndSync(){
-
-    try{
-
-        await saveOffline(true);
-
-        await syncCurrentToSheet();
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-    }
-
-}
-
 
 /* =====================================================
-   CURRENT DATA SYNC
+   INDEXED DB PUT
 ===================================================== */
 
-async function syncCurrentToSheet(){
+function putCV(data){
 
-    let data =
-        getData();
+    return new Promise(
+        function(resolve,reject){
 
+            if(!db){
 
-    try{
-
-        let response =
-            await fetch(
-                WEB_APP_URL,
-                {
-
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            ...data,
-
-                            action:"save"
-
-                        })
-
-                }
-            );
-
-
-        let result =
-            await response.json();
-
-
-        if(result.success){
-
-            alert(
-                "CV Google Sheet मा Save/Update भयो ✅"
-            );
-
-
-            loadList();
-
-
-            status(
-                "Google Sheet Synced ✅"
-            );
-
-        }
-
-        else{
-
-            alert(
-                result.message ||
-                "Google Sheet Save Failed"
-            );
-
-        }
-
-    }
-
-    catch(error){
-
-        console.error(error);
-
-        alert(
-            "Google Sheet connection failed."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   SYNC ALL OFFLINE
-===================================================== */
-
-async function syncToSheet(){
-
-    if(!db){
-
-        alert(
-            "Database not ready."
-        );
-
-        return;
-
-    }
-
-
-    let request =
-        db
-        .transaction(
-            "cvData",
-            "readonly"
-        )
-        .objectStore(
-            "cvData"
-        )
-        .getAll();
-
-
-    request.onsuccess =
-        async function(){
-
-            let all =
-                request.result || [];
-
-
-            if(!all.length){
-
-                alert(
-                    "No offline CV found."
+                reject(
+                    new Error(
+                        "IndexedDB not available"
+                    )
                 );
 
                 return;
@@ -1532,234 +1465,596 @@ async function syncToSheet(){
             }
 
 
-            let successCount = 0;
+            try{
+
+                const tx =
+                    db.transaction(
+                        STORE_NAME,
+                        "readwrite"
+                    );
 
 
-            for(
-                let data of all
-            ){
+                const store =
+                    tx.objectStore(
+                        STORE_NAME
+                    );
+
+
+                store.put(data);
+
+
+                tx.oncomplete =
+                    function(){
+
+                        resolve();
+
+                    };
+
+
+                tx.onerror =
+                    function(){
+
+                        reject(
+                            tx.error
+                        );
+
+                    };
+
+
+            }catch(error){
+
+                reject(error);
+
+            }
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   GET ALL CV
+===================================================== */
+
+function getAllCV(){
+
+    return new Promise(
+        function(resolve){
+
+            if(!db){
+
+                resolve([]);
+
+                return;
+
+            }
+
+
+            try{
+
+                const tx =
+                    db.transaction(
+                        STORE_NAME,
+                        "readonly"
+                    );
+
+
+                const store =
+                    tx.objectStore(
+                        STORE_NAME
+                    );
+
+
+                const request =
+                    store.getAll();
+
+
+                request.onsuccess =
+                    function(){
+
+                        resolve(
+                            request.result || []
+                        );
+
+                    };
+
+
+                request.onerror =
+                    function(){
+
+                        resolve([]);
+
+                    };
+
+            }catch(error){
+
+                console.error(error);
+
+                resolve([]);
+
+            }
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   GET ONE CV
+===================================================== */
+
+function getOneCV(id){
+
+    return new Promise(
+        function(resolve){
+
+            if(!db){
+
+                resolve(null);
+
+                return;
+
+            }
+
+
+            try{
+
+                const key =
+                    isNaN(id)
+                    ? id
+                    : Number(id);
+
+
+                const request =
+                    db
+                    .transaction(
+                        STORE_NAME,
+                        "readonly"
+                    )
+                    .objectStore(
+                        STORE_NAME
+                    )
+                    .get(key);
+
+
+                request.onsuccess =
+                    function(){
+
+                        resolve(
+                            request.result ||
+                            null
+                        );
+
+                    };
+
+
+                request.onerror =
+                    function(){
+
+                        resolve(null);
+
+                    };
+
+            }catch(error){
+
+                resolve(null);
+
+            }
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   DELETE ONE CV
+===================================================== */
+
+function deleteCVFromDB(id){
+
+    return new Promise(
+        function(resolve,reject){
+
+            if(!db){
+
+                resolve();
+
+                return;
+
+            }
+
+
+            try{
+
+                const key =
+                    isNaN(id)
+                    ? id
+                    : Number(id);
+
+
+                const tx =
+                    db.transaction(
+                        STORE_NAME,
+                        "readwrite"
+                    );
+
+
+                tx.objectStore(
+                    STORE_NAME
+                ).delete(key);
+
+
+                tx.oncomplete =
+                    function(){
+
+                        resolve();
+
+                    };
+
+
+                tx.onerror =
+                    function(){
+
+                        reject(
+                            tx.error
+                        );
+
+                    };
+
+            }catch(error){
+
+                reject(error);
+
+            }
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   SAVE OFFLINE
+===================================================== */
+
+async function saveOffline(){
+
+    const data =
+        collectCVData();
+
+
+    if(!data.name){
+
+        alert(
+            "Please enter Full Name first."
+        );
+
+
+        document
+            .getElementById("name")
+            .focus();
+
+
+        return;
+
+    }
+
+
+    try{
+
+        if(!db){
+
+            await initDB();
+
+        }
+
+
+        await putCV(data);
+
+
+        editId =
+            data.id;
+
+
+        gen();
+
+
+        await loadOfflineList();
+
+
+        setStatus(
+            "CV Offline Save भयो ✅"
+        );
+
+
+        alert(
+            "CV Offline Save भयो ✅"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "OFFLINE SAVE ERROR:",
+            error
+        );
+
+
+        setStatus(
+            "Storage save failed ❌"
+        );
+
+
+        alert(
+            "Offline Save Failed ❌\n\n" +
+            "Browser storage unavailable or full.\n" +
+            "Please delete some old CVs and try again."
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   LOAD OFFLINE LIST
+===================================================== */
+
+async function loadOfflineList(){
+
+    try{
+
+        const all =
+            await getAllCV();
+
+
+        displayOfflineList(
+            all
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        displayOfflineList([]);
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY OFFLINE LIST
+===================================================== */
+
+function displayOfflineList(all){
+
+    const box =
+        document.getElementById(
+            "offlineList"
+        );
+
+
+    if(!Array.isArray(all)){
+
+        all = [];
+
+    }
+
+
+    if(all.length === 0){
+
+        box.innerHTML = `
+
+            <div class="workBox">
+
+                <b>
+                    No Offline CV Found
+                </b>
+
+                <br><br>
+
+                Save a CV using
+                <b>
+                    💾 Save Offline
+                </b>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    all.sort(
+        function(a,b){
+
+            return Number(b.id || 0) -
+                   Number(a.id || 0);
+
+        }
+    );
+
+
+    let html = "";
+
+
+    all.forEach(
+        function(d){
+
+            const id =
+                String(d.id || "");
+
+
+            let savedDate = "";
+
+
+            if(d.savedAt){
 
                 try{
 
-                    let response =
-                        await fetch(
-                            WEB_APP_URL,
-                            {
+                    savedDate =
+                        new Date(
+                            d.savedAt
+                        ).toLocaleString();
 
-                                method:"POST",
+                }catch(e){
 
-                                headers:{
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify({
-
-                                        ...data,
-
-                                        action:"save"
-
-                                    })
-
-                            }
-                        );
-
-
-                    let result =
-                        await response.json();
-
-
-                    if(
-                        result.success
-                    ){
-
-                        successCount++;
-
-                    }
-
-                }
-
-                catch(error){
-
-                    console.error(
-                        error
-                    );
+                    savedDate = "";
 
                 }
 
             }
 
 
-            alert(
-                successCount +
-                " CV Google Sheet मा Sync भयो ✅"
-            );
+            html += `
+
+                <div class="workBox">
+
+                    <h3
+                        style="
+                            margin:0 0 8px 0;
+                        ">
+
+                        ${escapeHTML(
+                            d.name ||
+                            "Unnamed CV"
+                        )}
+
+                    </h3>
 
 
-            loadList();
+                    <div>
 
-        };
-
-}
-
-
-/* =====================================================
-   LOAD GOOGLE SHEET LIST
-===================================================== */
-
-async function loadList(){
-
-    try{
-
-        let response =
-            await fetch(
-                WEB_APP_URL +
-                "?action=list"
-            );
-
-
-        let result =
-            await response.json();
-
-
-        if(
-            !result.success
-        ){
-
-            $("dataList")
-                .innerHTML =
-                "Failed to load CV.";
-
-            return;
-
-        }
-
-
-        let all =
-            result.data || [];
-
-
-        if(!all.length){
-
-            $("dataList")
-                .innerHTML =
-                "No CV Found";
-
-            return;
-
-        }
-
-
-        $("dataList")
-            .innerHTML =
-
-
-            all.map(
-                function(d){
-
-                    return `
-
-                    <div class="listItem">
-
-                        <b>
-                            ${esc(d.name)}
-                        </b>
-
-                        <br>
-
-                        ${esc(d.phone)}
-
-                        <br>
-
-                        ${esc(d.location)}
-
-                        <br>
-
-                        <small>
-                            ID:
-                            ${esc(d.id)}
-                        </small>
-
-                        <br>
-
-
-                        <button
-                            onclick="
-                            editGoogleCV(
-                                '${esc(String(d.id))}'
-                            )
-                            "
-                        >
-                            Edit
-                        </button>
-
-
-                        <button
-                            class="red"
-                            onclick="
-                            deleteGoogleCV(
-                                '${esc(String(d.id))}'
-                            )
-                            "
-                        >
-                            Delete
-                        </button>
+                        📞
+                        ${escapeHTML(
+                            d.phone || ""
+                        )}
 
                     </div>
 
-                    `;
 
-                }
-            )
-            .join("");
+                    <div>
 
-    }
+                        📍
+                        ${escapeHTML(
+                            d.location || ""
+                        )}
 
-    catch(error){
+                    </div>
 
-        console.error(error);
 
-        $("dataList")
-            .innerHTML =
-            "Google Sheet बाट CV load गर्न सकिएन.";
+                    <div>
 
-    }
+                        ✉️
+                        ${escapeHTML(
+                            d.email || ""
+                        )}
+
+                    </div>
+
+
+                    <div
+                        style="
+                            margin-top:6px;
+                            font-size:12px;
+                            color:#666;
+                        ">
+
+                        ID:
+                        ${escapeHTML(id)}
+
+                        ${
+                            savedDate
+                            ?
+                            "<br>Saved: " +
+                            escapeHTML(savedDate)
+                            :
+                            ""
+                        }
+
+                    </div>
+
+
+                    <div
+                        style="
+                            margin-top:8px;
+                            font-weight:bold;
+                        ">
+
+                        ${
+                            d.synced
+                            ?
+                            "☁️ Google Sheet Synced"
+                            :
+                            "📱 Offline Only"
+                        }
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        onclick="editOfflineData('${id}')">
+
+                        ✏️ Edit
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="danger"
+                        onclick="deleteOfflineData('${id}')">
+
+                        🗑️ Delete
+
+                    </button>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    box.innerHTML =
+        html;
 
 }
 
 
+
 /* =====================================================
-   EDIT GOOGLE CV
+   EDIT OFFLINE
 ===================================================== */
 
-async function editGoogleCV(
-    id
-){
+async function editOfflineData(id){
 
     try{
 
-        let response =
-            await fetch(
-
-                WEB_APP_URL +
-                "?action=get&id=" +
-                encodeURIComponent(id)
-
-            );
+        const data =
+            await getOneCV(id);
 
 
-        let result =
-            await response.json();
-
-
-        if(
-            !result.success
-        ){
+        if(!data){
 
             alert(
-                result.message ||
-                "CV not found"
+                "CV not found."
             );
 
             return;
@@ -1767,8 +2062,15 @@ async function editGoogleCV(
         }
 
 
-        fillForm(
-            result.data
+        fillForm(data);
+
+
+        editId =
+            data.id;
+
+
+        setStatus(
+            "Offline CV loaded ✏️"
         );
 
 
@@ -1780,14 +2082,14 @@ async function editGoogleCV(
 
         });
 
-    }
 
-    catch(error){
+    }catch(error){
 
         console.error(error);
 
+
         alert(
-            "Google Sheet बाट CV load गर्न समस्या भयो."
+            "CV load failed."
         );
 
     }
@@ -1795,17 +2097,164 @@ async function editGoogleCV(
 }
 
 
+
 /* =====================================================
-   DELETE GOOGLE CV
+   FILL FORM
 ===================================================== */
 
-async function deleteGoogleCV(
-    id
-){
+function fillForm(d){
+
+    document.getElementById(
+        "name"
+    ).value =
+        d.name || "";
+
+
+    document.getElementById(
+        "location"
+    ).value =
+        d.location || "";
+
+
+    document.getElementById(
+        "phone"
+    ).value =
+        d.phone || "";
+
+
+    document.getElementById(
+        "email"
+    ).value =
+        d.email || "";
+
+
+    document.getElementById(
+        "dob"
+    ).value =
+        d.dob || "";
+
+
+    document.getElementById(
+        "gender"
+    ).value =
+        d.gender || "";
+
+
+    document.getElementById(
+        "nationality"
+    ).value =
+        d.nationality || "";
+
+
+    document.getElementById(
+        "summary"
+    ).value =
+        d.summary || "";
+
+
+    document.getElementById(
+        "skills"
+    ).value =
+        d.skills || "";
+
+
+    document.getElementById(
+        "languages"
+    ).value =
+        d.languages || "";
+
+
+    document.getElementById(
+        "education"
+    ).value =
+        d.education || "";
+
+
+    document.getElementById(
+        "Responsbiliti"
+    ).value =
+        d.Responsbiliti || "";
+
+
+    document.getElementById(
+        "workContainer"
+    ).innerHTML =
+        "";
+
+
+    workCount = 0;
+
+
+    if(
+        Array.isArray(d.works)
+    ){
+
+        d.works.forEach(
+            function(w){
+
+                addWork();
+
+
+                document.getElementById(
+                    "job" + workCount
+                ).value =
+                    w.job || "";
+
+
+                document.getElementById(
+                    "company" + workCount
+                ).value =
+                    w.company || "";
+
+
+                document.getElementById(
+                    "start" + workCount
+                ).value =
+                    w.start || "";
+
+
+                document.getElementById(
+                    "end" + workCount
+                ).value =
+                    w.end || "";
+
+
+                document.getElementById(
+                    "address" + workCount
+                ).value =
+                    w.address || "";
+
+
+                document.getElementById(
+                    "desc" + workCount
+                ).value =
+                    w.desc || "";
+
+            }
+        );
+
+    }
+
+
+    editId =
+        d.id;
+
+
+    gen();
+
+}
+
+
+
+/* =====================================================
+   DELETE OFFLINE
+===================================================== */
+
+async function deleteOfflineData(id){
 
     if(
         !confirm(
-            "Delete this CV from Google Sheet?"
+            "Delete this Offline CV?"
         )
     ){
 
@@ -1816,34 +2265,519 @@ async function deleteGoogleCV(
 
     try{
 
-        let response =
+        await deleteCVFromDB(id);
+
+
+        if(
+            String(editId) ===
+            String(id)
+        ){
+
+            editId = null;
+
+        }
+
+
+        await loadOfflineList();
+
+
+        setStatus(
+            "Offline CV deleted."
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        alert(
+            "Delete failed."
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   SYNC TO GOOGLE SHEET
+===================================================== */
+
+async function syncToSheet(){
+
+    const all =
+        await getAllCV();
+
+
+    if(all.length === 0){
+
+        alert(
+            "No Offline CV Found."
+        );
+
+        return;
+
+    }
+
+
+    setStatus(
+        "Syncing Offline CVs to Google Sheet..."
+    );
+
+
+    let successCount = 0;
+
+    let failedCount = 0;
+
+
+    for(
+        const data of all
+    ){
+
+        try{
+
+            const payload = {
+
+                action:"save",
+
+                id:data.id,
+
+                name:data.name,
+
+                location:data.location,
+
+                phone:data.phone,
+
+                email:data.email,
+
+                dob:data.dob,
+
+                gender:data.gender,
+
+                nationality:data.nationality,
+
+                summary:data.summary,
+
+                skills:data.skills,
+
+                languages:data.languages,
+
+                education:data.education,
+
+                Responsbiliti:
+                    data.Responsbiliti || "",
+
+                works:
+                    data.works || []
+
+            };
+
+
+            const response =
+                await fetch(
+                    WEB_APP_URL,
+                    {
+
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                payload
+                            )
+
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if(
+                result.success
+            ){
+
+                successCount++;
+
+
+                data.synced =
+                    true;
+
+
+                data.syncDate =
+                    new Date().toISOString();
+
+
+                await putCV(data);
+
+            }else{
+
+                failedCount++;
+
+            }
+
+        }catch(error){
+
+            console.error(
+                "Sync Error:",
+                error
+            );
+
+
+            failedCount++;
+
+        }
+
+    }
+
+
+    await loadOfflineList();
+
+
+    setStatus(
+        "Sync completed: " +
+        successCount +
+        " success, " +
+        failedCount +
+        " failed."
+    );
+
+
+    alert(
+
+        successCount +
+        " CV Google Sheet मा Sync भयो ✅\n\n" +
+
+        "Failed: " +
+        failedCount
+
+    );
+
+
+    await loadGoogleList();
+
+}
+
+
+
+/* =====================================================
+   GOOGLE LIST
+===================================================== */
+
+async function loadGoogleList(){
+
+    const box =
+        document.getElementById(
+            "googleList"
+        );
+
+
+    box.innerHTML =
+        "Loading Google Sheet...";
+
+
+    try{
+
+        const response =
             await fetch(
 
-                WEB_APP_URL,
+                WEB_APP_URL +
+                "?action=list&t=" +
+                Date.now(),
+
                 {
-
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            action:"delete",
-
-                            id:id
-
-                        })
-
+                    cache:"no-store"
                 }
 
             );
 
 
-        let result =
+        const result =
+            await response.json();
+
+
+        if(
+            !result.success
+        ){
+
+            box.innerHTML =
+                "Google Sheet error: " +
+                escapeHTML(
+                    result.message || ""
+                );
+
+
+            return;
+
+        }
+
+
+        const all =
+            Array.isArray(
+                result.data
+            )
+            ?
+            result.data
+            :
+            [];
+
+
+        if(
+            all.length === 0
+        ){
+
+            box.innerHTML =
+                "No CV Found in Google Sheet.";
+
+            return;
+
+        }
+
+
+        let html = "";
+
+
+        all.forEach(
+            function(d){
+
+                const id =
+                    String(
+                        d.id || ""
+                    );
+
+
+                html += `
+
+                    <div class="workBox">
+
+                        <h3
+                            style="
+                                margin:0;
+                            ">
+
+                            ${escapeHTML(
+                                d.name ||
+                                "Unnamed CV"
+                            )}
+
+                        </h3>
+
+
+                        <br>
+
+                        📞
+                        ${escapeHTML(
+                            d.phone || ""
+                        )}
+
+
+                        <br>
+
+                        📍
+                        ${escapeHTML(
+                            d.location || ""
+                        )}
+
+
+                        <br>
+
+
+                        <small>
+
+                            Google ID:
+                            ${escapeHTML(id)}
+
+                        </small>
+
+
+                        <br><br>
+
+
+                        <button
+                            type="button"
+                            onclick="editGoogleCV('${id}')">
+
+                            ✏️ Edit
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="danger"
+                            onclick="deleteGoogleCV('${id}')">
+
+                            🗑️ Delete
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        box.innerHTML =
+            html;
+
+
+    }catch(error){
+
+        console.error(
+            "Google List Error:",
+            error
+        );
+
+
+        box.innerHTML =
+            "Google Sheet load गर्न सकिएन। Internet check गर्नुहोस्।";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   EDIT GOOGLE CV
+===================================================== */
+
+async function editGoogleCV(id){
+
+    try{
+
+        const response =
+            await fetch(
+
+                WEB_APP_URL +
+                "?action=get&id=" +
+                encodeURIComponent(id) +
+                "&t=" +
+                Date.now()
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(
+            !result.success
+        ){
+
+            alert(
+                result.message ||
+                "CV not found."
+            );
+
+
+            return;
+
+        }
+
+
+        fillForm(
+            result.data
+        );
+
+
+        editId =
+            result.data.id;
+
+
+        setStatus(
+            "Google Sheet CV loaded ✏️"
+        );
+
+
+        window.scrollTo({
+
+            top:0,
+
+            behavior:"smooth"
+
+        });
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        alert(
+            "Google Sheet बाट CV load गर्न सकिएन।"
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DELETE GOOGLE CV
+===================================================== */
+
+async function deleteGoogleCV(id){
+
+    if(!id){
+
+        alert(
+            "CV ID not found."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !confirm(
+            "Delete this CV from Google Sheet?\n\nID: " +
+            id
+        )
+    ){
+
+        return;
+
+    }
+
+
+    setStatus(
+        "Deleting Google Sheet CV..."
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                WEB_APP_URL +
+                "?action=delete&id=" +
+                encodeURIComponent(id) +
+                "&t=" +
+                Date.now(),
+
+                {
+                    method:"GET",
+                    cache:"no-store"
+                }
+
+            );
+
+
+        const result =
             await response.json();
 
 
@@ -1852,31 +2786,39 @@ async function deleteGoogleCV(
         ){
 
             alert(
-                "CV Deleted Successfully ✅"
+                "Google Sheet CV deleted successfully ✅"
             );
 
 
-            loadList();
+            setStatus(
+                "Google Sheet CV deleted ✅"
+            );
 
-        }
 
-        else{
+            await loadGoogleList();
+
+
+        }else{
 
             alert(
                 result.message ||
-                "Delete Failed"
+                "Delete failed."
             );
 
         }
 
-    }
-
-    catch(error){
+    }catch(error){
 
         console.error(error);
 
+
         alert(
-            "Delete Failed ❌"
+            "Google Sheet delete failed."
+        );
+
+
+        setStatus(
+            "Delete failed ❌"
         );
 
     }
@@ -1884,51 +2826,66 @@ async function deleteGoogleCV(
 }
 
 
+
 /* =====================================================
-   DOWNLOAD TXT
+   COPY ALL DATA
 ===================================================== */
 
-function downloadTXT(){
+function copyAllData(){
 
-    let d =
-        getData();
+    const data =
+        collectCVData();
 
 
     let text = `
 
-FULL NAME:
-${d.name}
+Full Name:
+${data.name}
 
-LOCATION:
-${d.location}
+Location:
+${data.location}
 
-PHONE:
-${d.phone}
+Phone:
+${data.phone}
 
-EMAIL:
-${d.email}
+Email:
+${data.email}
 
-DATE OF BIRTH:
-${d.dob}
+Date of Birth:
+${data.dob}
 
-GENDER:
-${d.gender}
+Gender:
+${data.gender}
 
-NATIONALITY:
-${d.nationality}
+Nationality:
+${data.nationality}
 
+SUMMARY:
+${data.summary}
 
-PROFESSIONAL SUMMARY:
+SKILLS:
+${data.skills}
 
-${d.summary}
+LANGUAGES:
+${data.languages}
 
+EDUCATION:
+${data.education}
+
+RESPONSIBILITIES:
+${data.Responsbiliti}
 
 WORK HISTORY:
 
-${
-d.works.map(function(w){
+`;
 
-return `
+
+    data.works.forEach(
+        function(w,index){
+
+            text += `
+
+Work ${index + 1}
 
 Job Title:
 ${w.job}
@@ -1947,71 +2904,238 @@ ${w.desc}
 
 `;
 
-}).join("\n")
+        }
+    );
+
+
+    if(
+        navigator.clipboard
+    ){
+
+        navigator.clipboard
+            .writeText(text)
+            .then(
+                function(){
+
+                    alert(
+                        "All Entry Data Copied ✅"
+                    );
+
+                }
+            )
+            .catch(
+                function(){
+
+                    alert(
+                        "Clipboard not supported."
+                    );
+
+                }
+            );
+
+    }else{
+
+        alert(
+            "Clipboard not supported."
+        );
+
+    }
+
 }
 
 
-SKILLS:
 
-${d.skills}
+/* =====================================================
+   DOWNLOAD TXT
+===================================================== */
 
+function downloadTXT(){
 
-LANGUAGES:
-
-${d.languages}
-
-
-EDUCATION:
-
-${d.education}
+    const data =
+        collectCVData();
 
 
-RESPONSIBILITIES:
-
-${d.Responsbiliti}
-
-`;
+    let text =
+        "CURRICULUM VITAE\n\n";
 
 
-    let blob =
+    text +=
+        "Name: " +
+        data.name +
+        "\n";
+
+
+    text +=
+        "Location: " +
+        data.location +
+        "\n";
+
+
+    text +=
+        "Phone: " +
+        data.phone +
+        "\n";
+
+
+    text +=
+        "Email: " +
+        data.email +
+        "\n";
+
+
+    text +=
+        "DOB: " +
+        data.dob +
+        "\n";
+
+
+    text +=
+        "Gender: " +
+        data.gender +
+        "\n";
+
+
+    text +=
+        "Nationality: " +
+        data.nationality +
+        "\n\n";
+
+
+    text +=
+        "PROFESSIONAL SUMMARY\n" +
+        data.summary +
+        "\n\n";
+
+
+    text +=
+        "SKILLS\n" +
+        data.skills +
+        "\n\n";
+
+
+    text +=
+        "LANGUAGES\n" +
+        data.languages +
+        "\n\n";
+
+
+    text +=
+        "EDUCATION\n" +
+        data.education +
+        "\n\n";
+
+
+    text +=
+        "RESPONSIBILITIES\n" +
+        data.Responsbiliti +
+        "\n\n";
+
+
+    text +=
+        "WORK HISTORY\n\n";
+
+
+    data.works.forEach(
+        function(w,index){
+
+            text +=
+                "Work " +
+                (index + 1) +
+                "\n";
+
+
+            text +=
+                "Job Title: " +
+                w.job +
+                "\n";
+
+
+            text +=
+                "Company: " +
+                w.company +
+                "\n";
+
+
+            text +=
+                "Start: " +
+                w.start +
+                "\n";
+
+
+            text +=
+                "End: " +
+                w.end +
+                "\n";
+
+
+            text +=
+                "Address: " +
+                w.address +
+                "\n";
+
+
+            text +=
+                "Description: " +
+                w.desc +
+                "\n\n";
+
+        }
+    );
+
+
+    const blob =
         new Blob(
             [text],
             {
-                type:
-                "text/plain;charset=utf-8"
+                type:"text/plain"
             }
         );
 
 
-    let link =
-        document.createElement("a");
-
-
-    link.href =
+    const url =
         URL.createObjectURL(
             blob
         );
 
 
-    link.download =
-        (
-            d.name ||
-            "CV"
-        )
-        .replace(
+    const a =
+        document.createElement("a");
+
+
+    a.href =
+        url;
+
+
+    let fileName =
+        data.name ||
+        "CV";
+
+
+    fileName =
+        fileName.replace(
             /[\\/:*?"<>|]/g,
             "_"
-        ) +
+        );
+
+
+    a.download =
+        fileName +
         ".txt";
 
 
-    link.click();
+    a.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
 
 }
 
 
+
 /* =====================================================
-   PDF
+   DOWNLOAD PDF
 ===================================================== */
 
 async function downloadPDF(){
@@ -2025,23 +3149,29 @@ async function downloadPDF(){
         window.jspdf;
 
 
-    let canvas =
+    const cv =
+        document.querySelector(
+            ".cv"
+        );
+
+
+    const canvas =
         await html2canvas(
-            $("cv"),
+            cv,
             {
                 scale:2,
-                backgroundColor:"#ffffff"
+                useCORS:true
             }
         );
 
 
-    let imgData =
+    const imgData =
         canvas.toDataURL(
             "image/png"
         );
 
 
-    let pdf =
+    const pdf =
         new jsPDF(
             "p",
             "mm",
@@ -2049,18 +3179,18 @@ async function downloadPDF(){
         );
 
 
-    let imgWidth =
+    const imgWidth =
         210;
+
+
+    const pageHeight =
+        297;
 
 
     let imgHeight =
         canvas.height *
         imgWidth /
         canvas.width;
-
-
-    let pageHeight =
-        297;
 
 
     let position = 0;
@@ -2105,9 +3235,9 @@ async function downloadPDF(){
 
 
     let fileName =
-        $("name")
-        .value
-        .trim();
+        document.getElementById(
+            "name"
+        ).value.trim();
 
 
     if(
@@ -2135,114 +3265,447 @@ async function downloadPDF(){
 }
 
 
+
 /* =====================================================
-   COPY ALL DATA
+   PROFESSIONAL RESUME
 ===================================================== */
 
-function copyAllData(){
+function generateResume(){
 
-    let d =
-        getData();
-
-
-    let text = `
-
-Full Name:
-${d.name}
-
-Location:
-${d.location}
-
-Phone:
-${d.phone}
-
-Email:
-${d.email}
-
-Date of Birth:
-${d.dob}
-
-Gender:
-${d.gender}
-
-Nationality:
-${d.nationality}
+    gen();
 
 
-SUMMARY:
-
-${d.summary}
+    const jobs = [];
 
 
-SKILLS:
+    for(
+        let i = 1;
+        i <= workCount;
+        i++
+    ){
 
-${d.skills}
-
-
-LANGUAGES:
-
-${d.languages}
-
-
-EDUCATION:
-
-${d.education}
+        const job =
+            document.getElementById(
+                "job" + i
+            )?.value || "";
 
 
-RESPONSIBILITIES:
+        if(job){
 
-${d.Responsbiliti}
+            jobs.push(job);
+
+        }
+
+    }
 
 
-WORK HISTORY:
+    const name =
+        document.getElementById(
+            "name"
+        ).value || "";
 
-${
-d.works.map(function(w){
 
-return `
+    const nationality =
+        document.getElementById(
+            "nationality"
+        ).value || "";
 
-Job Title:
-${w.job}
 
-Company:
-${w.company}
+    const skills =
+        document.getElementById(
+            "skills"
+        ).value || "";
 
-Date:
-${w.start} - ${w.end}
 
-Address:
-${w.address}
+    const education =
+        document.getElementById(
+            "education"
+        ).value || "";
 
-Description:
-${w.desc}
 
-`;
+    const summary =
 
-}).join("\n")
+        `${name} is a hardworking and motivated professional with experience as ${jobs.join(", ")}. Skilled in ${skills}. A dedicated ${nationality} worker with strong teamwork, communication and problem-solving abilities seeking career growth opportunities.`;
+
+
+    document.getElementById(
+        "cvName"
+    ).innerText =
+        name;
+
+
+    document.getElementById(
+        "cvSummary"
+    ).innerText =
+        summary;
+
+
+    document.getElementById(
+        "cvSkills"
+    ).innerText =
+        skills;
+
+
+    document.getElementById(
+        "cvEdu"
+    ).innerText =
+        education;
+
+
+    document.getElementById(
+        "cvRespons"
+    ).innerText =
+
+        "Responsible for daily work activities, maintaining safety, teamwork, and completing assigned tasks efficiently.";
+
+
+    let workHTML = "";
+
+
+    for(
+        let i = 1;
+        i <= workCount;
+        i++
+    ){
+
+        const job =
+            document.getElementById(
+                "job" + i
+            )?.value || "";
+
+
+        const company =
+            document.getElementById(
+                "company" + i
+            )?.value || "";
+
+
+        if(
+            job ||
+            company
+        ){
+
+            workHTML += `
+
+                <p>
+
+                    <b>
+                        ${escapeHTML(job)}
+                    </b>
+
+                    -
+
+                    ${escapeHTML(company)}
+
+                </p>
+
+            `;
+
+        }
+
+    }
+
+
+    document.getElementById(
+        "cvWork"
+    ).innerHTML =
+        workHTML;
+
+
+    alert(
+        "Professional Resume Generated ✅"
+    );
+
 }
 
-`;
 
 
-    navigator
-    .clipboard
-    .writeText(text)
-    .then(function(){
+/* =====================================================
+   DOWNLOAD PROFESSIONAL RESUME PDF
+===================================================== */
 
-        alert(
-            "All Entry Data Copied ✅"
+async function downloadResumePDF(){
+
+    generateResume();
+
+
+    const {
+        jsPDF
+    } =
+        window.jspdf;
+
+
+    const tempDiv =
+        document.createElement(
+            "div"
         );
 
-    })
-    .catch(function(){
 
-        alert(
-            "Copy failed."
+    tempDiv.style.width =
+        "794px";
+
+
+    tempDiv.style.padding =
+        "40px";
+
+
+    tempDiv.style.fontFamily =
+        "Arial";
+
+
+    tempDiv.style.background =
+        "white";
+
+
+    tempDiv.style.color =
+        "#111";
+
+
+    tempDiv.innerHTML = `
+
+        <div
+            style="text-align:center;">
+
+            <img
+                src="${
+                    document.getElementById(
+                        "cvPhoto"
+                    ).src
+                }"
+
+                style="
+                    width:130px;
+                    height:130px;
+                    border-radius:50%;
+                    object-fit:cover;
+                    border:4px solid #0f766e;
+                ">
+
+
+            <h1>
+
+                ${escapeHTML(
+                    document.getElementById(
+                        "name"
+                    ).value
+                )}
+
+            </h1>
+
+
+            <p>
+
+                ${escapeHTML(
+                    document.getElementById(
+                        "phone"
+                    ).value
+                )}
+
+                |
+
+                ${escapeHTML(
+                    document.getElementById(
+                        "email"
+                    ).value
+                )}
+
+            </p>
+
+
+            <p>
+
+                ${escapeHTML(
+                    document.getElementById(
+                        "location"
+                    ).value
+                )}
+
+            </p>
+
+        </div>
+
+
+        <hr>
+
+
+        <h2
+            style="color:#0f766e;">
+
+            Professional Summary
+
+        </h2>
+
+
+        <p
+            style="
+                line-height:1.8;
+                text-align:justify;
+            ">
+
+            ${escapeHTML(
+                document.getElementById(
+                    "cvSummary"
+                ).innerText
+            )}
+
+        </p>
+
+
+        <h2
+            style="color:#0f766e;">
+
+            Skills
+
+        </h2>
+
+
+        <p>
+
+            ${escapeHTML(
+                document.getElementById(
+                    "skills"
+                ).value
+            )}
+
+        </p>
+
+
+        <h2
+            style="color:#0f766e;">
+
+            Work Experience
+
+        </h2>
+
+
+        ${document.getElementById(
+            "cvWork"
+        ).innerHTML}
+
+
+        <h2
+            style="color:#0f766e;">
+
+            Education
+
+        </h2>
+
+
+        <p>
+
+            ${escapeHTML(
+                document.getElementById(
+                    "education"
+                ).value
+            )}
+
+        </p>
+
+
+        <h2
+            style="color:#0f766e;">
+
+            Responsibilities
+
+        </h2>
+
+
+        <p>
+
+            ${escapeHTML(
+                document.getElementById(
+                    "Responsbiliti"
+                ).value
+            )}
+
+        </p>
+
+    `;
+
+
+    document.body.appendChild(
+        tempDiv
+    );
+
+
+    const canvas =
+        await html2canvas(
+            tempDiv,
+            {
+                scale:2
+            }
         );
 
-    });
+
+    const imgData =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    const pdf =
+        new jsPDF(
+            "p",
+            "mm",
+            "a4"
+        );
+
+
+    const imgWidth =
+        210;
+
+
+    const imgHeight =
+        canvas.height *
+        imgWidth /
+        canvas.width;
+
+
+    pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        imgWidth,
+        imgHeight
+    );
+
+
+    let fileName =
+        document.getElementById(
+            "name"
+        ).value.trim();
+
+
+    if(
+        !fileName
+    ){
+
+        fileName =
+            "Resume";
+
+    }
+
+
+    fileName =
+        fileName.replace(
+            /[\\/:*?"<>|]/g,
+            "_"
+        );
+
+
+    pdf.save(
+        fileName +
+        "_Resume.pdf"
+    );
+
+
+    document.body.removeChild(
+        tempDiv
+    );
 
 }
+
 
 
 /* =====================================================
@@ -2254,189 +3717,64 @@ function previewResume(){
     gen();
 
 
-    $("previewContent")
-        .innerHTML =
-        $("cv").outerHTML;
+    const resumeHTML =
+        document.querySelector(
+            ".right"
+        ).innerHTML;
 
 
-    $("previewModal")
-        .style.display =
+    document.getElementById(
+        "previewContent"
+    ).innerHTML = `
+
+        <div
+            style="
+                width:100%;
+                padding:20px;
+                background:white;
+            ">
+
+            ${resumeHTML}
+
+        </div>
+
+    `;
+
+
+    document.getElementById(
+        "previewModal"
+    ).style.display =
         "block";
 
 }
 
 
+
 function closePreview(){
 
-    $("previewModal")
-        .style.display =
+    document.getElementById(
+        "previewModal"
+    ).style.display =
         "none";
 
 }
 
 
-/* =====================================================
-   PRINT
-===================================================== */
-
-function printPreview(){
-
-    gen();
-
-
-    let printWindow =
-        window.open(
-            "",
-            "_blank",
-            "width=900,height=900"
-        );
-
-
-    if(!printWindow){
-
-        alert(
-            "Popup blocked. Please allow popup."
-        );
-
-        return;
-
-    }
-
-
-    printWindow.document.write(`
-
-<html>
-
-<head>
-
-<title>
-CV Print
-</title>
-
-<style>
-
-body{
-    margin:0;
-}
-
-.cv{
-    width:794px;
-    height:1123px;
-    display:flex;
-    font-family:Arial;
-}
-
-.left{
-    width:35%;
-    background:#0f766e;
-    color:white;
-    padding:25px;
-}
-
-.right{
-    width:65%;
-    padding:35px;
-}
-
-.photoWrap{
-    width:130px;
-    height:130px;
-    border-radius:50%;
-    overflow:hidden;
-    margin:auto;
-}
-
-.photoWrap img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-}
-
-</style>
-
-</head>
-
-<body>
-
-${$("cv").outerHTML}
-
-</body>
-
-</html>
-
-`);
-
-
-    printWindow.document.close();
-
-
-    setTimeout(
-        function(){
-
-            printWindow.print();
-
-        },
-        500
-    );
-
-}
-
 
 /* =====================================================
-   DISPLAY ZOOM
-===================================================== */
-
-function toggleDisplayZoom(){
-
-    displayZoomEnabled =
-        !displayZoomEnabled;
-
-
-    $("viewportMeta")
-        .setAttribute(
-
-            "content",
-
-            displayZoomEnabled
-
-            ?
-
-            "width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes"
-
-            :
-
-            "width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
-
-        );
-
-
-    alert(
-
-        displayZoomEnabled
-
-        ?
-
-        "Display Zoom Enabled"
-
-        :
-
-        "Display Zoom Disabled"
-
-    );
-
-}
-
-
-/* =====================================================
-   PHOTO ZOOM
+   PHOTO
 ===================================================== */
 
 const img =
-    $("cvPhoto");
+    document.getElementById(
+        "cvPhoto"
+    );
 
 
 const zoom =
-    $("zoomRange");
+    document.getElementById(
+        "zoomRange"
+    );
 
 
 zoom.addEventListener(
@@ -2445,8 +3783,9 @@ zoom.addEventListener(
 
         scale =
             parseFloat(
-                zoom.value
+                this.value
             );
+
 
         updateTransform();
 
@@ -2454,32 +3793,144 @@ zoom.addEventListener(
 );
 
 
+
 function updateTransform(){
 
     img.style.transform =
-        `translate(
-            ${posX}px,
-            ${posY}px
-        )
-        scale(
-            ${scale}
-        )`;
+        `translate(${posX}px,${posY}px) scale(${scale})`;
 
 }
+
+
+
+/* =====================================================
+   PHOTO PINCH ZOOM
+===================================================== */
+
+let initialDistance = 0;
+
+let initialScale = 1;
+
+
+function getDistance(
+    t1,
+    t2
+){
+
+    return Math.sqrt(
+
+        Math.pow(
+            t2.clientX -
+            t1.clientX,
+            2
+        )
+
+        +
+
+        Math.pow(
+            t2.clientY -
+            t1.clientY,
+            2
+        )
+
+    );
+
+}
+
+
+
+img.addEventListener(
+    "touchstart",
+    function(e){
+
+        if(
+            e.touches.length === 2
+        ){
+
+            e.preventDefault();
+
+
+            initialDistance =
+                getDistance(
+                    e.touches[0],
+                    e.touches[1]
+                );
+
+
+            initialScale =
+                scale;
+
+        }
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+
+img.addEventListener(
+    "touchmove",
+    function(e){
+
+        if(
+            e.touches.length === 2
+        ){
+
+            e.preventDefault();
+
+
+            const currentDistance =
+                getDistance(
+                    e.touches[0],
+                    e.touches[1]
+                );
+
+
+            scale =
+                initialScale *
+                (
+                    currentDistance /
+                    initialDistance
+                );
+
+
+            scale =
+                Math.max(
+                    1,
+                    Math.min(
+                        scale,
+                        3
+                    )
+                );
+
+
+            zoom.value =
+                scale;
+
+
+            updateTransform();
+
+        }
+
+    },
+    {
+        passive:false
+    }
+);
+
 
 
 /* =====================================================
    PHOTO DRAG
 ===================================================== */
 
-let dragging =
-    false;
+let isDragging = false;
 
-let startX =
-    0;
+let startX = 0;
 
-let startY =
-    0;
+let startY = 0;
 
 
 img.addEventListener(
@@ -2490,7 +3941,7 @@ img.addEventListener(
 
 function startDrag(e){
 
-    dragging =
+    isDragging =
         true;
 
 
@@ -2506,11 +3957,14 @@ function startDrag(e){
 }
 
 
+
 document.addEventListener(
     "mousemove",
     function(e){
 
-        if(!dragging){
+        if(
+            !isDragging
+        ){
 
             return;
 
@@ -2533,31 +3987,490 @@ document.addEventListener(
 );
 
 
+
 document.addEventListener(
     "mouseup",
     function(){
 
-        dragging =
+        isDragging =
             false;
 
     }
 );
 
 
+
 /* =====================================================
-   START
+   PHOTO INPUT
+===================================================== */
+
+document.getElementById(
+    "photo"
+).addEventListener(
+    "change",
+    function(){
+
+        const file =
+            this.files[0];
+
+
+        if(!file){
+
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e){
+
+                img.src =
+                    e.target.result;
+
+
+                scale =
+                    1;
+
+
+                posX =
+                    0;
+
+
+                posY =
+                    0;
+
+
+                zoom.value =
+                    1;
+
+
+                updateTransform();
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+);
+
+
+
+/* =====================================================
+   DRAFT
+   ONLY SMALL TEXT DATA
+===================================================== */
+
+function autoSaveDraft(){
+
+    try{
+
+        const draft = {
+
+            name:
+                document.getElementById(
+                    "name"
+                ).value,
+
+
+            location:
+                document.getElementById(
+                    "location"
+                ).value,
+
+
+            phone:
+                document.getElementById(
+                    "phone"
+                ).value,
+
+
+            email:
+                document.getElementById(
+                    "email"
+                ).value,
+
+
+            dob:
+                document.getElementById(
+                    "dob"
+                ).value,
+
+
+            gender:
+                document.getElementById(
+                    "gender"
+                ).value,
+
+
+            nationality:
+                document.getElementById(
+                    "nationality"
+                ).value,
+
+
+            summary:
+                document.getElementById(
+                    "summary"
+                ).value,
+
+
+            skills:
+                document.getElementById(
+                    "skills"
+                ).value,
+
+
+            languages:
+                document.getElementById(
+                    "languages"
+                ).value,
+
+
+            education:
+                document.getElementById(
+                    "education"
+                ).value,
+
+
+            Responsbiliti:
+                document.getElementById(
+                    "Responsbiliti"
+                ).value,
+
+
+            works:
+                collectWorks()
+
+        };
+
+
+        localStorage.setItem(
+            "draftCV",
+            JSON.stringify(draft)
+        );
+
+
+    }catch(error){
+
+        console.warn(
+            "Draft save skipped:",
+            error
+        );
+
+    }
+
+}
+
+
+
+document
+    .querySelectorAll(
+        "input, textarea, select"
+    )
+    .forEach(
+        function(el){
+
+            el.addEventListener(
+                "input",
+                autoSaveDraft
+            );
+
+
+            el.addEventListener(
+                "change",
+                autoSaveDraft
+            );
+
+        }
+    );
+
+
+
+/* =====================================================
+   LOAD DRAFT
+===================================================== */
+
+function loadDraft(){
+
+    try{
+
+        const draft =
+            JSON.parse(
+                localStorage.getItem(
+                    "draftCV"
+                ) || "{}"
+            );
+
+
+        if(
+            !draft ||
+            !draft.name
+        ){
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "name"
+        ).value =
+            draft.name || "";
+
+
+        document.getElementById(
+            "location"
+        ).value =
+            draft.location || "";
+
+
+        document.getElementById(
+            "phone"
+        ).value =
+            draft.phone || "";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            draft.email || "";
+
+
+        document.getElementById(
+            "dob"
+        ).value =
+            draft.dob || "";
+
+
+        document.getElementById(
+            "gender"
+        ).value =
+            draft.gender || "";
+
+
+        document.getElementById(
+            "nationality"
+        ).value =
+            draft.nationality || "";
+
+
+        document.getElementById(
+            "summary"
+        ).value =
+            draft.summary || "";
+
+
+        document.getElementById(
+            "skills"
+        ).value =
+            draft.skills || "";
+
+
+        document.getElementById(
+            "languages"
+        ).value =
+            draft.languages || "";
+
+
+        document.getElementById(
+            "education"
+        ).value =
+            draft.education || "";
+
+
+        document.getElementById(
+            "Responsbiliti"
+        ).value =
+            draft.Responsbiliti || "";
+
+
+        document.getElementById(
+            "workContainer"
+        ).innerHTML =
+            "";
+
+
+        workCount = 0;
+
+
+        if(
+            Array.isArray(
+                draft.works
+            )
+        ){
+
+            draft.works.forEach(
+                function(w){
+
+                    addWork();
+
+
+                    document.getElementById(
+                        "job" +
+                        workCount
+                    ).value =
+                        w.job || "";
+
+
+                    document.getElementById(
+                        "company" +
+                        workCount
+                    ).value =
+                        w.company || "";
+
+
+                    document.getElementById(
+                        "start" +
+                        workCount
+                    ).value =
+                        w.start || "";
+
+
+                    document.getElementById(
+                        "end" +
+                        workCount
+                    ).value =
+                        w.end || "";
+
+
+                    document.getElementById(
+                        "address" +
+                        workCount
+                    ).value =
+                        w.address || "";
+
+
+                    document.getElementById(
+                        "desc" +
+                        workCount
+                    ).value =
+                        w.desc || "";
+
+                }
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "Draft error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   DISPLAY ZOOM
+===================================================== */
+
+function toggleDisplayZoom(){
+
+    const viewport =
+        document.getElementById(
+            "viewportMeta"
+        );
+
+
+    if(
+        displayZoomEnabled
+    ){
+
+        viewport.setAttribute(
+            "content",
+            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        );
+
+
+        displayZoomEnabled =
+            false;
+
+
+        alert(
+            "Display Zoom Disabled"
+        );
+
+    }else{
+
+        viewport.setAttribute(
+            "content",
+            "width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+        );
+
+
+        displayZoomEnabled =
+            true;
+
+
+        alert(
+            "Display Zoom Enabled"
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
 ===================================================== */
 
 window.addEventListener(
     "load",
-    function(){
+    async function(){
+
+        loadDraft();
+
+
+        try{
+
+            await initDB();
+
+
+            await loadOfflineList();
+
+
+            setStatus(
+                "Ready - IndexedDB Storage Active ✅"
+            );
+
+
+        }catch(error){
+
+            console.error(
+                "DB Init Error:",
+                error
+            );
+
+
+            setStatus(
+                "IndexedDB unavailable ❌"
+            );
+
+        }
+
 
         gen();
 
-        initDB();
+
+        loadGoogleList();
 
     }
 );
+
 
 </script>
 
