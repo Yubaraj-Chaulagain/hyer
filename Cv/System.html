@@ -1,322 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1.0"
+>
 
 <title>Member Management System</title>
 
 <style>
+
 *{
-    box-sizing:border-box;
+box-sizing:border-box;
 }
 
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#f2f4f7;
-    color:#222;
+margin:0;
+font-family:Arial,sans-serif;
+background:#f2f4f7;
+color:#222;
 }
 
 header{
-    background:#1f4e78;
-    color:white;
-    padding:15px;
-    text-align:center;
-    font-size:22px;
-    font-weight:bold;
+background:#1f4e78;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
 }
 
 nav{
-    display:flex;
-    flex-wrap:wrap;
-    gap:6px;
-    padding:10px;
-    background:white;
-    box-shadow:0 2px 5px #bbb;
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+padding:10px;
+background:white;
+box-shadow:0 2px 5px #bbb;
 }
 
 nav button{
-    border:0;
-    background:#1f4e78;
-    color:white;
-    padding:10px 14px;
-    border-radius:5px;
-    cursor:pointer;
+border:0;
+background:#1f4e78;
+color:white;
+padding:10px 14px;
+border-radius:5px;
+cursor:pointer;
 }
 
 .container{
-    padding:15px;
-    max-width:1400px;
-    margin:auto;
+padding:15px;
+max-width:1400px;
+margin:auto;
 }
 
 .section{
-    display:none;
+display:none;
 }
 
 .section.active{
-    display:block;
+display:block;
 }
 
 .card{
-    background:white;
-    padding:18px;
-    margin-bottom:15px;
-    border-radius:8px;
-    box-shadow:0 2px 8px #ccc;
+background:white;
+padding:18px;
+margin-bottom:15px;
+border-radius:8px;
+box-shadow:0 2px 8px #ccc;
 }
 
 h2{
-    margin-top:0;
-    color:#1f4e78;
+margin-top:0;
+color:#1f4e78;
 }
 
 .form-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:12px;
+display:grid;
+grid-template-columns:
+repeat(auto-fit,minmax(200px,1fr));
+gap:12px;
 }
 
 label{
-    font-weight:bold;
-    display:block;
-    margin-bottom:5px;
+font-weight:bold;
+display:block;
+margin-bottom:5px;
 }
 
 input,
 select{
-    width:100%;
-    padding:10px;
-    border:1px solid #aaa;
-    border-radius:5px;
-    font-size:15px;
+width:100%;
+padding:10px;
+border:1px solid #aaa;
+border-radius:5px;
+font-size:15px;
 }
 
 input:disabled,
 select:disabled{
-    background:#e9ecef;
-    cursor:not-allowed;
+background:#e9ecef;
 }
 
 button{
-    padding:9px 14px;
-    border:0;
-    border-radius:5px;
-    cursor:pointer;
+padding:9px 14px;
+border:0;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:disabled{
+opacity:.6;
+cursor:not-allowed;
 }
 
 .btn-primary{
-    background:#1f4e78;
-    color:white;
+background:#1f4e78;
+color:white;
 }
 
 .btn-success{
-    background:#198754;
-    color:white;
+background:#198754;
+color:white;
 }
 
 .btn-danger{
-    background:#dc3545;
-    color:white;
+background:#dc3545;
+color:white;
 }
 
 .btn-warning{
-    background:#ffc107;
-    color:#000;
+background:#ffc107;
+color:#000;
 }
 
 .btn-secondary{
-    background:#6c757d;
-    color:white;
+background:#6c757d;
+color:white;
 }
 
 .table-wrap{
-    overflow-x:auto;
+overflow-x:auto;
 }
 
 table{
-    width:100%;
-    border-collapse:collapse;
-    min-width:800px;
+width:100%;
+border-collapse:collapse;
+min-width:800px;
 }
 
 th,
 td{
-    border:1px solid #ddd;
-    padding:8px;
-    text-align:left;
+border:1px solid #ddd;
+padding:8px;
+text-align:left;
 }
 
 th{
-    background:#1f4e78;
-    color:white;
+background:#1f4e78;
+color:white;
 }
 
 tr:nth-child(even){
-    background:#f7f7f7;
+background:#f7f7f7;
 }
 
 .actions{
-    display:flex;
-    gap:5px;
-    flex-wrap:wrap;
-}
-
-.total-box{
-    font-size:22px;
-    font-weight:bold;
-    padding:15px;
-    background:#e8f4ff;
-    border-radius:6px;
-    margin-top:10px;
+display:flex;
+gap:5px;
+flex-wrap:wrap;
 }
 
 .message{
-    padding:10px;
-    margin:10px 0;
-    border-radius:5px;
-    display:none;
+padding:10px;
+margin:10px 0;
+border-radius:5px;
+display:none;
 }
 
 .success{
-    background:#d1e7dd;
-    color:#0f5132;
+background:#d1e7dd;
+color:#0f5132;
 }
 
 .error{
-    background:#f8d7da;
-    color:#842029;
+background:#f8d7da;
+color:#842029;
 }
 
 .warning{
-    background:#fff3cd;
-    color:#664d03;
+background:#fff3cd;
+color:#664d03;
 }
 
-.storage-info{
-    font-size:13px;
-    color:#555;
-    margin-top:8px;
+.total-box{
+font-size:22px;
+font-weight:bold;
+padding:15px;
+background:#e8f4ff;
+border-radius:6px;
+margin-top:10px;
+}
+
+.sync-status{
+position:fixed;
+right:10px;
+bottom:10px;
+padding:8px 12px;
+background:#1f4e78;
+color:white;
+border-radius:20px;
+font-size:12px;
+z-index:9999;
 }
 
 @media(max-width:600px){
 
-    header{
-        font-size:18px;
-    }
-
-    nav button{
-        flex:1 1 45%;
-    }
-
-    .container{
-        padding:8px;
-    }
-
-    .card{
-        padding:12px;
-    }
-
-    input,
-    select{
-        font-size:16px;
-    }
+header{
+font-size:18px;
 }
+
+nav button{
+flex:1 1 45%;
+}
+
+.container{
+padding:8px;
+}
+
+.card{
+padding:12px;
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
 
 <header>
-    Member Management System
+Member Management System
 </header>
 
+
 <nav>
-    <button onclick="showSection('members')">Members</button>
-    <button onclick="showSection('transaction')">Transaction</button>
-    <button onclick="showSection('attendance')">Attendance</button>
-    <button onclick="showSection('company')">Company</button>
-    <button onclick="showSection('trade')">Trade</button>
+
+<button onclick="showSection('members')">
+Members
+</button>
+
+<button onclick="showSection('transaction')">
+Transaction
+</button>
+
+<button onclick="showSection('attendance')">
+Attendance
+</button>
+
+<button onclick="showSection('company')">
+Company
+</button>
+
+<button onclick="showSection('trade')">
+Trade
+</button>
+
 </nav>
 
+
 <div class="container">
+
 
 <!-- =====================================================
      MEMBERS
 ===================================================== -->
 
-<section id="members" class="section active">
+<section
+id="members"
+class="section active"
+>
 
 <div class="card">
 
 <h2>Members</h2>
 
-<div id="memberMessage" class="message"></div>
+<div
+id="memberMessage"
+class="message"
+></div>
+
 
 <div class="form-grid">
 
 <div>
+
 <label>Name</label>
-<input id="memberName" type="text">
+
+<input
+id="memberName"
+type="text"
+>
+
 </div>
 
+
 <div>
+
 <label>ID</label>
-<input id="memberId" type="text" disabled>
+
+<input
+id="memberId"
+type="text"
+disabled
+>
+
 </div>
 
+
 <div>
+
 <label>Working Company</label>
-<select id="memberWorkingCompany">
-<option value="">Select Working Company</option>
+
+<select
+id="memberWorkingCompany"
+>
+
+<option value="">
+Select Working Company
+</option>
+
 </select>
+
 </div>
 
+
 <div>
+
 <label>Phone Number</label>
-<input id="memberPhone" type="text">
+
+<input
+id="memberPhone"
+type="text"
+>
+
 </div>
 
+
 <div>
+
 <label>WhatsApp</label>
-<input id="memberWhatsapp" type="text">
+
+<input
+id="memberWhatsapp"
+type="text"
+>
+
 </div>
 
+
 <div>
+
 <label>Gmail</label>
-<input id="memberGmail" type="email">
+
+<input
+id="memberGmail"
+type="email"
+>
+
 </div>
 
+
 <div>
+
 <label>Trade</label>
-<select id="memberTrade">
-<option value="">Select Trade</option>
+
+<select
+id="memberTrade"
+>
+
+<option value="">
+Select Trade
+</option>
+
 </select>
+
 </div>
 
+
 <div>
+
 <label>Company</label>
-<select id="memberCompany">
-<option value="">Select Company</option>
+
+<select
+id="memberCompany"
+>
+
+<option value="">
+Select Company
+</option>
+
 </select>
+
 </div>
+
 
 <div>
+
 <label>Grand Total</label>
-<input id="memberGrandTotal" type="number" disabled>
+
+<input
+id="memberGrandTotal"
+type="number"
+disabled
+>
+
 </div>
 
 </div>
+
 
 <br>
 
-<button class="btn-success" onclick="saveMember()">
+
+<button
+id="memberSaveBtn"
+class="btn-success"
+onclick="saveMember()"
+>
+
 Save Member
+
 </button>
 
-<button class="btn-secondary" onclick="clearMemberForm()">
+
+<button
+class="btn-secondary"
+onclick="clearMemberForm()"
+>
+
 Clear
+
 </button>
 
 </div>
@@ -326,20 +455,25 @@ Clear
 
 <h2>Member List</h2>
 
+
 <input
-    id="memberSearch"
-    placeholder="Search member..."
-    oninput="renderMembers()"
+id="memberSearch"
+placeholder="Search member..."
+oninput="renderMembers()"
 >
 
+
 <br><br>
+
 
 <div class="table-wrap">
 
 <table>
 
 <thead>
+
 <tr>
+
 <th>Name</th>
 <th>ID</th>
 <th>Working Company</th>
@@ -350,10 +484,14 @@ Clear
 <th>Company</th>
 <th>Grand Total</th>
 <th>Actions</th>
+
 </tr>
+
 </thead>
 
-<tbody id="memberTable"></tbody>
+<tbody
+id="memberTable"
+></tbody>
 
 </table>
 
@@ -368,51 +506,67 @@ Clear
      TRANSACTION
 ===================================================== -->
 
-<section id="transaction" class="section">
+<section
+id="transaction"
+class="section"
+>
 
 <div class="card">
 
 <h2>Transaction</h2>
 
-<div id="transactionMessage" class="message"></div>
+<div
+id="transactionMessage"
+class="message"
+></div>
+
 
 <div class="form-grid">
 
+
 <div>
+
 <label>Name</label>
 
 <select
-    id="transactionName"
-    onchange="transactionNameChanged()"
+id="transactionName"
+onchange="transactionNameChanged()"
 >
 
-<option value="">Select Member</option>
+<option value="">
+Select Member
+</option>
 
 </select>
+
 </div>
 
 
 <div>
+
 <label>Date</label>
 
 <input
-    id="transactionDate"
-    type="date"
-    disabled
+id="transactionDate"
+type="date"
+disabled
 >
 
 </div>
 
 
 <div>
+
 <label>Type</label>
 
 <select
-    id="transactionType"
-    disabled
+id="transactionType"
+disabled
 >
 
-<option value="">Select Type</option>
+<option value="">
+Select Type
+</option>
 
 <option value="Credit">
 Credit
@@ -428,36 +582,44 @@ Debit
 
 
 <div>
+
 <label>Amount</label>
 
 <input
-    id="transactionAmount"
-    type="number"
-    min="0"
-    step="0.01"
-    disabled
+id="transactionAmount"
+type="number"
+min="0"
+step="0.01"
+disabled
 >
 
 </div>
 
 </div>
+
 
 <br>
 
-<button
-    id="transactionSaveBtn"
-    class="btn-success"
-    onclick="saveTransaction()"
-    disabled
->
-Save Transaction
-</button>
 
 <button
-    class="btn-secondary"
-    onclick="clearTransactionForm()"
+id="transactionSaveBtn"
+class="btn-success"
+onclick="saveTransaction()"
+disabled
 >
+
+Save Transaction
+
+</button>
+
+
+<button
+class="btn-secondary"
+onclick="clearTransactionForm()"
+>
+
 Clear
+
 </button>
 
 </div>
@@ -474,16 +636,20 @@ Clear
 <thead>
 
 <tr>
+
 <th>Name</th>
 <th>Date</th>
 <th>Type</th>
 <th>Amount</th>
 <th>Actions</th>
+
 </tr>
 
 </thead>
 
-<tbody id="transactionTable"></tbody>
+<tbody
+id="transactionTable"
+></tbody>
 
 </table>
 
@@ -498,26 +664,36 @@ Clear
      ATTENDANCE
 ===================================================== -->
 
-<section id="attendance" class="section">
+<section
+id="attendance"
+class="section"
+>
 
 <div class="card">
 
 <h2>Attendance</h2>
 
-<div id="attendanceMessage" class="message"></div>
+<div
+id="attendanceMessage"
+class="message"
+></div>
+
 
 <div class="form-grid">
+
 
 <div>
 
 <label>Name</label>
 
 <select
-    id="attendanceName"
-    onchange="attendanceNameChanged()"
+id="attendanceName"
+onchange="attendanceNameChanged()"
 >
 
-<option value="">Select Member</option>
+<option value="">
+Select Member
+</option>
 
 </select>
 
@@ -529,9 +705,9 @@ Clear
 <label>Date</label>
 
 <input
-    id="attendanceDate"
-    type="date"
-    disabled
+id="attendanceDate"
+type="date"
+disabled
 >
 
 </div>
@@ -542,11 +718,13 @@ Clear
 <label>Attendance</label>
 
 <select
-    id="attendanceType"
-    disabled
+id="attendanceType"
+disabled
 >
 
-<option value="">Select Attendance</option>
+<option value="">
+Select Attendance
+</option>
 
 <option value="Present">
 Present
@@ -570,22 +748,29 @@ Holiday Work
 
 </div>
 
+
 <br>
 
-<button
-    id="attendanceSaveBtn"
-    class="btn-success"
-    onclick="saveAttendance()"
-    disabled
->
-Save Attendance
-</button>
 
 <button
-    class="btn-secondary"
-    onclick="clearAttendanceForm()"
+id="attendanceSaveBtn"
+class="btn-success"
+onclick="saveAttendance()"
+disabled
 >
+
+Save Attendance
+
+</button>
+
+
+<button
+class="btn-secondary"
+onclick="clearAttendanceForm()"
+>
+
 Clear
+
 </button>
 
 </div>
@@ -602,15 +787,19 @@ Clear
 <thead>
 
 <tr>
+
 <th>Name</th>
 <th>Date</th>
 <th>Attendance</th>
 <th>Actions</th>
+
 </tr>
 
 </thead>
 
-<tbody id="attendanceTable"></tbody>
+<tbody
+id="attendanceTable"
+></tbody>
 
 </table>
 
@@ -625,41 +814,61 @@ Clear
      COMPANY
 ===================================================== -->
 
-<section id="company" class="section">
+<section
+id="company"
+class="section"
+>
 
 <div class="card">
 
 <h2>Company</h2>
 
-<div id="companyMessage" class="message"></div>
+<div
+id="companyMessage"
+class="message"
+></div>
+
 
 <div class="form-grid">
 
 <div>
 
-<label>Working Company Name</label>
+<label>
+Working Company Name
+</label>
 
-<input id="workingCompanyName">
+<input
+id="workingCompanyName"
+>
 
 </div>
+
 
 <div>
 
-<label>Your Company Name</label>
+<label>
+Your Company Name
+</label>
 
-<input id="yourCompanyName">
+<input
+id="yourCompanyName"
+>
 
 </div>
 
 </div>
+
 
 <br>
 
+
 <button
-    class="btn-success"
-    onclick="saveCompany()"
+class="btn-success"
+onclick="saveCompany()"
 >
+
 Save Company
+
 </button>
 
 </div>
@@ -676,14 +885,18 @@ Save Company
 <thead>
 
 <tr>
+
 <th>Working Company Name</th>
 <th>Your Company Name</th>
 <th>Actions</th>
+
 </tr>
 
 </thead>
 
-<tbody id="companyTable"></tbody>
+<tbody
+id="companyTable"
+></tbody>
 
 </table>
 
@@ -698,33 +911,48 @@ Save Company
      TRADE
 ===================================================== -->
 
-<section id="trade" class="section">
+<section
+id="trade"
+class="section"
+>
 
 <div class="card">
 
 <h2>Trade</h2>
 
-<div id="tradeMessage" class="message"></div>
+<div
+id="tradeMessage"
+class="message"
+></div>
+
 
 <div class="form-grid">
 
 <div>
 
-<label>Trade Name</label>
+<label>
+Trade Name
+</label>
 
-<input id="tradeName">
+<input
+id="tradeName"
+>
 
 </div>
 
 </div>
+
 
 <br>
 
+
 <button
-    class="btn-success"
-    onclick="saveTrade()"
+class="btn-success"
+onclick="saveTrade()"
 >
+
 Save Trade
+
 </button>
 
 </div>
@@ -741,13 +969,17 @@ Save Trade
 <thead>
 
 <tr>
+
 <th>Trade Name</th>
 <th>Actions</th>
+
 </tr>
 
 </thead>
 
-<tbody id="tradeTable"></tbody>
+<tbody
+id="tradeTable"
+></tbody>
 
 </table>
 
@@ -757,120 +989,138 @@ Save Trade
 
 </section>
 
+
+</div>
+
+
+<div
+id="syncStatus"
+class="sync-status"
+>
+Connecting...
 </div>
 
 
 <script>
 
+
 /* =========================================================
-   GOOGLE APPS SCRIPT URL
+   GOOGLE WEB APP
 ========================================================= */
 
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbzDI2PoQ1Jby7hXaXnjCumxP-u_rECFqylmgKgwTh_j3fztxMcD0a4VJfamdmZc4THE/exec";
+"https://script.google.com/macros/s/AKfycbxnN_XQg639jOZYE2DyTKSEizxIiA3PwXQaeyRu-w5jOVwWD_9UjxQrYD4xepZ_Qs__/exec";
 
 
 /* =========================================================
-   LOCAL BACKUP
+   STORAGE
 ========================================================= */
 
-const STORAGE_KEYS = {
+const STORAGE = {
 
-    members:"memberSystem_members",
+members:
+"memberSystem_members",
 
-    transactions:"memberSystem_transactions",
+transactions:
+"memberSystem_transactions",
 
-    attendance:"memberSystem_attendance",
+attendance:
+"memberSystem_attendance",
 
-    companies:"memberSystem_companies",
+companies:
+"memberSystem_companies",
 
-    trades:"memberSystem_trades"
+trades:
+"memberSystem_trades"
 
 };
 
 
 let members =
-    loadLocal(STORAGE_KEYS.members);
+loadLocal(
+STORAGE.members
+);
 
 let transactions =
-    loadLocal(STORAGE_KEYS.transactions);
+loadLocal(
+STORAGE.transactions
+);
 
 let attendance =
-    loadLocal(STORAGE_KEYS.attendance);
+loadLocal(
+STORAGE.attendance
+);
 
 let companies =
-    loadLocal(STORAGE_KEYS.companies);
+loadLocal(
+STORAGE.companies
+);
 
 let trades =
-    loadLocal(STORAGE_KEYS.trades);
+loadLocal(
+STORAGE.trades
+);
 
 
-let editingMemberId = null;
+let editingMemberId =
+null;
 
 
 /* =========================================================
-   LOCAL LOAD
+   LOCAL
 ========================================================= */
 
 function loadLocal(key){
 
-    try{
+try{
 
-        return JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
+return JSON.parse(
+localStorage.getItem(key) || "[]"
+);
 
-    }catch(e){
+}catch(e){
 
-        return [];
+return [];
 
-    }
+}
 
 }
 
 
-/* =========================================================
-   LOCAL BACKUP
-========================================================= */
-
 function saveLocal(){
 
-    try{
+try{
 
-        localStorage.setItem(
-            STORAGE_KEYS.members,
-            JSON.stringify(members)
-        );
+localStorage.setItem(
+STORAGE.members,
+JSON.stringify(members)
+);
 
-        localStorage.setItem(
-            STORAGE_KEYS.transactions,
-            JSON.stringify(transactions)
-        );
+localStorage.setItem(
+STORAGE.transactions,
+JSON.stringify(transactions)
+);
 
-        localStorage.setItem(
-            STORAGE_KEYS.attendance,
-            JSON.stringify(attendance)
-        );
+localStorage.setItem(
+STORAGE.attendance,
+JSON.stringify(attendance)
+);
 
-        localStorage.setItem(
-            STORAGE_KEYS.companies,
-            JSON.stringify(companies)
-        );
+localStorage.setItem(
+STORAGE.companies,
+JSON.stringify(companies)
+);
 
-        localStorage.setItem(
-            STORAGE_KEYS.trades,
-            JSON.stringify(trades)
-        );
+localStorage.setItem(
+STORAGE.trades,
+JSON.stringify(trades)
+);
 
-        return true;
+}catch(e){
 
-    }catch(e){
+console.log(e);
 
-        console.error(e);
-
-        return false;
-
-    }
+}
 
 }
 
@@ -879,343 +1129,327 @@ function saveLocal(){
    GOOGLE REQUEST
 ========================================================= */
 
-async function googleRequest(action,data={}){
+async function googlePost(
+action,
+data={}
+){
 
-    try{
-
-        const response =
-            await fetch(
-                WEB_APP_URL,
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                            "text/plain;charset=utf-8"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            action:action,
-                            ...data
-                        }),
-
-                    redirect:"follow"
-
-                }
-            );
+const response =
+await fetch(
+WEB_APP_URL,
+{
+method:"POST",
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+body:
+JSON.stringify({
+action,
+...data
+})
+}
+);
 
 
-        const text =
-            await response.text();
+const text =
+await response.text();
 
 
-        console.log(
-            "Google response:",
-            text
-        );
+let result;
 
 
-        let result;
+try{
+
+result =
+JSON.parse(text);
+
+}catch(e){
+
+throw new Error(
+"Invalid Google response: " +
+text.substring(0,200)
+);
+
+}
 
 
-        try{
+if(!result.success){
 
-            result =
-                JSON.parse(text);
+throw new Error(
+result.error ||
+"Google operation failed"
+);
 
-        }catch(e){
-
-            throw new Error(
-                "Google Apps Script ले JSON response दिएन.\n\n" +
-                text.substring(0,300)
-            );
-
-        }
+}
 
 
-        if(!result.success){
-
-            throw new Error(
-                result.error ||
-                "Google Sheet save failed."
-            );
-
-        }
-
-
-        return result;
-
-
-    }catch(error){
-
-        console.error(
-            "Google request error:",
-            error
-        );
-
-        throw error;
-
-    }
+return result;
 
 }
 
 
 /* =========================================================
-   LOAD FROM GOOGLE SHEET
+   LOAD GOOGLE
 ========================================================= */
 
-async function loadGoogleData(){
+async function loadGoogle(){
 
-    try{
+setStatus(
+"Loading Google Sheet..."
+);
 
-        const response =
-            await fetch(
-                WEB_APP_URL +
-                "?action=all&t=" +
-                Date.now()
-            );
 
+try{
 
-        const result =
-            await response.json();
+const response =
+await fetch(
+WEB_APP_URL +
+"?action=all&t=" +
+Date.now()
+);
 
 
-        if(!result.success){
+const result =
+await response.json();
 
-            throw new Error(
-                result.error ||
-                "Google data load failed."
-            );
 
-        }
+if(!result.success){
 
+throw new Error(
+result.error ||
+"Load failed"
+);
 
-        /* ================= MEMBERS ================= */
+}
 
-        if(
-            Array.isArray(
-                result.members
-            )
-        ){
 
-            members =
-                result.members.map(
-                    row => ({
+const data =
+result.data || {};
 
-                        id:
-                            row.ID || "",
 
-                        name:
-                            row.Name || "",
+members =
+(data.members || [])
+.map(
+r => ({
 
-                        workingCompany:
-                            row["Working Company"] || "",
+id:
+r.ID || "",
 
-                        phone:
-                            row.Phone || "",
+name:
+r.Name || "",
 
-                        whatsapp:
-                            row.WhatsApp || "",
+workingCompany:
+r["Working Company"] || "",
 
-                        gmail:
-                            row.Gmail || "",
+phone:
+r.Phone || "",
 
-                        trade:
-                            row.Trade || "",
+whatsapp:
+r.WhatsApp || "",
 
-                        company:
-                            row.Company || "",
+gmail:
+r.Gmail || "",
 
-                        grandTotal:
-                            Number(
-                                row["Grand Total"] || 0
-                            )
+trade:
+r.Trade || "",
 
-                    })
-                );
+company:
+r.Company || "",
 
-        }
+grandTotal:
+Number(
+r["Grand Total"] || 0
+)
 
+})
+);
 
-        /* ================= TRANSACTIONS ================= */
 
-        if(
-            Array.isArray(
-                result.transactions
-            )
-        ){
+transactions =
+(data.transactions || [])
+.map(
+r => ({
 
-            transactions =
-                result.transactions.map(
-                    row => ({
+id:
+r.TxnID || "",
 
-                        id:
-                            row.TxnID || "",
+memberId:
+r.MemberID || "",
 
-                        memberId:
-                            row.MemberID || "",
+name:
+r.Name || "",
 
-                        name:
-                            row.Name || "",
+date:
+formatDate(
+r.Date
+),
 
-                        date:
-                            formatGoogleDate(
-                                row.Date
-                            ),
+type:
+r.Type || "",
 
-                        type:
-                            row.Type || "",
+amount:
+Number(
+r.Amount || 0
+)
 
-                        amount:
-                            Number(
-                                row.Amount || 0
-                            )
+})
+);
 
-                    })
-                );
 
-        }
+attendance =
+(data.attendance || [])
+.map(
+r => ({
 
+id:
+r.ID || "",
 
-        /* ================= ATTENDANCE ================= */
+memberId:
+r.MemberID || "",
 
-        if(
-            Array.isArray(
-                result.attendance
-            )
-        ){
+name:
+r.Name || "",
 
-            attendance =
-                result.attendance.map(
-                    row => ({
+date:
+formatDate(
+r.Date
+),
 
-                        id:
-                            row.ID || "",
+type:
+r.Attendance || ""
 
-                        memberId:
-                            row.MemberID || "",
+})
+);
 
-                        name:
-                            row.Name || "",
 
-                        date:
-                            formatGoogleDate(
-                                row.Date
-                            ),
+companies =
+(data.companies || [])
+.map(
+r => ({
 
-                        type:
-                            row.Attendance || ""
+id:
+r.ID || "",
 
-                    })
-                );
+workingCompany:
+r["Working Company"] || "",
 
-        }
+company:
+r.Company || ""
 
+})
+);
 
-        /* ================= COMPANIES ================= */
 
-        if(
-            Array.isArray(
-                result.companies
-            )
-        ){
+trades =
+(data.trades || [])
+.map(
+r => ({
 
-            companies =
-                result.companies.map(
-                    row => ({
+id:
+r.ID || "",
 
-                        id:
-                            row.ID || "",
+name:
+r["Trade Name"] || ""
 
-                        workingCompany:
-                            row["Working Company"] || "",
+})
+);
 
-                        company:
-                            row.Company || ""
 
-                    })
-                );
+saveLocal();
 
-        }
+refreshAll();
 
+setStatus(
+"Google Sheet Connected"
+);
 
-        /* ================= TRADES ================= */
 
-        if(
-            Array.isArray(
-                result.trades
-            )
-        ){
+}catch(error){
 
-            trades =
-                result.trades.map(
-                    row => ({
+console.error(error);
 
-                        id:
-                            row.ID || "",
+setStatus(
+"Offline / Google error"
+);
 
-                        name:
-                            row["Trade Name"] || ""
-
-                    })
-                );
-
-        }
-
-
-        saveLocal();
-
-        refreshAll();
-
-        console.log(
-            "Google Sheet data loaded successfully."
-        );
-
-
-    }catch(error){
-
-        console.error(
-            "Google load failed:",
-            error
-        );
-
-        /*
-          Local data remain available.
-        */
-
-    }
+}
 
 }
 
 
 /* =========================================================
-   DATE FORMAT
+   DATE
 ========================================================= */
 
-function formatGoogleDate(value){
+function formatDate(value){
 
-    if(!value){
+if(!value){
 
-        return "";
+return "";
 
-    }
+}
 
-    const str =
-        String(value);
+const s =
+String(value);
 
-    if(
-        /^\d{4}-\d{2}-\d{2}/.test(str)
-    ){
+if(
+s.length >= 10 &&
+/^\d{4}-\d{2}-\d{2}/
+.test(s)
+){
 
-        return str.substring(
-            0,
-            10
-        );
+return s.substring(
+0,
+10
+);
 
-    }
+}
 
-    return str;
+return s;
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setStatus(text){
+
+document
+.getElementById(
+"syncStatus"
+)
+.textContent =
+text;
+
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+function showSection(id){
+
+document
+.querySelectorAll(
+".section"
+)
+.forEach(
+s =>
+s.classList.remove(
+"active"
+)
+);
+
+
+document
+.getElementById(id)
+.classList.add(
+"active"
+);
 
 }
 
@@ -1226,46 +1460,46 @@ function formatGoogleDate(value){
 
 function generateMemberId(){
 
-    let max = 0;
+let max = 0;
 
 
-    members.forEach(
-        member => {
+members.forEach(
+m => {
 
-            const n =
-                parseInt(
-                    String(
-                        member.id || ""
-                    )
-                    .replace(
-                        "MEM-",
-                        ""
-                    ),
-                    10
-                );
-
-
-            if(
-                !isNaN(n) &&
-                n > max
-            ){
-
-                max = n;
-
-            }
-
-        }
-    );
+const n =
+parseInt(
+String(
+m.id || ""
+)
+.replace(
+"MEM-",
+""
+),
+10
+);
 
 
-    return "MEM-" +
-        String(
-            max + 1
-        )
-        .padStart(
-            4,
-            "0"
-        );
+if(
+!isNaN(n) &&
+n > max
+){
+
+max = n;
+
+}
+
+}
+);
+
+
+return "MEM-" +
+String(
+max + 1
+)
+.padStart(
+4,
+"0"
+);
 
 }
 
@@ -1274,54 +1508,53 @@ function generateMemberId(){
    GRAND TOTAL
 ========================================================= */
 
-function calculateGrandTotal(name){
+function calculateGrandTotal(
+name
+){
 
-    let total = 0;
-
-
-    transactions.forEach(
-        tx => {
-
-            if(
-                String(tx.name)
-                .toLowerCase()
-                ===
-                String(name)
-                .toLowerCase()
-            ){
-
-                const amount =
-                    Number(
-                        tx.amount
-                    ) || 0;
+let total = 0;
 
 
-                if(
-                    tx.type ===
-                    "Credit"
-                ){
+transactions.forEach(
+tx => {
 
-                    total += amount;
+if(
+String(tx.name)
+.toLowerCase() ===
+String(name)
+.toLowerCase()
+){
 
-                }
-
-
-                if(
-                    tx.type ===
-                    "Debit"
-                ){
-
-                    total -= amount;
-
-                }
-
-            }
-
-        }
-    );
+const amount =
+Number(
+tx.amount
+) || 0;
 
 
-    return total;
+if(
+tx.type === "Credit"
+){
+
+total += amount;
+
+}
+
+
+if(
+tx.type === "Debit"
+){
+
+total -= amount;
+
+}
+
+}
+
+}
+);
+
+
+return total;
 
 }
 
@@ -1332,209 +1565,161 @@ function calculateGrandTotal(name){
 
 async function saveMember(){
 
-    const name =
-        document
-        .getElementById(
-            "memberName"
-        )
-        .value
-        .trim();
+const name =
+document
+.getElementById(
+"memberName"
+)
+.value
+.trim();
 
 
-    if(!name){
+if(!name){
 
-        showMessage(
-            "memberMessage",
-            "Please enter member name.",
-            "error"
-        );
+showMessage(
+"memberMessage",
+"Please enter member name.",
+"error"
+);
 
-        return;
+return;
 
-    }
+}
 
 
-    const workingCompany =
-        document
-        .getElementById(
-            "memberWorkingCompany"
-        )
-        .value;
+const data = {
 
+id:
+editingMemberId ||
+generateMemberId(),
 
-    const phone =
-        document
-        .getElementById(
-            "memberPhone"
-        )
-        .value
-        .trim();
+name:name,
 
+workingCompany:
+document
+.getElementById(
+"memberWorkingCompany"
+)
+.value,
 
-    const whatsapp =
-        document
-        .getElementById(
-            "memberWhatsapp"
-        )
-        .value
-        .trim();
+phone:
+document
+.getElementById(
+"memberPhone"
+)
+.value
+.trim(),
 
+whatsapp:
+document
+.getElementById(
+"memberWhatsapp"
+)
+.value
+.trim(),
 
-    const gmail =
-        document
-        .getElementById(
-            "memberGmail"
-        )
-        .value
-        .trim();
+gmail:
+document
+.getElementById(
+"memberGmail"
+)
+.value
+.trim(),
 
+trade:
+document
+.getElementById(
+"memberTrade"
+)
+.value,
 
-    const trade =
-        document
-        .getElementById(
-            "memberTrade"
-        )
-        .value;
+company:
+document
+.getElementById(
+"memberCompany"
+)
+.value,
 
+grandTotal:
+calculateGrandTotal(
+name
+)
 
-    const company =
-        document
-        .getElementById(
-            "memberCompany"
-        )
-        .value;
+};
 
 
-    let id;
+const btn =
+document.getElementById(
+"memberSaveBtn"
+);
 
 
-    if(editingMemberId){
+btn.disabled = true;
 
-        id =
-            editingMemberId;
 
-    }else{
+try{
 
-        id =
-            generateMemberId();
+const result =
+await googlePost(
+"saveMember",
+data
+);
 
-    }
 
+data.id =
+result.id ||
+data.id;
 
-    const member = {
 
-        id:id,
+const index =
+members.findIndex(
+m =>
+String(m.id) ===
+String(data.id)
+);
 
-        name:name,
 
-        workingCompany:
-            workingCompany,
+if(index >= 0){
 
-        phone:phone,
+members[index] =
+data;
 
-        whatsapp:whatsapp,
+}else{
 
-        gmail:gmail,
+members.push(
+data
+);
 
-        trade:trade,
+}
 
-        company:company,
 
-        grandTotal:
-            calculateGrandTotal(
-                name
-            )
+saveLocal();
 
-    };
+clearMemberForm();
 
+refreshAll();
 
-    const button =
-        event &&
-        event.target;
 
+showMessage(
+"memberMessage",
+"Member saved successfully.",
+"success"
+);
 
-    try{
 
-        if(button){
+}catch(error){
 
-            button.disabled =
-                true;
+showMessage(
+"memberMessage",
+error.message,
+"error"
+);
 
-        }
+}finally{
 
+btn.disabled = false;
 
-        const result =
-            await googleRequest(
-                "saveMember",
-                member
-            );
-
-
-        member.id =
-            result.id ||
-            id;
-
-
-        const existing =
-            members.findIndex(
-                m =>
-                    m.id ===
-                    editingMemberId
-            );
-
-
-        if(existing >= 0){
-
-            members[existing] =
-                member;
-
-        }else{
-
-            members.push(
-                member
-            );
-
-        }
-
-
-        saveLocal();
-
-
-        editingMemberId =
-            null;
-
-
-        clearMemberForm();
-
-        refreshAll();
-
-
-        showMessage(
-            "memberMessage",
-            "Member saved to Google Sheet successfully.",
-            "success"
-        );
-
-
-    }catch(error){
-
-        showMessage(
-            "memberMessage",
-            "Google Sheet Save Error: " +
-            error.message,
-            "error"
-        );
-
-    }finally{
-
-        if(button){
-
-            button.disabled =
-                false;
-
-        }
-
-    }
+}
 
 }
 
@@ -1545,79 +1730,79 @@ async function saveMember(){
 
 function editMember(id){
 
-    const member =
-        members.find(
-            m =>
-                String(m.id) ===
-                String(id)
-        );
+const member =
+members.find(
+m =>
+String(m.id) ===
+String(id)
+);
 
 
-    if(!member){
+if(!member){
 
-        return;
+return;
 
-    }
-
-
-    editingMemberId =
-        member.id;
+}
 
 
-    document.getElementById(
-        "memberName"
-    ).value =
-        member.name || "";
+editingMemberId =
+member.id;
 
 
-    document.getElementById(
-        "memberId"
-    ).value =
-        member.id || "";
+document.getElementById(
+"memberName"
+).value =
+member.name || "";
 
 
-    document.getElementById(
-        "memberWorkingCompany"
-    ).value =
-        member.workingCompany || "";
+document.getElementById(
+"memberId"
+).value =
+member.id || "";
 
 
-    document.getElementById(
-        "memberPhone"
-    ).value =
-        member.phone || "";
+document.getElementById(
+"memberWorkingCompany"
+).value =
+member.workingCompany || "";
 
 
-    document.getElementById(
-        "memberWhatsapp"
-    ).value =
-        member.whatsapp || "";
+document.getElementById(
+"memberPhone"
+).value =
+member.phone || "";
 
 
-    document.getElementById(
-        "memberGmail"
-    ).value =
-        member.gmail || "";
+document.getElementById(
+"memberWhatsapp"
+).value =
+member.whatsapp || "";
 
 
-    document.getElementById(
-        "memberTrade"
-    ).value =
-        member.trade || "";
+document.getElementById(
+"memberGmail"
+).value =
+member.gmail || "";
 
 
-    document.getElementById(
-        "memberCompany"
-    ).value =
-        member.company || "";
+document.getElementById(
+"memberTrade"
+).value =
+member.trade || "";
 
 
-    document.getElementById(
-        "memberGrandTotal"
-    ).value =
-        calculateGrandTotal(
-            member.name
-        );
+document.getElementById(
+"memberCompany"
+).value =
+member.company || "";
+
+
+document.getElementById(
+"memberGrandTotal"
+).value =
+calculateGrandTotal(
+member.name
+);
 
 }
 
@@ -1626,12 +1811,49 @@ function editMember(id){
    DELETE MEMBER
 ========================================================= */
 
-function deleteMember(id){
+async function deleteMember(id){
 
-    alert(
-        "Member delete अहिले Google Sheet मा सुरक्षित रूपमा जोडिएको छैन।\n" +
-        "पहिले Delete API थपेर मात्र delete गर्नुहोस्।"
-    );
+if(
+!confirm(
+"Delete this member?"
+)
+){
+
+return;
+
+}
+
+
+try{
+
+await googlePost(
+"deleteMember",
+{
+id:id
+}
+);
+
+
+members =
+members.filter(
+m =>
+String(m.id) !==
+String(id)
+);
+
+
+saveLocal();
+
+refreshAll();
+
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
 
 }
 
@@ -1642,53 +1864,53 @@ function deleteMember(id){
 
 function clearMemberForm(){
 
-    editingMemberId =
-        null;
+editingMemberId =
+null;
 
 
-    document.getElementById(
-        "memberName"
-    ).value = "";
+document.getElementById(
+"memberName"
+).value = "";
 
 
-    document.getElementById(
-        "memberId"
-    ).value = "";
+document.getElementById(
+"memberId"
+).value = "";
 
 
-    document.getElementById(
-        "memberWorkingCompany"
-    ).value = "";
+document.getElementById(
+"memberWorkingCompany"
+).value = "";
 
 
-    document.getElementById(
-        "memberPhone"
-    ).value = "";
+document.getElementById(
+"memberPhone"
+).value = "";
 
 
-    document.getElementById(
-        "memberWhatsapp"
-    ).value = "";
+document.getElementById(
+"memberWhatsapp"
+).value = "";
 
 
-    document.getElementById(
-        "memberGmail"
-    ).value = "";
+document.getElementById(
+"memberGmail"
+).value = "";
 
 
-    document.getElementById(
-        "memberTrade"
-    ).value = "";
+document.getElementById(
+"memberTrade"
+).value = "";
 
 
-    document.getElementById(
-        "memberCompany"
-    ).value = "";
+document.getElementById(
+"memberCompany"
+).value = "";
 
 
-    document.getElementById(
-        "memberGrandTotal"
-    ).value = "";
+document.getElementById(
+"memberGrandTotal"
+).value = "";
 
 }
 
@@ -1699,77 +1921,65 @@ function clearMemberForm(){
 
 function renderMembers(){
 
-    const tbody =
-        document.getElementById(
-            "memberTable"
-        );
+const tbody =
+document.getElementById(
+"memberTable"
+);
 
 
-    if(!tbody){
-
-        return;
-
-    }
-
-
-    const search =
-        (
-            document.getElementById(
-                "memberSearch"
-            )?.value ||
-            ""
-        )
-        .toLowerCase();
+const search =
+(
+document.getElementById(
+"memberSearch"
+).value || ""
+)
+.toLowerCase();
 
 
-    tbody.innerHTML =
-        "";
+tbody.innerHTML = "";
 
 
-    members
-    .filter(
-        member =>
-            String(
-                member.name || ""
-            )
-            .toLowerCase()
-            .includes(search)
-    )
-    .forEach(
-        member => {
+members
+.filter(
+m =>
+String(m.name || "")
+.toLowerCase()
+.includes(search)
+)
+.forEach(
+m => {
 
-            const total =
-                calculateGrandTotal(
-                    member.name
-                );
+const tr =
+document.createElement(
+"tr"
+);
 
 
-            const tr =
-                document
-                .createElement(
-                    "tr"
-                );
+const total =
+calculateGrandTotal(
+m.name
+);
 
 
-            tr.innerHTML = `
+tr.innerHTML = `
 
-<td>${escapeHtml(member.name)}</td>
+<td>${esc(m.name)}</td>
 
-<td>${escapeHtml(member.id)}</td>
+<td>${esc(m.id)}</td>
 
-<td>${escapeHtml(member.workingCompany || "")}</td>
+<td>${esc(m.workingCompany)}</td>
 
-<td>${escapeHtml(member.phone || "")}</td>
+<td>${esc(m.phone)}</td>
 
-<td>${escapeHtml(member.whatsapp || "")}</td>
+<td>${esc(m.whatsapp)}</td>
 
-<td>${escapeHtml(member.gmail || "")}</td>
+<td>${esc(m.gmail)}</td>
 
-<td>${escapeHtml(member.trade || "")}</td>
+<td>${esc(m.trade)}</td>
 
-<td>${escapeHtml(member.company || "")}</td>
+<td>${esc(m.company)}</td>
 
-<td>${total.toFixed(2)}</td>
+<td>${Number(total).toFixed(2)}</td>
 
 <td>
 
@@ -1777,9 +1987,16 @@ function renderMembers(){
 
 <button
 class="btn-warning"
-onclick="editMember('${escapeJs(member.id)}')"
+onclick="editMember('${js(m.id)}')"
 >
 Edit
+</button>
+
+<button
+class="btn-danger"
+onclick="deleteMember('${js(m.id)}')"
+>
+Delete
 </button>
 
 </div>
@@ -1789,244 +2006,291 @@ Edit
 `;
 
 
-            tbody.appendChild(
-                tr
-            );
+tbody.appendChild(
+tr
+);
 
-        }
-    );
+}
+);
 
 }
 
 
 /* =========================================================
-   TRANSACTION SAVE
+   TRANSACTION NAME
+========================================================= */
+
+function transactionNameChanged(){
+
+const enabled =
+document.getElementById(
+"transactionName"
+).value !== "";
+
+
+document.getElementById(
+"transactionDate"
+).disabled =
+!enabled;
+
+
+document.getElementById(
+"transactionType"
+).disabled =
+!enabled;
+
+
+document.getElementById(
+"transactionAmount"
+).disabled =
+!enabled;
+
+
+document.getElementById(
+"transactionSaveBtn"
+).disabled =
+!enabled;
+
+
+if(!enabled){
+
+document.getElementById(
+"transactionDate"
+).value = "";
+
+
+document.getElementById(
+"transactionType"
+).value = "";
+
+
+document.getElementById(
+"transactionAmount"
+).value = "";
+
+}
+
+}
+
+
+/* =========================================================
+   SAVE TRANSACTION
 ========================================================= */
 
 async function saveTransaction(){
 
-    const name =
-        document
-        .getElementById(
-            "transactionName"
-        )
-        .value;
+const name =
+document.getElementById(
+"transactionName"
+).value;
 
 
-    const date =
-        document
-        .getElementById(
-            "transactionDate"
-        )
-        .value;
+const date =
+document.getElementById(
+"transactionDate"
+).value;
 
 
-    const type =
-        document
-        .getElementById(
-            "transactionType"
-        )
-        .value;
+const type =
+document.getElementById(
+"transactionType"
+).value;
 
 
-    const amount =
-        Number(
-            document
-            .getElementById(
-                "transactionAmount"
-            )
-            .value
-        );
+const amount =
+Number(
+document.getElementById(
+"transactionAmount"
+).value
+);
 
 
-    if(!name){
+if(!name){
 
-        showMessage(
-            "transactionMessage",
-            "Please select Name first.",
-            "error"
-        );
+alert(
+"Please select member."
+);
 
-        return;
+return;
 
-    }
+}
 
 
-    if(!date){
+if(!date){
 
-        showMessage(
-            "transactionMessage",
-            "Please select Date.",
-            "error"
-        );
+alert(
+"Please select date."
+);
 
-        return;
+return;
 
-    }
+}
 
 
-    if(!type){
+if(!type){
 
-        showMessage(
-            "transactionMessage",
-            "Please select Credit or Debit.",
-            "error"
-        );
+alert(
+"Please select Credit or Debit."
+);
 
-        return;
+return;
 
-    }
+}
 
 
-    if(
-        !amount ||
-        amount <= 0
-    ){
+if(
+!amount ||
+amount <= 0
+){
 
-        showMessage(
-            "transactionMessage",
-            "Please enter valid Amount.",
-            "error"
-        );
+alert(
+"Please enter valid amount."
+);
 
-        return;
+return;
 
-    }
+}
 
 
-    const member =
-        members.find(
-            m =>
-                String(m.name)
-                .toLowerCase()
-                ===
-                String(name)
-                .toLowerCase()
-        );
+const member =
+members.find(
+m =>
+String(m.name)
+.toLowerCase() ===
+String(name)
+.toLowerCase()
+);
 
 
-    const data = {
+const data = {
 
-        id:
-            "TXN-" +
-            Date.now(),
+id:
+"TXN-" +
+Date.now(),
 
-        memberId:
-            member
-                ? member.id
-                : "",
+memberId:
+member
+? member.id
+: "",
 
-        name:name,
+name:name,
 
-        date:date,
+date:date,
 
-        type:type,
+type:type,
 
-        amount:amount
+amount:amount
 
-    };
+};
 
 
-    try{
+const btn =
+document.getElementById(
+"transactionSaveBtn"
+);
 
-        const result =
-            await googleRequest(
-                "saveTransaction",
-                data
-            );
 
+btn.disabled = true;
 
-        data.id =
-            result.txnId ||
-            data.id;
 
+try{
 
-        transactions.push(
-            data
-        );
+const result =
+await googlePost(
+"saveTransaction",
+data
+);
 
 
-        saveLocal();
+data.id =
+result.txnId ||
+data.id;
 
 
-        clearTransactionForm();
+transactions.push(
+data
+);
 
 
-        renderTransactions();
+saveLocal();
 
+clearTransactionForm();
 
-        renderMembers();
+refreshAll();
 
 
-        let message =
-            "Transaction saved successfully.";
+let message =
+"Transaction saved successfully.";
 
 
-        if(
-            result.notificationSent
-        ){
+if(
+result.notificationSent
+){
 
-            message +=
-                " Member notification sent.";
+message +=
+" Gmail notification sent.";
 
-        }else{
+}else{
 
-            message +=
-                " Member notification not sent.";
+message +=
+" Gmail notification was not sent.";
 
-        }
+}
 
 
-        showMessage(
-            "transactionMessage",
-            message,
-            result.notificationSent
-                ? "success"
-                : "warning"
-        );
+showMessage(
+"transactionMessage",
+message,
+result.notificationSent
+? "success"
+: "warning"
+);
 
 
-    }catch(error){
+}catch(error){
 
-        showMessage(
-            "transactionMessage",
-            "Google Sheet Save Error: " +
-            error.message,
-            "error"
-        );
+showMessage(
+"transactionMessage",
+error.message,
+"error"
+);
 
-    }
+}finally{
+
+btn.disabled = false;
+
+}
 
 }
 
 
 /* =========================================================
-   TRANSACTION CLEAR
+   CLEAR TRANSACTION
 ========================================================= */
 
 function clearTransactionForm(){
 
-    document.getElementById(
-        "transactionName"
-    ).value = "";
+document.getElementById(
+"transactionName"
+).value = "";
 
 
-    document.getElementById(
-        "transactionDate"
-    ).value = "";
+document.getElementById(
+"transactionDate"
+).value = "";
 
 
-    document.getElementById(
-        "transactionType"
-    ).value = "";
+document.getElementById(
+"transactionType"
+).value = "";
 
 
-    document.getElementById(
-        "transactionAmount"
-    ).value = "";
+document.getElementById(
+"transactionAmount"
+).value = "";
 
 
-    transactionNameChanged();
+transactionNameChanged();
 
 }
 
@@ -2037,362 +2301,326 @@ function clearTransactionForm(){
 
 function renderTransactions(){
 
-    const tbody =
-        document.getElementById(
-            "transactionTable"
-        );
+const tbody =
+document.getElementById(
+"transactionTable"
+);
 
 
-    if(!tbody){
-
-        return;
-
-    }
+tbody.innerHTML = "";
 
 
-    tbody.innerHTML =
-        "";
+transactions
+.slice()
+.reverse()
+.forEach(
+tx => {
+
+const tr =
+document.createElement(
+"tr"
+);
 
 
-    transactions
-    .slice()
-    .reverse()
-    .forEach(
-        tx => {
+tr.innerHTML = `
 
-            const tr =
-                document
-                .createElement(
-                    "tr"
-                );
+<td>${esc(tx.name)}</td>
 
+<td>${esc(tx.date)}</td>
 
-            tr.innerHTML = `
-
-<td>${escapeHtml(tx.name)}</td>
-
-<td>${escapeHtml(tx.date)}</td>
-
-<td>${escapeHtml(tx.type)}</td>
+<td>${esc(tx.type)}</td>
 
 <td>${Number(tx.amount).toFixed(2)}</td>
 
-<td>-</td>
+<td>
+
+<button
+class="btn-danger"
+onclick="deleteTransaction('${js(tx.id)}')"
+>
+Delete
+</button>
+
+</td>
 
 `;
 
 
-            tbody.appendChild(
-                tr
-            );
+tbody.appendChild(
+tr
+);
 
-        }
-    );
+}
+);
 
 }
 
 
 /* =========================================================
-   TRANSACTION NAME CHANGE
+   DELETE TRANSACTION
 ========================================================= */
 
-function transactionNameChanged(){
+async function deleteTransaction(id){
 
-    const name =
-        document.getElementById(
-            "transactionName"
-        ).value;
+if(
+!confirm(
+"Delete this transaction?"
+)
+){
 
+return;
 
-    const date =
-        document.getElementById(
-            "transactionDate"
-        );
-
-
-    const type =
-        document.getElementById(
-            "transactionType"
-        );
+}
 
 
-    const amount =
-        document.getElementById(
-            "transactionAmount"
-        );
+try{
+
+await googlePost(
+"deleteTransaction",
+{
+id:id
+}
+);
 
 
-    const save =
-        document.getElementById(
-            "transactionSaveBtn"
-        );
+transactions =
+transactions.filter(
+tx =>
+String(tx.id) !==
+String(id)
+);
 
 
-    const enabled =
-        name !== "";
+saveLocal();
+
+refreshAll();
 
 
-    date.disabled =
-        !enabled;
+}catch(error){
 
+alert(
+error.message
+);
 
-    type.disabled =
-        !enabled;
-
-
-    amount.disabled =
-        !enabled;
-
-
-    save.disabled =
-        !enabled;
-
-
-    if(!enabled){
-
-        date.value =
-            "";
-
-        type.value =
-            "";
-
-        amount.value =
-            "";
-
-    }
+}
 
 }
 
 
 /* =========================================================
-   ATTENDANCE SAVE
-========================================================= */
-
-async function saveAttendance(){
-
-    const name =
-        document
-        .getElementById(
-            "attendanceName"
-        )
-        .value;
-
-
-    const date =
-        document
-        .getElementById(
-            "attendanceDate"
-        )
-        .value;
-
-
-    const type =
-        document
-        .getElementById(
-            "attendanceType"
-        )
-        .value;
-
-
-    if(!name){
-
-        showMessage(
-            "attendanceMessage",
-            "Please select Name first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if(!date){
-
-        showMessage(
-            "attendanceMessage",
-            "Please select Date.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if(!type){
-
-        showMessage(
-            "attendanceMessage",
-            "Please select Attendance.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const member =
-        members.find(
-            m =>
-                String(m.name)
-                .toLowerCase()
-                ===
-                String(name)
-                .toLowerCase()
-        );
-
-
-    const data = {
-
-        id:
-            "ATT-" +
-            Date.now(),
-
-        memberId:
-            member
-                ? member.id
-                : "",
-
-        name:name,
-
-        date:date,
-
-        type:type
-
-    };
-
-
-    try{
-
-        const result =
-            await googleRequest(
-                "saveAttendance",
-                data
-            );
-
-
-        data.id =
-            result.id ||
-            data.id;
-
-
-        attendance.push(
-            data
-        );
-
-
-        saveLocal();
-
-
-        clearAttendanceForm();
-
-        renderAttendance();
-
-
-        showMessage(
-            "attendanceMessage",
-            "Attendance saved to Google Sheet successfully.",
-            "success"
-        );
-
-
-    }catch(error){
-
-        showMessage(
-            "attendanceMessage",
-            "Google Sheet Save Error: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   ATTENDANCE CLEAR
-========================================================= */
-
-function clearAttendanceForm(){
-
-    document.getElementById(
-        "attendanceName"
-    ).value = "";
-
-
-    document.getElementById(
-        "attendanceDate"
-    ).value = "";
-
-
-    document.getElementById(
-        "attendanceType"
-    ).value = "";
-
-
-    attendanceNameChanged();
-
-}
-
-
-/* =========================================================
-   ATTENDANCE NAME CHANGE
+   ATTENDANCE NAME
 ========================================================= */
 
 function attendanceNameChanged(){
 
-    const name =
-        document.getElementById(
-            "attendanceName"
-        ).value;
+const enabled =
+document.getElementById(
+"attendanceName"
+).value !== "";
 
 
-    const date =
-        document.getElementById(
-            "attendanceDate"
-        );
+document.getElementById(
+"attendanceDate"
+).disabled =
+!enabled;
 
 
-    const type =
-        document.getElementById(
-            "attendanceType"
-        );
+document.getElementById(
+"attendanceType"
+).disabled =
+!enabled;
 
 
-    const save =
-        document.getElementById(
-            "attendanceSaveBtn"
-        );
+document.getElementById(
+"attendanceSaveBtn"
+).disabled =
+!enabled;
 
 
-    const enabled =
-        name !== "";
+if(!enabled){
+
+document.getElementById(
+"attendanceDate"
+).value = "";
 
 
-    date.disabled =
-        !enabled;
+document.getElementById(
+"attendanceType"
+).value = "";
+
+}
+
+}
 
 
-    type.disabled =
-        !enabled;
+/* =========================================================
+   SAVE ATTENDANCE
+========================================================= */
+
+async function saveAttendance(){
+
+const name =
+document.getElementById(
+"attendanceName"
+).value;
 
 
-    save.disabled =
-        !enabled;
+const date =
+document.getElementById(
+"attendanceDate"
+).value;
 
 
-    if(!enabled){
+const type =
+document.getElementById(
+"attendanceType"
+).value;
 
-        date.value =
-            "";
 
-        type.value =
-            "";
+if(!name){
 
-    }
+alert(
+"Please select member."
+);
+
+return;
+
+}
+
+
+if(!date){
+
+alert(
+"Please select date."
+);
+
+return;
+
+}
+
+
+if(!type){
+
+alert(
+"Please select attendance."
+);
+
+return;
+
+}
+
+
+const member =
+members.find(
+m =>
+String(m.name)
+.toLowerCase() ===
+String(name)
+.toLowerCase()
+);
+
+
+const data = {
+
+id:
+"ATT-" +
+Date.now(),
+
+memberId:
+member
+? member.id
+: "",
+
+name:name,
+
+date:date,
+
+type:type
+
+};
+
+
+const btn =
+document.getElementById(
+"attendanceSaveBtn"
+);
+
+
+btn.disabled = true;
+
+
+try{
+
+const result =
+await googlePost(
+"saveAttendance",
+data
+);
+
+
+data.id =
+result.id ||
+data.id;
+
+
+attendance.push(
+data
+);
+
+
+saveLocal();
+
+clearAttendanceForm();
+
+refreshAll();
+
+
+showMessage(
+"attendanceMessage",
+"Attendance saved successfully.",
+"success"
+);
+
+
+}catch(error){
+
+showMessage(
+"attendanceMessage",
+error.message,
+"error"
+);
+
+}finally{
+
+btn.disabled = false;
+
+}
+
+}
+
+
+/* =========================================================
+   CLEAR ATTENDANCE
+========================================================= */
+
+function clearAttendanceForm(){
+
+document.getElementById(
+"attendanceName"
+).value = "";
+
+
+document.getElementById(
+"attendanceDate"
+).value = "";
+
+
+document.getElementById(
+"attendanceType"
+).value = "";
+
+
+attendanceNameChanged();
 
 }
 
@@ -2403,163 +2631,208 @@ function attendanceNameChanged(){
 
 function renderAttendance(){
 
-    const tbody =
-        document.getElementById(
-            "attendanceTable"
-        );
+const tbody =
+document.getElementById(
+"attendanceTable"
+);
 
 
-    if(!tbody){
-
-        return;
-
-    }
+tbody.innerHTML = "";
 
 
-    tbody.innerHTML =
-        "";
+attendance
+.slice()
+.reverse()
+.forEach(
+item => {
+
+const tr =
+document.createElement(
+"tr"
+);
 
 
-    attendance
-    .slice()
-    .reverse()
-    .forEach(
-        item => {
+tr.innerHTML = `
 
-            const tr =
-                document
-                .createElement(
-                    "tr"
-                );
+<td>${esc(item.name)}</td>
 
+<td>${esc(item.date)}</td>
 
-            tr.innerHTML = `
+<td>${esc(item.type)}</td>
 
-<td>${escapeHtml(item.name)}</td>
+<td>
 
-<td>${escapeHtml(item.date)}</td>
+<button
+class="btn-danger"
+onclick="deleteAttendance('${js(item.id)}')"
+>
+Delete
+</button>
 
-<td>${escapeHtml(item.type)}</td>
-
-<td>-</td>
+</td>
 
 `;
 
 
-            tbody.appendChild(
-                tr
-            );
+tbody.appendChild(
+tr
+);
 
-        }
-    );
+}
+);
 
 }
 
 
 /* =========================================================
-   COMPANY SAVE
+   DELETE ATTENDANCE
+========================================================= */
+
+async function deleteAttendance(id){
+
+if(
+!confirm(
+"Delete attendance?"
+)
+){
+
+return;
+
+}
+
+
+try{
+
+await googlePost(
+"deleteAttendance",
+{
+id:id
+}
+);
+
+
+attendance =
+attendance.filter(
+x =>
+String(x.id) !==
+String(id)
+);
+
+
+saveLocal();
+
+refreshAll();
+
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+
+/* =========================================================
+   COMPANY
 ========================================================= */
 
 async function saveCompany(){
 
-    const working =
-        document
-        .getElementById(
-            "workingCompanyName"
-        )
-        .value
-        .trim();
+const working =
+document.getElementById(
+"workingCompanyName"
+).value
+.trim();
 
 
-    const company =
-        document
-        .getElementById(
-            "yourCompanyName"
-        )
-        .value
-        .trim();
+const company =
+document.getElementById(
+"yourCompanyName"
+).value
+.trim();
 
 
-    if(!working){
+if(!working){
 
-        showMessage(
-            "companyMessage",
-            "Enter Working Company Name.",
-            "error"
-        );
+showMessage(
+"companyMessage",
+"Enter Working Company Name.",
+"error"
+);
 
-        return;
+return;
 
-    }
-
-
-    const data = {
-
-        id:
-            "COM-" +
-            Date.now(),
-
-        workingCompany:
-            working,
-
-        company:
-            company
-
-    };
+}
 
 
-    try{
+const data = {
 
-        const result =
-            await googleRequest(
-                "saveCompany",
-                data
-            );
+id:
+"COM-" +
+Date.now(),
 
+workingCompany:
+working,
 
-        data.id =
-            result.id ||
-            data.id;
+company:
+company
 
-
-        companies.push(
-            data
-        );
+};
 
 
-        saveLocal();
+try{
+
+const result =
+await googlePost(
+"saveCompany",
+data
+);
 
 
-        document.getElementById(
-            "workingCompanyName"
-        ).value = "";
+data.id =
+result.id ||
+data.id;
 
 
-        document.getElementById(
-            "yourCompanyName"
-        ).value = "";
+companies.push(
+data
+);
 
 
-        refreshAll();
+saveLocal();
+
+document.getElementById(
+"workingCompanyName"
+).value = "";
 
 
-        showMessage(
-            "companyMessage",
-            "Company saved to Google Sheet successfully.",
-            "success"
-        );
+document.getElementById(
+"yourCompanyName"
+).value = "";
 
 
-    }catch(error){
+refreshAll();
 
-        showMessage(
-            "companyMessage",
-            "Google Sheet Save Error: " +
-            error.message,
-            "error"
-        );
 
-    }
+showMessage(
+"companyMessage",
+"Company saved successfully.",
+"success"
+);
+
+
+}catch(error){
+
+showMessage(
+"companyMessage",
+error.message,
+"error"
+);
+
+}
 
 }
 
@@ -2570,140 +2843,188 @@ async function saveCompany(){
 
 function renderCompanies(){
 
-    const tbody =
-        document.getElementById(
-            "companyTable"
-        );
+const tbody =
+document.getElementById(
+"companyTable"
+);
 
 
-    if(!tbody){
-
-        return;
-
-    }
+tbody.innerHTML = "";
 
 
-    tbody.innerHTML =
-        "";
+companies.forEach(
+company => {
+
+const tr =
+document.createElement(
+"tr"
+);
 
 
-    companies.forEach(
-        company => {
+tr.innerHTML = `
 
-            const tr =
-                document
-                .createElement(
-                    "tr"
-                );
+<td>${esc(company.workingCompany)}</td>
 
+<td>${esc(company.company)}</td>
 
-            tr.innerHTML = `
+<td>
 
-<td>${escapeHtml(company.workingCompany)}</td>
+<button
+class="btn-danger"
+onclick="deleteCompany('${js(company.id)}')"
+>
+Delete
+</button>
 
-<td>${escapeHtml(company.company)}</td>
-
-<td>-</td>
+</td>
 
 `;
 
 
-            tbody.appendChild(
-                tr
-            );
+tbody.appendChild(
+tr
+);
 
-        }
-    );
+}
+);
 
 }
 
 
 /* =========================================================
-   TRADE SAVE
+   DELETE COMPANY
+========================================================= */
+
+async function deleteCompany(id){
+
+if(
+!confirm(
+"Delete company?"
+)
+){
+
+return;
+
+}
+
+
+try{
+
+await googlePost(
+"deleteCompany",
+{
+id:id
+}
+);
+
+
+companies =
+companies.filter(
+x =>
+String(x.id) !==
+String(id)
+);
+
+
+saveLocal();
+
+refreshAll();
+
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
+
+}
+
+
+/* =========================================================
+   TRADE
 ========================================================= */
 
 async function saveTrade(){
 
-    const name =
-        document
-        .getElementById(
-            "tradeName"
-        )
-        .value
-        .trim();
+const name =
+document.getElementById(
+"tradeName"
+).value
+.trim();
 
 
-    if(!name){
+if(!name){
 
-        showMessage(
-            "tradeMessage",
-            "Enter trade name.",
-            "error"
-        );
+showMessage(
+"tradeMessage",
+"Enter trade name.",
+"error"
+);
 
-        return;
+return;
 
-    }
-
-
-    const data = {
-
-        id:
-            "TRD-" +
-            Date.now(),
-
-        name:name
-
-    };
+}
 
 
-    try{
+const data = {
 
-        const result =
-            await googleRequest(
-                "saveTrade",
-                data
-            );
+id:
+"TRD-" +
+Date.now(),
 
+name:name
 
-        data.id =
-            result.id ||
-            data.id;
+};
 
 
-        trades.push(
-            data
-        );
+try{
+
+const result =
+await googlePost(
+"saveTrade",
+data
+);
 
 
-        saveLocal();
+data.id =
+result.id ||
+data.id;
 
 
-        document.getElementById(
-            "tradeName"
-        ).value = "";
+trades.push(
+data
+);
 
 
-        refreshAll();
+saveLocal();
 
 
-        showMessage(
-            "tradeMessage",
-            "Trade saved to Google Sheet successfully.",
-            "success"
-        );
+document.getElementById(
+"tradeName"
+).value = "";
 
 
-    }catch(error){
+refreshAll();
 
-        showMessage(
-            "tradeMessage",
-            "Google Sheet Save Error: " +
-            error.message,
-            "error"
-        );
 
-    }
+showMessage(
+"tradeMessage",
+"Trade saved successfully.",
+"success"
+);
+
+
+}catch(error){
+
+showMessage(
+"tradeMessage",
+error.message,
+"error"
+);
+
+}
 
 }
 
@@ -2714,48 +3035,99 @@ async function saveTrade(){
 
 function renderTrades(){
 
-    const tbody =
-        document.getElementById(
-            "tradeTable"
-        );
+const tbody =
+document.getElementById(
+"tradeTable"
+);
 
 
-    if(!tbody){
-
-        return;
-
-    }
+tbody.innerHTML = "";
 
 
-    tbody.innerHTML =
-        "";
+trades.forEach(
+trade => {
+
+const tr =
+document.createElement(
+"tr"
+);
 
 
-    trades.forEach(
-        trade => {
+tr.innerHTML = `
 
-            const tr =
-                document
-                .createElement(
-                    "tr"
-                );
+<td>${esc(trade.name)}</td>
 
+<td>
 
-            tr.innerHTML = `
+<button
+class="btn-danger"
+onclick="deleteTrade('${js(trade.id)}')"
+>
+Delete
+</button>
 
-<td>${escapeHtml(trade.name)}</td>
-
-<td>-</td>
+</td>
 
 `;
 
 
-            tbody.appendChild(
-                tr
-            );
+tbody.appendChild(
+tr
+);
 
-        }
-    );
+}
+);
+
+}
+
+
+/* =========================================================
+   DELETE TRADE
+========================================================= */
+
+async function deleteTrade(id){
+
+if(
+!confirm(
+"Delete trade?"
+)
+){
+
+return;
+
+}
+
+
+try{
+
+await googlePost(
+"deleteTrade",
+{
+id:id
+}
+);
+
+
+trades =
+trades.filter(
+x =>
+String(x.id) !==
+String(id)
+);
+
+
+saveLocal();
+
+refreshAll();
+
+
+}catch(error){
+
+alert(
+error.message
+);
+
+}
 
 }
 
@@ -2766,96 +3138,81 @@ function renderTrades(){
 
 function updateDropdowns(){
 
-    const workingSelect =
-        document.getElementById(
-            "memberWorkingCompany"
-        );
+const working =
+document.getElementById(
+"memberWorkingCompany"
+);
 
 
-    const companySelect =
-        document.getElementById(
-            "memberCompany"
-        );
+const company =
+document.getElementById(
+"memberCompany"
+);
 
 
-    const tradeSelect =
-        document.getElementById(
-            "memberTrade"
-        );
+const trade =
+document.getElementById(
+"memberTrade"
+);
 
 
-    if(
-        !workingSelect ||
-        !companySelect ||
-        !tradeSelect
-    ){
-
-        return;
-
-    }
+working.innerHTML =
+`<option value="">
+Select Working Company
+</option>`;
 
 
-    workingSelect.innerHTML =
-        `<option value="">
-            Select Working Company
-        </option>`;
+company.innerHTML =
+`<option value="">
+Select Company
+</option>`;
 
 
-    companySelect.innerHTML =
-        `<option value="">
-            Select Company
-        </option>`;
+trade.innerHTML =
+`<option value="">
+Select Trade
+</option>`;
 
 
-    tradeSelect.innerHTML =
-        `<option value="">
-            Select Trade
-        </option>`;
+companies.forEach(
+c => {
+
+if(c.workingCompany){
+
+working.innerHTML +=
+`<option value="${attr(c.workingCompany)}">
+${esc(c.workingCompany)}
+</option>`;
+
+}
 
 
-    companies.forEach(
-        company => {
+if(c.company){
 
-            if(
-                company.workingCompany
-            ){
+company.innerHTML +=
+`<option value="${attr(c.company)}">
+${esc(c.company)}
+</option>`;
 
-                workingSelect.innerHTML +=
-                    `<option value="${escapeAttr(company.workingCompany)}">
-                        ${escapeHtml(company.workingCompany)}
-                    </option>`;
+}
 
-            }
+}
+);
 
 
-            if(
-                company.company
-            ){
+trades.forEach(
+t => {
 
-                companySelect.innerHTML +=
-                    `<option value="${escapeAttr(company.company)}">
-                        ${escapeHtml(company.company)}
-                    </option>`;
+trade.innerHTML +=
+`<option value="${attr(t.name)}">
+${esc(t.name)}
+</option>`;
 
-            }
-
-        }
-    );
+}
+);
 
 
-    trades.forEach(
-        trade => {
-
-            tradeSelect.innerHTML +=
-                `<option value="${escapeAttr(trade.name)}">
-                    ${escapeHtml(trade.name)}
-                </option>`;
-
-        }
-    );
-
-
-    updateMemberSelects();
+updateMemberSelects();
 
 }
 
@@ -2866,78 +3223,175 @@ function updateDropdowns(){
 
 function updateMemberSelects(){
 
-    const txSelect =
-        document.getElementById(
-            "transactionName"
-        );
+const tx =
+document.getElementById(
+"transactionName"
+);
 
 
-    const attSelect =
-        document.getElementById(
-            "attendanceName"
-        );
+const att =
+document.getElementById(
+"attendanceName"
+);
 
 
-    if(
-        !txSelect ||
-        !attSelect
-    ){
-
-        return;
-
-    }
+tx.innerHTML =
+`<option value="">
+Select Member
+</option>`;
 
 
-    txSelect.innerHTML =
-        `<option value="">
-            Select Member
-        </option>`;
+att.innerHTML =
+`<option value="">
+Select Member
+</option>`;
 
 
-    attSelect.innerHTML =
-        `<option value="">
-            Select Member
-        </option>`;
+members.forEach(
+m => {
+
+const o1 =
+document.createElement(
+"option"
+);
 
 
-    members.forEach(
-        member => {
-
-            const option1 =
-                document
-                .createElement(
-                    "option"
-                );
+o1.value =
+m.name;
 
 
-            option1.value =
-                member.name;
+o1.textContent =
+m.name +
+" (" +
+m.id +
+")";
 
 
-            option1.textContent =
-                member.name +
-                " (" +
-                member.id +
-                ")";
+const o2 =
+o1.cloneNode(
+true
+);
 
 
-            const option2 =
-                option1.cloneNode(
-                    true
-                );
+tx.appendChild(
+o1
+);
 
 
-            txSelect.appendChild(
-                option1
-            );
+att.appendChild(
+o2
+);
+
+}
+);
+
+}
 
 
-            attSelect.appendChild(
-                option2
-            );
+/* =========================================================
+   MESSAGE
+========================================================= */
 
-        }
-    );
+function showMessage(
+id,
+text,
+type
+){
+
+const el =
+document.getElementById(
+id
+);
+
+
+if(!el){
+
+alert(text);
+
+return;
+
+}
+
+
+el.textContent =
+text;
+
+
+el.className =
+"message " +
+type;
+
+
+el.style.display =
+"block";
+
+
+setTimeout(
+() => {
+
+el.style.display =
+"none";
+
+},
+5000
+);
+
+}
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+function esc(value){
+
+return String(
+value ?? ""
+)
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+function attr(value){
+
+return esc(value);
+
+}
+
+
+function js(value){
+
+return String(
+value ?? ""
+)
+.replace(
+/\\/g,
+"\\\\"
+)
+.replace(
+/'/g,
+"\\'"
+);
 
 }
 
@@ -2948,127 +3402,17 @@ function updateMemberSelects(){
 
 function refreshAll(){
 
-    updateDropdowns();
+updateDropdowns();
 
-    renderMembers();
+renderMembers();
 
-    renderTransactions();
+renderTransactions();
 
-    renderAttendance();
+renderAttendance();
 
-    renderCompanies();
+renderCompanies();
 
-    renderTrades();
-
-}
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    elementId,
-    text,
-    type
-){
-
-    const element =
-        document.getElementById(
-            elementId
-        );
-
-
-    if(!element){
-
-        alert(text);
-
-        return;
-
-    }
-
-
-    element.textContent =
-        text;
-
-
-    element.className =
-        "message " +
-        type;
-
-
-    element.style.display =
-        "block";
-
-
-    setTimeout(
-        () => {
-
-            element.style.display =
-                "none";
-
-        },
-        5000
-    );
-
-}
-
-
-/* =========================================================
-   ESCAPE
-========================================================= */
-
-function escapeHtml(value){
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
-function escapeAttr(value){
-
-    return escapeHtml(
-        value
-    );
-
-}
-
-
-function escapeJs(value){
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /\\/g,
-        "\\\\"
-    )
-    .replace(
-        /'/g,
-        "\\'"
-    );
+renderTrades();
 
 }
 
@@ -3083,14 +3427,10 @@ transactionNameChanged();
 
 attendanceNameChanged();
 
-
-/*
-   Google Sheet बाट data load
-*/
-
-loadGoogleData();
+loadGoogle();
 
 </script>
 
 </body>
+
 </html>
