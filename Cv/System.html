@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Member Management System</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
 
 body{
     margin:0;
@@ -40,10 +43,6 @@ nav button{
     padding:10px 14px;
     border-radius:5px;
     cursor:pointer;
-}
-
-nav button:hover{
-    opacity:.85;
 }
 
 .container{
@@ -85,7 +84,8 @@ label{
     margin-bottom:5px;
 }
 
-input,select{
+input,
+select{
     width:100%;
     padding:10px;
     border:1px solid #aaa;
@@ -141,7 +141,8 @@ table{
     min-width:800px;
 }
 
-th,td{
+th,
+td{
     border:1px solid #ddd;
     padding:8px;
     text-align:left;
@@ -188,7 +189,19 @@ tr:nth-child(even){
     color:#842029;
 }
 
+.warning{
+    background:#fff3cd;
+    color:#664d03;
+}
+
+.storage-info{
+    font-size:13px;
+    color:#555;
+    margin-top:8px;
+}
+
 @media(max-width:600px){
+
     header{
         font-size:18px;
     }
@@ -203,6 +216,11 @@ tr:nth-child(even){
 
     .card{
         padding:12px;
+    }
+
+    input,
+    select{
+        font-size:16px;
     }
 }
 </style>
@@ -224,7 +242,9 @@ tr:nth-child(even){
 
 <div class="container">
 
-<!-- ================= MEMBERS ================= -->
+<!-- =====================================================
+     MEMBERS
+===================================================== -->
 
 <section id="members" class="section active">
 
@@ -301,6 +321,7 @@ Clear
 
 </div>
 
+
 <div class="card">
 
 <h2>Member List</h2>
@@ -343,7 +364,9 @@ Clear
 </section>
 
 
-<!-- ================= TRANSACTION ================= -->
+<!-- =====================================================
+     TRANSACTION
+===================================================== -->
 
 <section id="transaction" class="section">
 
@@ -358,15 +381,16 @@ Clear
 <div>
 <label>Name</label>
 
-<select id="transactionName" onchange="transactionNameChanged()">
+<select
+    id="transactionName"
+    onchange="transactionNameChanged()"
+>
 
-<option value="">
-Select Member
-</option>
+<option value="">Select Member</option>
 
 </select>
-
 </div>
+
 
 <div>
 <label>Date</label>
@@ -379,6 +403,7 @@ Select Member
 
 </div>
 
+
 <div>
 <label>Type</label>
 
@@ -387,9 +412,7 @@ Select Member
     disabled
 >
 
-<option value="">
-Select Type
-</option>
+<option value="">Select Type</option>
 
 <option value="Credit">
 Credit
@@ -402,6 +425,7 @@ Debit
 </select>
 
 </div>
+
 
 <div>
 <label>Amount</label>
@@ -470,7 +494,9 @@ Clear
 </section>
 
 
-<!-- ================= ATTENDANCE ================= -->
+<!-- =====================================================
+     ATTENDANCE
+===================================================== -->
 
 <section id="attendance" class="section">
 
@@ -491,13 +517,12 @@ Clear
     onchange="attendanceNameChanged()"
 >
 
-<option value="">
-Select Member
-</option>
+<option value="">Select Member</option>
 
 </select>
 
 </div>
+
 
 <div>
 
@@ -511,6 +536,7 @@ Select Member
 
 </div>
 
+
 <div>
 
 <label>Attendance</label>
@@ -520,9 +546,7 @@ Select Member
     disabled
 >
 
-<option value="">
-Select Attendance
-</option>
+<option value="">Select Attendance</option>
 
 <option value="Present">
 Present
@@ -597,13 +621,17 @@ Clear
 </section>
 
 
-<!-- ================= COMPANY ================= -->
+<!-- =====================================================
+     COMPANY
+===================================================== -->
 
 <section id="company" class="section">
 
 <div class="card">
 
 <h2>Company</h2>
+
+<div id="companyMessage" class="message"></div>
 
 <div class="form-grid">
 
@@ -666,13 +694,17 @@ Save Company
 </section>
 
 
-<!-- ================= TRADE ================= -->
+<!-- =====================================================
+     TRADE
+===================================================== -->
 
 <section id="trade" class="section">
 
 <div class="card">
 
 <h2>Trade</h2>
+
+<div id="tradeMessage" class="message"></div>
 
 <div class="form-grid">
 
@@ -731,7 +763,7 @@ Save Trade
 <script>
 
 /* =========================================================
-   STORAGE
+   STORAGE KEYS
 ========================================================= */
 
 const STORAGE_KEYS = {
@@ -749,55 +781,118 @@ const STORAGE_KEYS = {
 };
 
 
+/* =========================================================
+   SAFE LOAD
+========================================================= */
+
+function loadArray(key){
+
+    try{
+
+        const data =
+            localStorage.getItem(key);
+
+        if(!data){
+            return [];
+        }
+
+        const parsed =
+            JSON.parse(data);
+
+        return Array.isArray(parsed)
+            ? parsed
+            : [];
+
+    }catch(error){
+
+        console.error(
+            "Load error:",
+            key,
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
 let members =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.members) || "[]");
+    loadArray(STORAGE_KEYS.members);
 
 let transactions =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.transactions) || "[]");
+    loadArray(STORAGE_KEYS.transactions);
 
 let attendance =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.attendance) || "[]");
+    loadArray(STORAGE_KEYS.attendance);
 
 let companies =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.companies) || "[]");
+    loadArray(STORAGE_KEYS.companies);
 
 let trades =
-    JSON.parse(localStorage.getItem(STORAGE_KEYS.trades) || "[]");
+    loadArray(STORAGE_KEYS.trades);
 
 
 let editingMemberId = null;
 
 
 /* =========================================================
-   SAVE STORAGE
+   SAFE STORAGE SAVE
 ========================================================= */
 
 function saveStorage(){
 
-    localStorage.setItem(
-        STORAGE_KEYS.members,
-        JSON.stringify(members)
-    );
+    try{
 
-    localStorage.setItem(
-        STORAGE_KEYS.transactions,
-        JSON.stringify(transactions)
-    );
+        localStorage.setItem(
+            STORAGE_KEYS.members,
+            JSON.stringify(members)
+        );
 
-    localStorage.setItem(
-        STORAGE_KEYS.attendance,
-        JSON.stringify(attendance)
-    );
+        localStorage.setItem(
+            STORAGE_KEYS.transactions,
+            JSON.stringify(transactions)
+        );
 
-    localStorage.setItem(
-        STORAGE_KEYS.companies,
-        JSON.stringify(companies)
-    );
+        localStorage.setItem(
+            STORAGE_KEYS.attendance,
+            JSON.stringify(attendance)
+        );
 
-    localStorage.setItem(
-        STORAGE_KEYS.trades,
-        JSON.stringify(trades)
-    );
+        localStorage.setItem(
+            STORAGE_KEYS.companies,
+            JSON.stringify(companies)
+        );
+
+        localStorage.setItem(
+            STORAGE_KEYS.trades,
+            JSON.stringify(trades)
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "LOCAL STORAGE SAVE ERROR:",
+            error
+        );
+
+        alert(
+            "SAVE FAILED!\n\n" +
+            "Browser storage भरिएको वा blocked हुन सक्छ.\n\n" +
+            "पहिले browser को पुरानो अनावश्यक data हटाउनुहोस् र फेरि प्रयास गर्नुहोस्."
+        );
+
+        return false;
+
+    }
+
 }
 
 
@@ -815,15 +910,20 @@ function showSection(id){
 
         });
 
-    document
-        .getElementById(id)
-        .classList.add("active");
+    const section =
+        document.getElementById(id);
+
+    if(section){
+
+        section.classList.add("active");
+
+    }
 
 }
 
 
 /* =========================================================
-   ID
+   MEMBER ID
 ========================================================= */
 
 function generateMemberId(){
@@ -835,23 +935,30 @@ function generateMemberId(){
         const number =
             parseInt(
                 String(member.id || "")
-                .replace("MEM-","")
+                .replace("MEM-",""),
+                10
             );
 
-        if(!isNaN(number) && number > max){
+        if(
+            !isNaN(number) &&
+            number > max
+        ){
+
             max = number;
+
         }
 
     });
 
     return "MEM-" +
-        String(max + 1).padStart(4,"0");
+        String(max + 1)
+        .padStart(4,"0");
 
 }
 
 
 /* =========================================================
-   MEMBER GRAND TOTAL
+   GRAND TOTAL
 ========================================================= */
 
 function calculateGrandTotal(name){
@@ -892,63 +999,87 @@ function calculateGrandTotal(name){
 
 function saveMember(){
 
-    const name =
-        document
-        .getElementById("memberName")
-        .value.trim();
+    try{
 
-    if(!name){
-
-        showMessage(
-            "memberMessage",
-            "Please enter member name.",
-            "error"
-        );
-
-        return;
-
-    }
+        const name =
+            document
+            .getElementById("memberName")
+            .value
+            .trim();
 
 
-    const workingCompany =
-        document
-        .getElementById("memberWorkingCompany")
-        .value;
+        if(!name){
 
-    const phone =
-        document
-        .getElementById("memberPhone")
-        .value.trim();
-
-    const whatsapp =
-        document
-        .getElementById("memberWhatsapp")
-        .value.trim();
-
-    const gmail =
-        document
-        .getElementById("memberGmail")
-        .value.trim();
-
-    const trade =
-        document
-        .getElementById("memberTrade")
-        .value;
-
-    const company =
-        document
-        .getElementById("memberCompany")
-        .value;
-
-
-    if(editingMemberId){
-
-        const member =
-            members.find(
-                m => m.id === editingMemberId
+            showMessage(
+                "memberMessage",
+                "Please enter member name.",
+                "error"
             );
 
-        if(member){
+            return;
+
+        }
+
+
+        const workingCompany =
+            document
+            .getElementById("memberWorkingCompany")
+            .value;
+
+
+        const phone =
+            document
+            .getElementById("memberPhone")
+            .value
+            .trim();
+
+
+        const whatsapp =
+            document
+            .getElementById("memberWhatsapp")
+            .value
+            .trim();
+
+
+        const gmail =
+            document
+            .getElementById("memberGmail")
+            .value
+            .trim();
+
+
+        const trade =
+            document
+            .getElementById("memberTrade")
+            .value;
+
+
+        const company =
+            document
+            .getElementById("memberCompany")
+            .value;
+
+
+        if(editingMemberId){
+
+            const member =
+                members.find(
+                    m => m.id === editingMemberId
+                );
+
+
+            if(!member){
+
+                showMessage(
+                    "memberMessage",
+                    "Member not found.",
+                    "error"
+                );
+
+                return;
+
+            }
+
 
             member.name = name;
             member.workingCompany = workingCompany;
@@ -958,48 +1089,63 @@ function saveMember(){
             member.trade = trade;
             member.company = company;
 
+        }else{
+
+            const member = {
+
+                id:generateMemberId(),
+
+                name:name,
+
+                workingCompany:workingCompany,
+
+                phone:phone,
+
+                whatsapp:whatsapp,
+
+                gmail:gmail,
+
+                trade:trade,
+
+                company:company
+
+            };
+
+
+            members.push(member);
+
         }
 
-        editingMemberId = null;
 
-    }else{
+        if(!saveStorage()){
 
-        const member = {
+            return;
 
-            id:generateMemberId(),
+        }
 
-            name:name,
 
-            workingCompany:workingCompany,
+        clearMemberForm();
 
-            phone:phone,
+        refreshAll();
 
-            whatsapp:whatsapp,
 
-            gmail:gmail,
+        showMessage(
+            "memberMessage",
+            "Member saved successfully.",
+            "success"
+        );
 
-            trade:trade,
 
-            company:company
+    }catch(error){
 
-        };
+        console.error(error);
 
-        members.push(member);
+        alert(
+            "Member save error:\n" +
+            error.message
+        );
 
     }
-
-
-    saveStorage();
-
-    clearMemberForm();
-
-    refreshAll();
-
-    showMessage(
-        "memberMessage",
-        "Member saved successfully.",
-        "success"
-    );
 
 }
 
@@ -1015,37 +1161,71 @@ function editMember(id){
             m => m.id === id
         );
 
-    if(!member) return;
+
+    if(!member){
+
+        return;
+
+    }
 
 
     editingMemberId = id;
 
-    document.getElementById("memberName").value =
+
+    document.getElementById(
+        "memberName"
+    ).value =
         member.name || "";
 
-    document.getElementById("memberId").value =
+
+    document.getElementById(
+        "memberId"
+    ).value =
         member.id || "";
 
-    document.getElementById("memberWorkingCompany").value =
+
+    document.getElementById(
+        "memberWorkingCompany"
+    ).value =
         member.workingCompany || "";
 
-    document.getElementById("memberPhone").value =
+
+    document.getElementById(
+        "memberPhone"
+    ).value =
         member.phone || "";
 
-    document.getElementById("memberWhatsapp").value =
+
+    document.getElementById(
+        "memberWhatsapp"
+    ).value =
         member.whatsapp || "";
 
-    document.getElementById("memberGmail").value =
+
+    document.getElementById(
+        "memberGmail"
+    ).value =
         member.gmail || "";
 
-    document.getElementById("memberTrade").value =
+
+    document.getElementById(
+        "memberTrade"
+    ).value =
         member.trade || "";
 
-    document.getElementById("memberCompany").value =
+
+    document.getElementById(
+        "memberCompany"
+    ).value =
         member.company || "";
 
-    document.getElementById("memberGrandTotal").value =
-        calculateGrandTotal(member.name);
+
+    document.getElementById(
+        "memberGrandTotal"
+    ).value =
+        calculateGrandTotal(
+            member.name
+        );
 
 }
 
@@ -1056,11 +1236,19 @@ function editMember(id){
 
 function deleteMember(id){
 
-    if(!confirm("Delete this member?")){
+    if(
+        !confirm(
+            "Delete this member?"
+        )
+    ){
 
         return;
 
     }
+
+
+    const oldMembers =
+        members.slice();
 
 
     members =
@@ -1068,7 +1256,15 @@ function deleteMember(id){
             m => m.id !== id
         );
 
-    saveStorage();
+
+    if(!saveStorage()){
+
+        members = oldMembers;
+
+        return;
+
+    }
+
 
     refreshAll();
 
@@ -1083,23 +1279,50 @@ function clearMemberForm(){
 
     editingMemberId = null;
 
-    document.getElementById("memberName").value = "";
 
-    document.getElementById("memberId").value = "";
+    document.getElementById(
+        "memberName"
+    ).value = "";
 
-    document.getElementById("memberWorkingCompany").value = "";
 
-    document.getElementById("memberPhone").value = "";
+    document.getElementById(
+        "memberId"
+    ).value = "";
 
-    document.getElementById("memberWhatsapp").value = "";
 
-    document.getElementById("memberGmail").value = "";
+    document.getElementById(
+        "memberWorkingCompany"
+    ).value = "";
 
-    document.getElementById("memberTrade").value = "";
 
-    document.getElementById("memberCompany").value = "";
+    document.getElementById(
+        "memberPhone"
+    ).value = "";
 
-    document.getElementById("memberGrandTotal").value = "";
+
+    document.getElementById(
+        "memberWhatsapp"
+    ).value = "";
+
+
+    document.getElementById(
+        "memberGmail"
+    ).value = "";
+
+
+    document.getElementById(
+        "memberTrade"
+    ).value = "";
+
+
+    document.getElementById(
+        "memberCompany"
+    ).value = "";
+
+
+    document.getElementById(
+        "memberGrandTotal"
+    ).value = "";
 
 }
 
@@ -1111,28 +1334,62 @@ function clearMemberForm(){
 function renderMembers(){
 
     const tbody =
-        document.getElementById("memberTable");
+        document.getElementById(
+            "memberTable"
+        );
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    const searchElement =
+        document.getElementById(
+            "memberSearch"
+        );
+
 
     const search =
-        document
-        .getElementById("memberSearch")
-        .value
-        .toLowerCase();
+        searchElement
+        ? searchElement.value
+            .toLowerCase()
+            .trim()
+        : "";
 
 
     tbody.innerHTML = "";
 
 
     members
-    .filter(member =>
-        member.name
-        .toLowerCase()
-        .includes(search)
-    )
+    .filter(member => {
+
+        const name =
+            String(
+                member.name || ""
+            )
+            .toLowerCase();
+
+        const id =
+            String(
+                member.id || ""
+            )
+            .toLowerCase();
+
+        return (
+            name.includes(search) ||
+            id.includes(search)
+        );
+
+    })
     .forEach(member => {
 
         const total =
-            calculateGrandTotal(member.name);
+            calculateGrandTotal(
+                member.name
+            );
 
 
         const tr =
@@ -1141,48 +1398,47 @@ function renderMembers(){
 
         tr.innerHTML = `
 
-            <td>${escapeHtml(member.name)}</td>
+<td>${escapeHtml(member.name)}</td>
 
-            <td>${escapeHtml(member.id)}</td>
+<td>${escapeHtml(member.id)}</td>
 
-            <td>${escapeHtml(member.workingCompany || "")}</td>
+<td>${escapeHtml(member.workingCompany || "")}</td>
 
-            <td>${escapeHtml(member.phone || "")}</td>
+<td>${escapeHtml(member.phone || "")}</td>
 
-            <td>${escapeHtml(member.whatsapp || "")}</td>
+<td>${escapeHtml(member.whatsapp || "")}</td>
 
-            <td>${escapeHtml(member.gmail || "")}</td>
+<td>${escapeHtml(member.gmail || "")}</td>
 
-            <td>${escapeHtml(member.trade || "")}</td>
+<td>${escapeHtml(member.trade || "")}</td>
 
-            <td>${escapeHtml(member.company || "")}</td>
+<td>${escapeHtml(member.company || "")}</td>
 
-            <td>${total.toFixed(2)}</td>
+<td>${total.toFixed(2)}</td>
 
-            <td>
+<td>
 
-                <div class="actions">
+<div class="actions">
 
-                    <button
-                        class="btn-warning"
-                        onclick="editMember('${member.id}')"
-                    >
-                        Edit
-                    </button>
+<button
+class="btn-warning"
+onclick="editMember('${escapeJs(member.id)}')"
+>
+Edit
+</button>
 
-                    <button
-                        class="btn-danger"
-                        onclick="deleteMember('${member.id}')"
-                    >
-                        Delete
-                    </button>
+<button
+class="btn-danger"
+onclick="deleteMember('${escapeJs(member.id)}')"
+>
+Delete
+</button>
 
-                </div>
+</div>
 
-            </td>
+</td>
 
-        `;
-
+`;
 
         tbody.appendChild(tr);
 
@@ -1192,73 +1448,151 @@ function renderMembers(){
 
 
 /* =========================================================
-   COMPANY
+   COMPANY SAVE
 ========================================================= */
 
 function saveCompany(){
 
-    const working =
-        document
-        .getElementById("workingCompanyName")
-        .value.trim();
+    try{
 
-    const yourCompany =
-        document
-        .getElementById("yourCompanyName")
-        .value.trim();
+        const working =
+            document
+            .getElementById(
+                "workingCompanyName"
+            )
+            .value
+            .trim();
 
 
-    if(!working){
+        const yourCompany =
+            document
+            .getElementById(
+                "yourCompanyName"
+            )
+            .value
+            .trim();
 
-        alert("Enter Working Company Name.");
+
+        if(!working){
+
+            showMessage(
+                "companyMessage",
+                "Enter Working Company Name.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        companies.push({
+
+            id:
+                Date.now(),
+
+            workingCompany:
+                working,
+
+            company:
+                yourCompany
+
+        });
+
+
+        if(!saveStorage()){
+
+            companies.pop();
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "workingCompanyName"
+        ).value = "";
+
+
+        document.getElementById(
+            "yourCompanyName"
+        ).value = "";
+
+
+        refreshAll();
+
+
+        showMessage(
+            "companyMessage",
+            "Company saved successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        alert(
+            "Company save error:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COMPANY DELETE
+========================================================= */
+
+function deleteCompany(id){
+
+    if(
+        !confirm(
+            "Delete company?"
+        )
+    ){
 
         return;
 
     }
 
 
-    companies.push({
+    const old =
+        companies.slice();
 
-        id:Date.now(),
-
-        workingCompany:working,
-
-        company:yourCompany
-
-    });
-
-
-    saveStorage();
-
-    document.getElementById("workingCompanyName").value = "";
-
-    document.getElementById("yourCompanyName").value = "";
-
-    refreshAll();
-
-}
-
-
-function deleteCompany(id){
-
-    if(!confirm("Delete company?")) return;
 
     companies =
         companies.filter(
             c => c.id !== id
         );
 
-    saveStorage();
+
+    if(!saveStorage()){
+
+        companies = old;
+
+        return;
+
+    }
+
 
     refreshAll();
 
 }
 
 
+/* =========================================================
+   COMPANY LIST
+========================================================= */
+
 function renderCompanies(){
 
     const tbody =
-        document.getElementById("companyTable");
+        document.getElementById(
+            "companyTable"
+        );
+
 
     tbody.innerHTML = "";
 
@@ -1268,24 +1602,29 @@ function renderCompanies(){
         const tr =
             document.createElement("tr");
 
+
         tr.innerHTML = `
 
-            <td>${escapeHtml(company.workingCompany)}</td>
+<td>
+${escapeHtml(company.workingCompany)}
+</td>
 
-            <td>${escapeHtml(company.company)}</td>
+<td>
+${escapeHtml(company.company)}
+</td>
 
-            <td>
+<td>
 
-                <button
-                    class="btn-danger"
-                    onclick="deleteCompany(${company.id})"
-                >
-                    Delete
-                </button>
+<button
+class="btn-danger"
+onclick="deleteCompany(${Number(company.id)})"
+>
+Delete
+</button>
 
-            </td>
+</td>
 
-        `;
+`;
 
         tbody.appendChild(tr);
 
@@ -1295,47 +1634,124 @@ function renderCompanies(){
 
 
 /* =========================================================
-   TRADE
+   TRADE SAVE
 ========================================================= */
 
 function saveTrade(){
 
-    const name =
-        document
-        .getElementById("tradeName")
-        .value.trim();
+    try{
+
+        const name =
+            document
+            .getElementById(
+                "tradeName"
+            )
+            .value
+            .trim();
 
 
-    if(!name){
+        if(!name){
 
-        alert("Enter trade name.");
+            showMessage(
+                "tradeMessage",
+                "Enter trade name.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const exists =
+            trades.some(
+                trade =>
+                    String(
+                        trade.name || ""
+                    ).toLowerCase()
+                    ===
+                    name.toLowerCase()
+            );
+
+
+        if(exists){
+
+            showMessage(
+                "tradeMessage",
+                "This trade already exists.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        trades.push({
+
+            id:
+                Date.now(),
+
+            name:name
+
+        });
+
+
+        if(!saveStorage()){
+
+            trades.pop();
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "tradeName"
+        ).value = "";
+
+
+        refreshAll();
+
+
+        showMessage(
+            "tradeMessage",
+            "Trade saved successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        alert(
+            "Trade save error:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TRADE DELETE
+========================================================= */
+
+function deleteTrade(id){
+
+    if(
+        !confirm(
+            "Delete trade?"
+        )
+    ){
 
         return;
 
     }
 
 
-    trades.push({
-
-        id:Date.now(),
-
-        name:name
-
-    });
-
-
-    saveStorage();
-
-    document.getElementById("tradeName").value = "";
-
-    refreshAll();
-
-}
-
-
-function deleteTrade(id){
-
-    if(!confirm("Delete trade?")) return;
+    const old =
+        trades.slice();
 
 
     trades =
@@ -1344,17 +1760,31 @@ function deleteTrade(id){
         );
 
 
-    saveStorage();
+    if(!saveStorage()){
+
+        trades = old;
+
+        return;
+
+    }
+
 
     refreshAll();
 
 }
 
 
+/* =========================================================
+   TRADE LIST
+========================================================= */
+
 function renderTrades(){
 
     const tbody =
-        document.getElementById("tradeTable");
+        document.getElementById(
+            "tradeTable"
+        );
+
 
     tbody.innerHTML = "";
 
@@ -1367,21 +1797,22 @@ function renderTrades(){
 
         tr.innerHTML = `
 
-            <td>${escapeHtml(trade.name)}</td>
+<td>
+${escapeHtml(trade.name)}
+</td>
 
-            <td>
+<td>
 
-                <button
-                    class="btn-danger"
-                    onclick="deleteTrade(${trade.id})"
-                >
-                    Delete
-                </button>
+<button
+class="btn-danger"
+onclick="deleteTrade(${Number(trade.id)})"
+>
+Delete
+</button>
 
-            </td>
+</td>
 
-        `;
-
+`;
 
         tbody.appendChild(tr);
 
@@ -1401,10 +1832,12 @@ function updateDropdowns(){
             "memberWorkingCompany"
         );
 
+
     const companySelect =
         document.getElementById(
             "memberCompany"
         );
+
 
     const tradeSelect =
         document.getElementById(
@@ -1412,14 +1845,34 @@ function updateDropdowns(){
         );
 
 
+    const oldWorking =
+        workingSelect.value;
+
+
+    const oldCompany =
+        companySelect.value;
+
+
+    const oldTrade =
+        tradeSelect.value;
+
+
     workingSelect.innerHTML =
-        `<option value="">Select Working Company</option>`;
+        `<option value="">
+            Select Working Company
+        </option>`;
+
 
     companySelect.innerHTML =
-        `<option value="">Select Company</option>`;
+        `<option value="">
+            Select Company
+        </option>`;
+
 
     tradeSelect.innerHTML =
-        `<option value="">Select Trade</option>`;
+        `<option value="">
+            Select Trade
+        </option>`;
 
 
     companies.forEach(company => {
@@ -1432,6 +1885,7 @@ function updateDropdowns(){
                 </option>`;
 
         }
+
 
         if(company.company){
 
@@ -1455,6 +1909,18 @@ function updateDropdowns(){
     });
 
 
+    workingSelect.value =
+        oldWorking;
+
+
+    companySelect.value =
+        oldCompany;
+
+
+    tradeSelect.value =
+        oldTrade;
+
+
     updateMemberSelects();
 
 }
@@ -1471,32 +1937,70 @@ function updateMemberSelects(){
             "transactionName"
         );
 
+
     const attSelect =
         document.getElementById(
             "attendanceName"
         );
 
 
+    const oldTx =
+        txSelect.value;
+
+
+    const oldAtt =
+        attSelect.value;
+
+
     txSelect.innerHTML =
-        `<option value="">Select Member</option>`;
+        `<option value="">
+            Select Member
+        </option>`;
+
 
     attSelect.innerHTML =
-        `<option value="">Select Member</option>`;
+        `<option value="">
+            Select Member
+        </option>`;
 
 
     members.forEach(member => {
 
         const option =
-            `<option value="${escapeAttr(member.name)}">
-                ${escapeHtml(member.name)} (${escapeHtml(member.id)})
-            </option>`;
+            document.createElement(
+                "option"
+            );
 
 
-        txSelect.innerHTML += option;
+        option.value =
+            member.name;
 
-        attSelect.innerHTML += option;
+
+        option.textContent =
+            member.name +
+            " (" +
+            member.id +
+            ")";
+
+
+        txSelect.appendChild(
+            option.cloneNode(true)
+        );
+
+
+        attSelect.appendChild(
+            option
+        );
 
     });
+
+
+    txSelect.value =
+        oldTx;
+
+
+    attSelect.value =
+        oldAtt;
 
 }
 
@@ -1508,39 +2012,53 @@ function updateMemberSelects(){
 function transactionNameChanged(){
 
     const name =
-        document
-        .getElementById("transactionName")
-        .value;
+        document.getElementById(
+            "transactionName"
+        ).value;
 
 
     const date =
-        document
-        .getElementById("transactionDate");
+        document.getElementById(
+            "transactionDate"
+        );
+
 
     const type =
-        document
-        .getElementById("transactionType");
+        document.getElementById(
+            "transactionType"
+        );
+
 
     const amount =
-        document
-        .getElementById("transactionAmount");
+        document.getElementById(
+            "transactionAmount"
+        );
+
 
     const save =
-        document
-        .getElementById("transactionSaveBtn");
+        document.getElementById(
+            "transactionSaveBtn"
+        );
 
 
     const enabled =
         name !== "";
 
 
-    date.disabled = !enabled;
+    date.disabled =
+        !enabled;
 
-    type.disabled = !enabled;
 
-    amount.disabled = !enabled;
+    type.disabled =
+        !enabled;
 
-    save.disabled = !enabled;
+
+    amount.disabled =
+        !enabled;
+
+
+    save.disabled =
+        !enabled;
 
 
     if(!enabled){
@@ -1557,109 +2075,156 @@ function transactionNameChanged(){
 
 
 /* =========================================================
-   SAVE TRANSACTION
+   TRANSACTION SAVE
 ========================================================= */
 
 function saveTransaction(){
 
-    const name =
-        document
-        .getElementById("transactionName")
-        .value;
+    try{
 
-    const date =
-        document
-        .getElementById("transactionDate")
-        .value;
-
-    const type =
-        document
-        .getElementById("transactionType")
-        .value;
-
-    const amount =
-        Number(
+        const name =
             document
-            .getElementById("transactionAmount")
-            .value
+            .getElementById(
+                "transactionName"
+            )
+            .value;
+
+
+        const date =
+            document
+            .getElementById(
+                "transactionDate"
+            )
+            .value;
+
+
+        const type =
+            document
+            .getElementById(
+                "transactionType"
+            )
+            .value;
+
+
+        const amount =
+            Number(
+                document
+                .getElementById(
+                    "transactionAmount"
+                )
+                .value
+            );
+
+
+        if(!name){
+
+            showMessage(
+                "transactionMessage",
+                "Please select Name first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!date){
+
+            showMessage(
+                "transactionMessage",
+                "Please select Date.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!type){
+
+            showMessage(
+                "transactionMessage",
+                "Please select Credit or Debit.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !Number.isFinite(amount) ||
+            amount <= 0
+        ){
+
+            showMessage(
+                "transactionMessage",
+                "Please enter valid Amount.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const transaction = {
+
+            id:
+                Date.now(),
+
+            name:name,
+
+            date:date,
+
+            type:type,
+
+            amount:amount
+
+        };
+
+
+        transactions.push(
+            transaction
         );
 
 
-    if(!name){
+        if(!saveStorage()){
 
-        alert("Please select Name first.");
+            transactions.pop();
 
-        return;
+            return;
+
+        }
+
+
+        clearTransactionForm();
+
+        renderTransactions();
+
+        renderMembers();
+
+
+        showMessage(
+            "transactionMessage",
+            "Transaction saved successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Transaction save error:\n" +
+            error.message
+        );
 
     }
-
-    if(!date){
-
-        alert("Please select Date.");
-
-        return;
-
-    }
-
-    if(!type){
-
-        alert("Please select Credit or Debit.");
-
-        return;
-
-    }
-
-    if(!amount || amount <= 0){
-
-        alert("Please enter valid Amount.");
-
-        return;
-
-    }
-
-
-    transactions.push({
-
-        id:Date.now(),
-
-        name:name,
-
-        date:date,
-
-        type:type,
-
-        amount:amount
-
-    });
-
-
-    saveStorage();
-
-    clearTransactionForm();
-
-    renderTransactions();
-
-    renderMembers();
-
-
-    showMessage(
-        "transactionMessage",
-        "Transaction successful.",
-        "success"
-    );
-
-
-    /*
-       Future notification:
-
-       sendTransactionNotification({
-           name:name,
-           date:date,
-           type:type,
-           amount:amount
-       });
-
-    */
 
 }
 
@@ -1674,17 +2239,21 @@ function clearTransactionForm(){
         "transactionName"
     ).value = "";
 
+
     document.getElementById(
         "transactionDate"
     ).value = "";
+
 
     document.getElementById(
         "transactionType"
     ).value = "";
 
+
     document.getElementById(
         "transactionAmount"
     ).value = "";
+
 
     transactionNameChanged();
 
@@ -1702,6 +2271,7 @@ function renderTransactions(){
             "transactionTable"
         );
 
+
     tbody.innerHTML = "";
 
 
@@ -1716,27 +2286,34 @@ function renderTransactions(){
 
         tr.innerHTML = `
 
-            <td>${escapeHtml(tx.name)}</td>
+<td>
+${escapeHtml(tx.name)}
+</td>
 
-            <td>${escapeHtml(tx.date)}</td>
+<td>
+${escapeHtml(tx.date)}
+</td>
 
-            <td>${escapeHtml(tx.type)}</td>
+<td>
+${escapeHtml(tx.type)}
+</td>
 
-            <td>${Number(tx.amount).toFixed(2)}</td>
+<td>
+${Number(tx.amount).toFixed(2)}
+</td>
 
-            <td>
+<td>
 
-                <button
-                    class="btn-danger"
-                    onclick="deleteTransaction(${tx.id})"
-                >
-                    Delete
-                </button>
+<button
+class="btn-danger"
+onclick="deleteTransaction(${Number(tx.id)})"
+>
+Delete
+</button>
 
-            </td>
+</td>
 
-        `;
-
+`;
 
         tbody.appendChild(tr);
 
@@ -1751,11 +2328,19 @@ function renderTransactions(){
 
 function deleteTransaction(id){
 
-    if(!confirm("Delete this transaction?")){
+    if(
+        !confirm(
+            "Delete this transaction?"
+        )
+    ){
 
         return;
 
     }
+
+
+    const old =
+        transactions.slice();
 
 
     transactions =
@@ -1764,7 +2349,14 @@ function deleteTransaction(id){
         );
 
 
-    saveStorage();
+    if(!saveStorage()){
+
+        transactions = old;
+
+        return;
+
+    }
+
 
     renderTransactions();
 
@@ -1780,33 +2372,43 @@ function deleteTransaction(id){
 function attendanceNameChanged(){
 
     const name =
-        document
-        .getElementById("attendanceName")
-        .value;
+        document.getElementById(
+            "attendanceName"
+        ).value;
 
 
     const date =
-        document
-        .getElementById("attendanceDate");
+        document.getElementById(
+            "attendanceDate"
+        );
+
 
     const type =
-        document
-        .getElementById("attendanceType");
+        document.getElementById(
+            "attendanceType"
+        );
+
 
     const save =
-        document
-        .getElementById("attendanceSaveBtn");
+        document.getElementById(
+            "attendanceSaveBtn"
+        );
 
 
     const enabled =
         name !== "";
 
 
-    date.disabled = !enabled;
+    date.disabled =
+        !enabled;
 
-    type.disabled = !enabled;
 
-    save.disabled = !enabled;
+    type.disabled =
+        !enabled;
+
+
+    save.disabled =
+        !enabled;
 
 
     if(!enabled){
@@ -1821,77 +2423,124 @@ function attendanceNameChanged(){
 
 
 /* =========================================================
-   SAVE ATTENDANCE
+   ATTENDANCE SAVE
 ========================================================= */
 
 function saveAttendance(){
 
-    const name =
-        document
-        .getElementById("attendanceName")
-        .value;
+    try{
 
-    const date =
-        document
-        .getElementById("attendanceDate")
-        .value;
-
-    const type =
-        document
-        .getElementById("attendanceType")
-        .value;
+        const name =
+            document
+            .getElementById(
+                "attendanceName"
+            )
+            .value;
 
 
-    if(!name){
+        const date =
+            document
+            .getElementById(
+                "attendanceDate"
+            )
+            .value;
 
-        alert("Please select Name first.");
 
-        return;
+        const type =
+            document
+            .getElementById(
+                "attendanceType"
+            )
+            .value;
+
+
+        if(!name){
+
+            showMessage(
+                "attendanceMessage",
+                "Please select Name first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!date){
+
+            showMessage(
+                "attendanceMessage",
+                "Please select Date.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!type){
+
+            showMessage(
+                "attendanceMessage",
+                "Please select Attendance.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const item = {
+
+            id:
+                Date.now(),
+
+            name:name,
+
+            date:date,
+
+            type:type
+
+        };
+
+
+        attendance.push(item);
+
+
+        if(!saveStorage()){
+
+            attendance.pop();
+
+            return;
+
+        }
+
+
+        clearAttendanceForm();
+
+        renderAttendance();
+
+
+        showMessage(
+            "attendanceMessage",
+            "Attendance saved successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Attendance save error:\n" +
+            error.message
+        );
 
     }
-
-    if(!date){
-
-        alert("Please select Date.");
-
-        return;
-
-    }
-
-    if(!type){
-
-        alert("Please select Attendance.");
-
-        return;
-
-    }
-
-
-    attendance.push({
-
-        id:Date.now(),
-
-        name:name,
-
-        date:date,
-
-        type:type
-
-    });
-
-
-    saveStorage();
-
-    clearAttendanceForm();
-
-    renderAttendance();
-
-
-    showMessage(
-        "attendanceMessage",
-        "Attendance saved successfully.",
-        "success"
-    );
 
 }
 
@@ -1906,13 +2555,16 @@ function clearAttendanceForm(){
         "attendanceName"
     ).value = "";
 
+
     document.getElementById(
         "attendanceDate"
     ).value = "";
 
+
     document.getElementById(
         "attendanceType"
     ).value = "";
+
 
     attendanceNameChanged();
 
@@ -1930,6 +2582,7 @@ function renderAttendance(){
             "attendanceTable"
         );
 
+
     tbody.innerHTML = "";
 
 
@@ -1944,25 +2597,30 @@ function renderAttendance(){
 
         tr.innerHTML = `
 
-            <td>${escapeHtml(item.name)}</td>
+<td>
+${escapeHtml(item.name)}
+</td>
 
-            <td>${escapeHtml(item.date)}</td>
+<td>
+${escapeHtml(item.date)}
+</td>
 
-            <td>${escapeHtml(item.type)}</td>
+<td>
+${escapeHtml(item.type)}
+</td>
 
-            <td>
+<td>
 
-                <button
-                    class="btn-danger"
-                    onclick="deleteAttendance(${item.id})"
-                >
-                    Delete
-                </button>
+<button
+class="btn-danger"
+onclick="deleteAttendance(${Number(item.id)})"
+>
+Delete
+</button>
 
-            </td>
+</td>
 
-        `;
-
+`;
 
         tbody.appendChild(tr);
 
@@ -1977,11 +2635,19 @@ function renderAttendance(){
 
 function deleteAttendance(id){
 
-    if(!confirm("Delete attendance?")){
+    if(
+        !confirm(
+            "Delete attendance?"
+        )
+    ){
 
         return;
 
     }
+
+
+    const old =
+        attendance.slice();
 
 
     attendance =
@@ -1990,7 +2656,14 @@ function deleteAttendance(id){
         );
 
 
-    saveStorage();
+    if(!saveStorage()){
+
+        attendance = old;
+
+        return;
+
+    }
+
 
     renderAttendance();
 
@@ -2013,10 +2686,23 @@ function showMessage(
         );
 
 
-    element.textContent = text;
+    if(!element){
+
+        alert(text);
+
+        return;
+
+    }
+
+
+    element.textContent =
+        text;
+
 
     element.className =
-        "message " + type;
+        "message " +
+        type;
+
 
     element.style.display =
         "block";
@@ -2033,7 +2719,7 @@ function showMessage(
 
 
 /* =========================================================
-   SECURITY / HTML ESCAPE
+   ESCAPE
 ========================================================= */
 
 function escapeHtml(value){
@@ -2051,6 +2737,16 @@ function escapeHtml(value){
 function escapeAttr(value){
 
     return escapeHtml(value);
+
+}
+
+
+function escapeJs(value){
+
+    return String(value ?? "")
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'")
+        .replace(/"/g,"&quot;");
 
 }
 
@@ -2077,16 +2773,20 @@ function refreshAll(){
 
 
 /* =========================================================
-   DEFAULT COMPANY
+   DEFAULT DATA
 ========================================================= */
 
 function initializeDefaultData(){
+
+    let changed = false;
+
 
     if(companies.length === 0){
 
         companies.push({
 
-            id:Date.now(),
+            id:
+                Date.now(),
 
             workingCompany:
                 "SKM Sub Contract",
@@ -2098,7 +2798,8 @@ function initializeDefaultData(){
 
         companies.push({
 
-            id:Date.now()+1,
+            id:
+                Date.now()+1,
 
             workingCompany:
                 "DUTCO Supply",
@@ -2106,6 +2807,9 @@ function initializeDefaultData(){
             company:""
 
         });
+
+
+        changed = true;
 
     }
 
@@ -2133,7 +2837,8 @@ function initializeDefaultData(){
 
                 trades.push({
 
-                    id:Date.now()+index,
+                    id:
+                        Date.now()+index,
 
                     name:name
 
@@ -2142,17 +2847,72 @@ function initializeDefaultData(){
             }
         );
 
+
+        changed = true;
+
     }
 
 
-    saveStorage();
+    if(changed){
+
+        saveStorage();
+
+    }
 
 }
 
 
 /* =========================================================
-   INITIALIZE
+   TEST STORAGE
 ========================================================= */
+
+function testStorage(){
+
+    try{
+
+        const testKey =
+            "__member_system_test__";
+
+        localStorage.setItem(
+            testKey,
+            "1"
+        );
+
+        localStorage.removeItem(
+            testKey
+        );
+
+        console.log(
+            "LocalStorage: OK"
+        );
+
+        return true;
+
+    }catch(error){
+
+        console.error(
+            "LocalStorage unavailable:",
+            error
+        );
+
+        alert(
+            "WARNING!\n\n" +
+            "Browser Local Storage काम गरिरहेको छैन।\n" +
+            "त्यसैले data Save नहुन सक्छ।"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+testStorage();
 
 initializeDefaultData();
 
