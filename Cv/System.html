@@ -763,7 +763,15 @@ Save Trade
 <script>
 
 /* =========================================================
-   STORAGE KEYS
+   GOOGLE APPS SCRIPT URL
+========================================================= */
+
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbzDI2PoQ1Jby7hXaXnjCumxP-u_rECFqylmgKgwTh_j3fztxMcD0a4VJfamdmZc4THE/exec";
+
+
+/* =========================================================
+   LOCAL BACKUP
 ========================================================= */
 
 const STORAGE_KEYS = {
@@ -781,35 +789,38 @@ const STORAGE_KEYS = {
 };
 
 
+let members =
+    loadLocal(STORAGE_KEYS.members);
+
+let transactions =
+    loadLocal(STORAGE_KEYS.transactions);
+
+let attendance =
+    loadLocal(STORAGE_KEYS.attendance);
+
+let companies =
+    loadLocal(STORAGE_KEYS.companies);
+
+let trades =
+    loadLocal(STORAGE_KEYS.trades);
+
+
+let editingMemberId = null;
+
+
 /* =========================================================
-   SAFE LOAD
+   LOCAL LOAD
 ========================================================= */
 
-function loadArray(key){
+function loadLocal(key){
 
     try{
 
-        const data =
-            localStorage.getItem(key);
-
-        if(!data){
-            return [];
-        }
-
-        const parsed =
-            JSON.parse(data);
-
-        return Array.isArray(parsed)
-            ? parsed
-            : [];
-
-    }catch(error){
-
-        console.error(
-            "Load error:",
-            key,
-            error
+        return JSON.parse(
+            localStorage.getItem(key) || "[]"
         );
+
+    }catch(e){
 
         return [];
 
@@ -819,33 +830,10 @@ function loadArray(key){
 
 
 /* =========================================================
-   DATA
+   LOCAL BACKUP
 ========================================================= */
 
-let members =
-    loadArray(STORAGE_KEYS.members);
-
-let transactions =
-    loadArray(STORAGE_KEYS.transactions);
-
-let attendance =
-    loadArray(STORAGE_KEYS.attendance);
-
-let companies =
-    loadArray(STORAGE_KEYS.companies);
-
-let trades =
-    loadArray(STORAGE_KEYS.trades);
-
-
-let editingMemberId = null;
-
-
-/* =========================================================
-   SAFE STORAGE SAVE
-========================================================= */
-
-function saveStorage(){
+function saveLocal(){
 
     try{
 
@@ -876,18 +864,9 @@ function saveStorage(){
 
         return true;
 
-    }catch(error){
+    }catch(e){
 
-        console.error(
-            "LOCAL STORAGE SAVE ERROR:",
-            error
-        );
-
-        alert(
-            "SAVE FAILED!\n\n" +
-            "Browser storage भरिएको वा blocked हुन सक्छ.\n\n" +
-            "पहिले browser को पुरानो अनावश्यक data हटाउनुहोस् र फेरि प्रयास गर्नुहोस्."
-        );
+        console.error(e);
 
         return false;
 
@@ -897,27 +876,346 @@ function saveStorage(){
 
 
 /* =========================================================
-   SECTION
+   GOOGLE REQUEST
 ========================================================= */
 
-function showSection(id){
+async function googleRequest(action,data={}){
 
-    document
-        .querySelectorAll(".section")
-        .forEach(section => {
+    try{
 
-            section.classList.remove("active");
+        const response =
+            await fetch(
+                WEB_APP_URL,
+                {
+                    method:"POST",
 
-        });
+                    headers:{
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+                    },
 
-    const section =
-        document.getElementById(id);
+                    body:
+                        JSON.stringify({
+                            action:action,
+                            ...data
+                        }),
 
-    if(section){
+                    redirect:"follow"
 
-        section.classList.add("active");
+                }
+            );
+
+
+        const text =
+            await response.text();
+
+
+        console.log(
+            "Google response:",
+            text
+        );
+
+
+        let result;
+
+
+        try{
+
+            result =
+                JSON.parse(text);
+
+        }catch(e){
+
+            throw new Error(
+                "Google Apps Script ले JSON response दिएन.\n\n" +
+                text.substring(0,300)
+            );
+
+        }
+
+
+        if(!result.success){
+
+            throw new Error(
+                result.error ||
+                "Google Sheet save failed."
+            );
+
+        }
+
+
+        return result;
+
+
+    }catch(error){
+
+        console.error(
+            "Google request error:",
+            error
+        );
+
+        throw error;
 
     }
+
+}
+
+
+/* =========================================================
+   LOAD FROM GOOGLE SHEET
+========================================================= */
+
+async function loadGoogleData(){
+
+    try{
+
+        const response =
+            await fetch(
+                WEB_APP_URL +
+                "?action=all&t=" +
+                Date.now()
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(!result.success){
+
+            throw new Error(
+                result.error ||
+                "Google data load failed."
+            );
+
+        }
+
+
+        /* ================= MEMBERS ================= */
+
+        if(
+            Array.isArray(
+                result.members
+            )
+        ){
+
+            members =
+                result.members.map(
+                    row => ({
+
+                        id:
+                            row.ID || "",
+
+                        name:
+                            row.Name || "",
+
+                        workingCompany:
+                            row["Working Company"] || "",
+
+                        phone:
+                            row.Phone || "",
+
+                        whatsapp:
+                            row.WhatsApp || "",
+
+                        gmail:
+                            row.Gmail || "",
+
+                        trade:
+                            row.Trade || "",
+
+                        company:
+                            row.Company || "",
+
+                        grandTotal:
+                            Number(
+                                row["Grand Total"] || 0
+                            )
+
+                    })
+                );
+
+        }
+
+
+        /* ================= TRANSACTIONS ================= */
+
+        if(
+            Array.isArray(
+                result.transactions
+            )
+        ){
+
+            transactions =
+                result.transactions.map(
+                    row => ({
+
+                        id:
+                            row.TxnID || "",
+
+                        memberId:
+                            row.MemberID || "",
+
+                        name:
+                            row.Name || "",
+
+                        date:
+                            formatGoogleDate(
+                                row.Date
+                            ),
+
+                        type:
+                            row.Type || "",
+
+                        amount:
+                            Number(
+                                row.Amount || 0
+                            )
+
+                    })
+                );
+
+        }
+
+
+        /* ================= ATTENDANCE ================= */
+
+        if(
+            Array.isArray(
+                result.attendance
+            )
+        ){
+
+            attendance =
+                result.attendance.map(
+                    row => ({
+
+                        id:
+                            row.ID || "",
+
+                        memberId:
+                            row.MemberID || "",
+
+                        name:
+                            row.Name || "",
+
+                        date:
+                            formatGoogleDate(
+                                row.Date
+                            ),
+
+                        type:
+                            row.Attendance || ""
+
+                    })
+                );
+
+        }
+
+
+        /* ================= COMPANIES ================= */
+
+        if(
+            Array.isArray(
+                result.companies
+            )
+        ){
+
+            companies =
+                result.companies.map(
+                    row => ({
+
+                        id:
+                            row.ID || "",
+
+                        workingCompany:
+                            row["Working Company"] || "",
+
+                        company:
+                            row.Company || ""
+
+                    })
+                );
+
+        }
+
+
+        /* ================= TRADES ================= */
+
+        if(
+            Array.isArray(
+                result.trades
+            )
+        ){
+
+            trades =
+                result.trades.map(
+                    row => ({
+
+                        id:
+                            row.ID || "",
+
+                        name:
+                            row["Trade Name"] || ""
+
+                    })
+                );
+
+        }
+
+
+        saveLocal();
+
+        refreshAll();
+
+        console.log(
+            "Google Sheet data loaded successfully."
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Google load failed:",
+            error
+        );
+
+        /*
+          Local data remain available.
+        */
+
+    }
+
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatGoogleDate(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+    const str =
+        String(value);
+
+    if(
+        /^\d{4}-\d{2}-\d{2}/.test(str)
+    ){
+
+        return str.substring(
+            0,
+            10
+        );
+
+    }
+
+    return str;
 
 }
 
@@ -930,29 +1228,44 @@ function generateMemberId(){
 
     let max = 0;
 
-    members.forEach(member => {
 
-        const number =
-            parseInt(
-                String(member.id || "")
-                .replace("MEM-",""),
-                10
-            );
+    members.forEach(
+        member => {
 
-        if(
-            !isNaN(number) &&
-            number > max
-        ){
+            const n =
+                parseInt(
+                    String(
+                        member.id || ""
+                    )
+                    .replace(
+                        "MEM-",
+                        ""
+                    ),
+                    10
+                );
 
-            max = number;
+
+            if(
+                !isNaN(n) &&
+                n > max
+            ){
+
+                max = n;
+
+            }
 
         }
+    );
 
-    });
 
     return "MEM-" +
-        String(max + 1)
-        .padStart(4,"0");
+        String(
+            max + 1
+        )
+        .padStart(
+            4,
+            "0"
+        );
 
 }
 
@@ -965,28 +1278,48 @@ function calculateGrandTotal(name){
 
     let total = 0;
 
-    transactions.forEach(tx => {
 
-        if(tx.name === name){
+    transactions.forEach(
+        tx => {
 
-            const amount =
-                Number(tx.amount) || 0;
+            if(
+                String(tx.name)
+                .toLowerCase()
+                ===
+                String(name)
+                .toLowerCase()
+            ){
 
-            if(tx.type === "Credit"){
+                const amount =
+                    Number(
+                        tx.amount
+                    ) || 0;
 
-                total += amount;
 
-            }
+                if(
+                    tx.type ===
+                    "Credit"
+                ){
 
-            if(tx.type === "Debit"){
+                    total += amount;
 
-                total -= amount;
+                }
+
+
+                if(
+                    tx.type ===
+                    "Debit"
+                ){
+
+                    total -= amount;
+
+                }
 
             }
 
         }
+    );
 
-    });
 
     return total;
 
@@ -994,134 +1327,181 @@ function calculateGrandTotal(name){
 
 
 /* =========================================================
-   MEMBER SAVE
+   SAVE MEMBER
 ========================================================= */
 
-function saveMember(){
+async function saveMember(){
+
+    const name =
+        document
+        .getElementById(
+            "memberName"
+        )
+        .value
+        .trim();
+
+
+    if(!name){
+
+        showMessage(
+            "memberMessage",
+            "Please enter member name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const workingCompany =
+        document
+        .getElementById(
+            "memberWorkingCompany"
+        )
+        .value;
+
+
+    const phone =
+        document
+        .getElementById(
+            "memberPhone"
+        )
+        .value
+        .trim();
+
+
+    const whatsapp =
+        document
+        .getElementById(
+            "memberWhatsapp"
+        )
+        .value
+        .trim();
+
+
+    const gmail =
+        document
+        .getElementById(
+            "memberGmail"
+        )
+        .value
+        .trim();
+
+
+    const trade =
+        document
+        .getElementById(
+            "memberTrade"
+        )
+        .value;
+
+
+    const company =
+        document
+        .getElementById(
+            "memberCompany"
+        )
+        .value;
+
+
+    let id;
+
+
+    if(editingMemberId){
+
+        id =
+            editingMemberId;
+
+    }else{
+
+        id =
+            generateMemberId();
+
+    }
+
+
+    const member = {
+
+        id:id,
+
+        name:name,
+
+        workingCompany:
+            workingCompany,
+
+        phone:phone,
+
+        whatsapp:whatsapp,
+
+        gmail:gmail,
+
+        trade:trade,
+
+        company:company,
+
+        grandTotal:
+            calculateGrandTotal(
+                name
+            )
+
+    };
+
+
+    const button =
+        event &&
+        event.target;
+
 
     try{
 
-        const name =
-            document
-            .getElementById("memberName")
-            .value
-            .trim();
+        if(button){
 
-
-        if(!name){
-
-            showMessage(
-                "memberMessage",
-                "Please enter member name.",
-                "error"
-            );
-
-            return;
+            button.disabled =
+                true;
 
         }
 
 
-        const workingCompany =
-            document
-            .getElementById("memberWorkingCompany")
-            .value;
+        const result =
+            await googleRequest(
+                "saveMember",
+                member
+            );
 
 
-        const phone =
-            document
-            .getElementById("memberPhone")
-            .value
-            .trim();
+        member.id =
+            result.id ||
+            id;
 
 
-        const whatsapp =
-            document
-            .getElementById("memberWhatsapp")
-            .value
-            .trim();
+        const existing =
+            members.findIndex(
+                m =>
+                    m.id ===
+                    editingMemberId
+            );
 
 
-        const gmail =
-            document
-            .getElementById("memberGmail")
-            .value
-            .trim();
+        if(existing >= 0){
 
-
-        const trade =
-            document
-            .getElementById("memberTrade")
-            .value;
-
-
-        const company =
-            document
-            .getElementById("memberCompany")
-            .value;
-
-
-        if(editingMemberId){
-
-            const member =
-                members.find(
-                    m => m.id === editingMemberId
-                );
-
-
-            if(!member){
-
-                showMessage(
-                    "memberMessage",
-                    "Member not found.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            member.name = name;
-            member.workingCompany = workingCompany;
-            member.phone = phone;
-            member.whatsapp = whatsapp;
-            member.gmail = gmail;
-            member.trade = trade;
-            member.company = company;
+            members[existing] =
+                member;
 
         }else{
 
-            const member = {
-
-                id:generateMemberId(),
-
-                name:name,
-
-                workingCompany:workingCompany,
-
-                phone:phone,
-
-                whatsapp:whatsapp,
-
-                gmail:gmail,
-
-                trade:trade,
-
-                company:company
-
-            };
-
-
-            members.push(member);
+            members.push(
+                member
+            );
 
         }
 
 
-        if(!saveStorage()){
+        saveLocal();
 
-            return;
 
-        }
+        editingMemberId =
+            null;
 
 
         clearMemberForm();
@@ -1131,19 +1511,28 @@ function saveMember(){
 
         showMessage(
             "memberMessage",
-            "Member saved successfully.",
+            "Member saved to Google Sheet successfully.",
             "success"
         );
 
 
     }catch(error){
 
-        console.error(error);
-
-        alert(
-            "Member save error:\n" +
-            error.message
+        showMessage(
+            "memberMessage",
+            "Google Sheet Save Error: " +
+            error.message,
+            "error"
         );
+
+    }finally{
+
+        if(button){
+
+            button.disabled =
+                false;
+
+        }
 
     }
 
@@ -1151,14 +1540,16 @@ function saveMember(){
 
 
 /* =========================================================
-   MEMBER EDIT
+   EDIT MEMBER
 ========================================================= */
 
 function editMember(id){
 
     const member =
         members.find(
-            m => m.id === id
+            m =>
+                String(m.id) ===
+                String(id)
         );
 
 
@@ -1169,7 +1560,8 @@ function editMember(id){
     }
 
 
-    editingMemberId = id;
+    editingMemberId =
+        member.id;
 
 
     document.getElementById(
@@ -1231,53 +1623,27 @@ function editMember(id){
 
 
 /* =========================================================
-   MEMBER DELETE
+   DELETE MEMBER
 ========================================================= */
 
 function deleteMember(id){
 
-    if(
-        !confirm(
-            "Delete this member?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    const oldMembers =
-        members.slice();
-
-
-    members =
-        members.filter(
-            m => m.id !== id
-        );
-
-
-    if(!saveStorage()){
-
-        members = oldMembers;
-
-        return;
-
-    }
-
-
-    refreshAll();
+    alert(
+        "Member delete अहिले Google Sheet मा सुरक्षित रूपमा जोडिएको छैन।\n" +
+        "पहिले Delete API थपेर मात्र delete गर्नुहोस्।"
+    );
 
 }
 
 
 /* =========================================================
-   MEMBER CLEAR
+   CLEAR MEMBER
 ========================================================= */
 
 function clearMemberForm(){
 
-    editingMemberId = null;
+    editingMemberId =
+        null;
 
 
     document.getElementById(
@@ -1346,57 +1712,46 @@ function renderMembers(){
     }
 
 
-    const searchElement =
-        document.getElementById(
-            "memberSearch"
-        );
-
-
     const search =
-        searchElement
-        ? searchElement.value
-            .toLowerCase()
-            .trim()
-        : "";
+        (
+            document.getElementById(
+                "memberSearch"
+            )?.value ||
+            ""
+        )
+        .toLowerCase();
 
 
-    tbody.innerHTML = "";
+    tbody.innerHTML =
+        "";
 
 
     members
-    .filter(member => {
-
-        const name =
+    .filter(
+        member =>
             String(
                 member.name || ""
             )
-            .toLowerCase();
+            .toLowerCase()
+            .includes(search)
+    )
+    .forEach(
+        member => {
 
-        const id =
-            String(
-                member.id || ""
-            )
-            .toLowerCase();
-
-        return (
-            name.includes(search) ||
-            id.includes(search)
-        );
-
-    })
-    .forEach(member => {
-
-        const total =
-            calculateGrandTotal(
-                member.name
-            );
+            const total =
+                calculateGrandTotal(
+                    member.name
+                );
 
 
-        const tr =
-            document.createElement("tr");
+            const tr =
+                document
+                .createElement(
+                    "tr"
+                );
 
 
-        tr.innerHTML = `
+            tr.innerHTML = `
 
 <td>${escapeHtml(member.name)}</td>
 
@@ -1427,580 +1782,312 @@ onclick="editMember('${escapeJs(member.id)}')"
 Edit
 </button>
 
-<button
-class="btn-danger"
-onclick="deleteMember('${escapeJs(member.id)}')"
->
-Delete
-</button>
-
 </div>
 
 </td>
 
 `;
 
-        tbody.appendChild(tr);
 
-    });
-
-}
-
-
-/* =========================================================
-   COMPANY SAVE
-========================================================= */
-
-function saveCompany(){
-
-    try{
-
-        const working =
-            document
-            .getElementById(
-                "workingCompanyName"
-            )
-            .value
-            .trim();
-
-
-        const yourCompany =
-            document
-            .getElementById(
-                "yourCompanyName"
-            )
-            .value
-            .trim();
-
-
-        if(!working){
-
-            showMessage(
-                "companyMessage",
-                "Enter Working Company Name.",
-                "error"
+            tbody.appendChild(
+                tr
             );
 
-            return;
-
         }
-
-
-        companies.push({
-
-            id:
-                Date.now(),
-
-            workingCompany:
-                working,
-
-            company:
-                yourCompany
-
-        });
-
-
-        if(!saveStorage()){
-
-            companies.pop();
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "workingCompanyName"
-        ).value = "";
-
-
-        document.getElementById(
-            "yourCompanyName"
-        ).value = "";
-
-
-        refreshAll();
-
-
-        showMessage(
-            "companyMessage",
-            "Company saved successfully.",
-            "success"
-        );
-
-
-    }catch(error){
-
-        alert(
-            "Company save error:\n" +
-            error.message
-        );
-
-    }
+    );
 
 }
 
 
 /* =========================================================
-   COMPANY DELETE
+   TRANSACTION SAVE
 ========================================================= */
 
-function deleteCompany(id){
-
-    if(
-        !confirm(
-            "Delete company?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    const old =
-        companies.slice();
-
-
-    companies =
-        companies.filter(
-            c => c.id !== id
-        );
-
-
-    if(!saveStorage()){
-
-        companies = old;
-
-        return;
-
-    }
-
-
-    refreshAll();
-
-}
-
-
-/* =========================================================
-   COMPANY LIST
-========================================================= */
-
-function renderCompanies(){
-
-    const tbody =
-        document.getElementById(
-            "companyTable"
-        );
-
-
-    tbody.innerHTML = "";
-
-
-    companies.forEach(company => {
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-<td>
-${escapeHtml(company.workingCompany)}
-</td>
-
-<td>
-${escapeHtml(company.company)}
-</td>
-
-<td>
-
-<button
-class="btn-danger"
-onclick="deleteCompany(${Number(company.id)})"
->
-Delete
-</button>
-
-</td>
-
-`;
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =========================================================
-   TRADE SAVE
-========================================================= */
-
-function saveTrade(){
-
-    try{
-
-        const name =
-            document
-            .getElementById(
-                "tradeName"
-            )
-            .value
-            .trim();
-
-
-        if(!name){
-
-            showMessage(
-                "tradeMessage",
-                "Enter trade name.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const exists =
-            trades.some(
-                trade =>
-                    String(
-                        trade.name || ""
-                    ).toLowerCase()
-                    ===
-                    name.toLowerCase()
-            );
-
-
-        if(exists){
-
-            showMessage(
-                "tradeMessage",
-                "This trade already exists.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        trades.push({
-
-            id:
-                Date.now(),
-
-            name:name
-
-        });
-
-
-        if(!saveStorage()){
-
-            trades.pop();
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "tradeName"
-        ).value = "";
-
-
-        refreshAll();
-
-
-        showMessage(
-            "tradeMessage",
-            "Trade saved successfully.",
-            "success"
-        );
-
-
-    }catch(error){
-
-        alert(
-            "Trade save error:\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   TRADE DELETE
-========================================================= */
-
-function deleteTrade(id){
-
-    if(
-        !confirm(
-            "Delete trade?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    const old =
-        trades.slice();
-
-
-    trades =
-        trades.filter(
-            trade => trade.id !== id
-        );
-
-
-    if(!saveStorage()){
-
-        trades = old;
-
-        return;
-
-    }
-
-
-    refreshAll();
-
-}
-
-
-/* =========================================================
-   TRADE LIST
-========================================================= */
-
-function renderTrades(){
-
-    const tbody =
-        document.getElementById(
-            "tradeTable"
-        );
-
-
-    tbody.innerHTML = "";
-
-
-    trades.forEach(trade => {
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-<td>
-${escapeHtml(trade.name)}
-</td>
-
-<td>
-
-<button
-class="btn-danger"
-onclick="deleteTrade(${Number(trade.id)})"
->
-Delete
-</button>
-
-</td>
-
-`;
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =========================================================
-   DROPDOWNS
-========================================================= */
-
-function updateDropdowns(){
-
-    const workingSelect =
-        document.getElementById(
-            "memberWorkingCompany"
-        );
-
-
-    const companySelect =
-        document.getElementById(
-            "memberCompany"
-        );
-
-
-    const tradeSelect =
-        document.getElementById(
-            "memberTrade"
-        );
-
-
-    const oldWorking =
-        workingSelect.value;
-
-
-    const oldCompany =
-        companySelect.value;
-
-
-    const oldTrade =
-        tradeSelect.value;
-
-
-    workingSelect.innerHTML =
-        `<option value="">
-            Select Working Company
-        </option>`;
-
-
-    companySelect.innerHTML =
-        `<option value="">
-            Select Company
-        </option>`;
-
-
-    tradeSelect.innerHTML =
-        `<option value="">
-            Select Trade
-        </option>`;
-
-
-    companies.forEach(company => {
-
-        if(company.workingCompany){
-
-            workingSelect.innerHTML +=
-                `<option value="${escapeAttr(company.workingCompany)}">
-                    ${escapeHtml(company.workingCompany)}
-                </option>`;
-
-        }
-
-
-        if(company.company){
-
-            companySelect.innerHTML +=
-                `<option value="${escapeAttr(company.company)}">
-                    ${escapeHtml(company.company)}
-                </option>`;
-
-        }
-
-    });
-
-
-    trades.forEach(trade => {
-
-        tradeSelect.innerHTML +=
-            `<option value="${escapeAttr(trade.name)}">
-                ${escapeHtml(trade.name)}
-            </option>`;
-
-    });
-
-
-    workingSelect.value =
-        oldWorking;
-
-
-    companySelect.value =
-        oldCompany;
-
-
-    tradeSelect.value =
-        oldTrade;
-
-
-    updateMemberSelects();
-
-}
-
-
-/* =========================================================
-   MEMBER SELECTS
-========================================================= */
-
-function updateMemberSelects(){
-
-    const txSelect =
-        document.getElementById(
+async function saveTransaction(){
+
+    const name =
+        document
+        .getElementById(
             "transactionName"
+        )
+        .value;
+
+
+    const date =
+        document
+        .getElementById(
+            "transactionDate"
+        )
+        .value;
+
+
+    const type =
+        document
+        .getElementById(
+            "transactionType"
+        )
+        .value;
+
+
+    const amount =
+        Number(
+            document
+            .getElementById(
+                "transactionAmount"
+            )
+            .value
         );
 
 
-    const attSelect =
-        document.getElementById(
-            "attendanceName"
+    if(!name){
+
+        showMessage(
+            "transactionMessage",
+            "Please select Name first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!date){
+
+        showMessage(
+            "transactionMessage",
+            "Please select Date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!type){
+
+        showMessage(
+            "transactionMessage",
+            "Please select Credit or Debit.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !amount ||
+        amount <= 0
+    ){
+
+        showMessage(
+            "transactionMessage",
+            "Please enter valid Amount.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const member =
+        members.find(
+            m =>
+                String(m.name)
+                .toLowerCase()
+                ===
+                String(name)
+                .toLowerCase()
         );
 
 
-    const oldTx =
-        txSelect.value;
+    const data = {
+
+        id:
+            "TXN-" +
+            Date.now(),
+
+        memberId:
+            member
+                ? member.id
+                : "",
+
+        name:name,
+
+        date:date,
+
+        type:type,
+
+        amount:amount
+
+    };
 
 
-    const oldAtt =
-        attSelect.value;
+    try{
 
-
-    txSelect.innerHTML =
-        `<option value="">
-            Select Member
-        </option>`;
-
-
-    attSelect.innerHTML =
-        `<option value="">
-            Select Member
-        </option>`;
-
-
-    members.forEach(member => {
-
-        const option =
-            document.createElement(
-                "option"
+        const result =
+            await googleRequest(
+                "saveTransaction",
+                data
             );
 
 
-        option.value =
-            member.name;
+        data.id =
+            result.txnId ||
+            data.id;
 
 
-        option.textContent =
-            member.name +
-            " (" +
-            member.id +
-            ")";
-
-
-        txSelect.appendChild(
-            option.cloneNode(true)
+        transactions.push(
+            data
         );
 
 
-        attSelect.appendChild(
-            option
+        saveLocal();
+
+
+        clearTransactionForm();
+
+
+        renderTransactions();
+
+
+        renderMembers();
+
+
+        let message =
+            "Transaction saved successfully.";
+
+
+        if(
+            result.notificationSent
+        ){
+
+            message +=
+                " Member notification sent.";
+
+        }else{
+
+            message +=
+                " Member notification not sent.";
+
+        }
+
+
+        showMessage(
+            "transactionMessage",
+            message,
+            result.notificationSent
+                ? "success"
+                : "warning"
         );
 
-    });
+
+    }catch(error){
+
+        showMessage(
+            "transactionMessage",
+            "Google Sheet Save Error: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
 
 
-    txSelect.value =
-        oldTx;
+/* =========================================================
+   TRANSACTION CLEAR
+========================================================= */
+
+function clearTransactionForm(){
+
+    document.getElementById(
+        "transactionName"
+    ).value = "";
 
 
-    attSelect.value =
-        oldAtt;
+    document.getElementById(
+        "transactionDate"
+    ).value = "";
+
+
+    document.getElementById(
+        "transactionType"
+    ).value = "";
+
+
+    document.getElementById(
+        "transactionAmount"
+    ).value = "";
+
+
+    transactionNameChanged();
+
+}
+
+
+/* =========================================================
+   TRANSACTION LIST
+========================================================= */
+
+function renderTransactions(){
+
+    const tbody =
+        document.getElementById(
+            "transactionTable"
+        );
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        "";
+
+
+    transactions
+    .slice()
+    .reverse()
+    .forEach(
+        tx => {
+
+            const tr =
+                document
+                .createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+<td>${escapeHtml(tx.name)}</td>
+
+<td>${escapeHtml(tx.date)}</td>
+
+<td>${escapeHtml(tx.type)}</td>
+
+<td>${Number(tx.amount).toFixed(2)}</td>
+
+<td>-</td>
+
+`;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
 
 }
 
@@ -2063,11 +2150,14 @@ function transactionNameChanged(){
 
     if(!enabled){
 
-        date.value = "";
+        date.value =
+            "";
 
-        type.value = "";
+        type.value =
+            "";
 
-        amount.value = "";
+        amount.value =
+            "";
 
     }
 
@@ -2075,153 +2165,146 @@ function transactionNameChanged(){
 
 
 /* =========================================================
-   TRANSACTION SAVE
+   ATTENDANCE SAVE
 ========================================================= */
 
-function saveTransaction(){
+async function saveAttendance(){
 
-    try{
-
-        const name =
-            document
-            .getElementById(
-                "transactionName"
-            )
-            .value;
+    const name =
+        document
+        .getElementById(
+            "attendanceName"
+        )
+        .value;
 
 
-        const date =
-            document
-            .getElementById(
-                "transactionDate"
-            )
-            .value;
+    const date =
+        document
+        .getElementById(
+            "attendanceDate"
+        )
+        .value;
 
 
-        const type =
-            document
-            .getElementById(
-                "transactionType"
-            )
-            .value;
+    const type =
+        document
+        .getElementById(
+            "attendanceType"
+        )
+        .value;
 
 
-        const amount =
-            Number(
-                document
-                .getElementById(
-                    "transactionAmount"
-                )
-                .value
-            );
+    if(!name){
+
+        showMessage(
+            "attendanceMessage",
+            "Please select Name first.",
+            "error"
+        );
+
+        return;
+
+    }
 
 
-        if(!name){
+    if(!date){
 
-            showMessage(
-                "transactionMessage",
-                "Please select Name first.",
-                "error"
-            );
+        showMessage(
+            "attendanceMessage",
+            "Please select Date.",
+            "error"
+        );
 
-            return;
+        return;
 
-        }
-
-
-        if(!date){
-
-            showMessage(
-                "transactionMessage",
-                "Please select Date.",
-                "error"
-            );
-
-            return;
-
-        }
+    }
 
 
-        if(!type){
+    if(!type){
 
-            showMessage(
-                "transactionMessage",
-                "Please select Credit or Debit.",
-                "error"
-            );
+        showMessage(
+            "attendanceMessage",
+            "Please select Attendance.",
+            "error"
+        );
 
-            return;
+        return;
 
-        }
-
-
-        if(
-            !Number.isFinite(amount) ||
-            amount <= 0
-        ){
-
-            showMessage(
-                "transactionMessage",
-                "Please enter valid Amount.",
-                "error"
-            );
-
-            return;
-
-        }
+    }
 
 
-        const transaction = {
-
-            id:
-                Date.now(),
-
-            name:name,
-
-            date:date,
-
-            type:type,
-
-            amount:amount
-
-        };
-
-
-        transactions.push(
-            transaction
+    const member =
+        members.find(
+            m =>
+                String(m.name)
+                .toLowerCase()
+                ===
+                String(name)
+                .toLowerCase()
         );
 
 
-        if(!saveStorage()){
+    const data = {
 
-            transactions.pop();
+        id:
+            "ATT-" +
+            Date.now(),
 
-            return;
+        memberId:
+            member
+                ? member.id
+                : "",
 
-        }
+        name:name,
+
+        date:date,
+
+        type:type
+
+    };
 
 
-        clearTransactionForm();
+    try{
 
-        renderTransactions();
+        const result =
+            await googleRequest(
+                "saveAttendance",
+                data
+            );
 
-        renderMembers();
+
+        data.id =
+            result.id ||
+            data.id;
+
+
+        attendance.push(
+            data
+        );
+
+
+        saveLocal();
+
+
+        clearAttendanceForm();
+
+        renderAttendance();
 
 
         showMessage(
-            "transactionMessage",
-            "Transaction saved successfully.",
+            "attendanceMessage",
+            "Attendance saved to Google Sheet successfully.",
             "success"
         );
 
 
     }catch(error){
 
-        console.error(error);
-
-        alert(
-            "Transaction save error:\n" +
-            error.message
+        showMessage(
+            "attendanceMessage",
+            "Google Sheet Save Error: " +
+            error.message,
+            "error"
         );
 
     }
@@ -2230,137 +2313,27 @@ function saveTransaction(){
 
 
 /* =========================================================
-   TRANSACTION CLEAR
+   ATTENDANCE CLEAR
 ========================================================= */
 
-function clearTransactionForm(){
+function clearAttendanceForm(){
 
     document.getElementById(
-        "transactionName"
+        "attendanceName"
     ).value = "";
 
 
     document.getElementById(
-        "transactionDate"
+        "attendanceDate"
     ).value = "";
 
 
     document.getElementById(
-        "transactionType"
+        "attendanceType"
     ).value = "";
 
 
-    document.getElementById(
-        "transactionAmount"
-    ).value = "";
-
-
-    transactionNameChanged();
-
-}
-
-
-/* =========================================================
-   TRANSACTION LIST
-========================================================= */
-
-function renderTransactions(){
-
-    const tbody =
-        document.getElementById(
-            "transactionTable"
-        );
-
-
-    tbody.innerHTML = "";
-
-
-    transactions
-    .slice()
-    .reverse()
-    .forEach(tx => {
-
-        const tr =
-            document.createElement("tr");
-
-
-        tr.innerHTML = `
-
-<td>
-${escapeHtml(tx.name)}
-</td>
-
-<td>
-${escapeHtml(tx.date)}
-</td>
-
-<td>
-${escapeHtml(tx.type)}
-</td>
-
-<td>
-${Number(tx.amount).toFixed(2)}
-</td>
-
-<td>
-
-<button
-class="btn-danger"
-onclick="deleteTransaction(${Number(tx.id)})"
->
-Delete
-</button>
-
-</td>
-
-`;
-
-        tbody.appendChild(tr);
-
-    });
-
-}
-
-
-/* =========================================================
-   DELETE TRANSACTION
-========================================================= */
-
-function deleteTransaction(id){
-
-    if(
-        !confirm(
-            "Delete this transaction?"
-        )
-    ){
-
-        return;
-
-    }
-
-
-    const old =
-        transactions.slice();
-
-
-    transactions =
-        transactions.filter(
-            tx => tx.id !== id
-        );
-
-
-    if(!saveStorage()){
-
-        transactions = old;
-
-        return;
-
-    }
-
-
-    renderTransactions();
-
-    renderMembers();
+    attendanceNameChanged();
 
 }
 
@@ -2413,160 +2386,13 @@ function attendanceNameChanged(){
 
     if(!enabled){
 
-        date.value = "";
+        date.value =
+            "";
 
-        type.value = "";
-
-    }
-
-}
-
-
-/* =========================================================
-   ATTENDANCE SAVE
-========================================================= */
-
-function saveAttendance(){
-
-    try{
-
-        const name =
-            document
-            .getElementById(
-                "attendanceName"
-            )
-            .value;
-
-
-        const date =
-            document
-            .getElementById(
-                "attendanceDate"
-            )
-            .value;
-
-
-        const type =
-            document
-            .getElementById(
-                "attendanceType"
-            )
-            .value;
-
-
-        if(!name){
-
-            showMessage(
-                "attendanceMessage",
-                "Please select Name first.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if(!date){
-
-            showMessage(
-                "attendanceMessage",
-                "Please select Date.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if(!type){
-
-            showMessage(
-                "attendanceMessage",
-                "Please select Attendance.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const item = {
-
-            id:
-                Date.now(),
-
-            name:name,
-
-            date:date,
-
-            type:type
-
-        };
-
-
-        attendance.push(item);
-
-
-        if(!saveStorage()){
-
-            attendance.pop();
-
-            return;
-
-        }
-
-
-        clearAttendanceForm();
-
-        renderAttendance();
-
-
-        showMessage(
-            "attendanceMessage",
-            "Attendance saved successfully.",
-            "success"
-        );
-
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "Attendance save error:\n" +
-            error.message
-        );
+        type.value =
+            "";
 
     }
-
-}
-
-
-/* =========================================================
-   CLEAR ATTENDANCE
-========================================================= */
-
-function clearAttendanceForm(){
-
-    document.getElementById(
-        "attendanceName"
-    ).value = "";
-
-
-    document.getElementById(
-        "attendanceDate"
-    ).value = "";
-
-
-    document.getElementById(
-        "attendanceType"
-    ).value = "";
-
-
-    attendanceNameChanged();
 
 }
 
@@ -2583,62 +2409,385 @@ function renderAttendance(){
         );
 
 
-    tbody.innerHTML = "";
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        "";
 
 
     attendance
     .slice()
     .reverse()
-    .forEach(item => {
+    .forEach(
+        item => {
 
-        const tr =
-            document.createElement("tr");
+            const tr =
+                document
+                .createElement(
+                    "tr"
+                );
 
 
-        tr.innerHTML = `
+            tr.innerHTML = `
 
-<td>
-${escapeHtml(item.name)}
-</td>
+<td>${escapeHtml(item.name)}</td>
 
-<td>
-${escapeHtml(item.date)}
-</td>
+<td>${escapeHtml(item.date)}</td>
 
-<td>
-${escapeHtml(item.type)}
-</td>
+<td>${escapeHtml(item.type)}</td>
 
-<td>
-
-<button
-class="btn-danger"
-onclick="deleteAttendance(${Number(item.id)})"
->
-Delete
-</button>
-
-</td>
+<td>-</td>
 
 `;
 
-        tbody.appendChild(tr);
 
-    });
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
 
 }
 
 
 /* =========================================================
-   DELETE ATTENDANCE
+   COMPANY SAVE
 ========================================================= */
 
-function deleteAttendance(id){
+async function saveCompany(){
+
+    const working =
+        document
+        .getElementById(
+            "workingCompanyName"
+        )
+        .value
+        .trim();
+
+
+    const company =
+        document
+        .getElementById(
+            "yourCompanyName"
+        )
+        .value
+        .trim();
+
+
+    if(!working){
+
+        showMessage(
+            "companyMessage",
+            "Enter Working Company Name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const data = {
+
+        id:
+            "COM-" +
+            Date.now(),
+
+        workingCompany:
+            working,
+
+        company:
+            company
+
+    };
+
+
+    try{
+
+        const result =
+            await googleRequest(
+                "saveCompany",
+                data
+            );
+
+
+        data.id =
+            result.id ||
+            data.id;
+
+
+        companies.push(
+            data
+        );
+
+
+        saveLocal();
+
+
+        document.getElementById(
+            "workingCompanyName"
+        ).value = "";
+
+
+        document.getElementById(
+            "yourCompanyName"
+        ).value = "";
+
+
+        refreshAll();
+
+
+        showMessage(
+            "companyMessage",
+            "Company saved to Google Sheet successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        showMessage(
+            "companyMessage",
+            "Google Sheet Save Error: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COMPANY LIST
+========================================================= */
+
+function renderCompanies(){
+
+    const tbody =
+        document.getElementById(
+            "companyTable"
+        );
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        "";
+
+
+    companies.forEach(
+        company => {
+
+            const tr =
+                document
+                .createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+<td>${escapeHtml(company.workingCompany)}</td>
+
+<td>${escapeHtml(company.company)}</td>
+
+<td>-</td>
+
+`;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TRADE SAVE
+========================================================= */
+
+async function saveTrade(){
+
+    const name =
+        document
+        .getElementById(
+            "tradeName"
+        )
+        .value
+        .trim();
+
+
+    if(!name){
+
+        showMessage(
+            "tradeMessage",
+            "Enter trade name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const data = {
+
+        id:
+            "TRD-" +
+            Date.now(),
+
+        name:name
+
+    };
+
+
+    try{
+
+        const result =
+            await googleRequest(
+                "saveTrade",
+                data
+            );
+
+
+        data.id =
+            result.id ||
+            data.id;
+
+
+        trades.push(
+            data
+        );
+
+
+        saveLocal();
+
+
+        document.getElementById(
+            "tradeName"
+        ).value = "";
+
+
+        refreshAll();
+
+
+        showMessage(
+            "tradeMessage",
+            "Trade saved to Google Sheet successfully.",
+            "success"
+        );
+
+
+    }catch(error){
+
+        showMessage(
+            "tradeMessage",
+            "Google Sheet Save Error: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TRADE LIST
+========================================================= */
+
+function renderTrades(){
+
+    const tbody =
+        document.getElementById(
+            "tradeTable"
+        );
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        "";
+
+
+    trades.forEach(
+        trade => {
+
+            const tr =
+                document
+                .createElement(
+                    "tr"
+                );
+
+
+            tr.innerHTML = `
+
+<td>${escapeHtml(trade.name)}</td>
+
+<td>-</td>
+
+`;
+
+
+            tbody.appendChild(
+                tr
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+function updateDropdowns(){
+
+    const workingSelect =
+        document.getElementById(
+            "memberWorkingCompany"
+        );
+
+
+    const companySelect =
+        document.getElementById(
+            "memberCompany"
+        );
+
+
+    const tradeSelect =
+        document.getElementById(
+            "memberTrade"
+        );
+
 
     if(
-        !confirm(
-            "Delete attendance?"
-        )
+        !workingSelect ||
+        !companySelect ||
+        !tradeSelect
     ){
 
         return;
@@ -2646,26 +2795,170 @@ function deleteAttendance(id){
     }
 
 
-    const old =
-        attendance.slice();
+    workingSelect.innerHTML =
+        `<option value="">
+            Select Working Company
+        </option>`;
 
 
-    attendance =
-        attendance.filter(
-            item => item.id !== id
+    companySelect.innerHTML =
+        `<option value="">
+            Select Company
+        </option>`;
+
+
+    tradeSelect.innerHTML =
+        `<option value="">
+            Select Trade
+        </option>`;
+
+
+    companies.forEach(
+        company => {
+
+            if(
+                company.workingCompany
+            ){
+
+                workingSelect.innerHTML +=
+                    `<option value="${escapeAttr(company.workingCompany)}">
+                        ${escapeHtml(company.workingCompany)}
+                    </option>`;
+
+            }
+
+
+            if(
+                company.company
+            ){
+
+                companySelect.innerHTML +=
+                    `<option value="${escapeAttr(company.company)}">
+                        ${escapeHtml(company.company)}
+                    </option>`;
+
+            }
+
+        }
+    );
+
+
+    trades.forEach(
+        trade => {
+
+            tradeSelect.innerHTML +=
+                `<option value="${escapeAttr(trade.name)}">
+                    ${escapeHtml(trade.name)}
+                </option>`;
+
+        }
+    );
+
+
+    updateMemberSelects();
+
+}
+
+
+/* =========================================================
+   MEMBER SELECTS
+========================================================= */
+
+function updateMemberSelects(){
+
+    const txSelect =
+        document.getElementById(
+            "transactionName"
         );
 
 
-    if(!saveStorage()){
+    const attSelect =
+        document.getElementById(
+            "attendanceName"
+        );
 
-        attendance = old;
+
+    if(
+        !txSelect ||
+        !attSelect
+    ){
 
         return;
 
     }
 
 
+    txSelect.innerHTML =
+        `<option value="">
+            Select Member
+        </option>`;
+
+
+    attSelect.innerHTML =
+        `<option value="">
+            Select Member
+        </option>`;
+
+
+    members.forEach(
+        member => {
+
+            const option1 =
+                document
+                .createElement(
+                    "option"
+                );
+
+
+            option1.value =
+                member.name;
+
+
+            option1.textContent =
+                member.name +
+                " (" +
+                member.id +
+                ")";
+
+
+            const option2 =
+                option1.cloneNode(
+                    true
+                );
+
+
+            txSelect.appendChild(
+                option1
+            );
+
+
+            attSelect.appendChild(
+                option2
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+function refreshAll(){
+
+    updateDropdowns();
+
+    renderMembers();
+
+    renderTransactions();
+
     renderAttendance();
+
+    renderCompanies();
+
+    renderTrades();
 
 }
 
@@ -2708,12 +3001,15 @@ function showMessage(
         "block";
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        element.style.display =
-            "none";
+            element.style.display =
+                "none";
 
-    },3000);
+        },
+        5000
+    );
 
 }
 
@@ -2724,186 +3020,55 @@ function showMessage(
 
 function escapeHtml(value){
 
-    return String(value ?? "")
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
 function escapeAttr(value){
 
-    return escapeHtml(value);
+    return escapeHtml(
+        value
+    );
 
 }
 
 
 function escapeJs(value){
 
-    return String(value ?? "")
-        .replace(/\\/g,"\\\\")
-        .replace(/'/g,"\\'")
-        .replace(/"/g,"&quot;");
-
-}
-
-
-/* =========================================================
-   REFRESH
-========================================================= */
-
-function refreshAll(){
-
-    updateDropdowns();
-
-    renderMembers();
-
-    renderTransactions();
-
-    renderAttendance();
-
-    renderCompanies();
-
-    renderTrades();
-
-}
-
-
-/* =========================================================
-   DEFAULT DATA
-========================================================= */
-
-function initializeDefaultData(){
-
-    let changed = false;
-
-
-    if(companies.length === 0){
-
-        companies.push({
-
-            id:
-                Date.now(),
-
-            workingCompany:
-                "SKM Sub Contract",
-
-            company:""
-
-        });
-
-
-        companies.push({
-
-            id:
-                Date.now()+1,
-
-            workingCompany:
-                "DUTCO Supply",
-
-            company:""
-
-        });
-
-
-        changed = true;
-
-    }
-
-
-    if(trades.length === 0){
-
-        const defaultTrades = [
-
-            "Mason",
-            "Carpenter",
-            "Helper",
-            "Steel Fixer",
-            "Electrician",
-            "Foreman",
-            "Charge Hand",
-            "Camp Boss",
-            "Security",
-            "Cleaner"
-
-        ];
-
-
-        defaultTrades.forEach(
-            (name,index) => {
-
-                trades.push({
-
-                    id:
-                        Date.now()+index,
-
-                    name:name
-
-                });
-
-            }
-        );
-
-
-        changed = true;
-
-    }
-
-
-    if(changed){
-
-        saveStorage();
-
-    }
-
-}
-
-
-/* =========================================================
-   TEST STORAGE
-========================================================= */
-
-function testStorage(){
-
-    try{
-
-        const testKey =
-            "__member_system_test__";
-
-        localStorage.setItem(
-            testKey,
-            "1"
-        );
-
-        localStorage.removeItem(
-            testKey
-        );
-
-        console.log(
-            "LocalStorage: OK"
-        );
-
-        return true;
-
-    }catch(error){
-
-        console.error(
-            "LocalStorage unavailable:",
-            error
-        );
-
-        alert(
-            "WARNING!\n\n" +
-            "Browser Local Storage काम गरिरहेको छैन।\n" +
-            "त्यसैले data Save नहुन सक्छ।"
-        );
-
-        return false;
-
-    }
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /\\/g,
+        "\\\\"
+    )
+    .replace(
+        /'/g,
+        "\\'"
+    );
 
 }
 
@@ -2912,15 +3077,18 @@ function testStorage(){
    START
 ========================================================= */
 
-testStorage();
-
-initializeDefaultData();
-
 refreshAll();
 
 transactionNameChanged();
 
 attendanceNameChanged();
+
+
+/*
+   Google Sheet बाट data load
+*/
+
+loadGoogleData();
 
 </script>
 
