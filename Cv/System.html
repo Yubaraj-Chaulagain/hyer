@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Member Management System</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f2f4f7;
+    color:#222;
+}
+
+header{
+    background:#1f4e78;
+    color:white;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+}
+
+nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:10px;
+    background:white;
+    box-shadow:0 2px 5px #bbb;
+}
+
+nav button{
+    border:0;
+    background:#1f4e78;
+    color:white;
+    padding:10px 14px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+nav button:hover{
+    opacity:.85;
+}
+
+.container{
+    padding:15px;
+    max-width:1400px;
+    margin:auto;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.card{
+    background:white;
+    padding:18px;
+    margin-bottom:15px;
+    border-radius:8px;
+    box-shadow:0 2px 8px #ccc;
+}
+
+h2{
+    margin-top:0;
+    color:#1f4e78;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px;
+}
+
+label{
+    font-weight:bold;
+    display:block;
+    margin-bottom:5px;
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    border:1px solid #aaa;
+    border-radius:5px;
+    font-size:15px;
+}
+
+input:disabled,
+select:disabled{
+    background:#e9ecef;
+    cursor:not-allowed;
+}
+
+button{
+    padding:9px 14px;
+    border:0;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:#1f4e78;
+    color:white;
+}
+
+.btn-success{
+    background:#198754;
+    color:white;
+}
+
+.btn-danger{
+    background:#dc3545;
+    color:white;
+}
+
+.btn-warning{
+    background:#ffc107;
+    color:#000;
+}
+
+.btn-secondary{
+    background:#6c757d;
+    color:white;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:left;
+}
+
+th{
+    background:#1f4e78;
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f7f7f7;
+}
+
+.actions{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+}
+
+.total-box{
+    font-size:22px;
+    font-weight:bold;
+    padding:15px;
+    background:#e8f4ff;
+    border-radius:6px;
+    margin-top:10px;
+}
+
+.message{
+    padding:10px;
+    margin:10px 0;
+    border-radius:5px;
+    display:none;
+}
+
+.success{
+    background:#d1e7dd;
+    color:#0f5132;
+}
+
+.error{
+    background:#f8d7da;
+    color:#842029;
+}
+
+@media(max-width:600px){
+    header{
+        font-size:18px;
+    }
+
+    nav button{
+        flex:1 1 45%;
+    }
+
+    .container{
+        padding:8px;
+    }
+
+    .card{
+        padding:12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    Member Management System
+</header>
+
+<nav>
+    <button onclick="showSection('members')">Members</button>
+    <button onclick="showSection('transaction')">Transaction</button>
+    <button onclick="showSection('attendance')">Attendance</button>
+    <button onclick="showSection('company')">Company</button>
+    <button onclick="showSection('trade')">Trade</button>
+</nav>
+
+<div class="container">
+
+<!-- ================= MEMBERS ================= -->
+
+<section id="members" class="section active">
+
+<div class="card">
+
+<h2>Members</h2>
+
+<div id="memberMessage" class="message"></div>
+
+<div class="form-grid">
+
+<div>
+<label>Name</label>
+<input id="memberName" type="text">
+</div>
+
+<div>
+<label>ID</label>
+<input id="memberId" type="text" disabled>
+</div>
+
+<div>
+<label>Working Company</label>
+<select id="memberWorkingCompany">
+<option value="">Select Working Company</option>
+</select>
+</div>
+
+<div>
+<label>Phone Number</label>
+<input id="memberPhone" type="text">
+</div>
+
+<div>
+<label>WhatsApp</label>
+<input id="memberWhatsapp" type="text">
+</div>
+
+<div>
+<label>Gmail</label>
+<input id="memberGmail" type="email">
+</div>
+
+<div>
+<label>Trade</label>
+<select id="memberTrade">
+<option value="">Select Trade</option>
+</select>
+</div>
+
+<div>
+<label>Company</label>
+<select id="memberCompany">
+<option value="">Select Company</option>
+</select>
+</div>
+
+<div>
+<label>Grand Total</label>
+<input id="memberGrandTotal" type="number" disabled>
+</div>
+
+</div>
+
+<br>
+
+<button class="btn-success" onclick="saveMember()">
+Save Member
+</button>
+
+<button class="btn-secondary" onclick="clearMemberForm()">
+Clear
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Member List</h2>
+
+<input
+    id="memberSearch"
+    placeholder="Search member..."
+    oninput="renderMembers()"
+>
+
+<br><br>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Name</th>
+<th>ID</th>
+<th>Working Company</th>
+<th>Phone</th>
+<th>WhatsApp</th>
+<th>Gmail</th>
+<th>Trade</th>
+<th>Company</th>
+<th>Grand Total</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="memberTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= TRANSACTION ================= -->
+
+<section id="transaction" class="section">
+
+<div class="card">
+
+<h2>Transaction</h2>
+
+<div id="transactionMessage" class="message"></div>
+
+<div class="form-grid">
+
+<div>
+<label>Name</label>
+
+<select id="transactionName" onchange="transactionNameChanged()">
+
+<option value="">
+Select Member
+</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Date</label>
+
+<input
+    id="transactionDate"
+    type="date"
+    disabled
+>
+
+</div>
+
+<div>
+<label>Type</label>
+
+<select
+    id="transactionType"
+    disabled
+>
+
+<option value="">
+Select Type
+</option>
+
+<option value="Credit">
+Credit
+</option>
+
+<option value="Debit">
+Debit
+</option>
+
+</select>
+
+</div>
+
+<div>
+<label>Amount</label>
+
+<input
+    id="transactionAmount"
+    type="number"
+    min="0"
+    step="0.01"
+    disabled
+>
+
+</div>
+
+</div>
+
+<br>
+
+<button
+    id="transactionSaveBtn"
+    class="btn-success"
+    onclick="saveTransaction()"
+    disabled
+>
+Save Transaction
+</button>
+
+<button
+    class="btn-secondary"
+    onclick="clearTransactionForm()"
+>
+Clear
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>Transaction List</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Date</th>
+<th>Type</th>
+<th>Amount</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="transactionTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= ATTENDANCE ================= -->
+
+<section id="attendance" class="section">
+
+<div class="card">
+
+<h2>Attendance</h2>
+
+<div id="attendanceMessage" class="message"></div>
+
+<div class="form-grid">
+
+<div>
+
+<label>Name</label>
+
+<select
+    id="attendanceName"
+    onchange="attendanceNameChanged()"
+>
+
+<option value="">
+Select Member
+</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Date</label>
+
+<input
+    id="attendanceDate"
+    type="date"
+    disabled
+>
+
+</div>
+
+<div>
+
+<label>Attendance</label>
+
+<select
+    id="attendanceType"
+    disabled
+>
+
+<option value="">
+Select Attendance
+</option>
+
+<option value="Present">
+Present
+</option>
+
+<option value="Absent">
+Absent
+</option>
+
+<option value="Holiday">
+Holiday
+</option>
+
+<option value="Holiday Work">
+Holiday Work
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<br>
+
+<button
+    id="attendanceSaveBtn"
+    class="btn-success"
+    onclick="saveAttendance()"
+    disabled
+>
+Save Attendance
+</button>
+
+<button
+    class="btn-secondary"
+    onclick="clearAttendanceForm()"
+>
+Clear
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>Attendance List</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Date</th>
+<th>Attendance</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="attendanceTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= COMPANY ================= -->
+
+<section id="company" class="section">
+
+<div class="card">
+
+<h2>Company</h2>
+
+<div class="form-grid">
+
+<div>
+
+<label>Working Company Name</label>
+
+<input id="workingCompanyName">
+
+</div>
+
+<div>
+
+<label>Your Company Name</label>
+
+<input id="yourCompanyName">
+
+</div>
+
+</div>
+
+<br>
+
+<button
+    class="btn-success"
+    onclick="saveCompany()"
+>
+Save Company
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>Company List</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Working Company Name</th>
+<th>Your Company Name</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="companyTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= TRADE ================= -->
+
+<section id="trade" class="section">
+
+<div class="card">
+
+<h2>Trade</h2>
+
+<div class="form-grid">
+
+<div>
+
+<label>Trade Name</label>
+
+<input id="tradeName">
+
+</div>
+
+</div>
+
+<br>
+
+<button
+    class="btn-success"
+    onclick="saveTrade()"
+>
+Save Trade
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>Trade List</h2>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Trade Name</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody id="tradeTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const STORAGE_KEYS = {
+
+    members:"memberSystem_members",
+
+    transactions:"memberSystem_transactions",
+
+    attendance:"memberSystem_attendance",
+
+    companies:"memberSystem_companies",
+
+    trades:"memberSystem_trades"
+
+};
+
+
+let members =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.members) || "[]");
+
+let transactions =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.transactions) || "[]");
+
+let attendance =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.attendance) || "[]");
+
+let companies =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.companies) || "[]");
+
+let trades =
+    JSON.parse(localStorage.getItem(STORAGE_KEYS.trades) || "[]");
+
+
+let editingMemberId = null;
+
+
+/* =========================================================
+   SAVE STORAGE
+========================================================= */
+
+function saveStorage(){
+
+    localStorage.setItem(
+        STORAGE_KEYS.members,
+        JSON.stringify(members)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.transactions,
+        JSON.stringify(transactions)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.attendance,
+        JSON.stringify(attendance)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.companies,
+        JSON.stringify(companies)
+    );
+
+    localStorage.setItem(
+        STORAGE_KEYS.trades,
+        JSON.stringify(trades)
+    );
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+function showSection(id){
+
+    document
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+            section.classList.remove("active");
+
+        });
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* =========================================================
+   ID
+========================================================= */
+
+function generateMemberId(){
+
+    let max = 0;
+
+    members.forEach(member => {
+
+        const number =
+            parseInt(
+                String(member.id || "")
+                .replace("MEM-","")
+            );
+
+        if(!isNaN(number) && number > max){
+            max = number;
+        }
+
+    });
+
+    return "MEM-" +
+        String(max + 1).padStart(4,"0");
+
+}
+
+
+/* =========================================================
+   MEMBER GRAND TOTAL
+========================================================= */
+
+function calculateGrandTotal(name){
+
+    let total = 0;
+
+    transactions.forEach(tx => {
+
+        if(tx.name === name){
+
+            const amount =
+                Number(tx.amount) || 0;
+
+            if(tx.type === "Credit"){
+
+                total += amount;
+
+            }
+
+            if(tx.type === "Debit"){
+
+                total -= amount;
+
+            }
+
+        }
+
+    });
+
+    return total;
+
+}
+
+
+/* =========================================================
+   MEMBER SAVE
+========================================================= */
+
+function saveMember(){
+
+    const name =
+        document
+        .getElementById("memberName")
+        .value.trim();
+
+    if(!name){
+
+        showMessage(
+            "memberMessage",
+            "Please enter member name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const workingCompany =
+        document
+        .getElementById("memberWorkingCompany")
+        .value;
+
+    const phone =
+        document
+        .getElementById("memberPhone")
+        .value.trim();
+
+    const whatsapp =
+        document
+        .getElementById("memberWhatsapp")
+        .value.trim();
+
+    const gmail =
+        document
+        .getElementById("memberGmail")
+        .value.trim();
+
+    const trade =
+        document
+        .getElementById("memberTrade")
+        .value;
+
+    const company =
+        document
+        .getElementById("memberCompany")
+        .value;
+
+
+    if(editingMemberId){
+
+        const member =
+            members.find(
+                m => m.id === editingMemberId
+            );
+
+        if(member){
+
+            member.name = name;
+            member.workingCompany = workingCompany;
+            member.phone = phone;
+            member.whatsapp = whatsapp;
+            member.gmail = gmail;
+            member.trade = trade;
+            member.company = company;
+
+        }
+
+        editingMemberId = null;
+
+    }else{
+
+        const member = {
+
+            id:generateMemberId(),
+
+            name:name,
+
+            workingCompany:workingCompany,
+
+            phone:phone,
+
+            whatsapp:whatsapp,
+
+            gmail:gmail,
+
+            trade:trade,
+
+            company:company
+
+        };
+
+        members.push(member);
+
+    }
+
+
+    saveStorage();
+
+    clearMemberForm();
+
+    refreshAll();
+
+    showMessage(
+        "memberMessage",
+        "Member saved successfully.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   MEMBER EDIT
+========================================================= */
+
+function editMember(id){
+
+    const member =
+        members.find(
+            m => m.id === id
+        );
+
+    if(!member) return;
+
+
+    editingMemberId = id;
+
+    document.getElementById("memberName").value =
+        member.name || "";
+
+    document.getElementById("memberId").value =
+        member.id || "";
+
+    document.getElementById("memberWorkingCompany").value =
+        member.workingCompany || "";
+
+    document.getElementById("memberPhone").value =
+        member.phone || "";
+
+    document.getElementById("memberWhatsapp").value =
+        member.whatsapp || "";
+
+    document.getElementById("memberGmail").value =
+        member.gmail || "";
+
+    document.getElementById("memberTrade").value =
+        member.trade || "";
+
+    document.getElementById("memberCompany").value =
+        member.company || "";
+
+    document.getElementById("memberGrandTotal").value =
+        calculateGrandTotal(member.name);
+
+}
+
+
+/* =========================================================
+   MEMBER DELETE
+========================================================= */
+
+function deleteMember(id){
+
+    if(!confirm("Delete this member?")){
+
+        return;
+
+    }
+
+
+    members =
+        members.filter(
+            m => m.id !== id
+        );
+
+    saveStorage();
+
+    refreshAll();
+
+}
+
+
+/* =========================================================
+   MEMBER CLEAR
+========================================================= */
+
+function clearMemberForm(){
+
+    editingMemberId = null;
+
+    document.getElementById("memberName").value = "";
+
+    document.getElementById("memberId").value = "";
+
+    document.getElementById("memberWorkingCompany").value = "";
+
+    document.getElementById("memberPhone").value = "";
+
+    document.getElementById("memberWhatsapp").value = "";
+
+    document.getElementById("memberGmail").value = "";
+
+    document.getElementById("memberTrade").value = "";
+
+    document.getElementById("memberCompany").value = "";
+
+    document.getElementById("memberGrandTotal").value = "";
+
+}
+
+
+/* =========================================================
+   MEMBER LIST
+========================================================= */
+
+function renderMembers(){
+
+    const tbody =
+        document.getElementById("memberTable");
+
+    const search =
+        document
+        .getElementById("memberSearch")
+        .value
+        .toLowerCase();
+
+
+    tbody.innerHTML = "";
+
+
+    members
+    .filter(member =>
+        member.name
+        .toLowerCase()
+        .includes(search)
+    )
+    .forEach(member => {
+
+        const total =
+            calculateGrandTotal(member.name);
+
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(member.name)}</td>
+
+            <td>${escapeHtml(member.id)}</td>
+
+            <td>${escapeHtml(member.workingCompany || "")}</td>
+
+            <td>${escapeHtml(member.phone || "")}</td>
+
+            <td>${escapeHtml(member.whatsapp || "")}</td>
+
+            <td>${escapeHtml(member.gmail || "")}</td>
+
+            <td>${escapeHtml(member.trade || "")}</td>
+
+            <td>${escapeHtml(member.company || "")}</td>
+
+            <td>${total.toFixed(2)}</td>
+
+            <td>
+
+                <div class="actions">
+
+                    <button
+                        class="btn-warning"
+                        onclick="editMember('${member.id}')"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="btn-danger"
+                        onclick="deleteMember('${member.id}')"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   COMPANY
+========================================================= */
+
+function saveCompany(){
+
+    const working =
+        document
+        .getElementById("workingCompanyName")
+        .value.trim();
+
+    const yourCompany =
+        document
+        .getElementById("yourCompanyName")
+        .value.trim();
+
+
+    if(!working){
+
+        alert("Enter Working Company Name.");
+
+        return;
+
+    }
+
+
+    companies.push({
+
+        id:Date.now(),
+
+        workingCompany:working,
+
+        company:yourCompany
+
+    });
+
+
+    saveStorage();
+
+    document.getElementById("workingCompanyName").value = "";
+
+    document.getElementById("yourCompanyName").value = "";
+
+    refreshAll();
+
+}
+
+
+function deleteCompany(id){
+
+    if(!confirm("Delete company?")) return;
+
+    companies =
+        companies.filter(
+            c => c.id !== id
+        );
+
+    saveStorage();
+
+    refreshAll();
+
+}
+
+
+function renderCompanies(){
+
+    const tbody =
+        document.getElementById("companyTable");
+
+    tbody.innerHTML = "";
+
+
+    companies.forEach(company => {
+
+        const tr =
+            document.createElement("tr");
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(company.workingCompany)}</td>
+
+            <td>${escapeHtml(company.company)}</td>
+
+            <td>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteCompany(${company.id})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   TRADE
+========================================================= */
+
+function saveTrade(){
+
+    const name =
+        document
+        .getElementById("tradeName")
+        .value.trim();
+
+
+    if(!name){
+
+        alert("Enter trade name.");
+
+        return;
+
+    }
+
+
+    trades.push({
+
+        id:Date.now(),
+
+        name:name
+
+    });
+
+
+    saveStorage();
+
+    document.getElementById("tradeName").value = "";
+
+    refreshAll();
+
+}
+
+
+function deleteTrade(id){
+
+    if(!confirm("Delete trade?")) return;
+
+
+    trades =
+        trades.filter(
+            trade => trade.id !== id
+        );
+
+
+    saveStorage();
+
+    refreshAll();
+
+}
+
+
+function renderTrades(){
+
+    const tbody =
+        document.getElementById("tradeTable");
+
+    tbody.innerHTML = "";
+
+
+    trades.forEach(trade => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(trade.name)}</td>
+
+            <td>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteTrade(${trade.id})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   DROPDOWNS
+========================================================= */
+
+function updateDropdowns(){
+
+    const workingSelect =
+        document.getElementById(
+            "memberWorkingCompany"
+        );
+
+    const companySelect =
+        document.getElementById(
+            "memberCompany"
+        );
+
+    const tradeSelect =
+        document.getElementById(
+            "memberTrade"
+        );
+
+
+    workingSelect.innerHTML =
+        `<option value="">Select Working Company</option>`;
+
+    companySelect.innerHTML =
+        `<option value="">Select Company</option>`;
+
+    tradeSelect.innerHTML =
+        `<option value="">Select Trade</option>`;
+
+
+    companies.forEach(company => {
+
+        if(company.workingCompany){
+
+            workingSelect.innerHTML +=
+                `<option value="${escapeAttr(company.workingCompany)}">
+                    ${escapeHtml(company.workingCompany)}
+                </option>`;
+
+        }
+
+        if(company.company){
+
+            companySelect.innerHTML +=
+                `<option value="${escapeAttr(company.company)}">
+                    ${escapeHtml(company.company)}
+                </option>`;
+
+        }
+
+    });
+
+
+    trades.forEach(trade => {
+
+        tradeSelect.innerHTML +=
+            `<option value="${escapeAttr(trade.name)}">
+                ${escapeHtml(trade.name)}
+            </option>`;
+
+    });
+
+
+    updateMemberSelects();
+
+}
+
+
+/* =========================================================
+   MEMBER SELECTS
+========================================================= */
+
+function updateMemberSelects(){
+
+    const txSelect =
+        document.getElementById(
+            "transactionName"
+        );
+
+    const attSelect =
+        document.getElementById(
+            "attendanceName"
+        );
+
+
+    txSelect.innerHTML =
+        `<option value="">Select Member</option>`;
+
+    attSelect.innerHTML =
+        `<option value="">Select Member</option>`;
+
+
+    members.forEach(member => {
+
+        const option =
+            `<option value="${escapeAttr(member.name)}">
+                ${escapeHtml(member.name)} (${escapeHtml(member.id)})
+            </option>`;
+
+
+        txSelect.innerHTML += option;
+
+        attSelect.innerHTML += option;
+
+    });
+
+}
+
+
+/* =========================================================
+   TRANSACTION NAME CHANGE
+========================================================= */
+
+function transactionNameChanged(){
+
+    const name =
+        document
+        .getElementById("transactionName")
+        .value;
+
+
+    const date =
+        document
+        .getElementById("transactionDate");
+
+    const type =
+        document
+        .getElementById("transactionType");
+
+    const amount =
+        document
+        .getElementById("transactionAmount");
+
+    const save =
+        document
+        .getElementById("transactionSaveBtn");
+
+
+    const enabled =
+        name !== "";
+
+
+    date.disabled = !enabled;
+
+    type.disabled = !enabled;
+
+    amount.disabled = !enabled;
+
+    save.disabled = !enabled;
+
+
+    if(!enabled){
+
+        date.value = "";
+
+        type.value = "";
+
+        amount.value = "";
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE TRANSACTION
+========================================================= */
+
+function saveTransaction(){
+
+    const name =
+        document
+        .getElementById("transactionName")
+        .value;
+
+    const date =
+        document
+        .getElementById("transactionDate")
+        .value;
+
+    const type =
+        document
+        .getElementById("transactionType")
+        .value;
+
+    const amount =
+        Number(
+            document
+            .getElementById("transactionAmount")
+            .value
+        );
+
+
+    if(!name){
+
+        alert("Please select Name first.");
+
+        return;
+
+    }
+
+    if(!date){
+
+        alert("Please select Date.");
+
+        return;
+
+    }
+
+    if(!type){
+
+        alert("Please select Credit or Debit.");
+
+        return;
+
+    }
+
+    if(!amount || amount <= 0){
+
+        alert("Please enter valid Amount.");
+
+        return;
+
+    }
+
+
+    transactions.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        date:date,
+
+        type:type,
+
+        amount:amount
+
+    });
+
+
+    saveStorage();
+
+    clearTransactionForm();
+
+    renderTransactions();
+
+    renderMembers();
+
+
+    showMessage(
+        "transactionMessage",
+        "Transaction successful.",
+        "success"
+    );
+
+
+    /*
+       Future notification:
+
+       sendTransactionNotification({
+           name:name,
+           date:date,
+           type:type,
+           amount:amount
+       });
+
+    */
+
+}
+
+
+/* =========================================================
+   TRANSACTION CLEAR
+========================================================= */
+
+function clearTransactionForm(){
+
+    document.getElementById(
+        "transactionName"
+    ).value = "";
+
+    document.getElementById(
+        "transactionDate"
+    ).value = "";
+
+    document.getElementById(
+        "transactionType"
+    ).value = "";
+
+    document.getElementById(
+        "transactionAmount"
+    ).value = "";
+
+    transactionNameChanged();
+
+}
+
+
+/* =========================================================
+   TRANSACTION LIST
+========================================================= */
+
+function renderTransactions(){
+
+    const tbody =
+        document.getElementById(
+            "transactionTable"
+        );
+
+    tbody.innerHTML = "";
+
+
+    transactions
+    .slice()
+    .reverse()
+    .forEach(tx => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(tx.name)}</td>
+
+            <td>${escapeHtml(tx.date)}</td>
+
+            <td>${escapeHtml(tx.type)}</td>
+
+            <td>${Number(tx.amount).toFixed(2)}</td>
+
+            <td>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteTransaction(${tx.id})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   DELETE TRANSACTION
+========================================================= */
+
+function deleteTransaction(id){
+
+    if(!confirm("Delete this transaction?")){
+
+        return;
+
+    }
+
+
+    transactions =
+        transactions.filter(
+            tx => tx.id !== id
+        );
+
+
+    saveStorage();
+
+    renderTransactions();
+
+    renderMembers();
+
+}
+
+
+/* =========================================================
+   ATTENDANCE NAME CHANGE
+========================================================= */
+
+function attendanceNameChanged(){
+
+    const name =
+        document
+        .getElementById("attendanceName")
+        .value;
+
+
+    const date =
+        document
+        .getElementById("attendanceDate");
+
+    const type =
+        document
+        .getElementById("attendanceType");
+
+    const save =
+        document
+        .getElementById("attendanceSaveBtn");
+
+
+    const enabled =
+        name !== "";
+
+
+    date.disabled = !enabled;
+
+    type.disabled = !enabled;
+
+    save.disabled = !enabled;
+
+
+    if(!enabled){
+
+        date.value = "";
+
+        type.value = "";
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE ATTENDANCE
+========================================================= */
+
+function saveAttendance(){
+
+    const name =
+        document
+        .getElementById("attendanceName")
+        .value;
+
+    const date =
+        document
+        .getElementById("attendanceDate")
+        .value;
+
+    const type =
+        document
+        .getElementById("attendanceType")
+        .value;
+
+
+    if(!name){
+
+        alert("Please select Name first.");
+
+        return;
+
+    }
+
+    if(!date){
+
+        alert("Please select Date.");
+
+        return;
+
+    }
+
+    if(!type){
+
+        alert("Please select Attendance.");
+
+        return;
+
+    }
+
+
+    attendance.push({
+
+        id:Date.now(),
+
+        name:name,
+
+        date:date,
+
+        type:type
+
+    });
+
+
+    saveStorage();
+
+    clearAttendanceForm();
+
+    renderAttendance();
+
+
+    showMessage(
+        "attendanceMessage",
+        "Attendance saved successfully.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR ATTENDANCE
+========================================================= */
+
+function clearAttendanceForm(){
+
+    document.getElementById(
+        "attendanceName"
+    ).value = "";
+
+    document.getElementById(
+        "attendanceDate"
+    ).value = "";
+
+    document.getElementById(
+        "attendanceType"
+    ).value = "";
+
+    attendanceNameChanged();
+
+}
+
+
+/* =========================================================
+   ATTENDANCE LIST
+========================================================= */
+
+function renderAttendance(){
+
+    const tbody =
+        document.getElementById(
+            "attendanceTable"
+        );
+
+    tbody.innerHTML = "";
+
+
+    attendance
+    .slice()
+    .reverse()
+    .forEach(item => {
+
+        const tr =
+            document.createElement("tr");
+
+
+        tr.innerHTML = `
+
+            <td>${escapeHtml(item.name)}</td>
+
+            <td>${escapeHtml(item.date)}</td>
+
+            <td>${escapeHtml(item.type)}</td>
+
+            <td>
+
+                <button
+                    class="btn-danger"
+                    onclick="deleteAttendance(${item.id})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+
+/* =========================================================
+   DELETE ATTENDANCE
+========================================================= */
+
+function deleteAttendance(id){
+
+    if(!confirm("Delete attendance?")){
+
+        return;
+
+    }
+
+
+    attendance =
+        attendance.filter(
+            item => item.id !== id
+        );
+
+
+    saveStorage();
+
+    renderAttendance();
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    elementId,
+    text,
+    type
+){
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    element.textContent = text;
+
+    element.className =
+        "message " + type;
+
+    element.style.display =
+        "block";
+
+
+    setTimeout(() => {
+
+        element.style.display =
+            "none";
+
+    },3000);
+
+}
+
+
+/* =========================================================
+   SECURITY / HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttr(value){
+
+    return escapeHtml(value);
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+function refreshAll(){
+
+    updateDropdowns();
+
+    renderMembers();
+
+    renderTransactions();
+
+    renderAttendance();
+
+    renderCompanies();
+
+    renderTrades();
+
+}
+
+
+/* =========================================================
+   DEFAULT COMPANY
+========================================================= */
+
+function initializeDefaultData(){
+
+    if(companies.length === 0){
+
+        companies.push({
+
+            id:Date.now(),
+
+            workingCompany:
+                "SKM Sub Contract",
+
+            company:""
+
+        });
+
+
+        companies.push({
+
+            id:Date.now()+1,
+
+            workingCompany:
+                "DUTCO Supply",
+
+            company:""
+
+        });
+
+    }
+
+
+    if(trades.length === 0){
+
+        const defaultTrades = [
+
+            "Mason",
+            "Carpenter",
+            "Helper",
+            "Steel Fixer",
+            "Electrician",
+            "Foreman",
+            "Charge Hand",
+            "Camp Boss",
+            "Security",
+            "Cleaner"
+
+        ];
+
+
+        defaultTrades.forEach(
+            (name,index) => {
+
+                trades.push({
+
+                    id:Date.now()+index,
+
+                    name:name
+
+                });
+
+            }
+        );
+
+    }
+
+
+    saveStorage();
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+initializeDefaultData();
+
+refreshAll();
+
+transactionNameChanged();
+
+attendanceNameChanged();
+
+</script>
+
+</body>
+</html>
