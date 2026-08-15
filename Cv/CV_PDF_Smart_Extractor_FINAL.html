@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV PDF Smart Extractor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f5f7;font-family:Arial,sans-serif;color:#17202a}
+.wrap{max-width:1050px;margin:auto;padding:14px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 3px 14px #0001}
+h1{margin:0 0 6px;font-size:25px}h2{font-size:18px;margin:0 0 14px;color:#087f76}
+.note{font-size:13px;color:#667085}.upload{border:2px dashed #087f76;border-radius:12px;padding:24px;text-align:center;background:#f8fffe}
+input[type=file]{display:none}.pick{display:inline-block;background:#087f76;color:white;padding:12px 22px;border-radius:8px;font-weight:bold;cursor:pointer}
+.status{margin-top:12px;padding:10px;border-radius:8px;background:#eef7f5;font-size:13px}.progress{height:8px;background:#ddd;border-radius:9px;margin-top:9px;overflow:hidden}.bar{height:100%;width:0;background:#087f76}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;font-size:12px;font-weight:bold;margin-bottom:5px}
+input,textarea{width:100%;padding:10px;border:1px solid #ccd2d8;border-radius:7px;font-size:14px}textarea{min-height:100px;resize:vertical}
+button{border:0;border-radius:8px;padding:10px 15px;font-weight:bold;cursor:pointer;margin:4px}.primary{background:#087f76;color:#fff}.blue{background:#1976d2;color:#fff}.gray{background:#555;color:#fff}
+pre{background:#111;color:#eee;padding:13px;border-radius:8px;white-space:pre-wrap;font-size:12px;max-height:420px;overflow:auto}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="card">
+<h1>📄 Smart CV PDF Details Extractor</h1>
+<div class="note">Normal PDF + scanned/photo CV. This version uses OCR positions to separate left and right columns.</div>
+<div class="upload">
+<label class="pick" for="pdf">📂 Upload CV PDF</label>
+<input id="pdf" type="file" accept="application/pdf">
+<div id="fname">No file selected</div>
+</div>
+<div id="status" class="status">Ready.</div>
+<div class="progress"><div id="bar" class="bar"></div></div>
+</div>
+
+<div class="card">
+<h2>👤 Personal Details</h2>
+<div class="grid">
+<div><label>Full Name</label><input id="name"></div>
+<div><label>Phone</label><input id="phone"></div>
+<div><label>Email</label><input id="email"></div>
+<div><label>Location / Address</label><input id="address"></div>
+<div><label>Date of Birth</label><input id="dob"></div>
+<div><label>Gender</label><input id="gender"></div>
+<div><label>Nationality</label><input id="nationality"></div>
+<div><label>Profession / Job Title</label><input id="profession"></div>
+<div class="full"><label>Professional Summary</label><textarea id="summary"></textarea></div>
+<div class="full"><label>Work Experience / Work History</label><textarea id="experience"></textarea></div>
+<div class="full"><label>Education</label><textarea id="education"></textarea></div>
+<div class="full"><label>Responsibilities</label><textarea id="responsibilities"></textarea></div>
+<div><label>Skills</label><textarea id="skills"></textarea></div>
+<div><label>Languages</label><textarea id="languages"></textarea></div>
+</div>
+<br>
+<button class="primary" onclick="reanalyze()">🔄 Re-analyze</button>
+<button class="gray" onclick="clearAll()">Clear</button>
+</div>
+
+<div class="card">
+<h2>🔍 Detected OCR Text</h2>
+<pre id="raw">Upload a PDF...</pre>
+</div>
+
+</div>
+
+<script type="module">
+import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+const $=id=>document.getElementById(id);
+let detected={left:[],right:[],all:[]};
+
+function status(t,p){
+ $("status").textContent=t;
+ if(p!=null)$("bar").style.width=Math.max(0,Math.min(100,p))+"%";
+}
+function clean(s){return (s||"").replace(/\s+/g," ").trim()}
+function linesFromWords(words){
+ const rows=[];
+ for(const w of words.filter(x=>x.text&&x.text.trim())){
+  const y=w.bbox.y0, h=Math.max(1,w.bbox.y1-w.bbox.y0);
+  let row=rows.find(r=>Math.abs(r.y-y)<h*.65);
+  if(!row){row={y,words:[]};rows.push(row)}
+  row.words.push(w);
+ }
+ rows.sort((a,b)=>a.y-b.y);
+ return rows.map(r=>({
+   y:r.y,
+   x:Math.min(...r.words.map(w=>w.bbox.x0)),
+   text:r.words.sort((a,b)=>a.bbox.x0-b.bbox.x0).map(w=>w.text).join(" ")
+ })).filter(r=>r.text);
+}
+function sectionIndex(rows,name){
+ return rows.findIndex(r=>clean(r.text).toLowerCase().replace(/[^a-z ]/g,"").trim()===name);
+}
+function getSection(rows,name,nextNames=[]){
+ const i=sectionIndex(rows,name); if(i<0)return "";
+ let out=[];
+ for(let j=i+1;j<rows.length;j++){
+  const x=clean(rows[j].text).toLowerCase().replace(/[^a-z ]/g,"").trim();
+  if(nextNames.includes(x))break;
+  out.push(rows[j].text);
+ }
+ return out.join("\n").trim();
+}
+function valueAfterLabel(rows,label){
+ const i=rows.findIndex(r=>clean(r.text).toLowerCase().replace(/[:]/g,"").trim()===label);
+ if(i<0)return "";
+ let same=clean(rows[i].text).replace(new RegExp("^"+label+"\\s*[:\\-]?\\s*","i"),"").trim();
+ if(same && same.toLowerCase()!==label)return same;
+ return rows[i+1]?.text||"";
+}
+function firstEmail(text){
+ return (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/ig)||[])[0]||"";
+}
+function phone(text){
+ const a=text.match(/(?:\+?\d[\d ()-]{7,}\d)/g)||[];
+ return a.sort((x,y)=>y.replace(/\D/g,"").length-x.replace(/\D/g,"").length)[0]||"";
+}
+function set(id,v){$(id).value=clean(v||"")}
+
+$("pdf").addEventListener("change",async e=>{
+ const f=e.target.files[0];if(!f)return;
+ $("fname").textContent=f.name;
+ status("Opening PDF...",3);
+ try{
+  const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+  let allWords=[];
+  for(let p=1;p<=pdf.numPages;p++){
+   status("Rendering page "+p+"/"+pdf.numPages+"...",8);
+   const page=await pdf.getPage(p);
+   const vp=page.getViewport({scale:2.5});
+   const canvas=document.createElement("canvas");
+   canvas.width=Math.ceil(vp.width);canvas.height=Math.ceil(vp.height);
+   const ctx=canvas.getContext("2d");
+   await page.render({canvasContext:ctx,viewport:vp}).promise;
+
+   status("OCR page "+p+"/"+pdf.numPages+"...",15);
+   const result=await Tesseract.recognize(canvas,"eng",{
+    logger:m=>{
+     if(m.status==="recognizing text"){
+      status("OCR page "+p+"/"+pdf.numPages+" : "+Math.round(m.progress*100)+"%",15+(m.progress*75/pdf.numPages));
+     }
+    }
+   });
+   // Tesseract coordinates are in the rendered canvas.
+   allWords.push(...result.data.words.map(w=>({
+    text:w.text,
+    bbox:{x0:w.bbox.x0,y0:w.bbox.y0,x1:w.bbox.x1,y1:w.bbox.y1}
+   })));
+  }
+
+  const rows=linesFromWords(allWords);
+  const maxX=Math.max(...allWords.map(w=>w.bbox.x1),1);
+  const split=maxX*.35;
+
+  // Daniel-style two-column CV: contact/skills/languages on left, main CV on right.
+  const leftWords=allWords.filter(w=>w.bbox.x0<split);
+  const rightWords=allWords.filter(w=>w.bbox.x0>=split);
+  const left=linesFromWords(leftWords);
+  const right=linesFromWords(rightWords);
+
+  detected={left,right,all:rows};
+  $("raw").textContent=
+    "===== LEFT COLUMN =====\\n"+left.map(x=>x.text).join("\\n")+
+    "\\n\\n===== RIGHT COLUMN =====\\n"+right.map(x=>x.text).join("\\n");
+
+  extractDanielStyle(left,right,rows);
+  status("✅ Extraction complete. Form भरिएको छ—आवश्यक भए edit गर्नुहोस्।",100);
+ }catch(err){
+  console.error(err);status("❌ Error: "+err.message,0);
+ }
+});
+
+function extractDanielStyle(left,right,all){
+ // Name: first meaningful large/title-like line on right, before first section heading.
+ const nameCandidate=right.map(r=>r.text).find(x=>
+   /^[A-Za-z][A-Za-z .'-]{2,60}$/.test(clean(x)) &&
+   !/professional|summary|work|history|education|responsibilities|skills|languages/i.test(x)
+ );
+ set("name",nameCandidate);
+
+ const lt=left.map(r=>r.text).join("\n");
+ const rt=right.map(r=>r.text).join("\n");
+
+ // Daniel-style labeled left column.
+ set("address",valueAfterLabel(left,"location"));
+ set("phone",valueAfterLabel(left,"phone")||phone(lt));
+ set("email",valueAfterLabel(left,"email")||firstEmail(lt));
+ set("dob",valueAfterLabel(left,"dob"));
+ set("gender",valueAfterLabel(left,"gender"));
+ set("nationality",valueAfterLabel(left,"nationality"));
+
+ // Skills: between Skills and Languages.
+ const skillNames=["skills","languages"];
+ const si=sectionIndex(left,"skills"), li=sectionIndex(left,"languages");
+ if(si>=0)set("skills",left.slice(si+1,li>=0?li:left.length).map(x=>x.text).join("\n"));
+
+ if(li>=0)set("languages",left.slice(li+1).map(x=>x.text).join("\n"));
+
+ // Right-side sections. This exactly handles headings used by the supplied CV,
+ // and also common variants.
+ const aliases={
+  summary:["professional summary","profile","career objective","objective"],
+  experience:["work history","work experience","professional experience","employment history"],
+  education:["education","academic qualification"],
+  responsibilities:["responsibilities","duties"]
+ };
+
+ set("summary",readBetween(right,aliases.summary,["work history","work experience","professional experience","education","responsibilities"]));
+ set("experience",readBetween(right,aliases.experience,["education","responsibilities"]));
+ set("education",readBetween(right,aliases.education,["responsibilities"]));
+ set("responsibilities",readBetween(right,aliases.responsibilities,[]));
+
+ // Profession: first role in Work History (e.g. Steel Fixer).
+ let exp=$("experience").value;
+ const expLines=exp.split("\n").map(clean).filter(Boolean);
+ const role=expLines.find(x=>x.length<55 && /^[A-Za-z][A-Za-z /&-]+$/.test(x) &&
+   !/skm technical|local construction|residential construction|present|dubai|ghana|uae|region|project/i.test(x));
+ set("profession",role||"");
+
+ // If there is no explicit work section, use the summary's first phrase.
+ if(!$("profession").value){
+  const m=$("summary").value.match(/^(.{3,70}?)(?:\s+with\s+experience|\s+with\s+\d|\.)/i);
+  if(m)set("profession",m[1]);
+ }
+}
+
+function readBetween(rows,aliases,next){
+ let start=-1;
+ for(let i=0;i<rows.length;i++){
+  const x=clean(rows[i].text).toLowerCase().replace(/[^a-z ]/g,"").trim();
+  if(aliases.includes(x)){start=i+1;break}
+ }
+ if(start<0)return "";
+ let out=[];
+ for(let i=start;i<rows.length;i++){
+  const x=clean(rows[i].text).toLowerCase().replace(/[^a-z ]/g,"").trim();
+  if(next.includes(x))break;
+  out.push(rows[i].text);
+ }
+ return out.join("\n").trim();
+}
+
+window.reanalyze=()=>{
+ if(detected.left.length||detected.right.length)extractDanielStyle(detected.left,detected.right,detected.all);
+};
+window.clearAll=()=>{
+ document.querySelectorAll("input,textarea").forEach(x=>{if(x.type!=="file")x.value=""});
+ $("raw").textContent="Upload a PDF...";
+ $("fname").textContent="No file selected";status("Ready.",0);
+};
+</script>
+</body>
+</html>
