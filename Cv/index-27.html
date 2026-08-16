@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta id="viewportMeta" name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pro CV Builder Advanced</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#eef2f7;color:#222}
+.form{padding:15px;background:#fff}
+input,textarea,select{width:100%;padding:10px;margin:5px 0;border-radius:6px;border:1px solid #ccc}
+textarea{min-height:80px;resize:vertical}
+button{width:100%;padding:12px;background:#0f766e;color:#fff;border:none;border-radius:6px;margin-top:5px;font-size:16px;cursor:pointer}
+button:hover{opacity:.9}
+.workBox{border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:8px;background:#fafafa}
+.cv{display:flex;width:794px;min-height:1123px;margin:20px auto;background:#fff;box-shadow:0 0 10px rgba(0,0,0,.2);overflow:hidden;border-radius:14px}
+.left{width:35%;background:linear-gradient(180deg,#134e4a,#0f766e);color:#fff;padding:25px}
+.right{width:65%;padding:35px;background:#fff;font-family:'Segoe UI',sans-serif}
+.photoWrap{width:130px;height:130px;border-radius:50%;border:4px solid #fff;box-shadow:0 0 10px rgba(0,0,0,.2);margin:auto;overflow:hidden;position:relative;touch-action:none}
+.photoWrap img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;cursor:grab;transform-origin:center}
+.left h3{font-size:18px;letter-spacing:1px;margin-top:20px}
+.left p,.left h5{font-size:14px;line-height:1.7;word-break:break-word}
+h1{margin:0;padding-bottom:5px;word-break:break-word}
+#cvName{font-size:34px;font-weight:bold;color:#0f172a;border:none;margin-bottom:5px;letter-spacing:1px}
+.right .section{margin-top:22px}
+.right .section h3{background:#0f766e;color:#fff;padding:8px 12px;border-radius:6px;font-size:16px;letter-spacing:1px;margin-bottom:10px}
+#cvSummary,#cvEdu,#cvRespons,#cvWork,#cvSkills{font-size:15px;line-height:1.8;color:#333;text-align:justify}
+#cvSkills{color:#fff!important}
+#cvWork b{color:#0f766e;font-size:16px}
+.small{font-size:14px;line-height:1.5}
+#previewModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:9999;overflow:auto}
+#previewBox{width:90%;max-width:900px;margin:40px auto;background:#fff;padding:20px;border-radius:10px;position:relative}
+.statusBox{padding:12px;margin:10px 0;background:#e6fffa;border:1px solid #99f6e4;border-radius:6px;color:#115e59}
+.googleBox{margin-top:30px}
+.dbBadge{display:inline-block;padding:5px 8px;border-radius:5px;font-size:12px;background:#ecfdf5;color:#047857;margin-bottom:8px}
+@media(max-width:900px){body{overflow-x:auto}.cv{width:794px;min-width:794px;margin:10px auto}}
+@media print{body{background:#fff}.cv{width:210mm;height:297mm;margin:0;box-shadow:none}}
+</style>
+</head>
+
+<body>
+<div class="form">
+<h2>Fill CV Details</h2>
+<button type="button" onclick="toggleDisplayZoom()">Enable / Disable Display Zoom</button>
+
+<h3>Photo</h3>
+<input type="file" id="photo" accept="image/*">
+<input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1">
+
+<h3>Basic Info</h3>
+<input id="name" placeholder="Full Name">
+<input id="location" placeholder="Location">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="dob" placeholder="Date of Birth">
+<select id="gender">
+<option value="">Select Gender</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+</select>
+<input id="nationality" placeholder="Nationality">
+
+<h3>Professional Summary</h3>
+<textarea id="summary" placeholder="Professional Summary"></textarea>
+
+<h3>Work History</h3>
+<div id="workContainer"></div>
+<button type="button" onclick="addWork()">+ Add Work</button>
+
+<h3>Skills</h3>
+<textarea id="skills" placeholder="Skills"></textarea>
+<h3>Languages</h3>
+<textarea id="languages" placeholder="Languages"></textarea>
+<h3>Education</h3>
+<textarea id="education" placeholder="Education"></textarea>
+<h3>Responsibilities</h3>
+<textarea id="Responsbiliti" placeholder="Responsibilities"></textarea>
+
+<hr>
+<button type="button" onclick="gen()">Generate CV</button>
+<button type="button" onclick="generateResume()">Generate Professional Resume</button>
+<button type="button" onclick="downloadTXT()">Download TXT</button>
+<button type="button" onclick="downloadPDF()">Download PDF</button>
+<button type="button" onclick="downloadResumePDF()">Download Professional Resume PDF</button>
+<button type="button" onclick="copyAllData()">Copy All Entry Data</button>
+<button type="button" onclick="saveOffline()">💾 Save Offline</button>
+<button type="button" onclick="clearAllOfflineData()" style="background:#b91c1c;">🗑️ Clear All Offline Data</button>
+<button type="button" onclick="syncToSheet()">☁️ Sync Offline CVs to Google Sheet</button>
+<button type="button" onclick="loadGoogleList()">🔄 Refresh Google Sheet</button>
+<button type="button" onclick="previewResume()">Preview Resume</button>
+<div id="statusBox" class="statusBox">Starting...</div>
+</div>
+
+<div class="cv">
+<div class="left">
+<div class="photoWrap"><img id="cvPhoto" alt="CV Photo"></div>
+<h3><u>Contact</u></h3>
+<h5>Location:<p id="cvLocation"></p></h5>
+<h5>Phone:<p id="cvPhone"></p></h5>
+<h5>Email:<p id="cvEmail"></p></h5>
+<h5>DOB:<p id="cvDob"></p></h5>
+<h5>Gender:<p id="cvgender"></p></h5>
+<h5>Nationality:<p id="cvNationality"></p></h5>
+<h3><u>Skills</u></h3><p id="cvSkills"></p>
+<h3><u>Languages</u></h3><p id="cvLang"></p>
+</div>
+
+<div class="right">
+<h1 id="cvName">Your Name</h1>
+<div class="section"><h3>PROFESSIONAL SUMMARY</h3><p id="cvSummary" class="small"></p></div>
+<div class="section"><h3>WORK HISTORY</h3><div id="cvWork"></div></div>
+<div class="section"><h3>EDUCATION</h3><p id="cvEdu"></p></div>
+<div class="section"><h3>RESPONSIBILITIES</h3><p id="cvRespons"></p></div>
+</div>
+</div>
+
+<div class="form">
+<h2>📱 Offline Saved CVs</h2>
+<div class="dbBadge">IndexedDB Offline Storage — Database v3</div>
+<div id="offlineList">Loading Offline CVs...</div>
+<div class="googleBox">
+<h2>☁️ Google Sheet CVs</h2>
+<div id="googleList">Google Sheet list not loaded.</div>
+</div>
+</div>
+
+<div id="previewModal">
+<div id="previewBox">
+<button type="button" onclick="closePreview()" style="width:auto;background:red;position:absolute;right:10px;top:10px;">Close</button>
+<div id="previewContent"></div>
+</div>
+</div>
+
+<script>
+const WEB_APP_URL="https://script.google.com/macros/s/AKfycbw8fkZNNNDuhtL20uLDQor6mBPbC-eDq-9dGr9sN0XEZiLCYflyQAE2iMS1Um7qI4-1/exec";
+
+/* IMPORTANT:
+   The old version was 1, but this browser already has CVDatabase version 2.
+   Opening version 1 caused:
+   "The requested version (1) is less than the existing version (2)."
+   Version 3 upgrades both old v1 and v2 databases safely.
+*/
+const DB_NAME="CVDatabase";
+const DB_VERSION=3;
+const STORE_NAME="cvData";
+
+let db=null,editId=null,workCount=0,displayZoomEnabled=false;
+let scale=1,posX=0,posY=0,photoDataUrl="";
+window.__editingSynced=false;
+window.__editingSyncDate="";
+
+function setStatus(message){document.getElementById("statusBox").innerText=message}
+
+function escapeHTML(str){
+ return String(str||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function addWork(){
+ workCount++;
+ const div=document.createElement("div");
+ div.className="workBox";
+ div.innerHTML=`
+ <strong>Work Experience ${workCount}</strong>
+ <input placeholder="Job Title" id="job${workCount}">
+ <input placeholder="Company" id="company${workCount}">
+ <input placeholder="Start Date" id="start${workCount}">
+ <input placeholder="End Date" id="end${workCount}">
+ <input placeholder="Address" id="address${workCount}">
+ <textarea placeholder="Description" id="desc${workCount}"></textarea>`;
+ document.getElementById("workContainer").appendChild(div);
+}
+
+function collectWorks(){
+ const works=[];
+ for(let i=1;i<=workCount;i++){
+  const job=document.getElementById("job"+i)?.value||"";
+  const company=document.getElementById("company"+i)?.value||"";
+  const start=document.getElementById("start"+i)?.value||"";
+  const end=document.getElementById("end"+i)?.value||"";
+  const address=document.getElementById("address"+i)?.value||"";
+  const desc=document.getElementById("desc"+i)?.value||"";
+  if(job||company||start||end||address||desc) works.push({job,company,start,end,address,desc});
+ }
+ return works;
+}
+
+function collectCVData(){
+ return {
+  id:editId||Date.now(),
+  name:document.getElementById("name").value.trim(),
+  location:document.getElementById("location").value.trim(),
+  phone:document.getElementById("phone").value.trim(),
+  email:document.getElementById("email").value.trim(),
+  dob:document.getElementById("dob").value.trim(),
+  gender:document.getElementById("gender").value,
+  nationality:document.getElementById("nationality").value.trim(),
+  summary:document.getElementById("summary").value.trim(),
+  skills:document.getElementById("skills").value.trim(),
+  languages:document.getElementById("languages").value.trim(),
+  education:document.getElementById("education").value.trim(),
+  Responsbiliti:document.getElementById("Responsbiliti").value.trim(),
+  works:collectWorks(),
+  photoDataUrl:photoDataUrl||"",
+  savedAt:new Date().toISOString(),
+  synced:(editId!==null && editId!==undefined) ? !!(window.__editingSynced) : false,
+  syncDate:(editId!==null && editId!==undefined) ? (window.__editingSyncDate||"") : ""
+ };
+}
+
+function gen(){
+ document.getElementById("cvName").innerText=document.getElementById("name").value||"Your Name";
+ document.getElementById("cvLocation").innerText=document.getElementById("location").value;
+ document.getElementById("cvPhone").innerText=document.getElementById("phone").value;
+ document.getElementById("cvEmail").innerText=document.getElementById("email").value;
+ document.getElementById("cvDob").innerText=document.getElementById("dob").value;
+ document.getElementById("cvgender").innerText=document.getElementById("gender").value;
+ document.getElementById("cvNationality").innerText=document.getElementById("nationality").value;
+
+ ["summary","skills","languages","education","Responsbiliti"].forEach(id=>{
+  const target={summary:"cvSummary",skills:"cvSkills",languages:"cvLang",education:"cvEdu",Responsbiliti:"cvRespons"}[id];
+  document.getElementById(target).innerHTML=escapeHTML(document.getElementById(id).value).replace(/\n/g,"<br>");
+ });
+
+ let workHTML="";
+ for(let i=1;i<=workCount;i++){
+  const job=document.getElementById("job"+i)?.value||"";
+  const company=document.getElementById("company"+i)?.value||"";
+  const start=document.getElementById("start"+i)?.value||"";
+  const end=document.getElementById("end"+i)?.value||"";
+  const address=document.getElementById("address"+i)?.value||"";
+  const desc=document.getElementById("desc"+i)?.value||"";
+  if(job||company) workHTML+=`
+   <div style="margin-bottom:10px">
+    <b>${escapeHTML(job)}</b><br>
+    <span>${escapeHTML(company)}</span><br>
+    <span style="font-size:11px;color:#555">${escapeHTML(start)} - ${escapeHTML(end)}</span><br>
+    <span style="font-size:11px">${escapeHTML(address)}</span><br>
+    <span style="font-size:12px">${escapeHTML(desc).replace(/\n/g,"<br>")}</span>
+   </div>`;
+ }
+ document.getElementById("cvWork").innerHTML=workHTML;
+ if(photoDataUrl) document.getElementById("cvPhoto").src=photoDataUrl;
+}
+
+/* =========================
+   INDEXEDDB FIX
+   ========================= */
+function initDB(){
+ return new Promise((resolve,reject)=>{
+  if(db){resolve(db);return}
+  if(!window.indexedDB){reject(new Error("IndexedDB is not supported by this browser."));return}
+
+  let request;
+  try{
+   request=indexedDB.open(DB_NAME,DB_VERSION);
+  }catch(err){reject(err);return}
+
+  request.onupgradeneeded=e=>{
+   const database=e.target.result;
+   if(!database.objectStoreNames.contains(STORE_NAME)){
+    database.createObjectStore(STORE_NAME,{keyPath:"id"});
+   }
+  };
+
+  request.onsuccess=e=>{
+   db=e.target.result;
+   db.onversionchange=()=>{db.close();db=null};
+   db.onclose=()=>{db=null};
+   db.onerror=event=>console.error("IndexedDB runtime error:",event.target.error);
+   resolve(db);
+  };
+
+  request.onerror=e=>{
+   db=null;
+   console.error("IndexedDB Open Error:",e.target.error);
+   reject(e.target.error||new Error("Unable to open IndexedDB."));
+  };
+
+  request.onblocked=()=>{
+   console.warn("IndexedDB upgrade is blocked. Close another tab/window using this CV Builder and retry.");
+  };
+ });
+}
+
+async function saveOffline(){
+ const data=collectCVData();
+ if(!data.name){alert("Please enter Full Name first.");document.getElementById("name").focus();return}
+ setStatus("Saving CV Offline...");
+ try{
+  const database=db||await initDB();
+  await new Promise((resolve,reject)=>{
+   const tx=database.transaction(STORE_NAME,"readwrite");
+   tx.objectStore(STORE_NAME).put(data);
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error||new Error("IndexedDB save failed."));
+   tx.onabort=()=>reject(tx.error||new Error("IndexedDB transaction aborted."));
+  });
+  editId=data.id;
+  gen();
+  await loadOfflineList();
+  setStatus("CV Offline Save भयो ✅");
+  alert("CV Offline Save भयो ✅");
+ }catch(error){
+  console.error("OFFLINE SAVE ERROR:",error);
+  setStatus("Offline Save Failed ❌");
+  alert("Offline save failed:\n\n"+(error?.message||error));
+ }
+}
+
+async function loadOfflineList(){
+ try{
+  const database=db||await initDB();
+  const all=await new Promise((resolve,reject)=>{
+   const tx=database.transaction(STORE_NAME,"readonly");
+   const req=tx.objectStore(STORE_NAME).getAll();
+   req.onsuccess=()=>resolve(req.result||[]);
+   req.onerror=()=>reject(req.error);
+  });
+  all.sort((a,b)=>Number(b.id||0)-Number(a.id||0));
+  displayOfflineList(all);
+ }catch(error){
+  console.error("Load Offline List Error:",error);
+  displayOfflineList([]);
+ }
+}
+
+function displayOfflineList(all){
+ const box=document.getElementById("offlineList");
+ if(!box)return;
+ if(!all.length){
+  box.innerHTML=`<div class="workBox"><b>No Offline CV Found</b><br>Save a CV using <b>💾 Save Offline</b></div>`;
+  return;
+ }
+ box.innerHTML=all.map(d=>{
+  const id=String(d.id||"");
+  const savedDate=d.savedAt?new Date(d.savedAt).toLocaleString():"";
+  return `<div class="workBox">
+   <h3 style="margin:0 0 8px">${escapeHTML(d.name||"Unnamed CV")}</h3>
+   <div>📞 ${escapeHTML(d.phone||"")}</div>
+   <div>📍 ${escapeHTML(d.location||"")}</div>
+   <div>✉️ ${escapeHTML(d.email||"")}</div>
+   <div style="margin-top:6px;font-size:12px;color:#666">ID: ${escapeHTML(id)}${savedDate?"<br>Saved: "+escapeHTML(savedDate):""}</div>
+   <div style="margin-top:8px;font-weight:bold">${d.synced?"☁️ Google Sheet Synced":"📱 Offline Only"}</div>
+   <button type="button" onclick="editOfflineDataById(${JSON.stringify(id)})">✏️ Edit</button>
+   <button type="button" style="background:#dc2626" onclick="deleteOfflineDataById(${JSON.stringify(id)})">🗑️ Delete</button>
+  </div>`;
+ }).join("");
+}
+
+async function findOfflineRecordById(id){
+ const database=db||await initDB();
+ const all=await new Promise((resolve,reject)=>{
+  const tx=database.transaction(STORE_NAME,"readonly");
+  const req=tx.objectStore(STORE_NAME).getAll();
+  req.onsuccess=()=>resolve(req.result||[]);
+  req.onerror=()=>reject(req.error);
+ });
+ const wanted=String(id);
+ return all.find(item=>String(item.id)===wanted)||null;
+}
+
+async function editOfflineDataById(id){
+ try{
+  const data=await findOfflineRecordById(id);
+  if(!data){alert("CV not found in Offline Storage.");return}
+  fillForm(data);
+ }catch(error){
+  console.error("Offline edit error:",error);
+  alert("CV edit failed:\n\n"+(error.message||error));
+ }
+}
+
+async function editOfflineData(id){
+ return editOfflineDataById(id);
+}
+
+function fillForm(d){
+ ["name","location","phone","email","dob","gender","nationality","summary","skills","languages","education","Responsbiliti"].forEach(id=>{
+  document.getElementById(id).value=d[id]||"";
+ });
+ document.getElementById("workContainer").innerHTML="";
+ workCount=0;
+ if(Array.isArray(d.works)) d.works.forEach(w=>{
+  addWork();
+  document.getElementById("job"+workCount).value=w.job||"";
+  document.getElementById("company"+workCount).value=w.company||"";
+  document.getElementById("start"+workCount).value=w.start||"";
+  document.getElementById("end"+workCount).value=w.end||"";
+  document.getElementById("address"+workCount).value=w.address||"";
+  document.getElementById("desc"+workCount).value=w.desc||"";
+ });
+ editId=d.id;
+ photoDataUrl=d.photoDataUrl||"";
+ if(photoDataUrl)document.getElementById("cvPhoto").src=photoDataUrl;
+ else document.getElementById("cvPhoto").removeAttribute("src");
+ gen();
+ window.scrollTo({top:0,behavior:"smooth"});
+ setStatus("Offline CV editing mode ✏️");
+ alert("Offline CV loaded ✏️");
+}
+
+async function deleteOfflineDataById(id){
+ if(!confirm("Delete this Offline CV?"))return;
+ try{
+  const database=db||await initDB();
+  const data=await findOfflineRecordById(id);
+  if(!data){alert("CV not found in Offline Storage.");return}
+
+  await new Promise((resolve,reject)=>{
+   const tx=database.transaction(STORE_NAME,"readwrite");
+   const req=tx.objectStore(STORE_NAME).delete(data.id);
+   req.onerror=()=>reject(req.error||new Error("Delete request failed."));
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error||new Error("Delete transaction failed."));
+   tx.onabort=()=>reject(tx.error||new Error("Delete transaction aborted."));
+  });
+
+  if(String(editId)===String(data.id))editId=null;
+  await loadOfflineList();
+  setStatus("Offline CV deleted successfully ✅");
+  alert("Offline CV deleted successfully ✅");
+ }catch(error){
+  console.error("Offline delete error:",error);
+  alert("Delete failed:\n\n"+(error.message||error));
+ }
+}
+
+async function deleteOfflineData(id){
+    if(!confirm("Delete this Offline CV?")) return;
+
+    setStatus("Deleting Offline CV...");
+
+    try{
+        const database = db || await initDB();
+
+        await new Promise((resolve,reject)=>{
+            const tx = database.transaction(STORE_NAME, "readwrite");
+            const store = tx.objectStore(STORE_NAME);
+            let deleted = false;
+
+            const cursorRequest = store.openCursor();
+
+            cursorRequest.onsuccess = function(e){
+                const cursor = e.target.result;
+
+                if(!cursor){
+                    if(!deleted){
+                        try{ tx.abort(); }catch(_){}
+                    }
+                    return;
+                }
+
+                if(String(cursor.value.id) === String(id)){
+                    const deleteRequest = cursor.delete();
+
+                    deleteRequest.onsuccess = function(){
+                        deleted = true;
+                    };
+
+                    deleteRequest.onerror = function(){
+                        reject(deleteRequest.error || new Error("Delete request failed."));
+                    };
+
+                    return;
+                }
+
+                cursor.continue();
+            };
+
+            cursorRequest.onerror = function(){
+                reject(cursorRequest.error || new Error("Could not search Offline CV records."));
+            };
+
+            tx.oncomplete = function(){
+                if(deleted) resolve();
+                else reject(new Error("CV record not found."));
+            };
+
+            tx.onerror = function(){
+                reject(tx.error || new Error("IndexedDB delete transaction failed."));
+            };
+
+            tx.onabort = function(){
+                if(!deleted){
+                    reject(tx.error || new Error("CV record not found or delete was aborted."));
+                }
+            };
+        });
+
+        if(String(editId) === String(id)) editId = null;
+
+        await loadOfflineList();
+        setStatus("Offline CV deleted successfully ✅");
+        alert("Offline CV deleted successfully ✅");
+
+    }catch(error){
+        console.error("DELETE OFFLINE ERROR:", error);
+        setStatus("Offline Delete Failed ❌");
+        alert("Offline delete failed:\n\n" + (error?.message || error));
+    }
+}
+
+async function getAllFromIndexedDB(){
+ try{
+  const database=db||await initDB();
+  return await new Promise((resolve,reject)=>{
+   const tx=database.transaction(STORE_NAME,"readonly");
+   const req=tx.objectStore(STORE_NAME).getAll();
+   req.onsuccess=()=>resolve(req.result||[]);
+   req.onerror=()=>reject(req.error);
+  });
+ }catch(error){console.error("getAllFromIndexedDB:",error);return[]}
+}
+
+async function updateLocalData(data){
+ try{
+  const database=db||await initDB();
+  await new Promise((resolve,reject)=>{
+   const tx=database.transaction(STORE_NAME,"readwrite");
+   tx.objectStore(STORE_NAME).put(data);
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error);
+  });
+ }catch(error){console.error("IndexedDB update error:",error)}
+}
+
+/* =========================
+   GOOGLE SHEET
+   ========================= */
+async function syncToSheet(){
+ const all=await getAllFromIndexedDB();
+ if(!all.length){alert("No Offline CV Found.");return}
+ setStatus("Syncing Offline CVs to Google Sheet...");
+ let successCount=0,failedCount=0;
+ for(const data of all){
+  try{
+   const payload={action:"save",id:data.id,name:data.name,location:data.location,phone:data.phone,email:data.email,dob:data.dob,gender:data.gender,nationality:data.nationality,summary:data.summary,skills:data.skills,languages:data.languages,education:data.education,Responsbiliti:data.Responsbiliti||"",works:data.works||[]};
+   const response=await fetch(WEB_APP_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+   const result=await response.json();
+   if(result.success){
+    successCount++;
+    data.synced=true;
+    data.syncDate=new Date().toISOString();
+    await updateLocalData(data);
+   }else failedCount++;
+  }catch(error){console.error("Sync error:",error);failedCount++}
+ }
+ await loadOfflineList();
+ setStatus(`Sync completed: ${successCount} success, ${failedCount} failed.`);
+ alert(`${successCount} CV Google Sheet मा Sync भयो ✅\n\nFailed: ${failedCount}`);
+ await loadGoogleList();
+}
+
+async function loadGoogleList(){
+ const box=document.getElementById("googleList");
+ box.innerHTML="Loading Google Sheet...";
+ try{
+  const response=await fetch(WEB_APP_URL+"?action=list&t="+Date.now(),{cache:"no-store"});
+  const result=await response.json();
+  if(!result.success){box.innerHTML="Google Sheet error: "+escapeHTML(result.message||"");return}
+  const all=Array.isArray(result.data)?result.data:[];
+  if(!all.length){box.innerHTML="No CV Found in Google Sheet.";return}
+  box.innerHTML=all.map(d=>{
+   const id=String(d.id||"");
+   return `<div class="workBox">
+    <b>${escapeHTML(d.name||"Unnamed CV")}</b><br>
+    ${escapeHTML(d.phone||"")}<br>
+    ${escapeHTML(d.location||"")}<br>
+    <small>Google ID: ${escapeHTML(id)}</small><br><br>
+    <button type="button" onclick="editGoogleCV(${JSON.stringify(id)})">Edit</button>
+    <button type="button" style="background:#dc2626" onclick="deleteGoogleCV(${JSON.stringify(id)})">Delete</button>
+   </div>`;
+  }).join("");
+ }catch(error){
+  console.error("Google list error:",error);
+  box.innerHTML="Google Sheet load गर्न सकिएन। Internet check गर्नुहोस्।";
+ }
+}
+
+async function editGoogleCV(id){
+ try{
+  const response=await fetch(WEB_APP_URL+"?action=get&id="+encodeURIComponent(id)+"&t="+Date.now());
+  const result=await response.json();
+  if(!result.success){alert(result.message||"CV not found.");return}
+  fillForm(result.data);
+  editId=result.data.id;
+  setStatus("Google Sheet CV loaded ✏️");
+  window.scrollTo({top:0,behavior:"smooth"});
+ }catch(error){console.error(error);alert("Google Sheet बाट CV load गर्न सकिएन।")}
+}
+
+async function deleteGoogleCV(id){
+ if(!id){alert("CV ID not found.");return}
+ if(!confirm("Delete this CV from Google Sheet?\n\nID: "+id))return;
+ setStatus("Deleting Google Sheet CV...");
+ try{
+  const response=await fetch(WEB_APP_URL+"?action=delete&id="+encodeURIComponent(id)+"&t="+Date.now(),{method:"GET",cache:"no-store"});
+  const result=await response.json();
+  if(result.success){alert("Google Sheet CV deleted successfully ✅");setStatus("Google Sheet CV deleted ✅");await loadGoogleList()}
+  else alert(result.message||"Delete failed.");
+ }catch(error){console.error(error);alert("Google Sheet delete failed.");setStatus("Delete failed ❌")}
+}
+
+/* =========================
+   COPY / TXT
+   ========================= */
+function copyAllData(){
+ let works="";
+ for(let i=1;i<=workCount;i++){
+  const job=document.getElementById("job"+i)?.value||"",company=document.getElementById("company"+i)?.value||"",start=document.getElementById("start"+i)?.value||"",end=document.getElementById("end"+i)?.value||"",address=document.getElementById("address"+i)?.value||"",desc=document.getElementById("desc"+i)?.value||"";
+  if(job||company)works+=`\nJob Title: ${job}\nCompany: ${company}\nDate: ${start} - ${end}\nAddress: ${address}\nDescription: ${desc}\n`;
+ }
+ const text=`Full Name:\n${document.getElementById("name").value}\n\nLocation:\n${document.getElementById("location").value}\n\nPhone:\n${document.getElementById("phone").value}\n\nEmail:\n${document.getElementById("email").value}\n\nDate of Birth:\n${document.getElementById("dob").value}\n\nGender:\n${document.getElementById("gender").value}\n\nNationality:\n${document.getElementById("nationality").value}\n\nSUMMARY:\n${document.getElementById("summary").value}\n\nSKILLS:\n${document.getElementById("skills").value}\n\nLANGUAGES:\n${document.getElementById("languages").value}\n\nEDUCATION:\n${document.getElementById("education").value}\n\nRESPONSIBILITIES:\n${document.getElementById("Responsbiliti").value}\n\nWORK HISTORY:\n${works}`;
+ if(navigator.clipboard)navigator.clipboard.writeText(text).then(()=>alert("All Entry Data Copied ✅")).catch(()=>alert("Clipboard permission denied."));
+ else alert("Clipboard not supported.");
+}
+
+function downloadTXT(){
+ const data=collectCVData();
+ let text="CURRICULUM VITAE\n\n";
+ text+=`Name: ${data.name}\nLocation: ${data.location}\nPhone: ${data.phone}\nEmail: ${data.email}\nDOB: ${data.dob}\nGender: ${data.gender}\nNationality: ${data.nationality}\n\n`;
+ text+=`PROFESSIONAL SUMMARY\n${data.summary}\n\nSKILLS\n${data.skills}\n\nLANGUAGES\n${data.languages}\n\nEDUCATION\n${data.education}\n\nRESPONSIBILITIES\n${data.Responsbiliti}\n\nWORK HISTORY\n\n`;
+ data.works.forEach((w,i)=>text+=`Work ${i+1}\nJob Title: ${w.job}\nCompany: ${w.company}\nStart: ${w.start}\nEnd: ${w.end}\nAddress: ${w.address}\nDescription: ${w.desc}\n\n`);
+ const blob=new Blob([text],{type:"text/plain"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;let fileName=data.name||"CV";fileName=fileName.replace(/[\\/:*?"<>|]/g,"_");a.download=fileName+".txt";document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+/* =========================
+   PDF
+   ========================= */
+async function downloadPDF(){
+ gen();
+ const {jsPDF}=window.jspdf,cv=document.querySelector(".cv");
+ const canvas=await html2canvas(cv,{scale:2,useCORS:true});
+ const imgData=canvas.toDataURL("image/png"),pdf=new jsPDF("p","mm","a4");
+ const imgWidth=210,pageHeight=297;
+ let imgHeight=canvas.height*imgWidth/canvas.width,position=0,remaining=imgHeight;
+ pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);
+ while(remaining>pageHeight){position-=pageHeight;pdf.addPage();pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);remaining-=pageHeight}
+ let fileName=document.getElementById("name").value.trim()||"CV";fileName=fileName.replace(/[\\/:*?"<>|]/g,"_");
+ pdf.save(fileName+".pdf");
+}
+
+function generateResume(){
+ gen();
+ const jobs=[];
+ for(let i=1;i<=workCount;i++){const job=document.getElementById("job"+i)?.value||"";if(job)jobs.push(job)}
+ const name=document.getElementById("name").value||"",nationality=document.getElementById("nationality").value||"",skills=document.getElementById("skills").value||"",education=document.getElementById("education").value||"";
+ const summary=`${name} is a hardworking and motivated professional with experience as ${jobs.join(", ")}. Skilled in ${skills}. A dedicated ${nationality} worker with strong teamwork, communication and problem-solving abilities seeking career growth opportunities.`;
+ document.getElementById("cvName").innerText=name;
+ document.getElementById("cvSummary").innerText=summary;
+ document.getElementById("cvSkills").innerText=skills;
+ document.getElementById("cvEdu").innerText=education;
+ document.getElementById("cvRespons").innerText="Responsible for daily work activities, maintaining safety, teamwork, and completing assigned tasks efficiently.";
+ let workHTML="";
+ for(let i=1;i<=workCount;i++){
+  const job=document.getElementById("job"+i)?.value||"",company=document.getElementById("company"+i)?.value||"";
+  if(job||company)workHTML+=`<p><b>${escapeHTML(job)}</b> - ${escapeHTML(company)}</p>`;
+ }
+ document.getElementById("cvWork").innerHTML=workHTML;
+ alert("Professional Resume Generated ✅");
+}
+
+async function downloadResumePDF(){
+ generateResume();
+ const {jsPDF}=window.jspdf;
+ const name=escapeHTML(document.getElementById("name").value);
+ const phone=escapeHTML(document.getElementById("phone").value);
+ const email=escapeHTML(document.getElementById("email").value);
+ const location=escapeHTML(document.getElementById("location").value);
+ const photo=document.getElementById("cvPhoto").src;
+ const resumeHTML=`<div id="resumePDF" style="width:794px;padding:40px;font-family:Arial;background:white;color:#111">
+ <div style="text-align:center">${photo?`<img src="${photo}" style="width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid #0f766e">`:""}
+ <h1>${name}</h1><p>${phone} | ${email}</p><p>${location}</p></div><hr>
+ <h2 style="color:#0f766e">Professional Summary</h2><p style="line-height:1.8;text-align:justify">${escapeHTML(document.getElementById("cvSummary").innerText)}</p>
+ <h2 style="color:#0f766e">Skills</h2><p>${escapeHTML(document.getElementById("skills").value)}</p>
+ <h2 style="color:#0f766e">Work Experience</h2>${document.getElementById("cvWork").innerHTML}
+ <h2 style="color:#0f766e">Education</h2><p>${escapeHTML(document.getElementById("education").value)}</p>
+ <h2 style="color:#0f766e">Responsibilities</h2><p>${escapeHTML(document.getElementById("Responsbiliti").value)}</p></div>`;
+ const tempDiv=document.createElement("div");tempDiv.innerHTML=resumeHTML;document.body.appendChild(tempDiv);
+ const canvas=await html2canvas(document.getElementById("resumePDF"),{scale:2,useCORS:true});
+ const imgData=canvas.toDataURL("image/png"),pdf=new jsPDF("p","mm","a4"),imgWidth=210,pageHeight=297;
+ let imgHeight=canvas.height*imgWidth/canvas.width,position=0,remaining=imgHeight;
+ pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);
+ while(remaining>pageHeight){position-=pageHeight;pdf.addPage();pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);remaining-=pageHeight}
+ let fileName=document.getElementById("name").value.trim()||"Resume";fileName=fileName.replace(/[\\/:*?"<>|]/g,"_");
+ pdf.save(fileName+"_Resume.pdf");tempDiv.remove();
+}
+
+/* =========================
+   PREVIEW
+   ========================= */
+function previewResume(){
+ gen();
+ document.getElementById("previewContent").innerHTML=`<div style="width:100%;padding:20px;background:white">${document.querySelector(".right").innerHTML}</div>`;
+ document.getElementById("previewModal").style.display="block";
+}
+function closePreview(){document.getElementById("previewModal").style.display="none"}
+
+/* =========================
+   PHOTO
+   ========================= */
+const img=document.getElementById("cvPhoto"),zoom=document.getElementById("zoomRange");
+zoom.addEventListener("input",function(){scale=parseFloat(this.value);updateTransform()});
+function updateTransform(){img.style.transform=`translate(${posX}px,${posY}px) scale(${scale})`}
+
+let initialDistance=0,initialScale=1;
+function getDistance(t1,t2){return Math.sqrt(Math.pow(t2.clientX-t1.clientX,2)+Math.pow(t2.clientY-t1.clientY,2))}
+img.addEventListener("touchstart",e=>{
+ if(e.touches.length===2){e.preventDefault();initialDistance=getDistance(e.touches[0],e.touches[1]);initialScale=scale}
+},{passive:false});
+img.addEventListener("touchmove",e=>{
+ if(e.touches.length===2){
+  e.preventDefault();
+  scale=Math.max(1,Math.min(3,initialScale*(getDistance(e.touches[0],e.touches[1])/initialDistance)));
+  zoom.value=scale;updateTransform();
+ }
+},{passive:false});
+
+let isDragging=false,startX=0,startY=0;
+img.addEventListener("mousedown",e=>{isDragging=true;startX=e.clientX-posX;startY=e.clientY-posY});
+document.addEventListener("mousemove",e=>{if(isDragging){posX=e.clientX-startX;posY=e.clientY-startY;updateTransform()}});
+document.addEventListener("mouseup",()=>isDragging=false);
+
+let lastTouchX=0,lastTouchY=0,touchDragging=false;
+img.addEventListener("touchstart",e=>{
+ if(e.touches.length===1){touchDragging=true;lastTouchX=e.touches[0].clientX;lastTouchY=e.touches[0].clientY}
+},{passive:false});
+img.addEventListener("touchmove",e=>{
+ if(e.touches.length===1&&touchDragging){
+  e.preventDefault();
+  const x=e.touches[0].clientX,y=e.touches[0].clientY;
+  posX+=x-lastTouchX;posY+=y-lastTouchY;lastTouchX=x;lastTouchY=y;updateTransform();
+ }
+},{passive:false});
+img.addEventListener("touchend",()=>touchDragging=false);
+
+document.getElementById("photo").addEventListener("change",function(){
+ const file=this.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  photoDataUrl=e.target.result;img.src=photoDataUrl;scale=1;posX=0;posY=0;zoom.value=1;updateTransform();autoSaveDraft();
+ };
+ reader.readAsDataURL(file);
+});
+
+/* =========================
+   DRAFT
+   ========================= */
+function autoSaveDraft(){
+ try{
+  const draft={
+   name:document.getElementById("name").value,location:document.getElementById("location").value,
+   phone:document.getElementById("phone").value,email:document.getElementById("email").value,
+   dob:document.getElementById("dob").value,gender:document.getElementById("gender").value,
+   nationality:document.getElementById("nationality").value,summary:document.getElementById("summary").value,
+   skills:document.getElementById("skills").value,languages:document.getElementById("languages").value,
+   education:document.getElementById("education").value,Responsbiliti:document.getElementById("Responsbiliti").value,
+   works:collectWorks()
+  };
+  const draftText=JSON.stringify(draft);
+  if(draftText.length<300000)localStorage.setItem("draftCV",draftText);
+ }catch(error){console.warn("Draft save skipped:",error)}
+}
+
+document.querySelectorAll("input:not([type=file]),textarea,select").forEach(el=>{
+ el.addEventListener("input",autoSaveDraft);el.addEventListener("change",autoSaveDraft);
+});
+
+function loadDraft(){
+ try{
+  const draft=JSON.parse(localStorage.getItem("draftCV")||"{}");
+  if(!draft||!draft.name)return;
+  ["name","location","phone","email","dob","gender","nationality","summary","skills","languages","education","Responsbiliti"].forEach(id=>document.getElementById(id).value=draft[id]||"");
+  document.getElementById("workContainer").innerHTML="";workCount=0;
+  if(Array.isArray(draft.works))draft.works.forEach(w=>{
+   addWork();
+   document.getElementById("job"+workCount).value=w.job||"";
+   document.getElementById("company"+workCount).value=w.company||"";
+   document.getElementById("start"+workCount).value=w.start||"";
+   document.getElementById("end"+workCount).value=w.end||"";
+   document.getElementById("address"+workCount).value=w.address||"";
+   document.getElementById("desc"+workCount).value=w.desc||"";
+  });
+ }catch(error){console.error("Draft error:",error)}
+}
+
+function toggleDisplayZoom(){
+ const viewport=document.getElementById("viewportMeta");
+ if(displayZoomEnabled){
+  viewport.setAttribute("content","width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no");
+  displayZoomEnabled=false;alert("Display Zoom Disabled");
+ }else{
+  viewport.setAttribute("content","width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes");
+  displayZoomEnabled=true;alert("Display Zoom Enabled");
+ }
+}
+
+/* =========================
+   INITIAL LOAD
+   ========================= */
+window.addEventListener("load",async()=>{
+ loadDraft();
+ gen();
+ try{
+  await initDB();
+  await loadOfflineList();
+  setStatus("Ready - Offline Database v3 Ready ✅");
+ }catch(error){
+  console.error("Database initialization failed:",error);
+  setStatus("Offline database unavailable ❌");
+ }
+ loadGoogleList();
+});
+</script>
+</body>
+</html>
