@@ -1086,128 +1086,81 @@ function gen(){
    SAVE OFFLINE
 ===================================================== */
 
-function saveOffline(){
+async function saveOffline(){
 
     const data = collectCVData();
 
     if(!data.name){
 
         alert("Please enter Full Name first.");
-
         document.getElementById("name").focus();
-
         return;
+
+    }
+
+    if(!db){
+
+        alert("Offline database is not ready. Please wait a moment and try again.");
+        return;
+
     }
 
     try{
 
-        let list = JSON.parse(
-            localStorage.getItem("offlineCVs") || "[]"
+        const tx = db.transaction(
+            "cvData",
+            "readwrite"
         );
 
-        const index = list.findIndex(
-            x => String(x.id) === String(data.id)
-        );
+        const store = tx.objectStore("cvData");
 
-        if(index >= 0){
+        store.put(data);
 
-            list[index] = data;
+        tx.oncomplete = function(){
 
-        }else{
+            editId = data.id;
 
-            list.push(data);
+            gen();
 
-        }
+            loadOfflineList();
 
-        localStorage.setItem(
-            "offlineCVs",
-            JSON.stringify(list)
-        );
+            setStatus(
+                "CV Offline Save भयो ✅"
+            );
 
-        console.log("Saved LocalStorage:", list);
+            alert(
+                "CV Offline Save भयो ✅"
+            );
+
+        };
+
+        tx.onerror = function(){
+
+            console.error(
+                "IndexedDB Save Error:",
+                tx.error
+            );
+
+            alert(
+                "Offline save failed: " +
+                (tx.error?.message || "Database error")
+            );
+
+        };
 
     }catch(error){
 
         console.error(
-            "LocalStorage Save Error:",
+            "Offline save error:",
             error
         );
 
-        alert("Offline save failed: " + error.message);
-
-        return;
-    }
-
-
-    /* =========================
-       INDEXED DB
-    ========================= */
-
-    if(db){
-
-        try{
-
-            const tx = db.transaction(
-                "cvData",
-                "readwrite"
-            );
-
-            const store = tx.objectStore("cvData");
-
-            store.put(data);
-
-            tx.oncomplete = function(){
-
-                console.log(
-                    "IndexedDB Save Success"
-                );
-
-                loadOfflineList();
-
-            };
-
-            tx.onerror = function(){
-
-                console.error(
-                    "IndexedDB Save Error:",
-                    tx.error
-                );
-
-                loadOfflineList();
-
-            };
-
-        }catch(error){
-
-            console.error(
-                "IndexedDB Error:",
-                error
-            );
-
-            loadOfflineList();
-
-        }
-
-    }else{
-
-        /* IndexedDB नभए पनि LocalStorage बाट list देखाउने */
-
-        loadOfflineList();
+        alert(
+            "Offline save failed: " +
+            error.message
+        );
 
     }
-
-
-    editId = data.id;
-
-    gen();
-
-    setStatus(
-        "CV Offline Save भयो ✅"
-    );
-
-    alert(
-        "CV Offline Save भयो ✅"
-    );
 
 }
 /* =====================================================
@@ -1216,51 +1169,13 @@ function saveOffline(){
 
 function loadOfflineList(){
 
-    let localData = [];
-
-    /* =========================
-       GET LOCAL STORAGE
-    ========================= */
-
-    try{
-
-        localData = JSON.parse(
-            localStorage.getItem("offlineCVs") || "[]"
-        );
-
-        if(!Array.isArray(localData)){
-
-            localData = [];
-
-        }
-
-    }catch(error){
-
-        console.error(
-            "LocalStorage Load Error:",
-            error
-        );
-
-        localData = [];
-
-    }
-
-
-    /* =========================
-       IF INDEXED DB NOT READY
-    ========================= */
-
     if(!db){
 
-        displayOfflineList(localData);
+        displayOfflineList([]);
 
         return;
+
     }
-
-
-    /* =========================
-       GET INDEXED DB
-    ========================= */
 
     try{
 
@@ -1275,75 +1190,20 @@ function loadOfflineList(){
 
         const request = store.getAll();
 
-
         request.onsuccess = function(){
 
-            const dbData =
-                Array.isArray(request.result)
-                ? request.result
-                : [];
+            let all = request.result || [];
 
-
-            /* =========================
-               COMBINE BOTH LISTS
-            ========================= */
-
-            const combined = [];
-
-
-            /* First IndexedDB */
-
-            dbData.forEach(function(item){
-
-                combined.push(item);
-
-            });
-
-
-            /* Then LocalStorage */
-
-            localData.forEach(function(item){
-
-                const exists =
-                    combined.some(function(x){
-
-                        return String(x.id) ===
-                               String(item.id);
-
-                    });
-
-
-                if(!exists){
-
-                    combined.push(item);
-
-                }
-
-            });
-
-
-            /* =========================
-               SORT NEWEST FIRST
-            ========================= */
-
-            combined.sort(function(a,b){
+            all.sort(function(a,b){
 
                 return Number(b.id || 0) -
                        Number(a.id || 0);
 
             });
 
-
-            console.log(
-                "FINAL OFFLINE CV LIST:",
-                combined
-            );
-
-
-            displayOfflineList(combined);
+            displayOfflineList(all);
 
         };
-
 
         request.onerror = function(){
 
@@ -1352,22 +1212,15 @@ function loadOfflineList(){
                 request.error
             );
 
-            /* fallback */
-
-            displayOfflineList(localData);
+            displayOfflineList([]);
 
         };
 
     }catch(error){
 
-        console.error(
-            "IndexedDB Transaction Error:",
-            error
-        );
+        console.error(error);
 
-        /* fallback */
-
-        displayOfflineList(localData);
+        displayOfflineList([]);
 
     }
 
@@ -1530,97 +1383,61 @@ function displayOfflineList(all){
 
 function editOfflineData(id){
 
-    let data = [];
+    if(!db){
 
+        alert("Offline database is not ready.");
+        return;
+
+    }
 
     try{
 
-        data =
-            JSON.parse(
-                localStorage.getItem(
-                    "offlineCVs"
-                ) || "[]"
-            );
-
-    }catch(error){
-
-        data = [];
-
-    }
-
-
-    let d =
-        data.find(
-            x =>
-            String(x.id) ===
-            String(id)
-        );
-
-
-    if(d){
-
-        fillForm(d);
-
-        return;
-
-    }
-
-
-    if(!db){
-
-        alert(
-            "CV not found."
-        );
-
-        return;
-
-    }
-
-
-    const tx =
-        db.transaction(
+        const tx = db.transaction(
             "cvData",
             "readonly"
         );
 
-    const store =
-        tx.objectStore(
+        const store = tx.objectStore(
             "cvData"
         );
 
+        const key =
+            isNaN(id) ? id : Number(id);
 
-    const key =
-        isNaN(id)
-        ? id
-        : Number(id);
+        const request = store.get(key);
 
-
-    const request =
-        store.get(key);
-
-
-    request.onsuccess =
-        function(){
+        request.onsuccess = function(){
 
             if(request.result){
 
-                fillForm(
-                    request.result
-                );
+                fillForm(request.result);
 
             }else{
 
-                alert(
-                    "CV not found."
-                );
+                alert("CV not found.");
 
             }
 
         };
 
+        request.onerror = function(){
+
+            alert("Unable to load CV.");
+
+        };
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "CV load failed: " +
+            error.message
+        );
+
+    }
+
 }
-
-
 /* =====================================================
    FILL FORM
 ===================================================== */
@@ -2123,73 +1940,35 @@ function getAllFromIndexedDB(){
 
 function updateLocalData(data){
 
+    if(!db) return;
+
     try{
 
-        let list =
-            JSON.parse(
-                localStorage.getItem(
-                    "offlineCVs"
-                ) || "[]"
-            );
-
-
-        const index =
-            list.findIndex(
-                x =>
-                String(x.id) ===
-                String(data.id)
-            );
-
-
-        if(index >= 0){
-
-            list[index] =
-                data;
-
-        }else{
-
-            list.push(data);
-
-        }
-
-
-        localStorage.setItem(
-            "offlineCVs",
-            JSON.stringify(list)
+        const tx = db.transaction(
+            "cvData",
+            "readwrite"
         );
+
+        tx.objectStore(
+            "cvData"
+        ).put(data);
+
+        tx.oncomplete = function(){
+
+            loadOfflineList();
+
+        };
 
     }catch(error){
 
-        console.error(error);
-
-    }
-
-
-    if(db){
-
-        try{
-
-            const tx =
-                db.transaction(
-                    "cvData",
-                    "readwrite"
-                );
-
-            tx.objectStore(
-                "cvData"
-            ).put(data);
-
-        }catch(error){
-
-            console.error(error);
-
-        }
+        console.error(
+            "IndexedDB update error:",
+            error
+        );
 
     }
 
 }
-
-
 /* =====================================================
    LOAD GOOGLE SHEET LIST
 ===================================================== */
