@@ -1,0 +1,82 @@
+<!doctype html><html lang="ne"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nepali Congress – Marin Gaupalika</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;overflow-x:hidden}
+body{font-family:Arial,"Noto Sans Devanagari",sans-serif;background:#f4f6fa;color:#172033}
+header{background:linear-gradient(135deg,#071b5c,#b5121b);color:#fff;padding:22px 14px}
+.container{width:100%;max-width:1450px;margin:auto;padding:clamp(10px,2vw,24px)}
+h1{font-size:clamp(20px,3vw,32px);margin:0}.sub{margin-top:6px}
+.toolbar{display:grid;grid-template-columns:1fr 190px 180px;gap:9px;margin-bottom:15px}
+input,select,button{font:inherit;padding:11px;border:1px solid #d5dbe5;border-radius:8px}
+button{background:#071b5c;color:white;cursor:pointer}.status{font-size:13px;color:#667085}
+.error{display:none;background:#fff0f0;color:#b42318;padding:12px;border-radius:8px;margin-bottom:15px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.card{background:#fff;padding:16px;border-radius:11px;box-shadow:0 2px 10px #0001;border-top:4px solid #b5121b}
+.label{font-size:13px;color:#667085}.value{font-size:28px;font-weight:bold;margin-top:7px}
+.panel{background:#fff;border-radius:11px;padding:16px;box-shadow:0 2px 10px #0001;margin-bottom:18px}
+.panel h2{margin:0 0 13px;font-size:18px}.table-wrap{overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:700px}th,td{padding:10px;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+th{background:#071b5c;color:#fff;position:sticky;top:0}td:first-child,th:first-child{text-align:left}
+.chart{height:300px;display:flex;align-items:flex-end;gap:10px;padding:10px 5px 30px;border-bottom:1px solid #ddd}
+.barbox{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.bar{width:min(55px,70%);background:#b5121b;border-radius:5px 5px 0 0;min-height:2px}
+.barvalue{font-size:11px}.barlabel{font-size:11px;margin-top:7px}
+@media(max-width:1050px){.cards{grid-template-columns:repeat(3,1fr)}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}}
+@media(max-width:700px){.cards{grid-template-columns:repeat(2,1fr);gap:8px}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.panel{padding:11px}.chart{height:250px}}
+@media(max-width:420px){.toolbar{grid-template-columns:1fr}.toolbar input{grid-column:auto}.cards{gap:7px}.card{padding:12px}.value{font-size:21px}.label{font-size:11px}}
+</style></head><body>
+<header><div class="container"><h1>🏛️ Nepali Congress – Marin Gaupalika</h1><div class="sub">Ward-wise Live Dashboard</div></div></header>
+<main class="container">
+<div class="toolbar"><input id="search" placeholder="Search particulars..."><select id="source"></select><button id="refresh">🔄 Refresh Live Data</button><span id="status" class="status">Loading...</span></div>
+<div id="error" class="error"></div><div id="cards" class="cards"></div>
+<div class="panel"><h2>📊 Ward Comparison</h2><div id="chart" class="chart"></div></div>
+<div class="panel"><h2>📋 Detailed Data</h2><div class="table-wrap"><table id="table"></table></div></div>
+</main>
+<script>
+const SOURCES={"Dashboard": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=1528926399&single=true&output=csv", "Ward No. 1": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=1305058402&single=true&output=csv", "Ward No. 2": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=678202482&single=true&output=csv", "Ward No. 3": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=2118059586&single=true&output=csv", "Ward No. 4": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=443248913&single=true&output=csv", "Ward No. 5": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=163559443&single=true&output=csv", "Ward No. 6": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=410063601&single=true&output=csv", "Ward No. 7": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=2061508803&single=true&output=csv"};
+let rows=[],headers=[];
+const sel=document.getElementById("source");
+Object.keys(SOURCES).forEach(k=>sel.add(new Option(k,k)));
+
+function parseCSV(t){let a=[],r=[],c="",q=false;for(let i=0;i<t.length;i++){let x=t[i],n=t[i+1];
+if(x=='"'&&q&&n=='"'){c+='"';i++}else if(x=='"')q=!q;else if(x==','&&!q){r.push(c.trim());c=""}
+else if((x=='\n'||x=='\r')&&!q){if(x=='\r'&&n=='\n')i++;r.push(c.trim());if(r.some(v=>v))a.push(r);r=[];c=""}else c+=x}
+if(c||r.length){r.push(c.trim());if(r.some(v=>v))a.push(r)}return a}
+function objects(a){if(a.length<2)return[];let h=a[0];return a.slice(1).map(r=>Object.fromEntries(h.map((x,i)=>[x,r[i]||""])))}
+function num(v){let n=parseFloat(String(v).replace(/,/g,""));return isNaN(n)?0:n}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+async function load(){
+ let name=sel.value;document.getElementById("status").textContent="Loading "+name+"...";
+ try{
+  let u=SOURCES[name]+"&cache="+Date.now(),res=await fetch(u,{cache:"no-store"});
+  if(!res.ok)throw Error(res.status);
+  rows=objects(parseCSV(await res.text()));if(!rows.length)throw Error("empty");
+  headers=Object.keys(rows[0]);render();
+  document.getElementById("status").textContent="LIVE ✓ "+name+" • "+new Date().toLocaleTimeString();
+  document.getElementById("error").style.display="none";
+ }catch(e){
+  document.getElementById("status").textContent="Live load failed";
+  document.getElementById("error").style.display="block";
+  document.getElementById("error").textContent="Google CSV live data load भएन। Sheet Publish to web गरिएको र CSV सार्वजनिक रूपमा खुल्ने सुनिश्चित गर्नुहोस्।";
+ }}
+
+function render(){
+ let first=headers[0]||"Particulars";
+ let wanted=["Number of Households","Total Family Members","Total Male","Total Female","Total Voters"];
+ document.getElementById("cards").innerHTML=wanted.map(n=>{
+  let r=rows.find(x=>String(x[first]).trim().toLowerCase()==n.toLowerCase());if(!r)return"";
+  let total="Grand Total"in r?num(r["Grand Total"]):headers.slice(1).reduce((s,h)=>s+num(r[h]),0);
+  return `<div class="card"><div class="label">${esc(n)}</div><div class="value">${total.toLocaleString()}</div></div>`
+ }).join("");
+ let q=document.getElementById("search").value.toLowerCase();
+ let rs=rows.filter(r=>String(r[first]).toLowerCase().includes(q));
+ document.getElementById("table").innerHTML="<thead><tr>"+headers.map(h=>`<th>${esc(h)}</th>`).join("")+"</tr></thead><tbody>"+
+ rs.map(r=>"<tr>"+headers.map(h=>`<td>${esc(r[h])}</td>`).join("")+"</tr>").join("")+"</tbody>";
+ let rr=rows.find(x=>String(x[first]).trim().toLowerCase()=="total family members"),ws=headers.slice(1).filter(x=>x!="Grand Total");
+ let vals=ws.map(w=>num(rr?.[w])),mx=Math.max(...vals,1);
+ document.getElementById("chart").innerHTML=ws.map((w,i)=>`<div class="barbox"><div class="barvalue">${vals[i]}</div><div class="bar" style="height:${Math.max(2,vals[i]/mx*88)}%"></div><div class="barlabel">${esc(w)}</div></div>`).join("");
+}
+document.getElementById("search").oninput=render;sel.onchange=load;document.getElementById("refresh").onclick=load;load();
+</script></body></html>
