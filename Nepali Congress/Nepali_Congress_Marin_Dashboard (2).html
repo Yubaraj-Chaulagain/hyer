@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nepali Congress – Marin Gaupalika Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Devanagari",sans-serif;background:#f3f5f9;color:#172033}
+.header{background:linear-gradient(135deg,#071b5c,#b5121b);color:#fff;padding:24px 18px}
+.header h1{margin:0;font-size:28px}
+.header p{margin:7px 0 0;opacity:.9}
+.container{max-width:1400px;margin:auto;padding:18px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+button,.select,.search{border:1px solid #d8dce5;background:#fff;border-radius:8px;padding:11px 14px;font-size:14px}
+button{cursor:pointer;background:#071b5c;color:#fff;border-color:#071b5c}
+button:hover{opacity:.9}
+.search{min-width:260px;flex:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:20px}
+.card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 3px 12px rgba(0,0,0,.07);border-top:4px solid #b5121b}
+.card .label{font-size:13px;color:#697386}
+.card .value{font-size:28px;font-weight:700;margin-top:8px}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:20px}
+.panel{background:#fff;border-radius:12px;padding:18px;box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.panel h2{font-size:18px;margin:0 0 15px}
+.chartbox{height:330px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:800px}
+th,td{padding:11px 10px;border-bottom:1px solid #e7e9ee;text-align:right}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:#fff}
+thead th{background:#071b5c;color:#fff;position:sticky;top:0}
+thead th:first-child{background:#071b5c}
+tbody tr:hover td{background:#f7f9fc}
+.total{font-weight:700;background:#fff7f7}
+.status{font-size:13px;color:#667085;margin-left:auto;align-self:center}
+.error{color:#b42318;background:#fef3f2;padding:12px;border-radius:8px;display:none;margin-bottom:15px}
+/* Responsive layout: mobile, tablet, laptop and desktop */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{min-width:0}
+.container{width:100%;max-width:1400px;margin:0 auto;padding:clamp(10px,2vw,24px)}
+.header{width:100%}
+.header h1{font-size:clamp(20px,3vw,30px);line-height:1.25}
+.header p{font-size:clamp(12px,1.6vw,16px)}
+
+.toolbar{display:grid;grid-template-columns:minmax(180px,1fr) auto auto auto;align-items:center}
+.search{width:100%;min-width:0}
+.select{min-width:150px;max-width:220px}
+button{white-space:nowrap}
+
+.cards{grid-template-columns:repeat(5,minmax(0,1fr))}
+.card{min-width:0;padding:clamp(12px,2vw,18px)}
+.card .value{font-size:clamp(21px,3vw,30px);overflow:hidden;text-overflow:ellipsis}
+
+.grid{grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr)}
+.panel{min-width:0}
+.chartbox{height:clamp(250px,30vw,360px)}
+.table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:760px}
+
+@media(max-width:1100px){
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar .search{grid-column:1 / -1}
+  .toolbar .status{margin-left:0}
+  .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+  .container{padding:10px}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar button{width:100%;padding:10px 8px}
+  .toolbar .select{width:100%;min-width:0;max-width:none}
+  .toolbar .status{grid-column:1 / -1}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .card{padding:13px}
+  .panel{padding:12px;border-radius:10px}
+  .panel h2{font-size:16px}
+  .chartbox{height:270px}
+  th,td{padding:9px 8px;font-size:13px}
+}
+
+@media(max-width:420px){
+  .header{padding:17px 10px}
+  .header h1{font-size:19px}
+  .header p{font-size:12px}
+  .toolbar{grid-template-columns:1fr}
+  .toolbar .search,.toolbar .status{grid-column:auto}
+  .cards{grid-template-columns:1fr 1fr;gap:8px}
+  .card .label{font-size:11px}
+  .card .value{font-size:21px}
+  .chartbox{height:240px}
+  table{min-width:700px}
+}
+
+/* Prevent accidental page zoom-like overflow on narrow devices */
+img,canvas,svg{max-width:100%}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container">
+    <h1>🏛️ Nepali Congress – Marin Gaupalika</h1>
+    <p>Ward-wise जनसांख्यिक तथा मतदाता Dashboard</p>
+  </div>
+</header>
+
+<main class="container">
+  <div class="toolbar">
+    <input id="search" class="search" placeholder="Search particulars...">
+    <select id="ward" class="select"><option value="all">All Wards</option></select>
+    <button onclick="loadData()">🔄 Refresh Data</button>
+    <span id="status" class="status">Loading...</span>
+  </div>
+
+  <div id="error" class="error"></div>
+  <section id="cards" class="cards"></section>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>📊 Ward Comparison</h2>
+      <div class="chartbox"><canvas id="wardChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>👥 Gender & Voter Summary</h2>
+      <div class="chartbox"><canvas id="genderChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>📋 Detailed Summary</h2>
+    <div class="table-wrap">
+      <table id="dataTable"></table>
+    </div>
+  </div>
+</main>
+
+<script>
+const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub';
+const INITIAL_DATA = [{"Particulars":"Number of Households","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Total Family Members","Ward No. 1":4,"Ward No. 2":4,"Ward No. 3":4,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":12},{"Particulars":"Total Male","Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":6},{"Particulars":"Total Female","Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":6},{"Particulars":"Total Voters","Ward No. 1":1,"Ward No. 2":2,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"18+ Age Group","Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":6},{"Particulars":"No Voter Card","Ward No. 1":1,"Ward No. 2":0,"Ward No. 3":2,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Working Male","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Working Female","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Unemployed Male","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Unemployed Female","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Economic Status – Poor","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Economic Status – Middle Income","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Economic Status – High Income","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Income Source – Salary","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3},{"Particulars":"Income Source – Business","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Income Source – Agriculture","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Income Source – Foreign Employment","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Income Source – Daily Wage","Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":0},{"Particulars":"Complaints \/ Grievances","Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,"Ward No. 7":0,"Grand Total":3}];
+let data = [];
+let wardChart = null;
+let genderChart = null;
+
+function parseCSV(text) {
+  const rows=[]; let row=[]; let cell=''; let quote=false;
+  for(let i=0;i<text.length;i++) {
+    const c=text[i], n=text[i+1];
+    if(c === '"' && quote && n === '"') { cell+='"'; i++; }
+    else if(c === '"') quote=!quote;
+    else if(c === ',' && !quote) { row.push(cell.trim()); cell=''; }
+    else if((c==='\n'||c==='\r') && !quote) {
+      if(c==='\r' && n==='\n') i++;
+      row.push(cell.trim()); rows.push(row); row=[]; cell='';
+    } else cell+=c;
+  }
+  if(cell!=='' || row.length) { row.push(cell.trim()); rows.push(row); }
+  return rows.filter(r => r.some(x => x !== ''));
+}
+
+function normalize(rows) {
+  if(!rows.length) return [];
+  const headers=rows[0];
+  return rows.slice(1).map(r => {
+    const o={};
+    headers.forEach((h,i)=>o[h]=(r[i]??'').trim());
+    return o;
+  });
+}
+
+function num(v) {
+  const n=parseFloat(String(v).replace(/,/g,''));
+  return Number.isFinite(n)?n:0;
+}
+
+function render(rows) {
+  data=rows;
+  const headers=Object.keys(rows[0]||{});
+  const first=headers[0];
+  const wards=headers.slice(1).filter(h=>h.toLowerCase()!=='grand total');
+
+  const wardSelect=document.getElementById('ward');
+  const current=wardSelect.value;
+  wardSelect.innerHTML='<option value="all">All Wards</option>';
+  wards.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w;wardSelect.appendChild(o)});
+  if([...wardSelect.options].some(o=>o.value===current)) wardSelect.value=current;
+
+  renderCards(rows,headers,first);
+  renderTable(rows,headers,first);
+  renderCharts(rows,headers,first,wards);
+  document.getElementById('status').textContent='Updated: '+new Date().toLocaleTimeString();
+}
+
+function renderCards(rows,headers,first) {
+  const wanted=['Number of Households','Total Family Members','Total Male','Total Female','Total Voters'];
+  const cards=document.getElementById('cards');
+  cards.innerHTML='';
+  wanted.forEach(label=>{
+    const r=rows.find(x=>String(x[first]).trim().toLowerCase()===label.toLowerCase());
+    if(!r) return;
+    const total=headers.includes('Grand Total')?num(r['Grand Total']):headers.slice(1).reduce((s,h)=>s+num(r[h]),0);
+    cards.innerHTML += `<div class="card"><div class="label">${label}</div><div class="value">${total.toLocaleString()}</div></div>`;
+  });
+}
+
+function renderTable(rows,headers,first) {
+  const q=document.getElementById('search').value.toLowerCase();
+  const ward=document.getElementById('ward').value;
+  const filtered=rows.filter(r=>{
+    const matchText=String(r[first]).toLowerCase().includes(q);
+    return matchText;
+  });
+  const table=document.getElementById('dataTable');
+  table.innerHTML='<thead><tr>'+headers.map(h=>`<th>${escapeHtml(h)}</th>`).join('')+'</tr></thead>';
+  const body=document.createElement('tbody');
+  filtered.forEach(r=>{
+    const tr=document.createElement('tr');
+    headers.forEach((h,i)=>{
+      const td=document.createElement('td');
+      td.textContent=r[h]||'';
+      if(i===0) td.style.textAlign='left';
+      if(h==='Grand Total') td.className='total';
+      if(ward!=='all' && h!==first && h!==ward) td.style.display='none';
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+  table.appendChild(body);
+  // hide/show selected ward columns
+  [...table.rows].forEach(tr=>[...tr.cells].forEach((cell,i)=>{
+    const h=headers[i];
+    cell.style.display=(ward!=='all' && h!==first && h!==ward)?'none':'';
+  }));
+}
+
+function renderCharts(rows,headers,first,wards) {
+  const labels=wards;
+  const key=(name)=>rows.find(r=>String(r[first]).trim().toLowerCase()===name.toLowerCase());
+  const male=key('Total Male'), female=key('Total Female'), voters=key('Total Voters');
+
+  if(wardChart) wardChart.destroy();
+  wardChart=new Chart(document.getElementById('wardChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Male',data:labels.map(w=>num(male?.[w]))},
+      {label:'Female',data:labels.map(w=>num(female?.[w]))},
+      {label:'Voters',data:labels.map(w=>num(voters?.[w]))}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{beginAtZero:true}}}
+  });
+
+  if(genderChart) genderChart.destroy();
+  const mt=male? (headers.includes('Grand Total')?num(male['Grand Total']):labels.reduce((s,w)=>s+num(male[w]),0)):0;
+  const ft=female? (headers.includes('Grand Total')?num(female['Grand Total']):labels.reduce((s,w)=>s+num(female[w]),0)):0;
+  genderChart=new Chart(document.getElementById('genderChart'),{
+    type:'doughnut',
+    data:{labels:['Male','Female'],datasets:[{data:[mt,ft]}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+async function loadData() {
+  document.getElementById('status').textContent='Loading live Google Sheet...';
+  document.getElementById('error').style.display='none';
+
+  try {
+    const url = GVIZ_URL + '?output=html&tqx=' +
+      encodeURIComponent('out:html') + '&_=' + Date.now();
+
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+
+    const html = await res.text();
+
+    // Google published gviz output is an HTML table.
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const table = doc.querySelector('table');
+
+    if(!table) throw new Error('Google Sheet table not found');
+
+    const trs = [...table.querySelectorAll('tr')];
+    const rows = trs.map(tr =>
+      [...tr.querySelectorAll('th,td')].map(cell => cell.textContent.trim())
+    ).filter(r => r.length);
+
+    if(rows.length < 2) throw new Error('No Sheet data');
+
+    const liveRows = normalize(rows);
+    if(!liveRows.length) throw new Error('Empty Sheet');
+
+    render(liveRows);
+    document.getElementById('status').textContent =
+      'Live data updated: '+new Date().toLocaleTimeString();
+
+  } catch(e) {
+    console.error('Google Sheet live load error:', e);
+    document.getElementById('error').style.display='block';
+    document.getElementById('error').textContent =
+      'Google Sheet बाट live data load भएन। Sheet Publish गरिएको छ कि छैन जाँच गर्नुहोस्।';
+    render(INITIAL_DATA);
+    document.getElementById('status').textContent='Local fallback';
+  }
+}
+
+document.getElementById('search').addEventListener('input',()=>renderTable(data,Object.keys(data[0]||{}),Object.keys(data[0]||{})[0]));
+document.getElementById('ward').addEventListener('change',()=>renderTable(data,Object.keys(data[0]||{}),Object.keys(data[0]||{})[0]));
+
+render(INITIAL_DATA);
+loadData();
+</script>
+</body>
+</html>
