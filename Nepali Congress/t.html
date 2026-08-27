@@ -190,6 +190,64 @@
       border-radius: 8px;
     }
 
+    .developer-credit {
+  margin-top: 12px;
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px;
+  background: rgba(255,255,255,.1);
+  font-size: 12px;
+  color: rgba(255,255,255,.9);
+}
+
+.developer-credit strong {
+  color: #fff;
+}
+.footer {
+  margin-top: 30px;
+  padding: 25px 15px;
+  text-align: center;
+  background: linear-gradient(135deg, #071b5c, #0d2b83);
+  color: #fff;
+  border-top: 4px solid #b5121b;
+}
+
+.footer-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.footer-developer {
+  font-size: 13px;
+  color: rgba(255,255,255,.9);
+}
+
+.footer-developer strong {
+  color: #fff;
+}
+
+.footer-copy {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+}
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 20px 10px;
+  }
+
+  .footer-title {
+    font-size: 14px;
+  }
+
+  .footer-developer {
+    font-size: 12px;
+  }
+}
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -377,7 +435,9 @@
     <div class="container">
       <h1>🏛️ Nepali Congress – Marin Gaupalika</h1>
       <p>Ward-wise जनसांख्यिक तथा मतदाता Dashboard</p>
-    </div>
+<div class="developer-credit">
+  Developed by <strong>Yubaraj Chaulagain (Saroj)</strong>
+</div>
   </header>
 
   <main class="container">
@@ -1591,6 +1651,20 @@ render(INITIAL_DATA);
 loadData();
 
 </script>
+<footer class="footer">
+  <div class="footer-title">
+    🏛️ Marin Gaupalika Dashboard
+  </div>
+
+  <div class="footer-developer">
+    Designed & Developed by
+    <strong>Yubaraj Chaulagain (Saroj)</strong>
+  </div>
+
+  <div class="footer-copy">
+    © 2026 Yubaraj Chaulagain (Saroj). All Rights Reserved.
+  </div>
+</footer>
 
 </body>
 </html>
