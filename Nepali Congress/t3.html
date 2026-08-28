@@ -2938,55 +2938,7 @@ async function generateApplicationPDF(row){
         }
 
 
-        <!-- ================= BOTTOM REFERENCE ================= -->
-
-        ${
-          !isNews
-          ? `
-            <div style="
-              margin-top:45px;
-              padding-top:12px;
-              border-top:1px solid #d1d5db;
-              display:flex;
-              justify-content:space-between;
-              font-size:11px;
-              color:#4b5563;
-            ">
-
-              ${
-                dartaNo
-                ? `
-                  <div>
-                    दर्ता नं.:
-                    ${escapeHtml(dartaNo)}
-                  </div>
-                `
-                : `<div></div>`
-              }
-
-              ${
-                chalaniNo
-                ? `
-                  <div>
-                    चलानी नं.:
-                    ${escapeHtml(chalaniNo)}
-                  </div>
-                `
-                : `<div></div>`
-              }
-
-              ${
-                status
-                ? `
-                  <div>
-                    स्थिति:
-                    ${escapeHtml(status)}
-                  </div>
-                `
-                : `<div></div>`
-              }
-
-            </div>
+      
           `
           : ""
         }
