@@ -1793,7 +1793,7 @@ function renderNews(){
       getNewsValue(row,"Contact"),
       getNewsValue(row,"Address"),
       getNewsValue(row,"position"),
-      getNewsValue(row,"From"),
+     getNewsValue(row,"To-line 2"),
       getNewsValue(row,"To"),
       getNewsValue(row,"Subject"),
       getNewsValue(row,"Details"),
@@ -1863,8 +1863,8 @@ function renderNews(){
     const positionName=
       getNewsValue(row,"position");
 
-    const from=
-      getNewsValue(row,"From");
+    const toLine2 =
+  getNewsValue(row,"To-line 2");
 
     const to=
       getNewsValue(row,"To");
@@ -2021,10 +2021,10 @@ function renderNews(){
         }
 
         ${
-          from
-          ? `<span class="meta">From: ${escapeHtml(from)}</span>`
-          :""
-        }
+  toLine2
+  ? `<span class="meta">To-line 2: ${escapeHtml(toLine2)}</span>`
+  :""
+}
 
         ${
           to
@@ -2182,7 +2182,7 @@ function createApplicationMessage(row){
   const contact=getNewsValue(row,"Contact");
   const address=getNewsValue(row,"Address");
   const position=getNewsValue(row,"position");
-  const from=getNewsValue(row,"From");
+  const toLine2=getNewsValue(row,"To-line 2");
   const to=getNewsValue(row,"To");
   const subject=getNewsValue(row,"Subject");
   const details=getNewsValue(row,"Details");
@@ -2197,7 +2197,7 @@ function createApplicationMessage(row){
     position ? "पद: "+position : "",
     address ? "ठेगाना: "+address : "",
     contact ? "सम्पर्क: "+contact : "",
-    from ? "From: "+from : "",
+    toLine2 ? "To-line 2: "+toLine2 : "",
     to ? "To: "+to : "",
     subject ? "विषय: "+subject : "",
     details ? "\nविवरण:\n"+details : "",
@@ -2460,8 +2460,8 @@ async function generateApplicationPDF(row){
     const positionName =
       getNewsValue(row,"position") || "";
 
-    const from =
-      getNewsValue(row,"From") || "";
+    const toLine2 =
+  getNewsValue(row,"To-line 2") || "";
 
     const to =
       getNewsValue(row,"To") || "";
@@ -2612,14 +2612,14 @@ async function generateApplicationPDF(row){
         }
 
         ${
-          from
-          ? `
-            <div>
-              ${escapeHtml(from)}
-            </div>
-          `
-          : ""
-        }
+  toLine2
+  ? `
+    <div>
+      ${escapeHtml(toLine2)}
+    </div>
+  `
+  : ""
+}
 
       </div>
 
