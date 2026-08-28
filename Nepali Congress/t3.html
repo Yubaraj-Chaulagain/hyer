@@ -2422,9 +2422,8 @@ document
   loadNews
 );
 
-
 /* =========================================================
-   A4 APPLICATION PDF
+   A4 APPLICATION / CHALANI / DARTA PDF
    ========================================================= */
 
 async function generateApplicationPDF(row){
@@ -2440,7 +2439,10 @@ async function generateApplicationPDF(row){
     ================================= */
 
     const type =
-      getNewsValue(row,"Types") || "निवेदन";
+      getNewsValue(row,"Types") || "";
+
+    const normalizedType =
+      normalizeText(type);
 
     const subject =
       getNewsValue(row,"Subject") || "";
@@ -2461,7 +2463,7 @@ async function generateApplicationPDF(row){
       getNewsValue(row,"position") || "";
 
     const toLine2 =
-  getNewsValue(row,"To-line 2") || "";
+      getNewsValue(row,"To-line 2") || "";
 
     const to =
       getNewsValue(row,"To") || "";
@@ -2483,6 +2485,61 @@ async function generateApplicationPDF(row){
 
     const timestamp =
       getNewsValue(row,"Timestamp") || "";
+
+
+    /* ================================
+       DOCUMENT TYPE
+       चलानी भए = चलानी
+       पत्र प्राप्त भए = दर्ता
+       News भए = समाचार
+    ================================= */
+
+    const isNews =
+      normalizedType.includes("news") ||
+      normalizedType.includes("समाचार");
+
+    const isReceivedLetter =
+      normalizedType.includes("पत्र प्राप्त") ||
+      normalizedType.includes("darta") ||
+      normalizedType.includes("दर्ता");
+
+    const isChalani =
+      normalizedType.includes("chalani") ||
+      normalizedType.includes("चलानी");
+
+    let documentLabel = "निवेदन";
+    let documentNumberLabel = "पत्र संख्या:";
+    let documentNumber = chalaniNo;
+    let documentDate = chalaniDate;
+
+    if(isNews){
+
+      documentLabel = "समाचार";
+      documentNumberLabel = "";
+      documentNumber = "";
+      documentDate =
+        timestamp ||
+        chalaniDate ||
+        dartaDate;
+
+    }else if(isReceivedLetter){
+
+      documentLabel = "पत्र प्राप्त / दर्ता";
+      documentNumberLabel = "दर्ता नं.:";
+      documentNumber = dartaNo;
+      documentDate =
+        dartaDate ||
+        timestamp;
+
+    }else if(isChalani || chalaniNo){
+
+      documentLabel = "चलानी पत्र";
+      documentNumberLabel = "चलानी नं.:";
+      documentNumber = chalaniNo;
+      documentDate =
+        chalaniDate ||
+        timestamp;
+    }
 
 
     /* ================================
@@ -2513,286 +2570,432 @@ async function generateApplicationPDF(row){
 
       font-size:14px;
       line-height:1.8;
+
+      overflow:hidden;
     `;
 
 
     /* ================================
-       REFERENCE TOP
+       CREATE PDF CONTENT
     ================================= */
 
     pdfPage.innerHTML = `
 
-      <!-- HEADER -->
+      <!-- =========================================
+           NEPALI CONGRESS WATERMARK BACKGROUND
+      ========================================== -->
+
+      <img
+        src="Nepali_Congress_alt_flag.svg"
+        crossorigin="anonymous"
+        alt=""
+        style="
+          position:absolute;
+          width:480px;
+          height:480px;
+          object-fit:contain;
+
+          left:50%;
+          top:50%;
+
+          transform:
+            translate(-50%,-50%);
+
+          opacity:0.055;
+
+          z-index:0;
+
+          pointer-events:none;
+        "
+      >
+
+
+      <!-- MAIN CONTENT -->
 
       <div style="
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:18px;
-  padding:12px 10px;
-  border-bottom:2px solid #071b5c;
-">
-
-  <!-- नेपाली कांग्रेसको रुख लोगो -->
-  <div style="
-    width:75px;
-    height:75px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-shrink:0;
-  ">
-    <img
-      src="Nepali_Congress_alt_flag.svg"
-      alt="नेपाली कांग्रेस लोगो"
-      style="
-        width:75px;
-        height:75px;
-        object-fit:contain;
-      "
-    >
-  </div>
-
-  <!-- नाम तथा ठेगाना -->
-  <div style="
-    text-align:center;
-    line-height:1.3;
-  ">
-
-    <div style="
-      font-size:28px;
-      font-weight:700;
-      color:#071b5c;
-    ">
-      नेपाली कांग्रेस
-    </div>
-
-    <div style="
-      font-size:15px;
-      font-weight:600;
-      margin-top:4px;
-    ">
-      मरीण गाउँपालिका, सिन्धुली
-    </div>
-
-    <div style="
-      font-size:13px;
-      margin-top:2px;
-    ">
-      बागमती प्रदेश, नेपाल
-    </div>
-
-  </div>
-
-</div>
-
-
-      <div style="
-        border-top:3px solid #071b5c;
-        border-bottom:1px solid #b5121b;
-        margin-bottom:18px;
-      "></div>
-
-
-      <!-- LETTER REFERENCE -->
-
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        margin-bottom:28px;
-        font-size:13px;
+        position:relative;
+        z-index:1;
       ">
 
-        <div>
-          <strong>पत्र संख्या:</strong>
-          ${escapeHtml(chalaniNo || "-")}
-        </div>
 
-        <div>
-          <strong>मिति:</strong>
-          ${escapeHtml(
-            chalaniDate ||
-            dartaDate ||
-            formatDate(timestamp) ||
-            "-"
-          )}
-        </div>
-
-      </div>
-
-
-      <!-- TO -->
-
-      <div style="
-        margin-bottom:22px;
-        line-height:2;
-      ">
-
-        ${
-          to
-          ? `
-            <div>
-              श्री ${escapeHtml(to)}
-            </div>
-          `
-          : `
-            <div>
-              श्री ........................................
-            </div>
-          `
-        }
-
-        ${
-  toLine2
-  ? `
-    <div>
-      ${escapeHtml(toLine2)}
-    </div>
-  `
-  : ""
-}
-
-      </div>
-
-
-      <!-- SUBJECT -->
-
-      <div style="
-        text-align:center;
-        font-size:17px;
-        font-weight:700;
-        margin:20px 0 25px;
-        text-decoration:underline;
-      ">
-
-        विषय: ${escapeHtml(subject)}
-
-      </div>
-
-
-      <!-- SALUTATION -->
-
-      <div style="
-        margin-bottom:12px;
-        font-weight:600;
-      ">
-        महोदय,
-      </div>
-
-
-      <!-- DETAILS -->
-
-      <div style="
-        text-align:justify;
-        white-space:pre-wrap;
-        line-height:2.05;
-        margin-bottom:28px;
-      ">
-        ${escapeHtml(details)}
-      </div>
-
-
-      <!-- APPLICANT -->
-
-      <div style="
-        margin-top:35px;
-        margin-left:420px;
-        width:230px;
-        text-align:left;
-        line-height:1.9;
-      ">
+        <!-- ================= HEADER ================= -->
 
         <div style="
-          text-align:center;
-          margin-bottom:35px;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:18px;
+          padding:12px 10px;
+          border-bottom:2px solid #071b5c;
         ">
-          ................................<br>
-          दस्तखत
+
+          <!-- नेपाली कांग्रेस लोगो -->
+
+          <div style="
+            width:75px;
+            height:75px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0;
+          ">
+
+            <img
+              src="Nepali_Congress_alt_flag.svg"
+              crossorigin="anonymous"
+              alt="नेपाली कांग्रेस लोगो"
+              style="
+                width:75px;
+                height:75px;
+                object-fit:contain;
+              "
+            >
+
+          </div>
+
+
+          <!-- NAME -->
+
+          <div style="
+            text-align:center;
+            line-height:1.3;
+          ">
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#071b5c;
+            ">
+              नेपाली कांग्रेस
+            </div>
+
+            <div style="
+              font-size:15px;
+              font-weight:600;
+              margin-top:4px;
+            ">
+              मरीण गाउँपालिका, सिन्धुली
+            </div>
+
+            <div style="
+              font-size:13px;
+              margin-top:2px;
+            ">
+              बागमती प्रदेश, नेपाल
+            </div>
+
+          </div>
+
         </div>
 
+
+        <!-- HEADER LINE -->
+
+        <div style="
+          border-top:3px solid #071b5c;
+          border-bottom:1px solid #b5121b;
+          margin-bottom:18px;
+        "></div>
+
+
+        <!-- ================= DOCUMENT TITLE ================= -->
+
         ${
-          fullName
+          documentLabel
           ? `
-            <div>
-              <strong>नाम:</strong>
-              ${escapeHtml(fullName)}
+            <div style="
+              text-align:center;
+              font-size:16px;
+              font-weight:700;
+              margin-bottom:15px;
+              color:#071b5c;
+            ">
+              ${escapeHtml(documentLabel)}
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= REFERENCE ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              margin-bottom:28px;
+              font-size:13px;
+            ">
+
+              <div>
+                <strong>
+                  ${escapeHtml(documentNumberLabel)}
+                </strong>
+                ${escapeHtml(documentNumber || "-")}
+              </div>
+
+              <div>
+                <strong>मिति:</strong>
+                ${escapeHtml(
+                  documentDate
+                    ? formatDate(documentDate)
+                    : "-"
+                )}
+              </div>
+
             </div>
           `
           : `
-            <div>
-              <strong>नाम:</strong>
-              ................................
+            <div style="
+              display:flex;
+              justify-content:flex-end;
+              margin-bottom:28px;
+              font-size:13px;
+            ">
+
+              <div>
+                <strong>मिति:</strong>
+                ${escapeHtml(
+                  documentDate
+                    ? formatDate(documentDate)
+                    : "-"
+                )}
+              </div>
+
             </div>
           `
         }
 
+
+        <!-- ================= TO ================= -->
+
         ${
-          positionName
+          !isNews
           ? `
-            <div>
-              <strong>पद:</strong>
-              ${escapeHtml(positionName)}
+            <div style="
+              margin-bottom:22px;
+              line-height:2;
+            ">
+
+              ${
+                to
+                ? `
+                  <div>
+                    श्री ${escapeHtml(to)}
+                  </div>
+                `
+                : `
+                  <div>
+                    श्री ........................................
+                  </div>
+                `
+              }
+
+              ${
+                toLine2
+                ? `
+                  <div>
+                    ${escapeHtml(toLine2)}
+                  </div>
+                `
+                : ""
+              }
+
             </div>
           `
           : ""
         }
 
+
+        <!-- ================= SUBJECT ================= -->
+
         ${
-          address
+          subject
           ? `
-            <div>
-              <strong>ठेगाना:</strong>
-              ${escapeHtml(address)}
+            <div style="
+              text-align:center;
+              font-size:17px;
+              font-weight:700;
+              margin:20px 0 25px;
+              text-decoration:underline;
+            ">
+
+              ${
+                isNews
+                ? escapeHtml(subject)
+                : `विषय: ${escapeHtml(subject)}`
+              }
+
             </div>
           `
           : ""
         }
 
+
+        <!-- ================= SALUTATION ================= -->
+
         ${
-          contact
+          !isNews
           ? `
-            <div>
-              <strong>सम्पर्क:</strong>
-              ${escapeHtml(contact)}
+            <div style="
+              margin-bottom:12px;
+              font-weight:600;
+            ">
+              महोदय,
             </div>
           `
           : ""
         }
+
+
+        <!-- ================= DETAILS ================= -->
+
+        <div style="
+          text-align:justify;
+          white-space:pre-wrap;
+          line-height:2.05;
+          margin-bottom:28px;
+        ">
+          ${escapeHtml(details)}
+        </div>
+
+
+        <!-- ================= SIGNATURE / APPLICANT ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-top:35px;
+              margin-left:auto;
+              width:230px;
+              text-align:left;
+              line-height:1.9;
+            ">
+
+              <div style="
+                text-align:center;
+                margin-bottom:35px;
+              ">
+                ................................<br>
+                दस्तखत
+              </div>
+
+              ${
+                fullName
+                ? `
+                  <div>
+                    <strong>नाम:</strong>
+                    ${escapeHtml(fullName)}
+                  </div>
+                `
+                : `
+                  <div>
+                    <strong>नाम:</strong>
+                    ................................
+                  </div>
+                `
+              }
+
+              ${
+                positionName
+                ? `
+                  <div>
+                    <strong>पद:</strong>
+                    ${escapeHtml(positionName)}
+                  </div>
+                `
+                : ""
+              }
+
+              ${
+                address
+                ? `
+                  <div>
+                    <strong>ठेगाना:</strong>
+                    ${escapeHtml(address)}
+                  </div>
+                `
+                : ""
+              }
+
+              ${
+                contact
+                ? `
+                  <div>
+                    <strong>सम्पर्क:</strong>
+                    ${escapeHtml(contact)}
+                  </div>
+                `
+                : ""
+              }
+
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= BOTTOM REFERENCE ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-top:45px;
+              padding-top:12px;
+              border-top:1px solid #d1d5db;
+              display:flex;
+              justify-content:space-between;
+              font-size:11px;
+              color:#4b5563;
+            ">
+
+              ${
+                dartaNo
+                ? `
+                  <div>
+                    दर्ता नं.:
+                    ${escapeHtml(dartaNo)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+              ${
+                chalaniNo
+                ? `
+                  <div>
+                    चलानी नं.:
+                    ${escapeHtml(chalaniNo)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+              ${
+                status
+                ? `
+                  <div>
+                    स्थिति:
+                    ${escapeHtml(status)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+            </div>
+          `
+          : ""
+        }
+
 
       </div>
 
 
-      <!-- BOTTOM REFERENCE -->
-
-      <div style="
-        margin-top:45px;
-        padding-top:12px;
-        border-top:1px solid #d1d5db;
-        display:flex;
-        justify-content:space-between;
-        font-size:11px;
-        color:#4b5563;
-      ">
-
-        <div>
-          दर्ता नं.:
-          ${escapeHtml(dartaNo || "-")}
-        </div>
-
-        <div>
-          चलानी नं.:
-          ${escapeHtml(chalaniNo || "-")}
-        </div>
-
-        <div>
-          स्थिति:
-          ${escapeHtml(status || "-")}
-        </div>
-
-      </div>
-
-
-      <!-- FOOTER -->
+      <!-- ================= FOOTER ================= -->
 
       <div style="
         position:absolute;
@@ -2809,6 +3012,8 @@ async function generateApplicationPDF(row){
 
         font-size:9px;
         color:#6b7280;
+
+        z-index:2;
       ">
 
         <span>
@@ -2828,12 +3033,30 @@ async function generateApplicationPDF(row){
 
 
     /* ================================
-       WAIT FOR NEPALI FONT
+       WAIT FOR FONT + IMAGE
     ================================= */
 
     if(document.fonts){
       await document.fonts.ready;
     }
+
+    const images =
+      pdfPage.querySelectorAll("img");
+
+    await Promise.all(
+      Array.from(images).map(img=>{
+
+        if(img.complete){
+          return Promise.resolve();
+        }
+
+        return new Promise(resolve=>{
+          img.onload=resolve;
+          img.onerror=resolve;
+        });
+
+      })
+    );
 
     await new Promise(resolve =>
       setTimeout(resolve,500)
@@ -2858,7 +3081,7 @@ async function generateApplicationPDF(row){
 
 
     /* ================================
-       A4 PDF
+       CREATE A4 PDF
     ================================= */
 
     const pdf =
@@ -2889,7 +3112,7 @@ async function generateApplicationPDF(row){
 
 
     /* ================================
-       A4 MULTI PAGE
+       MULTI PAGE
     ================================= */
 
     let heightLeft = imageHeight;
@@ -2933,7 +3156,7 @@ async function generateApplicationPDF(row){
     ================================= */
 
     const cleanName =
-      (fullName || "Nivedan")
+      (fullName || subject || documentLabel || "Document")
         .replace(
           /[\\/:*?"<>|]/g,
           "_"
@@ -2943,12 +3166,17 @@ async function generateApplicationPDF(row){
           "_"
         );
 
+
     const cleanNo =
-      (dartaNo || chalaniNo || "")
-        .replace(
-          /[\\/:*?"<>|]/g,
-          "_"
-        );
+      (
+        isReceivedLetter
+          ? dartaNo
+          : chalaniNo
+      )
+      .replace(
+        /[\\/:*?"<>|]/g,
+        "_"
+      );
 
 
     const filename =
@@ -2973,20 +3201,23 @@ async function generateApplicationPDF(row){
     );
 
     alert(
-      "A4 Application PDF बनाउन सकिएन।"
+      "A4 PDF बनाउन सकिएन।"
     );
 
   }finally{
 
-    if(pdfPage && pdfPage.parentNode){
-      pdfPage.parentNode.removeChild(pdfPage);
+    if(
+      pdfPage &&
+      pdfPage.parentNode
+    ){
+      pdfPage.parentNode.removeChild(
+        pdfPage
+      );
     }
 
   }
 
 }
-
-
 
 
 /* =========================================================
