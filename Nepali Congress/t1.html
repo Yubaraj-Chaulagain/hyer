@@ -1,0 +1,2890 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nepali Congress – Marin Gaupalika Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family:
+        Arial,
+        "Noto Sans Devanagari",
+        "Nirmala UI",
+        sans-serif;
+      background: #f3f5f9;
+      color: #172033;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .header {
+      width: 100%;
+      background: linear-gradient(135deg, #071b5c, #b5121b);
+      color: #fff;
+      padding: 12px 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: clamp(17px, 2.4vw, 25px);
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin: 4px 0 0;
+      font-size: clamp(11px, 1.4vw, 14px);
+      line-height: 1.3;
+      opacity: 0.9;
+    }
+
+    .developer-inline {
+      font-size: 0.55em;
+      font-weight: 400;
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       CONTAINER
+       ========================================================= */
+
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: clamp(10px, 2vw, 18px);
+    }
+
+    /* =========================================================
+       TOOLBAR
+       ========================================================= */
+
+    .toolbar {
+      display: grid;
+      grid-template-columns:
+        minmax(180px, 1fr)
+        180px
+        auto
+        auto;
+
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .search,
+    .select,
+    button {
+      min-height: 42px;
+      border-radius: 8px;
+      padding: 9px 13px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .search,
+    .select {
+      width: 100%;
+      border: 1px solid #d8dce5;
+      background: #fff;
+      color: #172033;
+      outline: none;
+    }
+
+    .search:focus,
+    .select:focus {
+      border-color: #071b5c;
+      box-shadow: 0 0 0 2px rgba(7, 27, 92, 0.08);
+    }
+
+    button {
+      border: 1px solid #071b5c;
+      background: #071b5c;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #667085;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       ERROR
+       ========================================================= */
+
+    .error {
+      display: none;
+      margin-bottom: 15px;
+      padding: 11px 13px;
+      border-radius: 8px;
+      color: #b42318;
+      background: #fef3f2;
+      border: 1px solid #fecdca;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       SUMMARY CARDS
+       ========================================================= */
+
+    .cards {
+      display: grid;
+      grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      min-width: 0;
+      background: #fff;
+      border-radius: 11px;
+      padding: 15px;
+      border-top: 4px solid #b5121b;
+      box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.07);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 5px 16px rgba(0, 0, 0, 0.09);
+    }
+
+    .card .label {
+      font-size: 12px;
+      line-height: 1.4;
+      color: #697386;
+    }
+
+    .card .value {
+      margin-top: 6px;
+      font-size: clamp(21px, 3vw, 29px);
+      line-height: 1.1;
+      font-weight: 700;
+      color: #172033;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* =========================================================
+       MAIN GRID
+       ========================================================= */
+
+    .grid {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.4fr)
+        minmax(280px, 1fr);
+
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      min-width: 0;
+      background: #fff;
+      border-radius: 11px;
+      padding: 16px;
+      box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.07);
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    /* =========================================================
+       CHARTS
+       ========================================================= */
+
+    .chartbox {
+      position: relative;
+      width: 100%;
+      height: 300px;
+    }
+
+    .chartbox canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* =========================================================
+       TABLE
+       ========================================================= */
+
+    .table-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      -webkit-overflow-scrolling: touch;
+
+      border-radius: 7px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1000px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px 9px;
+      border-bottom: 1px solid #e7e9ee;
+
+      text-align: right;
+      white-space: nowrap;
+
+      font-size: 13px;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+
+      background: #071b5c;
+      color: #fff;
+
+      font-weight: 600;
+    }
+
+    thead th:first-child {
+      z-index: 5;
+      background: #071b5c;
+    }
+
+    tbody td:first-child {
+      z-index: 2;
+      background: #fff;
+    }
+
+    tbody tr:hover td {
+      background: #f7f9fc;
+    }
+
+    tbody tr:hover td:first-child {
+      background: #f7f9fc;
+    }
+
+    .total {
+      font-weight: 700;
+      background: #fff7f7 !important;
+    }
+
+    .empty {
+      padding: 25px !important;
+      text-align: center !important;
+      color: #667085;
+    }
+
+    /* =========================================================
+       ATTACHMENT BUTTONS
+       ========================================================= */
+
+    .attachment-btn {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .attachment-btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    .view-btn {
+      background: #071b5c;
+      color: #fff;
+    }
+
+    .download-btn {
+      background: #198754;
+      color: #fff;
+    }
+
+    .no-file {
+      color: #98a2b3;
+      font-size: 12px;
+    }
+
+    .not-allowed {
+      color: #b42318;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       TYPE BADGES
+       ========================================================= */
+
+    .type-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .type-news {
+      background: #eaf2ff;
+      color: #071b5c;
+    }
+
+    .type-application {
+      background: #eaf8ef;
+      color: #198754;
+    }
+
+    .type-other {
+      background: #f2f4f7;
+      color: #475467;
+    }
+
+    .download-yes {
+      color: #198754;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .download-no {
+      color: #b42318;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    /* =========================================================
+       LOADING
+       ========================================================= */
+
+    .loading {
+      opacity: 0.65;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .footer {
+      width: 100%;
+      margin-top: 25px;
+      padding: 20px 15px;
+
+      text-align: center;
+
+      background:
+        linear-gradient(
+          135deg,
+          #071b5c,
+          #0d2b83
+        );
+
+      color: #fff;
+
+      border-top: 4px solid #b5121b;
+    }
+
+    .footer-title {
+      margin-bottom: 6px;
+
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .footer-developer {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .footer-developer strong {
+      color: #fff;
+    }
+
+    .footer-copy {
+      margin-top: 6px;
+
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* =========================================================
+       TABLET
+       ========================================================= */
+
+    @media (max-width: 1100px) {
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toolbar .search {
+        grid-column: 1 / -1;
+      }
+
+      .status {
+        white-space: normal;
+      }
+
+      .cards {
+        grid-template-columns:
+          repeat(3, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chartbox {
+        height: 300px;
+      }
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 700px) {
+
+      .header {
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 16px;
+        line-height: 1.2;
+      }
+
+      .header p {
+        margin-top: 3px;
+        font-size: 10px;
+      }
+
+      .developer-inline {
+        font-size: 0.52em;
+      }
+
+      .container {
+        padding: 9px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+
+        margin-bottom: 12px;
+      }
+
+      .toolbar .search {
+        grid-column: 1 / -1;
+      }
+
+      .toolbar button,
+      .toolbar .select {
+        width: 100%;
+      }
+
+      .toolbar .status {
+        grid-column: 1 / -1;
+        font-size: 11px;
+      }
+
+      .cards {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .card {
+        padding: 11px;
+        border-radius: 9px;
+        border-top-width: 3px;
+      }
+
+      .card .label {
+        font-size: 10px;
+      }
+
+      .card .value {
+        margin-top: 5px;
+        font-size: 20px;
+      }
+
+      .grid {
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .panel {
+        padding: 11px;
+        border-radius: 9px;
+      }
+
+      .panel h2 {
+        margin-bottom: 9px;
+        font-size: 15px;
+      }
+
+      .chartbox {
+        height: 245px;
+      }
+
+      th,
+      td {
+        padding: 8px 7px;
+        font-size: 12px;
+      }
+
+      .footer {
+        margin-top: 18px;
+        padding: 17px 10px;
+      }
+
+      .footer-title {
+        font-size: 13px;
+      }
+
+      .footer-developer {
+        font-size: 11px;
+      }
+
+      .footer-copy {
+        font-size: 9px;
+      }
+    }
+
+    /* =========================================================
+       SMALL MOBILE
+       ========================================================= */
+
+    @media (max-width: 420px) {
+
+      .header {
+        padding: 8px 9px;
+      }
+
+      .header h1 {
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .header p {
+        display: none;
+      }
+
+      .developer-inline {
+        font-size: 0.50em;
+      }
+
+      .container {
+        padding: 8px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .toolbar .search,
+      .toolbar .status {
+        grid-column: auto;
+      }
+
+      .cards {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+
+        gap: 7px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .card .label {
+        font-size: 9px;
+      }
+
+      .card .value {
+        font-size: 19px;
+      }
+
+      .panel {
+        padding: 9px;
+      }
+
+      .panel h2 {
+        font-size: 14px;
+      }
+
+      .chartbox {
+        height: 225px;
+      }
+
+      table {
+        min-width: 900px;
+      }
+
+      .footer {
+        padding: 15px 8px;
+      }
+
+      .footer-title {
+        font-size: 12px;
+      }
+
+      .footer-developer {
+        font-size: 10px;
+      }
+
+      .footer-copy {
+        font-size: 8px;
+      }
+    }
+
+    /* =========================================================
+       VERY SMALL PHONES
+       ========================================================= */
+
+    @media (max-width: 350px) {
+
+      .header h1 {
+        font-size: 13px;
+      }
+
+      .developer-inline {
+        font-size: 0.48em;
+      }
+
+      .card .value {
+        font-size: 17px;
+      }
+
+      .chartbox {
+        height: 210px;
+      }
+    }
+
+    img,
+    canvas,
+    svg {
+      max-width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =======================================================
+       HEADER
+       ======================================================= -->
+
+  <header class="header">
+    <div class="container">
+
+      <h1>
+        🏛️ Nepali Congress – Marin Gaupalika
+        <span class="developer-inline">
+          (Developed by Yubaraj Chaulagain (Saroj))
+        </span>
+      </h1>
+
+      <p>
+        Ward-wise जनसांख्यिक तथा मतदाता Dashboard
+      </p>
+
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    <!-- =====================================================
+         TOOLBAR
+         ===================================================== -->
+
+    <div class="toolbar">
+
+      <input
+        id="search"
+        class="search"
+        type="search"
+        placeholder="Search particulars..."
+        autocomplete="off"
+      >
+
+      <select id="ward" class="select">
+        <option value="all">All Wards</option>
+      </select>
+
+      <button
+        id="refreshBtn"
+        type="button"
+      >
+        🔄 Refresh Data
+      </button>
+
+      <span
+        id="status"
+        class="status"
+      >
+        Loading...
+      </span>
+
+    </div>
+
+
+    <!-- =====================================================
+         ERROR
+         ===================================================== -->
+
+    <div
+      id="error"
+      class="error"
+    ></div>
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+         ===================================================== -->
+
+    <section
+      id="cards"
+      class="cards"
+    ></section>
+
+
+    <!-- =====================================================
+         CHARTS
+         ===================================================== -->
+
+    <div class="grid">
+
+      <div class="panel">
+
+        <h2>
+          📊 Ward Comparison
+        </h2>
+
+        <div class="chartbox">
+
+          <canvas
+            id="wardChart"
+          ></canvas>
+
+        </div>
+
+      </div>
+
+
+      <div class="panel">
+
+        <h2>
+          👥 Gender Summary
+        </h2>
+
+        <div class="chartbox">
+
+          <canvas
+            id="genderChart"
+          ></canvas>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABLE
+         ===================================================== -->
+
+    <div class="panel">
+
+      <h2>
+        📋 Detailed Summary
+      </h2>
+
+      <div class="table-wrap">
+
+        <table
+          id="dataTable"
+        ></table>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+<script>
+"use strict";
+
+
+/* =========================================================
+   GOOGLE SHEET CSV URL
+   ========================================================= */
+
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=382649531&single=true&output=csv";
+
+
+/* =========================================================
+   FALLBACK DATA
+   ========================================================= */
+
+const INITIAL_DATA = [
+  {
+    "Particulars": "Number of Households",
+    "Ward No. 1": 1,
+    "Ward No. 2": 1,
+    "Ward No. 3": 1,
+    "Ward No. 4": 0,
+    "Ward No. 5": 0,
+    "Ward No. 6": 0,
+    "Ward No. 7": 0,
+    "Grand Total": 3
+  },
+
+  {
+    "Particulars": "Total Family Members",
+    "Ward No. 1": 4,
+    "Ward No. 2": 4,
+    "Ward No. 3": 4,
+    "Ward No. 4": 0,
+    "Ward No. 5": 0,
+    "Ward No. 6": 0,
+    "Ward No. 7": 0,
+    "Grand Total": 12
+  },
+
+  {
+    "Particulars": "Total Male",
+    "Ward No. 1": 2,
+    "Ward No. 2": 2,
+    "Ward No. 3": 2,
+    "Ward No. 4": 0,
+    "Ward No. 5": 0,
+    "Ward No. 6": 0,
+    "Ward No. 7": 0,
+    "Grand Total": 6
+  },
+
+  {
+    "Particulars": "Total Female",
+    "Ward No. 1": 2,
+    "Ward No. 2": 2,
+    "Ward No. 3": 2,
+    "Ward No. 4": 0,
+    "Ward No. 5": 0,
+    "Ward No. 6": 0,
+    "Ward No. 7": 0,
+    "Grand Total": 6
+  },
+
+  {
+    "Particulars": "Total Voters",
+    "Ward No. 1": 1,
+    "Ward No. 2": 2,
+    "Ward No. 3": 0,
+    "Ward No. 4": 0,
+    "Ward No. 5": 0,
+    "Ward No. 6": 0,
+    "Ward No. 7": 0,
+    "Grand Total": 3
+  }
+];
+
+
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
+
+let data = [];
+
+let wardChart = null;
+
+let genderChart = null;
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function normalizeText(value) {
+
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
+
+}
+
+
+function num(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return 0;
+  }
+
+  const cleaned =
+    String(value)
+      .replace(/,/g, "")
+      .replace(/[^\d.-]/g, "");
+
+  const number =
+    parseFloat(cleaned);
+
+  return Number.isFinite(number)
+    ? number
+    : 0;
+
+}
+
+
+function formatNumber(value) {
+
+  return Number(value || 0)
+    .toLocaleString("en-US");
+
+}
+
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(
+      /[&<>"']/g,
+      function(match) {
+
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
+
+        return map[match];
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
+
+function parseCSV(text) {
+
+  const rows = [];
+
+  let row = [];
+
+  let cell = "";
+
+  let inQuotes = false;
+
+
+  for (
+    let i = 0;
+    i < text.length;
+    i++
+  ) {
+
+    const char = text[i];
+
+    const next = text[i + 1];
+
+
+    if (
+      char === '"' &&
+      inQuotes &&
+      next === '"'
+    ) {
+
+      cell += '"';
+
+      i++;
+
+      continue;
+
+    }
+
+
+    if (char === '"') {
+
+      inQuotes = !inQuotes;
+
+      continue;
+
+    }
+
+
+    if (
+      char === "," &&
+      !inQuotes
+    ) {
+
+      row.push(
+        cell.trim()
+      );
+
+      cell = "";
+
+      continue;
+
+    }
+
+
+    if (
+      (
+        char === "\n" ||
+        char === "\r"
+      ) &&
+      !inQuotes
+    ) {
+
+      if (
+        char === "\r" &&
+        next === "\n"
+      ) {
+
+        i++;
+
+      }
+
+
+      row.push(
+        cell.trim()
+      );
+
+
+      if (
+        row.some(
+          value => value !== ""
+        )
+      ) {
+
+        rows.push(row);
+
+      }
+
+
+      row = [];
+
+      cell = "";
+
+      continue;
+
+    }
+
+
+    cell += char;
+
+  }
+
+
+  if (
+    cell !== "" ||
+    row.length
+  ) {
+
+    row.push(
+      cell.trim()
+    );
+
+
+    if (
+      row.some(
+        value => value !== ""
+      )
+    ) {
+
+      rows.push(row);
+
+    }
+
+  }
+
+
+  return rows;
+
+}
+
+
+/* =========================================================
+   NORMALIZE ROWS
+   ========================================================= */
+
+function normalize(rows) {
+
+  if (
+    !Array.isArray(rows) ||
+    rows.length < 2
+  ) {
+
+    return [];
+
+  }
+
+
+  const headers =
+    rows[0].map(
+      header =>
+        String(header || "").trim()
+    );
+
+
+  return rows
+    .slice(1)
+    .map(row => {
+
+      const object = {};
+
+
+      headers.forEach(
+        (header, index) => {
+
+          object[header] =
+            row[index] !== undefined
+              ? String(
+                  row[index]
+                ).trim()
+              : "";
+
+        }
+      );
+
+
+      return object;
+
+    })
+    .filter(row => {
+
+      const firstKey =
+        headers[0];
+
+      return (
+        row[firstKey] !== ""
+      );
+
+    });
+
+}
+
+
+/* =========================================================
+   STRUCTURE
+   ========================================================= */
+
+function getStructure(rows) {
+
+  if (!rows.length) {
+
+    return {
+      headers: [],
+      first: "",
+      wards: []
+    };
+
+  }
+
+
+  const headers =
+    Object.keys(rows[0]);
+
+
+  const first =
+    headers[0];
+
+
+  const wards =
+    headers.filter(
+      header => {
+
+        const normalized =
+          normalizeText(header);
+
+
+        return (
+          header !== first &&
+          normalized !== "grand total" &&
+          normalized !== "total"
+        );
+
+      }
+    );
+
+
+  return {
+    headers,
+    first,
+    wards
+  };
+
+}
+
+
+/* =========================================================
+   FIND ROW
+   ========================================================= */
+
+function findRow(
+  rows,
+  firstColumn,
+  label
+) {
+
+  const target =
+    normalizeText(label);
+
+
+  return rows.find(
+    row =>
+      normalizeText(
+        row[firstColumn]
+      ) === target
+  );
+
+}
+
+
+/* =========================================================
+   DOWNLOAD CHECK
+   ========================================================= */
+
+function isDownloadAllowed(
+  type,
+  download
+) {
+
+  const t =
+    normalizeText(type);
+
+  const d =
+    normalizeText(download);
+
+
+  /*
+    Only application can be downloaded.
+  */
+
+  if (t !== "application") {
+
+    return false;
+
+  }
+
+
+  /*
+    Accepted values:
+    yes
+    true
+    1
+    download
+    allowed
+    y
+  */
+
+  return [
+    "yes",
+    "true",
+    "1",
+    "download",
+    "allowed",
+    "y"
+  ].includes(d);
+
+}
+
+
+/* =========================================================
+   TYPE BADGE
+   ========================================================= */
+
+function createTypeElement(
+  value
+) {
+
+  const type =
+    normalizeText(value);
+
+
+  const span =
+    document.createElement("span");
+
+
+  span.className =
+    "type-badge";
+
+
+  if (type === "news") {
+
+    span.classList.add(
+      "type-news"
+    );
+
+    span.textContent =
+      "📰 News";
+
+  }
+
+  else if (
+    type === "application"
+  ) {
+
+    span.classList.add(
+      "type-application"
+    );
+
+    span.textContent =
+      "📄 Application";
+
+  }
+
+  else {
+
+    span.classList.add(
+      "type-other"
+    );
+
+    span.textContent =
+      value || "—";
+
+  }
+
+
+  return span;
+
+}
+
+
+/* =========================================================
+   ATTACHMENT ELEMENT
+   ========================================================= */
+
+function createAttachmentElement(
+  row
+) {
+
+  const attachment =
+    String(
+      row["Attachment"] || ""
+    ).trim();
+
+
+  const type =
+    normalizeText(
+      row["Types"]
+    );
+
+
+  const download =
+    row["Download"];
+
+
+  /*
+    No attachment
+  */
+
+  if (!attachment) {
+
+    const span =
+      document.createElement("span");
+
+    span.className =
+      "no-file";
+
+    span.textContent =
+      "—";
+
+    return span;
+
+  }
+
+
+  /*
+    NEWS
+    View only
+  */
+
+  if (type === "news") {
+
+    const link =
+      document.createElement("a");
+
+
+    link.href =
+      attachment;
+
+
+    link.target =
+      "_blank";
+
+
+    link.rel =
+      "noopener noreferrer";
+
+
+    link.className =
+      "attachment-btn view-btn";
+
+
+    link.textContent =
+      "👁️ View";
+
+
+    return link;
+
+  }
+
+
+  /*
+    APPLICATION + DOWNLOAD YES
+  */
+
+  if (
+    isDownloadAllowed(
+      type,
+      download
+    )
+  ) {
+
+    const link =
+      document.createElement("a");
+
+
+    link.href =
+      attachment;
+
+
+    /*
+      This asks browser to download
+      where supported.
+    */
+
+    link.setAttribute(
+      "download",
+      ""
+    );
+
+
+    link.target =
+      "_blank";
+
+
+    link.rel =
+      "noopener noreferrer";
+
+
+    link.className =
+      "attachment-btn download-btn";
+
+
+    link.textContent =
+      "⬇️ Download";
+
+
+    return link;
+
+  }
+
+
+  /*
+    Application but download disabled
+  */
+
+  const span =
+    document.createElement("span");
+
+
+  span.className =
+    "not-allowed";
+
+
+  span.textContent =
+    "🚫 Download बन्द";
+
+
+  return span;
+
+}
+
+
+/* =========================================================
+   RENDER EVERYTHING
+   ========================================================= */
+
+function render(rows) {
+
+  if (
+    !Array.isArray(rows) ||
+    rows.length === 0
+  ) {
+
+    return;
+
+  }
+
+
+  data = rows;
+
+
+  const structure =
+    getStructure(rows);
+
+
+  populateWardSelect(
+    structure.wards
+  );
+
+
+  renderCards(
+    rows,
+    structure.headers,
+    structure.first
+  );
+
+
+  renderTable(
+    rows,
+    structure.headers,
+    structure.first
+  );
+
+
+  renderCharts(
+    rows,
+    structure.headers,
+    structure.first,
+    structure.wards
+  );
+
+}
+
+
+/* =========================================================
+   WARD SELECT
+   ========================================================= */
+
+function populateWardSelect(
+  wards
+) {
+
+  const select =
+    document.getElementById(
+      "ward"
+    );
+
+
+  const oldValue =
+    select.value;
+
+
+  select.innerHTML = "";
+
+
+  const allOption =
+    document.createElement(
+      "option"
+    );
+
+
+  allOption.value =
+    "all";
+
+
+  allOption.textContent =
+    "All Wards";
+
+
+  select.appendChild(
+    allOption
+  );
+
+
+  wards.forEach(
+    ward => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        ward;
+
+
+      option.textContent =
+        ward;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  if (
+    wards.includes(oldValue) ||
+    oldValue === "all"
+  ) {
+
+    select.value =
+      oldValue;
+
+  }
+
+  else {
+
+    select.value =
+      "all";
+
+  }
+
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+function renderCards(
+  rows,
+  headers,
+  first
+) {
+
+  const cards =
+    document.getElementById(
+      "cards"
+    );
+
+
+  cards.innerHTML = "";
+
+
+  const wanted = [
+
+    "Number of Households",
+
+    "Total Family Members",
+
+    "Total Male",
+
+    "Total Female",
+
+    "Total Voters"
+
+  ];
+
+
+  wanted.forEach(
+    label => {
+
+      const row =
+        findRow(
+          rows,
+          first,
+          label
+        );
+
+
+      if (!row) {
+
+        return;
+
+      }
+
+
+      let total = 0;
+
+
+      if (
+        headers.includes(
+          "Grand Total"
+        )
+      ) {
+
+        total =
+          num(
+            row["Grand Total"]
+          );
+
+      }
+
+      else {
+
+        total =
+          headers
+            .slice(1)
+            .reduce(
+              (
+                sum,
+                header
+              ) =>
+                sum +
+                num(
+                  row[header]
+                ),
+              0
+            );
+
+      }
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "card";
+
+
+      const labelElement =
+        document.createElement(
+          "div"
+        );
+
+
+      labelElement.className =
+        "label";
+
+
+      labelElement.textContent =
+        label;
+
+
+      const valueElement =
+        document.createElement(
+          "div"
+        );
+
+
+      valueElement.className =
+        "value";
+
+
+      valueElement.textContent =
+        formatNumber(total);
+
+
+      card.appendChild(
+        labelElement
+      );
+
+
+      card.appendChild(
+        valueElement
+      );
+
+
+      cards.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+function renderTable(
+  rows,
+  headers,
+  first
+) {
+
+  const table =
+    document.getElementById(
+      "dataTable"
+    );
+
+
+  const searchValue =
+    normalizeText(
+      document.getElementById(
+        "search"
+      ).value
+    );
+
+
+  const selectedWard =
+    document.getElementById(
+      "ward"
+    ).value;
+
+
+  const visibleHeaders =
+    selectedWard === "all"
+      ? headers
+      : headers.filter(
+          header =>
+            header === first ||
+            header === selectedWard
+        );
+
+
+  const filteredRows =
+    rows.filter(
+      row => {
+
+        if (!searchValue) {
+
+          return true;
+
+        }
+
+
+        /*
+          Search all columns,
+          not only first column.
+        */
+
+        return headers.some(
+          header =>
+            normalizeText(
+              row[header]
+            ).includes(
+              searchValue
+            )
+        );
+
+      }
+    );
+
+
+  table.innerHTML = "";
+
+
+  /* =======================================================
+     HEADER
+     ======================================================= */
+
+  const thead =
+    document.createElement(
+      "thead"
+    );
+
+
+  const headerRow =
+    document.createElement(
+      "tr"
+    );
+
+
+  visibleHeaders.forEach(
+    header => {
+
+      const th =
+        document.createElement(
+          "th"
+        );
+
+
+      th.textContent =
+        header;
+
+
+      headerRow.appendChild(
+        th
+      );
+
+    }
+  );
+
+
+  thead.appendChild(
+    headerRow
+  );
+
+
+  table.appendChild(
+    thead
+  );
+
+
+  /* =======================================================
+     BODY
+     ======================================================= */
+
+  const tbody =
+    document.createElement(
+      "tbody"
+    );
+
+
+  if (!filteredRows.length) {
+
+    const tr =
+      document.createElement(
+        "tr"
+      );
+
+
+    const td =
+      document.createElement(
+        "td"
+      );
+
+
+    td.colSpan =
+      Math.max(
+        visibleHeaders.length,
+        1
+      );
+
+
+    td.className =
+      "empty";
+
+
+    td.textContent =
+      "No matching data found.";
+
+
+    tr.appendChild(
+      td
+    );
+
+
+    tbody.appendChild(
+      tr
+    );
+
+  }
+
+  else {
+
+    filteredRows.forEach(
+      row => {
+
+        const tr =
+          document.createElement(
+            "tr"
+          );
+
+
+        visibleHeaders.forEach(
+          header => {
+
+            const td =
+              document.createElement(
+                "td"
+              );
+
+
+            const normalizedHeader =
+              normalizeText(
+                header
+              );
+
+
+            /* -----------------------------------------
+               ATTACHMENT
+               ----------------------------------------- */
+
+            if (
+              normalizedHeader ===
+              "attachment"
+            ) {
+
+              td.appendChild(
+                createAttachmentElement(
+                  row
+                )
+              );
+
+            }
+
+
+            /* -----------------------------------------
+               TYPES
+               ----------------------------------------- */
+
+            else if (
+              normalizedHeader ===
+              "types"
+            ) {
+
+              td.appendChild(
+                createTypeElement(
+                  row[header]
+                )
+              );
+
+            }
+
+
+            /* -----------------------------------------
+               DOWNLOAD
+               ----------------------------------------- */
+
+            else if (
+              normalizedHeader ===
+              "download"
+            ) {
+
+              const allowed =
+                isDownloadAllowed(
+                  row["Types"],
+                  row["Download"]
+                );
+
+
+              if (allowed) {
+
+                td.innerHTML =
+                  '<span class="download-yes">' +
+                  '✓ Yes' +
+                  '</span>';
+
+              }
+
+              else {
+
+                td.innerHTML =
+                  '<span class="download-no">' +
+                  '✕ No' +
+                  '</span>';
+
+              }
+
+            }
+
+
+            /* -----------------------------------------
+               NORMAL COLUMN
+               ----------------------------------------- */
+
+            else {
+
+              td.textContent =
+                row[header] ?? "";
+
+            }
+
+
+            /* -----------------------------------------
+               FIRST COLUMN
+               ----------------------------------------- */
+
+            if (
+              header === first
+            ) {
+
+              td.style.textAlign =
+                "left";
+
+            }
+
+
+            /* -----------------------------------------
+               GRAND TOTAL
+               ----------------------------------------- */
+
+            if (
+              normalizedHeader ===
+              "grand total"
+            ) {
+
+              td.classList.add(
+                "total"
+              );
+
+            }
+
+
+            tr.appendChild(
+              td
+            );
+
+          }
+        );
+
+
+        tbody.appendChild(
+          tr
+        );
+
+      }
+    );
+
+  }
+
+
+  table.appendChild(
+    tbody
+  );
+
+}
+
+
+/* =========================================================
+   CHARTS
+   ========================================================= */
+
+function renderCharts(
+  rows,
+  headers,
+  first,
+  wards
+) {
+
+  const male =
+    findRow(
+      rows,
+      first,
+      "Total Male"
+    );
+
+
+  const female =
+    findRow(
+      rows,
+      first,
+      "Total Female"
+    );
+
+
+  const voters =
+    findRow(
+      rows,
+      first,
+      "Total Voters"
+    );
+
+
+  /* =======================================================
+     WARD BAR CHART
+     ======================================================= */
+
+  if (wardChart) {
+
+    wardChart.destroy();
+
+  }
+
+
+  const wardCanvas =
+    document.getElementById(
+      "wardChart"
+    );
+
+
+  wardChart =
+    new Chart(
+      wardCanvas,
+      {
+
+        type: "bar",
+
+        data: {
+
+          labels: wards,
+
+          datasets: [
+
+            {
+
+              label: "Male",
+
+              data:
+                wards.map(
+                  ward =>
+                    num(
+                      male?.[ward]
+                    )
+                ),
+
+              backgroundColor:
+                "#071b5c",
+
+              borderRadius: 5
+
+            },
+
+            {
+
+              label: "Female",
+
+              data:
+                wards.map(
+                  ward =>
+                    num(
+                      female?.[ward]
+                    )
+                ),
+
+              backgroundColor:
+                "#b5121b",
+
+              borderRadius: 5
+
+            },
+
+            {
+
+              label: "Voters",
+
+              data:
+                wards.map(
+                  ward =>
+                    num(
+                      voters?.[ward]
+                    )
+                ),
+
+              backgroundColor:
+                "#f59e0b",
+
+              borderRadius: 5
+
+            }
+
+          ]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          interaction: {
+
+            mode: "index",
+
+            intersect: false
+
+          },
+
+          plugins: {
+
+            legend: {
+
+              position: "bottom"
+
+            },
+
+            tooltip: {
+
+              callbacks: {
+
+                label:
+                  function(context) {
+
+                    return (
+                      " " +
+                      context.dataset.label +
+                      ": " +
+                      formatNumber(
+                        context.raw
+                      )
+                    );
+
+                  }
+
+              }
+
+            }
+
+          },
+
+          scales: {
+
+            y: {
+
+              beginAtZero: true,
+
+              ticks: {
+
+                precision: 0
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+    );
+
+
+  /* =======================================================
+     GENDER DOUGHNUT
+     ======================================================= */
+
+  if (genderChart) {
+
+    genderChart.destroy();
+
+  }
+
+
+  const maleTotal =
+    getGrandTotal(
+      male,
+      headers,
+      wards
+    );
+
+
+  const femaleTotal =
+    getGrandTotal(
+      female,
+      headers,
+      wards
+    );
+
+
+  const genderCanvas =
+    document.getElementById(
+      "genderChart"
+    );
+
+
+  genderChart =
+    new Chart(
+      genderCanvas,
+      {
+
+        type: "doughnut",
+
+        data: {
+
+          labels: [
+            "Male",
+            "Female"
+          ],
+
+          datasets: [
+
+            {
+
+              data: [
+                maleTotal,
+                femaleTotal
+              ],
+
+              backgroundColor: [
+                "#071b5c",
+                "#b5121b"
+              ],
+
+              borderWidth: 2,
+
+              borderColor:
+                "#ffffff"
+
+            }
+
+          ]
+
+        },
+
+        options: {
+
+          responsive: true,
+
+          maintainAspectRatio: false,
+
+          cutout: "62%",
+
+          plugins: {
+
+            legend: {
+
+              position: "bottom"
+
+            },
+
+            tooltip: {
+
+              callbacks: {
+
+                label:
+                  function(context) {
+
+                    const value =
+                      num(
+                        context.raw
+                      );
+
+
+                    const total =
+                      maleTotal +
+                      femaleTotal;
+
+
+                    const percentage =
+                      total > 0
+                        ? (
+                            (
+                              value /
+                              total
+                            ) *
+                            100
+                          ).toFixed(1)
+                        : 0;
+
+
+                    return (
+                      " " +
+                      context.label +
+                      ": " +
+                      formatNumber(
+                        value
+                      ) +
+                      " (" +
+                      percentage +
+                      "%)"
+                    );
+
+                  }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   GRAND TOTAL
+   ========================================================= */
+
+function getGrandTotal(
+  row,
+  headers,
+  wards
+) {
+
+  if (!row) {
+
+    return 0;
+
+  }
+
+
+  if (
+    headers.includes(
+      "Grand Total"
+    )
+  ) {
+
+    return num(
+      row["Grand Total"]
+    );
+
+  }
+
+
+  return wards.reduce(
+    (
+      sum,
+      ward
+    ) =>
+      sum +
+      num(
+        row[ward]
+      ),
+    0
+  );
+
+}
+
+
+/* =========================================================
+   LOAD GOOGLE SHEET
+   ========================================================= */
+
+async function loadData() {
+
+  const status =
+    document.getElementById(
+      "status"
+    );
+
+
+  const error =
+    document.getElementById(
+      "error"
+    );
+
+
+  const refreshBtn =
+    document.getElementById(
+      "refreshBtn"
+    );
+
+
+  const toolbar =
+    document.querySelector(
+      ".toolbar"
+    );
+
+
+  error.style.display =
+    "none";
+
+
+  status.textContent =
+    "Loading live Google Sheet...";
+
+
+  refreshBtn.disabled =
+    true;
+
+
+  toolbar.classList.add(
+    "loading"
+  );
+
+
+  try {
+
+    /*
+      Your CSV URL already contains:
+
+      ?gid=...
+      &single=true
+      &output=csv
+
+      So we only add cache-buster with &_
+    */
+
+    const separator =
+      CSV_URL.includes("?")
+        ? "&"
+        : "?";
+
+
+    const url =
+      CSV_URL +
+      separator +
+      "_=" +
+      Date.now();
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          method: "GET",
+          cache: "no-store"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "HTTP " +
+        response.status
+      );
+
+    }
+
+
+    const csv =
+      await response.text();
+
+
+    if (!csv.trim()) {
+
+      throw new Error(
+        "Google Sheet returned empty data"
+      );
+
+    }
+
+
+    const rows =
+      parseCSV(csv);
+
+
+    if (rows.length < 2) {
+
+      throw new Error(
+        "No valid Sheet data"
+      );
+
+    }
+
+
+    const liveData =
+      normalize(rows);
+
+
+    if (!liveData.length) {
+
+      throw new Error(
+        "Empty Sheet"
+      );
+
+    }
+
+
+    render(
+      liveData
+    );
+
+
+    status.textContent =
+      "🟢 Live data updated: " +
+      new Date()
+        .toLocaleTimeString();
+
+
+  }
+
+  catch (errorObject) {
+
+    console.error(
+      "Google Sheet loading error:",
+      errorObject
+    );
+
+
+    error.style.display =
+      "block";
+
+
+    error.textContent =
+      "Google Sheet बाट live data load भएन। " +
+      "Sheet Public/Published गरिएको छ कि छैन " +
+      "जाँच गर्नुहोस्। " +
+      "तलको fallback data देखाइएको छ।";
+
+
+    render(
+      INITIAL_DATA
+    );
+
+
+    status.textContent =
+      "🟡 Local fallback data";
+
+  }
+
+  finally {
+
+    refreshBtn.disabled =
+      false;
+
+
+    toolbar.classList.remove(
+      "loading"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SEARCH EVENT
+   ========================================================= */
+
+document
+  .getElementById("search")
+  .addEventListener(
+    "input",
+    function() {
+
+      if (!data.length) {
+
+        return;
+
+      }
+
+
+      const structure =
+        getStructure(data);
+
+
+      renderTable(
+        data,
+        structure.headers,
+        structure.first
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   WARD EVENT
+   ========================================================= */
+
+document
+  .getElementById("ward")
+  .addEventListener(
+    "change",
+    function() {
+
+      if (!data.length) {
+
+        return;
+
+      }
+
+
+      const structure =
+        getStructure(data);
+
+
+      renderTable(
+        data,
+        structure.headers,
+        structure.first
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   REFRESH EVENT
+   ========================================================= */
+
+document
+  .getElementById("refreshBtn")
+  .addEventListener(
+    "click",
+    loadData
+  );
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+render(
+  INITIAL_DATA
+);
+
+loadData();
+
+</script>
+
+
+<!-- =======================================================
+     FOOTER
+     ======================================================= -->
+
+<footer class="footer">
+
+  <div class="footer-title">
+    🏛️ Marin Gaupalika Dashboard
+  </div>
+
+  <div class="footer-developer">
+    Designed & Developed by
+    <strong>
+      Yubaraj Chaulagain (Saroj)
+    </strong>
+  </div>
+
+  <div class="footer-copy">
+    © 2026 Yubaraj Chaulagain (Saroj).
+    All Rights Reserved.
+  </div>
+
+</footer>
+
+</body>
+</html>
