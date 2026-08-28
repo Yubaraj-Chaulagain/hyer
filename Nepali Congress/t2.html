@@ -7,6 +7,12 @@
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
@@ -2133,550 +2139,511 @@ document
   loadNews
 );
 
-  /* =========================================================
-   APPLICATION PDF GENERATOR
+
+/* =========================================================
+   A4 APPLICATION PDF
    ========================================================= */
 
 async function generateApplicationPDF(row){
+
+  let pdfPage = null;
 
   try{
 
     const { jsPDF } = window.jspdf;
 
-    const doc = new jsPDF({
-      orientation:"portrait",
-      unit:"mm",
-      format:"a4"
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const red = [181,18,27];
-    const blue = [7,27,92];
-    const gray = [90,98,115];
-
-    /* -----------------------------------------
-       DATA
-    ----------------------------------------- */
+    /* ================================
+       GET GOOGLE SHEET DATA
+    ================================= */
 
     const type =
-      getNewsValue(row,"Types") || "Application";
+      getNewsValue(row,"Types") || "निवेदन";
 
     const subject =
-      getNewsValue(row,"Subject") || "Application";
+      getNewsValue(row,"Subject") || "";
 
     const details =
-      getNewsValue(row,"Details");
+      getNewsValue(row,"Details") || "";
 
     const fullName =
-      getNewsValue(row,"Full Name");
+      getNewsValue(row,"Full Name") || "";
 
     const contact =
-      getNewsValue(row,"Contact");
+      getNewsValue(row,"Contact") || "";
 
     const from =
-      getNewsValue(row,"From");
+      getNewsValue(row,"From") || "";
 
     const to =
-      getNewsValue(row,"To");
+      getNewsValue(row,"To") || "";
 
     const chalaniNo =
-      getNewsValue(row,"Chalani No.");
+      getNewsValue(row,"Chalani No.") || "";
 
     const chalaniDate =
-      getNewsValue(row,"Chalani Date");
+      getNewsValue(row,"Chalani Date") || "";
 
     const dartaNo =
-      getNewsValue(row,"Darta No.");
+      getNewsValue(row,"Darta No.") || "";
 
     const dartaDate =
-      getNewsValue(row,"Darta Date");
+      getNewsValue(row,"Darta Date") || "";
 
     const status =
-      getNewsValue(row,"Status");
+      getNewsValue(row,"Status") || "";
 
     const timestamp =
-      getNewsValue(row,"Timestamp");
+      getNewsValue(row,"Timestamp") || "";
 
 
-    /* -----------------------------------------
-       HEADER
-    ----------------------------------------- */
+    /* ================================
+       CREATE A4 PAGE
+    ================================= */
 
-    doc.setFillColor(...blue);
+    pdfPage = document.createElement("div");
 
-    doc.rect(
-      0,
-      0,
-      pageWidth,
-      30,
-      "F"
-    );
+    pdfPage.style.cssText = `
+      position:absolute;
+      left:-10000px;
+      top:0;
 
-    doc.setFillColor(...red);
+      width:794px;
+      min-height:1123px;
 
-    doc.rect(
-      0,
-      30,
-      pageWidth,
-      3,
-      "F"
-    );
+      background:#ffffff;
+      color:#111827;
 
+      font-family:
+        "Noto Sans Devanagari",
+        "Nirmala UI",
+        Arial,
+        sans-serif;
 
-    /* Title */
+      box-sizing:border-box;
+      padding:55px 65px 70px;
 
-    doc.setTextColor(255,255,255);
-
-    doc.setFont("helvetica","bold");
-
-    doc.setFontSize(17);
-
-    doc.text(
-      "MARIN GAUPALIKA",
-      pageWidth/2,
-      12,
-      {
-        align:"center"
-      }
-    );
-
-    doc.setFontSize(11);
-
-    doc.setFont("helvetica","normal");
-
-    doc.text(
-      "News / Application Management System",
-      pageWidth/2,
-      20,
-      {
-        align:"center"
-      }
-    );
+      font-size:14px;
+      line-height:1.8;
+    `;
 
 
-    /* -----------------------------------------
-       DOCUMENT TITLE
-    ----------------------------------------- */
+    /* ================================
+       REFERENCE TOP
+    ================================= */
 
-    let y = 45;
+    pdfPage.innerHTML = `
 
-    doc.setTextColor(...blue);
+      <!-- HEADER -->
 
-    doc.setFont("helvetica","bold");
+      <div style="
+        text-align:center;
+        margin-bottom:18px;
+      ">
 
-    doc.setFontSize(15);
+        <div style="
+          font-size:27px;
+          font-weight:700;
+          color:#071b5c;
+          line-height:1.3;
+        ">
+          मरीन गाउँपालिका
+        </div>
 
-    doc.text(
-      type.toUpperCase(),
-      pageWidth/2,
-      y,
-      {
-        align:"center"
-      }
-    );
+        <div style="
+          font-size:17px;
+          font-weight:600;
+          margin-top:2px;
+        ">
+          गाउँ कार्यपालिकाको कार्यालय
+        </div>
 
-    y += 8;
+        <div style="
+          font-size:13px;
+          margin-top:2px;
+        ">
+          सिन्धुली, बागमती प्रदेश, नेपाल
+        </div>
 
-    doc.setDrawColor(...red);
-
-    doc.setLineWidth(.6);
-
-    doc.line(
-      25,
-      y,
-      pageWidth-25,
-      y
-    );
-
-    y += 10;
-
-
-    /* -----------------------------------------
-       REFERENCE INFORMATION
-    ----------------------------------------- */
-
-    const referenceRows = [];
-
-    if(chalaniNo)
-      referenceRows.push([
-        "चलानी नं.",
-        chalaniNo
-      ]);
-
-    if(chalaniDate)
-      referenceRows.push([
-        "चलानी मिति",
-        chalaniDate
-      ]);
-
-    if(dartaNo)
-      referenceRows.push([
-        "दर्ता नं.",
-        dartaNo
-      ]);
-
-    if(dartaDate)
-      referenceRows.push([
-        "दर्ता मिति",
-        dartaDate
-      ]);
-
-    if(status)
-      referenceRows.push([
-        "Status",
-        status
-      ]);
-
-    if(timestamp)
-      referenceRows.push([
-        "Timestamp",
-        timestamp
-      ]);
+      </div>
 
 
-    if(referenceRows.length){
+      <div style="
+        border-top:3px solid #071b5c;
+        border-bottom:1px solid #b5121b;
+        margin-bottom:18px;
+      "></div>
 
-      doc.autoTable({
 
-        startY:y,
+      <!-- LETTER REFERENCE -->
 
-        head:[
-          [
-            "Reference",
-            "Details"
-          ]
-        ],
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        margin-bottom:28px;
+        font-size:13px;
+      ">
 
-        body:referenceRows,
+        <div>
+          <strong>पत्र संख्या:</strong>
+          ${escapeHtml(chalaniNo || "-")}
+        </div>
 
-        theme:"grid",
+        <div>
+          <strong>मिति:</strong>
+          ${escapeHtml(
+            chalaniDate ||
+            dartaDate ||
+            formatDate(timestamp) ||
+            "-"
+          )}
+        </div>
 
-        styles:{
-          fontSize:9,
-          cellPadding:3,
-          lineColor:[220,220,220],
-          textColor:[40,40,40]
-        },
+      </div>
 
-        headStyles:{
-          fillColor:blue,
-          textColor:[255,255,255],
-          fontStyle:"bold"
-        },
 
-        columnStyles:{
-          0:{
-            cellWidth:42,
-            fontStyle:"bold"
-          }
-        },
+      <!-- TO -->
 
-        margin:{
-          left:25,
-          right:25
+      <div style="
+        margin-bottom:22px;
+        line-height:2;
+      ">
+
+        ${
+          to
+          ? `
+            <div>
+              श्री ${escapeHtml(to)}
+            </div>
+          `
+          : `
+            <div>
+              श्री ........................................
+            </div>
+          `
         }
-      });
 
-      y =
-        doc.lastAutoTable.finalY + 10;
-    }
-
-
-    /* -----------------------------------------
-       APPLICANT INFORMATION
-    ----------------------------------------- */
-
-    doc.setFont("helvetica","bold");
-
-    doc.setFontSize(12);
-
-    doc.setTextColor(...blue);
-
-    doc.text(
-      "Applicant / Correspondence Information",
-      25,
-      y
-    );
-
-    y += 4;
-
-    const applicantRows=[];
-
-    if(fullName)
-      applicantRows.push([
-        "Full Name",
-        fullName
-      ]);
-
-    if(contact)
-      applicantRows.push([
-        "Contact",
-        contact
-      ]);
-
-    if(from)
-      applicantRows.push([
-        "From",
-        from
-      ]);
-
-    if(to)
-      applicantRows.push([
-        "To",
-        to
-      ]);
-
-
-    if(applicantRows.length){
-
-      doc.autoTable({
-
-        startY:y,
-
-        body:applicantRows,
-
-        theme:"grid",
-
-        styles:{
-          fontSize:9,
-          cellPadding:3,
-          lineColor:[220,220,220],
-          textColor:[40,40,40]
-        },
-
-        columnStyles:{
-          0:{
-            cellWidth:42,
-            fontStyle:"bold",
-            fillColor:[247,248,250]
-          }
-        },
-
-        margin:{
-          left:25,
-          right:25
+        ${
+          from
+          ? `
+            <div>
+              ${escapeHtml(from)}
+            </div>
+          `
+          : ""
         }
-      });
 
-      y =
-        doc.lastAutoTable.finalY + 10;
+      </div>
+
+
+      <!-- SUBJECT -->
+
+      <div style="
+        text-align:center;
+        font-size:17px;
+        font-weight:700;
+        margin:20px 0 25px;
+        text-decoration:underline;
+      ">
+
+        विषय: ${escapeHtml(subject)}
+
+      </div>
+
+
+      <!-- SALUTATION -->
+
+      <div style="
+        margin-bottom:12px;
+        font-weight:600;
+      ">
+        महोदय,
+      </div>
+
+
+      <!-- DETAILS -->
+
+      <div style="
+        text-align:justify;
+        white-space:pre-wrap;
+        line-height:2.05;
+        margin-bottom:28px;
+      ">
+        ${escapeHtml(details)}
+      </div>
+
+
+      <!-- APPLICANT -->
+
+      <div style="
+        margin-top:35px;
+        margin-left:420px;
+        width:230px;
+        text-align:left;
+        line-height:1.9;
+      ">
+
+        <div style="
+          text-align:center;
+          margin-bottom:35px;
+        ">
+          ................................<br>
+          दस्तखत
+        </div>
+
+        ${
+          fullName
+          ? `
+            <div>
+              <strong>नाम:</strong>
+              ${escapeHtml(fullName)}
+            </div>
+          `
+          : `
+            <div>
+              <strong>नाम:</strong>
+              ................................
+            </div>
+          `
+        }
+
+        ${
+          contact
+          ? `
+            <div>
+              <strong>सम्पर्क:</strong>
+              ${escapeHtml(contact)}
+            </div>
+          `
+          : ""
+        }
+
+      </div>
+
+
+      <!-- BOTTOM REFERENCE -->
+
+      <div style="
+        margin-top:45px;
+        padding-top:12px;
+        border-top:1px solid #d1d5db;
+        display:flex;
+        justify-content:space-between;
+        font-size:11px;
+        color:#4b5563;
+      ">
+
+        <div>
+          दर्ता नं.:
+          ${escapeHtml(dartaNo || "-")}
+        </div>
+
+        <div>
+          चलानी नं.:
+          ${escapeHtml(chalaniNo || "-")}
+        </div>
+
+        <div>
+          स्थिति:
+          ${escapeHtml(status || "-")}
+        </div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div style="
+        position:absolute;
+        bottom:25px;
+        left:65px;
+        right:65px;
+
+        border-top:1px solid #d1d5db;
+
+        padding-top:7px;
+
+        display:flex;
+        justify-content:space-between;
+
+        font-size:9px;
+        color:#6b7280;
+      ">
+
+        <span>
+          Marin Gaupalika Dashboard
+        </span>
+
+        <span>
+          Electronic Document
+        </span>
+
+      </div>
+
+    `;
+
+
+    document.body.appendChild(pdfPage);
+
+
+    /* ================================
+       WAIT FOR NEPALI FONT
+    ================================= */
+
+    if(document.fonts){
+      await document.fonts.ready;
     }
 
-
-    /* -----------------------------------------
-       SUBJECT
-    ----------------------------------------- */
-
-    doc.setFont("helvetica","bold");
-
-    doc.setFontSize(12);
-
-    doc.setTextColor(...blue);
-
-    doc.text(
-      "Subject",
-      25,
-      y
+    await new Promise(resolve =>
+      setTimeout(resolve,500)
     );
 
-    y += 5;
 
-    doc.setFillColor(
-      248,
-      249,
-      252
-    );
+    /* ================================
+       HTML → CANVAS
+    ================================= */
 
-    doc.setDrawColor(
-      220,
-      223,
-      230
-    );
-
-    const subjectLines =
-      doc.splitTextToSize(
-        subject,
-        pageWidth-60
-      );
-
-    const subjectHeight =
-      Math.max(
-        12,
-        subjectLines.length*5+7
-      );
-
-    doc.roundedRect(
-      25,
-      y,
-      pageWidth-50,
-      subjectHeight,
-      2,
-      2,
-      "FD"
-    );
-
-    doc.setTextColor(
-      30,
-      35,
-      45
-    );
-
-    doc.setFont("helvetica","bold");
-
-    doc.setFontSize(10);
-
-    doc.text(
-      subjectLines,
-      30,
-      y+7
-    );
-
-    y += subjectHeight + 10;
-
-
-    /* -----------------------------------------
-       DETAILS
-    ----------------------------------------- */
-
-    if(details){
-
-      doc.setTextColor(...blue);
-
-      doc.setFont("helvetica","bold");
-
-      doc.setFontSize(12);
-
-      doc.text(
-        "Application Details",
-        25,
-        y
-      );
-
-      y += 6;
-
-      doc.setFont("helvetica","normal");
-
-      doc.setFontSize(10);
-
-      doc.setTextColor(
-        55,
-        60,
-        70
-      );
-
-      const detailLines =
-        doc.splitTextToSize(
-          details,
-          pageWidth-55
-        );
-
-      doc.text(
-        detailLines,
-        27,
-        y
-      );
-
-    }
-
-
-    /* -----------------------------------------
-       FOOTER
-    ----------------------------------------- */
-
-    const totalPages =
-      doc.internal.getNumberOfPages();
-
-    for(
-      let page=1;
-      page<=totalPages;
-      page++
-    ){
-
-      doc.setPage(page);
-
-      doc.setDrawColor(
-        220,
-        220,
-        220
-      );
-
-      doc.line(
-        20,
-        pageHeight-18,
-        pageWidth-20,
-        pageHeight-18
-      );
-
-      doc.setFontSize(8);
-
-      doc.setTextColor(
-        120,
-        120,
-        120
-      );
-
-      doc.text(
-        "Marin Gaupalika Dashboard",
-        20,
-        pageHeight-11
-      );
-
-      doc.text(
-        "Generated electronically",
-        pageWidth-20,
-        pageHeight-11,
+    const canvas =
+      await html2canvas(
+        pdfPage,
         {
-          align:"right"
+          scale:2.5,
+          useCORS:true,
+          allowTaint:false,
+          backgroundColor:"#ffffff",
+          logging:false
         }
       );
+
+
+    /* ================================
+       A4 PDF
+    ================================= */
+
+    const pdf =
+      new jsPDF({
+        orientation:"portrait",
+        unit:"mm",
+        format:"a4",
+        compress:true
+      });
+
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const imageWidth = pageWidth;
+
+    const imageHeight =
+      canvas.height *
+      imageWidth /
+      canvas.width;
+
+
+    const imageData =
+      canvas.toDataURL(
+        "image/jpeg",
+        0.96
+      );
+
+
+    /* ================================
+       A4 MULTI PAGE
+    ================================= */
+
+    let heightLeft = imageHeight;
+    let position = 0;
+
+    pdf.addImage(
+      imageData,
+      "JPEG",
+      0,
+      position,
+      imageWidth,
+      imageHeight
+    );
+
+    heightLeft -= pageHeight;
+
+
+    while(heightLeft > 0){
+
+      position =
+        heightLeft -
+        imageHeight;
+
+      pdf.addPage();
+
+      pdf.addImage(
+        imageData,
+        "JPEG",
+        0,
+        position,
+        imageWidth,
+        imageHeight
+      );
+
+      heightLeft -= pageHeight;
     }
 
 
-    /* -----------------------------------------
+    /* ================================
        FILE NAME
-    ----------------------------------------- */
+    ================================= */
 
-    const safeName =
-      (fullName || "Application")
+    const cleanName =
+      (fullName || "Nivedan")
         .replace(
-          /[^a-zA-Z0-9\u0900-\u097F_-]/g,
+          /[\\/:*?"<>|]/g,
+          "_"
+        )
+        .replace(
+          /\s+/g,
           "_"
         );
 
-    const safeDarta =
-      (dartaNo || "")
+    const cleanNo =
+      (dartaNo || chalaniNo || "")
         .replace(
-          /[^a-zA-Z0-9_-]/g,
+          /[\\/:*?"<>|]/g,
           "_"
         );
+
 
     const filename =
-      "Marin_Gaupalika_Application_" +
-      safeName +
-      (safeDarta ? "_"+safeDarta : "") +
+      "Marin_Gaupalika_" +
+      cleanName +
+      (cleanNo ? "_" + cleanNo : "") +
       ".pdf";
 
 
-    /* -----------------------------------------
+    /* ================================
        DOWNLOAD
-    ----------------------------------------- */
+    ================================= */
 
-    doc.save(filename);
+    pdf.save(filename);
+
 
   }catch(error){
 
     console.error(
-      "PDF generation error:",
+      "A4 PDF Error:",
       error
     );
 
     alert(
-      "PDF generate गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।"
+      "A4 Application PDF बनाउन सकिएन।"
     );
+
+  }finally{
+
+    if(pdfPage && pdfPage.parentNode){
+      pdfPage.parentNode.removeChild(pdfPage);
+    }
+
   }
+
 }
+
 
 
 
