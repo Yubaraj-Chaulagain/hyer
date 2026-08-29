@@ -1,0 +1,4343 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nepali Congress – Marin Gaupalika Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+body{
+  font-family:Arial,"Noto Sans Devanagari","Nirmala UI",sans-serif;
+  background:#f3f5f9;
+  color:#172033;
+}
+
+.header{
+  width:100%;
+  background:linear-gradient(135deg,#071b5c,#b5121b);
+  color:#fff;
+  padding:12px 18px;
+}
+
+.header h1{
+  margin:0;
+  font-size:clamp(17px,2.4vw,25px);
+  line-height:1.25;
+}
+
+.header p{
+  margin:4px 0 0;
+  font-size:clamp(11px,1.4vw,14px);
+  opacity:.9;
+}
+
+.developer-inline{
+  font-size:.55em;
+  font-weight:400;
+  opacity:.85;
+  white-space:nowrap;
+}
+
+.container{
+  width:100%;
+  max-width:1400px;
+  margin:0 auto;
+  padding:clamp(10px,2vw,18px);
+}
+
+.toolbar{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) 180px auto auto;
+  gap:10px;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.search,.select,button{
+  min-height:42px;
+  border-radius:8px;
+  padding:9px 13px;
+  font-family:inherit;
+  font-size:14px;
+}
+
+.search,.select{
+  width:100%;
+  border:1px solid #d8dce5;
+  background:#fff;
+  color:#172033;
+  outline:none;
+}
+
+.search:focus,.select:focus{
+  border-color:#071b5c;
+  box-shadow:0 0 0 2px rgba(7,27,92,.08);
+}
+
+button{
+  border:1px solid #071b5c;
+  background:#071b5c;
+  color:#fff;
+  cursor:pointer;
+}
+
+button:hover{opacity:.9}
+button:disabled{opacity:.55;cursor:not-allowed}
+
+.status{
+  font-size:12px;
+  color:#667085;
+  white-space:nowrap;
+}
+
+.error{
+  display:none;
+  margin-bottom:15px;
+  padding:11px 13px;
+  border-radius:8px;
+  color:#b42318;
+  background:#fef3f2;
+  border:1px solid #fecdca;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.card{
+  min-width:0;
+  background:#fff;
+  border-radius:11px;
+  padding:15px;
+  border-top:4px solid #b5121b;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
+
+.card .label{
+  font-size:12px;
+  color:#697386;
+}
+
+.card .value{
+  margin-top:6px;
+  font-size:clamp(21px,3vw,29px);
+  font-weight:700;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);
+  gap:16px;
+  margin-bottom:18px;
+}
+
+.panel{
+  min-width:0;
+  background:#fff;
+  border-radius:11px;
+  padding:16px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+  margin-bottom:18px;
+}
+
+.panel h2{
+  margin:0 0 12px;
+  font-size:17px;
+}
+
+.chartbox{
+  position:relative;
+  width:100%;
+  height:300px;
+}
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+table{
+  width:100%;
+  min-width:760px;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:10px 9px;
+  border-bottom:1px solid #e7e9ee;
+  text-align:right;
+  white-space:nowrap;
+  font-size:13px;
+}
+
+th:first-child,td:first-child{
+  text-align:left;
+  position:sticky;
+  left:0;
+}
+
+thead th{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#071b5c;
+  color:#fff;
+}
+
+tbody td:first-child{
+  z-index:2;
+  background:#fff;
+}
+
+tbody tr:hover td{
+  background:#f7f9fc;
+}
+
+.total{
+  font-weight:700;
+  background:#fff7f7!important;
+}
+
+.empty{
+  padding:25px!important;
+  text-align:center!important;
+  color:#667085;
+}
+
+/* ================= NEWS ================= */
+
+.news-toolbar{
+  display:grid;
+  grid-template-columns:1fr 180px 180px auto;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.news-list{
+  display:grid;
+  gap:12px;
+}
+
+.news-item{
+  border:1px solid #e5e7eb;
+  border-left:5px solid #b5121b;
+  border-radius:9px;
+  padding:14px;
+  background:#fff;
+  transition:.2s;
+}
+
+.news-item:hover{
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+  transform:translateY(-1px);
+}
+
+.news-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.news-title{
+  font-size:16px;
+  font-weight:700;
+  color:#071b5c;
+  line-height:1.4;
+}
+
+.news-date{
+  font-size:11px;
+  color:#667085;
+  white-space:nowrap;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  margin-top:7px;
+  background:#eef2ff;
+  color:#3730a3;
+}
+
+.badge.application{
+  background:#fff1f2;
+  color:#be123c;
+}
+
+.badge.notice{
+  background:#fff7ed;
+  color:#c2410c;
+}
+
+.badge.news{
+  background:#ecfdf5;
+  color:#047857;
+}
+
+.status-badge{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:20px;
+  background:#f3f4f6;
+  color:#374151;
+  font-size:11px;
+  font-weight:600;
+}
+
+.status-badge.completed,
+.status-badge.approved,
+.status-badge.success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-badge.pending{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.status-badge.rejected{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.news-details{
+  margin-top:9px;
+  font-size:13px;
+  color:#4b5563;
+  line-height:1.6;
+  white-space:pre-line;
+}
+
+.news-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+.meta{
+  padding:5px 8px;
+  border-radius:6px;
+  background:#f7f8fa;
+  color:#596273;
+  font-size:11px;
+}
+
+.news-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+
+.btn-small{
+  min-height:34px;
+  padding:6px 11px;
+  border-radius:6px;
+  font-size:12px;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#071b5c;
+  color:#fff;
+}
+
+.btn-download{
+  background:#b5121b;
+}
+
+.no-news{
+  text-align:center;
+  padding:30px 15px;
+  color:#667085;
+  border:1px dashed #d5d9e2;
+  border-radius:8px;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  width:100%;
+  margin-top:25px;
+  padding:20px 15px;
+  text-align:center;
+  background:linear-gradient(135deg,#071b5c,#0d2b83);
+  color:#fff;
+  border-top:4px solid #b5121b;
+}
+
+.footer-title{
+  margin-bottom:6px;
+  font-size:15px;
+  font-weight:700;
+}
+
+.footer-developer{
+  font-size:12px;
+  color:rgba(255,255,255,.9);
+}
+
+.footer-copy{
+  margin-top:6px;
+  font-size:10px;
+  color:rgba(255,255,255,.55);
+}
+
+/* ================= TABLET ================= */
+
+@media(max-width:1100px){
+
+  .toolbar{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .toolbar .search{
+    grid-column:1/-1;
+  }
+
+  .cards{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .news-toolbar{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+  .header{
+    padding:10px;
+  }
+
+  .header h1{
+    font-size:16px;
+  }
+
+  .header p{
+    font-size:10px;
+  }
+
+  .container{
+    padding:9px;
+  }
+
+  .toolbar{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .toolbar .search{
+    grid-column:1/-1;
+  }
+
+  .toolbar .status{
+    grid-column:1/-1;
+    white-space:normal;
+  }
+
+  .cards{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .card{
+    padding:11px;
+  }
+
+  .card .label{
+    font-size:10px;
+  }
+
+  .card .value{
+    font-size:20px;
+  }
+
+  .panel{
+    padding:11px;
+  }
+
+  .chartbox{
+    height:245px;
+  }
+
+  .news-toolbar{
+    grid-template-columns:1fr;
+  }
+
+  .news-top{
+    flex-direction:column;
+  }
+
+  .news-title{
+    font-size:14px;
+  }
+}
+
+@media(max-width:420px){
+
+  .header h1{
+    font-size:14px;
+  }
+
+  .header p{
+    display:none;
+  }
+
+  .toolbar{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar .search{
+    grid-column:auto;
+  }
+
+  .cards{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .card{
+    padding:10px;
+  }
+
+  .card .value{
+    font-size:19px;
+  }
+
+  .panel{
+    padding:9px;
+  }
+
+  .chartbox{
+    height:225px;
+  }
+}
+
+/* =========================================================
+   ADMIN LOGIN
+   ========================================================= */
+.admin-login-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.55);
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.admin-login-modal.show{display:flex;}
+.admin-login-box{
+  position:relative;
+  width:100%;
+  max-width:400px;
+  background:#fff;
+  border-radius:14px;
+  padding:28px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+}
+.admin-login-box h3{margin:0 0 10px;}
+.admin-login-box p{color:#555;font-size:14px;margin-bottom:20px;}
+.admin-login-box input{
+  width:100%;box-sizing:border-box;padding:12px 14px;margin-bottom:12px;
+  border:1px solid #ccc;border-radius:8px;font-size:15px;
+}
+.admin-login-btn{
+  width:100%;border:none;padding:12px;border-radius:8px;cursor:pointer;
+  background:#071b5c;color:#fff;font-weight:700;
+}
+.admin-close-btn{
+  position:absolute;right:12px;top:8px;border:none;background:transparent;
+  font-size:28px;cursor:pointer;
+}
+#adminLoginError{color:#c62828;margin-bottom:10px;font-size:14px;}
+.btn-gmail{background:#0f766e;}
+.btn-whatsapp{background:#166534;}
+
+/* ================= MAIN TABS ================= */
+.app-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+  padding:6px;
+  background:#fff;
+  border-radius:10px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
+.app-tab-btn{
+  flex:1 1 180px;
+  min-height:42px;
+  border:1px solid #d8dce5;
+  background:#f7f9fc;
+  color:#172033;
+  font-weight:700;
+}
+.app-tab-btn.active{
+  background:#071b5c;
+  color:#fff;
+  border-color:#071b5c;
+}
+.app-tab-panel{display:none;}
+.app-tab-panel.active{display:block;}
+
+/* ================= COMMENTS ================= */
+
+.comment-item{
+  border:1px solid #e5e7eb;
+  border-left:5px solid #071b5c;
+  border-radius:10px;
+  padding:15px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.comment-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.comment-name{
+  font-size:16px;
+  font-weight:700;
+  color:#071b5c;
+}
+
+.comment-subject{
+  margin-top:4px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.comment-message{
+  margin-top:12px;
+  padding:12px;
+  background:#f7f9fc;
+  border-radius:8px;
+  line-height:1.7;
+  white-space:pre-line;
+  font-size:13px;
+}
+
+.comment-reply{
+  margin-top:12px;
+  padding:12px;
+  background:#ecfdf5;
+  border-left:4px solid #047857;
+  border-radius:7px;
+  line-height:1.7;
+  white-space:pre-line;
+  font-size:13px;
+}
+
+.comment-reply-title{
+  font-weight:700;
+  color:#047857;
+  margin-bottom:4px;
+}
+
+.comment-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.reply-btn{
+  background:#071b5c;
+}
+
+.reply-box{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  background:#f8fafc;
+  border:1px solid #d8dce5;
+  border-radius:8px;
+}
+
+.reply-box.show{
+  display:block;
+}
+
+.reply-input{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  padding:10px;
+  border:1px solid #d8dce5;
+  border-radius:7px;
+  font-family:inherit;
+  font-size:13px;
+}
+
+.reply-save{
+  margin-top:8px;
+  background:#047857;
+}
+
+.comment-status{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  background:#f3f4f6;
+}
+
+.comment-status.replied{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.comment-status.pending{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+@media(max-width:700px){
+
+  .comment-head{
+    flex-direction:column;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="container">
+    <h1>
+      🏛️ Nepali Congress – Marin Gaupalika
+      <span class="developer-inline">
+        (Developed by Yubaraj Chaulagain (Saroj))
+      </span>
+    </h1>
+    <p>Ward-wise जनसांख्यिक तथा मतदाता Dashboard</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ================= MAIN TABS ================= -->
+  <div class="app-tabs" role="tablist" aria-label="Main sections">
+    <button type="button" class="app-tab-btn active" id="dashboardTabBtn" aria-selected="true" onclick="showMainTab('dashboard')">📊 Dashboard</button>
+    <button type="button" class="app-tab-btn" id="newsTabBtn" aria-selected="false" onclick="showMainTab('news')">📰 News / Application</button>
+    <button type="button" class="app-tab-btn" id="commentsTabBtn" aria-selected="false" onclick="showMainTab('comments')">💬 Comments / गुनासो</button>
+  </div>
+
+  <div id="dashboardTab" class="app-tab-panel active">
+
+  <!-- ================= WARD TOOLBAR ================= -->
+
+  <div class="toolbar">
+
+    <input
+      id="search"
+      class="search"
+      type="search"
+      placeholder="Search particulars..."
+      autocomplete="off"
+    >
+
+    <select id="ward" class="select">
+      <option value="all">All Wards</option>
+    </select>
+
+    <button id="refreshBtn" type="button">
+      🔄 Refresh Data
+    </button>
+
+    <span id="status" class="status">
+      Loading...
+    </span>
+
+  </div>
+
+  <div id="error" class="error"></div>
+
+  <!-- ================= SUMMARY ================= -->
+
+  <section id="cards" class="cards"></section>
+
+  <!-- ================= CHARTS ================= -->
+
+  <div class="grid">
+
+    <div class="panel">
+      <h2>📊 Ward Comparison</h2>
+
+      <div class="chartbox">
+        <canvas id="wardChart"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>👥 Gender Summary</h2>
+
+      <div class="chartbox">
+        <canvas id="genderChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= TABLE ================= -->
+
+  <div class="panel">
+
+    <h2>📋 Detailed Summary</h2>
+
+    <div class="table-wrap">
+      <table id="dataTable"></table>
+    </div>
+
+  </div>
+
+  </div><!-- /dashboardTab -->
+
+  <!-- =====================================================
+       NEWS / APPLICATION
+       ===================================================== -->
+
+  <div id="newsTab" class="app-tab-panel">
+  <div class="panel">
+
+    <h2>📰 News / Application</h2>
+
+    <div class="news-toolbar">
+
+      <input
+        id="newsSearch"
+        class="search"
+        type="search"
+        placeholder="Search news/application..."
+      >
+
+      <select id="typeFilter" class="select">
+        <option value="all">All Types</option>
+      </select>
+
+      <select id="statusFilter" class="select">
+        <option value="all">All Status</option>
+      </select>
+
+      <button id="newsRefreshBtn" type="button">
+        🔄 Refresh
+      </button>
+
+    </div>
+
+    <div id="newsStatus"
+         class="status"
+         style="margin-bottom:12px;">
+      Loading News/Application...
+    </div>
+
+    <div id="newsList" class="news-list"></div>
+
+  </div>
+  </div><!-- /newsTab -->
+
+<!-- =====================================================
+     COMMENTS / GRIEVANCE
+===================================================== -->
+
+<div id="commentsTab" class="app-tab-panel">
+<div class="panel" id="commentsSection">
+
+  <h2>💬 Comments / सुझाव / गुनासो</h2>
+
+  <div class="news-toolbar">
+
+    <input
+      id="commentsSearch"
+      class="search"
+      type="search"
+      placeholder="नाम, विषय वा सन्देश खोज्नुहोस्..."
+    >
+
+    <select id="commentsCategory" class="select">
+      <option value="all">All Category</option>
+    </select>
+
+    <select id="commentsStatus" class="select">
+      <option value="all">All Status</option>
+    </select>
+
+    <button
+      id="commentsRefreshBtn"
+      type="button"
+    >
+      🔄 Refresh
+    </button>
+
+  </div>
+
+  <div
+    id="commentsStatusText"
+    class="status"
+    style="margin-bottom:12px;"
+  >
+    Loading Comments...
+  </div>
+
+  <div
+    id="commentsList"
+    class="news-list"
+  ></div>
+
+</div>
+</div><!-- /commentsTab -->
+
+</main>
+
+<footer class="footer">
+
+  <div class="footer-title">
+    🏛️ Marin Gaupalika Dashboard
+  </div>
+
+  <div class="footer-developer">
+    Designed & Developed by
+    <strong>Yubaraj Chaulagain (Saroj)</strong>
+  </div>
+
+  <div class="footer-copy">
+    © 2026 Yubaraj Chaulagain (Saroj). All Rights Reserved.
+  </div>
+
+</footer>
+
+
+<div id="adminLoginModal" class="admin-login-modal" aria-hidden="true">
+  <div class="admin-login-box">
+    <button type="button" class="admin-close-btn" onclick="closeAdminLogin()" aria-label="Close">×</button>
+    <h3>🔐 Admin Login</h3>
+    <p>Gmail वा WhatsApp पठाउन Authorized User Login आवश्यक छ।</p>
+    <input type="text" id="adminUsername" placeholder="Username" autocomplete="username">
+    <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password">
+    <div id="adminLoginError"></div>
+    <button type="button" class="admin-login-btn" onclick="verifyAdminLogin()">Login</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   GOOGLE SHEETS
+   ========================================================= */
+
+const GVIZ_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub";
+
+const NEWS_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=382649531&single=true&output=csv";
+
+const USERS_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=680228645&single=true&output=csv";
+
+
+const COMMENTS_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=740624513&single=true&output=csv";
+
+/*
+  Google Apps Script Web App URL
+  Apps Script deploy गरेपछि यहाँ URL राख्नुहोस्।
+*/
+const COMMENTS_API_URL =
+"https://script.google.com/macros/s/AKfycbxokQ-PfINDrvDQhj-4syeiNIxJpFo4ZQjeXQA6YXlgFMPiJoxp3qwPTCv5_DCVQGP6vg/exec";
+
+let commentsData=[];
+
+/* =========================================================
+   FALLBACK DATA
+   ========================================================= */
+
+const INITIAL_DATA = [
+{
+"Particulars":"Number of Households",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Total Family Members",
+"Ward No. 1":4,"Ward No. 2":4,"Ward No. 3":4,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":12
+},
+{
+"Particulars":"Total Male",
+"Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":6
+},
+{
+"Particulars":"Total Female",
+"Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":6
+},
+{
+"Particulars":"Total Voters",
+"Ward No. 1":1,"Ward No. 2":2,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"18+ Age Group",
+"Ward No. 1":2,"Ward No. 2":2,"Ward No. 3":2,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":6
+},
+{
+"Particulars":"No Voter Card",
+"Ward No. 1":1,"Ward No. 2":0,"Ward No. 3":2,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Working Male",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Working Female",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Unemployed Male",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Unemployed Female",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Economic Status – Poor",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Economic Status – Middle Income",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Economic Status – High Income",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Income Source – Salary",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+},
+{
+"Particulars":"Income Source – Business",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Income Source – Agriculture",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Income Source – Foreign Employment",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Income Source – Daily Wage",
+"Ward No. 1":0,"Ward No. 2":0,"Ward No. 3":0,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":0
+},
+{
+"Particulars":"Complaints / Grievances",
+"Ward No. 1":1,"Ward No. 2":1,"Ward No. 3":1,
+"Ward No. 4":0,"Ward No. 5":0,"Ward No. 6":0,
+"Ward No. 7":0,"Grand Total":3
+}
+];
+
+
+/* =========================================================
+   GLOBAL STATE
+   ========================================================= */
+
+let data=[];
+let newsData=[];
+let usersData=[];
+let isAdminLoggedIn=false;
+let pendingAction=null;
+let pendingRow=null;
+let wardChart=null;
+let genderChart=null;
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function normalizeText(value){
+  return String(value ?? "")
+    .trim()
+    .toLowerCase();
+}
+
+function num(value){
+
+  if(value===null || value===undefined){
+    return 0;
+  }
+
+  const cleaned=String(value)
+    .replace(/,/g,"")
+    .replace(/[^\d.-]/g,"");
+
+  const n=parseFloat(cleaned);
+
+  return Number.isFinite(n)?n:0;
+}
+
+function formatNumber(value){
+  return Number(value||0).toLocaleString("en-US");
+}
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/[&<>"']/g,function(match){
+
+      const map={
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      };
+
+      return map[match];
+    });
+}
+
+
+/* =========================================================
+   CSV PARSER
+   ========================================================= */
+
+function parseCSV(text){
+
+  const rows=[];
+  let row=[];
+  let cell="";
+  let inQuotes=false;
+
+  for(let i=0;i<text.length;i++){
+
+    const char=text[i];
+    const next=text[i+1];
+
+    if(char==='"' && inQuotes && next==='"'){
+      cell+='"';
+      i++;
+      continue;
+    }
+
+    if(char==='"'){
+      inQuotes=!inQuotes;
+      continue;
+    }
+
+    if(char==="," && !inQuotes){
+      row.push(cell.trim());
+      cell="";
+      continue;
+    }
+
+    if((char==="\n" || char==="\r") && !inQuotes){
+
+      if(char==="\r" && next==="\n"){
+        i++;
+      }
+
+      row.push(cell.trim());
+
+      if(row.some(v=>v!=="")){
+        rows.push(row);
+      }
+
+      row=[];
+      cell="";
+      continue;
+    }
+
+    cell+=char;
+  }
+
+  if(cell!=="" || row.length){
+
+    row.push(cell.trim());
+
+    if(row.some(v=>v!=="")){
+      rows.push(row);
+    }
+  }
+
+  return rows;
+}
+
+
+/* =========================================================
+   NORMALIZE
+   ========================================================= */
+
+function normalize(rows){
+
+  if(!Array.isArray(rows) || rows.length<2){
+    return [];
+  }
+
+  const headers=rows[0]
+    .map(h=>String(h||"").trim());
+
+  return rows
+    .slice(1)
+    .map(row=>{
+
+      const object={};
+
+      headers.forEach((header,index)=>{
+        object[header]=
+          row[index]!==undefined
+            ? String(row[index]).trim()
+            : "";
+      });
+
+      return object;
+    })
+    .filter(row=>{
+      const firstKey=headers[0];
+      return row[firstKey]!=="";
+    });
+}
+
+
+/* =========================================================
+   STRUCTURE
+   ========================================================= */
+
+function getStructure(rows){
+
+  if(!rows.length){
+    return{
+      headers:[],
+      first:"",
+      wards:[]
+    };
+  }
+
+  const headers=Object.keys(rows[0]);
+  const first=headers[0];
+
+  const wards=headers.filter(header=>{
+
+    const normalized=normalizeText(header);
+
+    return(
+      header!==first &&
+      normalized!=="grand total" &&
+      normalized!=="total"
+    );
+  });
+
+  return{
+    headers,
+    first,
+    wards
+  };
+}
+
+
+/* =========================================================
+   FIND ROW
+   ========================================================= */
+
+function findRow(rows,firstColumn,label){
+
+  const target=normalizeText(label);
+
+  return rows.find(row=>
+    normalizeText(row[firstColumn])===target
+  );
+}
+
+
+/* =========================================================
+   RENDER DASHBOARD
+   ========================================================= */
+
+function render(rows){
+
+  if(!Array.isArray(rows)||!rows.length){
+    return;
+  }
+
+  data=rows;
+
+  const structure=getStructure(rows);
+
+  populateWardSelect(structure.wards);
+
+  renderCards(rows,structure.headers,structure.first);
+
+  renderTable(rows,structure.headers,structure.first);
+
+  renderCharts(
+    rows,
+    structure.headers,
+    structure.first,
+    structure.wards
+  );
+}
+
+
+/* =========================================================
+   WARD SELECT
+   ========================================================= */
+
+function populateWardSelect(wards){
+
+  const select=document.getElementById("ward");
+  const oldValue=select.value;
+
+  select.innerHTML="";
+
+  const all=document.createElement("option");
+
+  all.value="all";
+  all.textContent="All Wards";
+
+  select.appendChild(all);
+
+  wards.forEach(ward=>{
+
+    const option=document.createElement("option");
+
+    option.value=ward;
+    option.textContent=ward;
+
+    select.appendChild(option);
+  });
+
+  if(wards.includes(oldValue)||oldValue==="all"){
+    select.value=oldValue;
+  }else{
+    select.value="all";
+  }
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+function renderCards(rows,headers,first){
+
+  const cards=document.getElementById("cards");
+
+  cards.innerHTML="";
+
+  const wanted=[
+    "Number of Households",
+    "Total Family Members",
+    "Total Male",
+    "Total Female",
+    "Total Voters"
+  ];
+
+  wanted.forEach(label=>{
+
+    const row=findRow(rows,first,label);
+
+    if(!row){
+      return;
+    }
+
+    let total=0;
+
+    if(headers.includes("Grand Total")){
+      total=num(row["Grand Total"]);
+    }else{
+
+      total=headers
+        .slice(1)
+        .reduce(
+          (sum,header)=>sum+num(row[header]),
+          0
+        );
+    }
+
+    const card=document.createElement("div");
+
+    card.className="card";
+
+    card.innerHTML=`
+      <div class="label">${escapeHtml(label)}</div>
+      <div class="value">${formatNumber(total)}</div>
+    `;
+
+    cards.appendChild(card);
+  });
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+function renderTable(rows,headers,first){
+
+  const table=document.getElementById("dataTable");
+
+  const searchValue=normalizeText(
+    document.getElementById("search").value
+  );
+
+  const selectedWard=
+    document.getElementById("ward").value;
+
+  const visibleHeaders=
+    selectedWard==="all"
+      ? headers
+      : headers.filter(header=>
+          header===first ||
+          header===selectedWard
+        );
+
+  const filteredRows=rows.filter(row=>{
+
+    if(!searchValue){
+      return true;
+    }
+
+    return normalizeText(row[first])
+      .includes(searchValue);
+  });
+
+  table.innerHTML="";
+
+  const thead=document.createElement("thead");
+  const headerRow=document.createElement("tr");
+
+  visibleHeaders.forEach(header=>{
+
+    const th=document.createElement("th");
+
+    th.textContent=header;
+
+    headerRow.appendChild(th);
+  });
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  const tbody=document.createElement("tbody");
+
+  if(!filteredRows.length){
+
+    const tr=document.createElement("tr");
+    const td=document.createElement("td");
+
+    td.colSpan=visibleHeaders.length;
+    td.className="empty";
+    td.textContent="No matching data found.";
+
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+
+  }else{
+
+    filteredRows.forEach(row=>{
+
+      const tr=document.createElement("tr");
+
+      visibleHeaders.forEach(header=>{
+
+        const td=document.createElement("td");
+
+        td.textContent=row[header]??"";
+
+        if(header===first){
+          td.style.textAlign="left";
+        }
+
+        if(
+          normalizeText(header)==="grand total"
+        ){
+          td.className="total";
+        }
+
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  table.appendChild(tbody);
+}
+
+
+/* =========================================================
+   CHARTS
+   ========================================================= */
+
+function renderCharts(rows,headers,first,wards){
+
+  const male=findRow(rows,first,"Total Male");
+  const female=findRow(rows,first,"Total Female");
+  const voters=findRow(rows,first,"Total Voters");
+
+  if(wardChart){
+    wardChart.destroy();
+  }
+
+  wardChart=new Chart(
+    document.getElementById("wardChart"),
+    {
+      type:"bar",
+
+      data:{
+        labels:wards,
+
+        datasets:[
+          {
+            label:"Male",
+            data:wards.map(w=>num(male?.[w])),
+            backgroundColor:"#071b5c",
+            borderRadius:5
+          },
+          {
+            label:"Female",
+            data:wards.map(w=>num(female?.[w])),
+            backgroundColor:"#b5121b",
+            borderRadius:5
+          },
+          {
+            label:"Voters",
+            data:wards.map(w=>num(voters?.[w])),
+            backgroundColor:"#f59e0b",
+            borderRadius:5
+          }
+        ]
+      },
+
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+
+        plugins:{
+          legend:{
+            position:"bottom"
+          }
+        },
+
+        scales:{
+          y:{
+            beginAtZero:true,
+            ticks:{
+              precision:0
+            }
+          }
+        }
+      }
+    }
+  );
+
+  if(genderChart){
+    genderChart.destroy();
+  }
+
+  const maleTotal=getGrandTotal(
+    male,
+    headers,
+    wards
+  );
+
+  const femaleTotal=getGrandTotal(
+    female,
+    headers,
+    wards
+  );
+
+  genderChart=new Chart(
+    document.getElementById("genderChart"),
+    {
+      type:"doughnut",
+
+      data:{
+        labels:["Male","Female"],
+
+        datasets:[
+          {
+            data:[
+              maleTotal,
+              femaleTotal
+            ],
+
+            backgroundColor:[
+              "#071b5c",
+              "#b5121b"
+            ],
+
+            borderWidth:2,
+            borderColor:"#fff"
+          }
+        ]
+      },
+
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        cutout:"62%",
+
+        plugins:{
+          legend:{
+            position:"bottom"
+          },
+
+          tooltip:{
+            callbacks:{
+              label:function(context){
+
+                const value=num(context.raw);
+
+                const total=
+                  maleTotal+
+                  femaleTotal;
+
+                const percentage=
+                  total>0
+                    ?((value/total)*100).toFixed(1)
+                    :0;
+
+                return(
+                  " "+
+                  context.label+
+                  ": "+
+                  formatNumber(value)+
+                  " ("+
+                  percentage+
+                  "%)"
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+  );
+}
+
+
+/* =========================================================
+   GRAND TOTAL
+   ========================================================= */
+
+function getGrandTotal(row,headers,wards){
+
+  if(!row){
+    return 0;
+  }
+
+  if(headers.includes("Grand Total")){
+    return num(row["Grand Total"]);
+  }
+
+  return wards.reduce(
+    (sum,ward)=>sum+num(row[ward]),
+    0
+  );
+}
+
+
+/* =========================================================
+   LOAD WARD DATA
+   ========================================================= */
+
+async function loadData(){
+
+  const status=document.getElementById("status");
+  const error=document.getElementById("error");
+  const refreshBtn=document.getElementById("refreshBtn");
+
+  error.style.display="none";
+  refreshBtn.disabled=true;
+
+  status.textContent="Loading live Google Sheet...";
+
+  try{
+
+    const url=
+      GVIZ_URL+
+      "?output=csv&_="+
+      Date.now();
+
+    const response=await fetch(
+      url,
+      {
+        method:"GET",
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP "+response.status
+      );
+    }
+
+    const csv=await response.text();
+
+    const rows=parseCSV(csv);
+
+    if(rows.length<2){
+      throw new Error(
+        "CSV मा पर्याप्त rows भेटिएन।"
+      );
+    }
+
+    const liveData=normalize(rows);
+
+    if(!liveData.length){
+      throw new Error("Empty Sheet");
+    }
+
+    render(liveData);
+
+    status.textContent=
+      "🟢 Live data updated: "+
+      new Date().toLocaleTimeString();
+
+  }catch(err){
+
+    console.error(err);
+
+    error.style.display="block";
+
+    error.textContent=
+      "⚠️ Google Sheet बाट live data load भएन। "+
+      "Fallback data देखाइएको छ। Google Sheet Publish to web / CSV URL जाँच गर्नुहोस्।";
+
+    render(INITIAL_DATA);
+
+    status.textContent=
+      "🟡 Local fallback data";
+
+  }finally{
+
+    refreshBtn.disabled=false;
+  }
+}
+
+
+/* =========================================================
+   NEWS HELPERS
+   ========================================================= */
+
+function getNewsValue(row,name){
+
+  const key=Object.keys(row).find(k=>
+    normalizeText(k)===normalizeText(name)
+  );
+
+  return key ? String(row[key]??"").trim() : "";
+}
+
+
+/* =========================================================
+   DATE FORMAT
+   ========================================================= */
+
+function formatDate(value){
+
+  if(!value){
+    return "";
+  }
+
+  const date=new Date(value);
+
+  if(Number.isNaN(date.getTime())){
+    return value;
+  }
+
+  return date.toLocaleDateString(
+    "en-GB",
+    {
+      year:"numeric",
+      month:"short",
+      day:"numeric"
+    }
+  );
+}
+
+
+/* =========================================================
+   TYPE CLASS
+   ========================================================= */
+
+function typeClass(type){
+
+  const t=normalizeText(type);
+
+  if(t.includes("application")||t.includes("आवेदन")){
+    return "application";
+  }
+
+  if(t.includes("notice")||t.includes("सूचना")){
+    return "notice";
+  }
+
+  if(t.includes("news")||t.includes("समाचार")){
+    return "news";
+  }
+
+  return "";
+}
+
+
+/* =========================================================
+   STATUS CLASS
+   ========================================================= */
+
+function statusClass(status){
+
+  const s=normalizeText(status);
+
+  if(
+    s.includes("complete")||
+    s.includes("approved")||
+    s.includes("success")||
+    s.includes("सम्पन्न")||
+    s.includes("स्वीकृत")
+  ){
+    return "completed";
+  }
+
+  if(
+    s.includes("pending")||
+    s.includes("process")||
+    s.includes("बाँकी")||
+    s.includes("प्रक्रिया")
+  ){
+    return "pending";
+  }
+
+  if(
+    s.includes("reject")||
+    s.includes("अस्वीकार")
+  ){
+    return "rejected";
+  }
+
+  return "";
+}
+
+
+/* =========================================================
+   NEWS FILTER OPTIONS
+   ========================================================= */
+
+function populateNewsFilters(){
+
+  const typeFilter=
+    document.getElementById("typeFilter");
+
+  const statusFilter=
+    document.getElementById("statusFilter");
+
+  const currentType=typeFilter.value;
+  const currentStatus=statusFilter.value;
+
+  const types=[
+    ...new Set(
+      newsData
+        .map(row=>getNewsValue(row,"Types"))
+        .filter(Boolean)
+    )
+  ];
+
+  const statuses=[
+    ...new Set(
+      newsData
+        .map(row=>getNewsValue(row,"Status"))
+        .filter(Boolean)
+    )
+  ];
+
+  typeFilter.innerHTML=
+    `<option value="all">All Types</option>`;
+
+  types.forEach(type=>{
+
+    const option=document.createElement("option");
+
+    option.value=type;
+    option.textContent=type;
+
+    typeFilter.appendChild(option);
+  });
+
+  statusFilter.innerHTML=
+    `<option value="all">All Status</option>`;
+
+  statuses.forEach(status=>{
+
+    const option=document.createElement("option");
+
+    option.value=status;
+    option.textContent=status;
+
+    statusFilter.appendChild(option);
+  });
+
+  if(types.includes(currentType)){
+    typeFilter.value=currentType;
+  }
+
+  if(statuses.includes(currentStatus)){
+    statusFilter.value=currentStatus;
+  }
+}
+
+
+/* =========================================================
+   RENDER NEWS
+   ========================================================= */
+
+function renderNews(){
+
+  const list=document.getElementById("newsList");
+
+  const search=normalizeText(
+    document.getElementById("newsSearch").value
+  );
+
+  const typeFilter=
+    document.getElementById("typeFilter").value;
+
+  const statusFilter=
+    document.getElementById("statusFilter").value;
+
+  let rows=[...newsData];
+
+  rows=rows.filter(row=>{
+
+    const type=getNewsValue(row,"Types");
+    const status=getNewsValue(row,"Status");
+
+    if(
+      typeFilter!=="all" &&
+      type!==typeFilter
+    ){
+      return false;
+    }
+
+    if(
+      statusFilter!=="all" &&
+      status!==statusFilter
+    ){
+      return false;
+    }
+
+    if(!search){
+      return true;
+    }
+
+    const searchable=[
+      getNewsValue(row,"Full Name"),
+      getNewsValue(row,"Contact"),
+      getNewsValue(row,"Address"),
+      getNewsValue(row,"position"),
+     getNewsValue(row,"To-line 2"),
+      getNewsValue(row,"To"),
+      getNewsValue(row,"Subject"),
+      getNewsValue(row,"Details"),
+      getNewsValue(row,"Chalani No."),
+      getNewsValue(row,"Darta No."),
+      type,
+      status
+    ]
+    .join(" ");
+
+    return normalizeText(searchable)
+      .includes(search);
+  });
+
+  /* newest first */
+
+  rows.sort((a,b)=>{
+
+    const da=
+      new Date(getNewsValue(a,"Timestamp")).getTime()||0;
+
+    const db=
+      new Date(getNewsValue(b,"Timestamp")).getTime()||0;
+
+    return db-da;
+  });
+
+  list.innerHTML="";
+
+  if(!rows.length){
+
+    list.innerHTML=`
+      <div class="no-news">
+        📰 कुनै News / Application भेटिएन।
+      </div>
+    `;
+
+    return;
+  }
+
+  rows.forEach(row=>{
+
+    const type=getNewsValue(row,"Types");
+    const status=getNewsValue(row,"Status");
+
+    const title=
+      getNewsValue(row,"Subject")||
+      "Untitled";
+
+    const details=
+      getNewsValue(row,"Details");
+
+    const date=
+      getNewsValue(row,"Timestamp")||
+      getNewsValue(row,"Chalani Date")||
+      getNewsValue(row,"Darta Date");
+
+    const fullName=
+      getNewsValue(row,"Full Name");
+
+    const contact=
+      getNewsValue(row,"Contact");
+
+    const address=
+      getNewsValue(row,"Address");
+
+    const positionName=
+      getNewsValue(row,"position");
+
+    const toLine2 =
+  getNewsValue(row,"To-line 2");
+
+    const to=
+      getNewsValue(row,"To");
+
+    const chalaniNo=
+      getNewsValue(row,"Chalani No.");
+
+    const chalaniDate=
+      getNewsValue(row,"Chalani Date");
+
+    const dartaNo=
+      getNewsValue(row,"Darta No.");
+
+    const dartaDate=
+      getNewsValue(row,"Darta Date");
+
+    const attachment=
+      getNewsValue(row,"Attachment");
+
+    const download=
+      getNewsValue(row,"Download");
+
+    const item=document.createElement("article");
+
+    item.className="news-item";
+
+    let actions="";
+
+    if(attachment){
+
+      actions+=`
+        <a
+          class="btn-small"
+          href="${escapeHtml(attachment)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📎 Attachment
+        </a>
+      `;
+    }
+
+    actions+=`
+  <button
+    class="btn-small btn-download"
+    type="button"
+    onclick='generateApplicationPDF(${JSON.stringify(row).replace(/'/g,"&#39;")})'
+  >
+    ⬇️ Download PDF
+  </button>
+`;
+
+    actions+=`
+  <button
+    class="btn-small btn-gmail"
+    type="button"
+    onclick='requestAdminAction("gmail", ${JSON.stringify(row).replace(/'/g,"&#39;")})'
+  >
+    📧 Send Gmail
+  </button>
+`;
+
+    actions+=`
+  <button
+    class="btn-small btn-whatsapp"
+    type="button"
+    onclick='requestAdminAction("whatsapp", ${JSON.stringify(row).replace(/'/g,"&#39;")})'
+  >
+    💬 Send WhatsApp
+  </button>
+`;
+
+
+    item.innerHTML=`
+
+      <div class="news-top">
+
+        <div>
+
+          <div class="news-title">
+            ${escapeHtml(title)}
+          </div>
+
+          ${
+            type
+            ? `
+              <span class="badge ${typeClass(type)}">
+                ${escapeHtml(type)}
+              </span>
+            `
+            :""
+          }
+
+        </div>
+
+        ${
+          date
+          ? `
+            <div class="news-date">
+              📅 ${escapeHtml(formatDate(date))}
+            </div>
+          `
+          :""
+        }
+
+      </div>
+
+      ${
+        status
+        ? `
+          <div style="margin-top:8px">
+            <span class="status-badge ${statusClass(status)}">
+              ${escapeHtml(status)}
+            </span>
+          </div>
+        `
+        :""
+      }
+
+      ${
+        details
+        ? `
+          <div class="news-details">
+            ${escapeHtml(details)}
+          </div>
+        `
+        :""
+      }
+
+      <div class="news-meta">
+
+        ${
+          fullName
+          ? `<span class="meta">👤 ${escapeHtml(fullName)}</span>`
+          :""
+        }
+
+        ${
+          contact
+          ? `<span class="meta">📞 ${escapeHtml(contact)}</span>`
+          :""
+        }
+
+        ${
+          address
+          ? `<span class="meta">📍 ${escapeHtml(address)}</span>`
+          :""
+        }
+
+        ${
+          positionName
+          ? `<span class="meta">💼 ${escapeHtml(positionName)}</span>`
+          :""
+        }
+
+        ${
+  toLine2
+  ? `<span class="meta">To-line 2: ${escapeHtml(toLine2)}</span>`
+  :""
+}
+
+        ${
+          to
+          ? `<span class="meta">To: ${escapeHtml(to)}</span>`
+          :""
+        }
+
+        ${
+          chalaniNo
+          ? `<span class="meta">चलानी: ${escapeHtml(chalaniNo)}</span>`
+          :""
+        }
+
+        ${
+          chalaniDate
+          ? `<span class="meta">चलानी मिति: ${escapeHtml(chalaniDate)}</span>`
+          :""
+        }
+
+        ${
+          dartaNo
+          ? `<span class="meta">दर्ता: ${escapeHtml(dartaNo)}</span>`
+          :""
+        }
+
+        ${
+          dartaDate
+          ? `<span class="meta">दर्ता मिति: ${escapeHtml(dartaDate)}</span>`
+          :""
+        }
+
+      </div>
+
+      ${
+        actions
+        ? `<div class="news-actions">${actions}</div>`
+        :""
+      }
+
+    `;
+
+    list.appendChild(item);
+  });
+}
+
+
+/* =========================================================
+   USERS / ADMIN LOGIN
+   ========================================================= */
+
+async function loadUsers(){
+  try{
+    const separator=USERS_CSV_URL.includes("?") ? "&" : "?";
+    const response=await fetch(
+      USERS_CSV_URL+separator+"_="+Date.now(),
+      {method:"GET",cache:"no-store"}
+    );
+
+    if(!response.ok){
+      throw new Error("Users sheet HTTP "+response.status);
+    }
+
+    const csv=await response.text();
+    const rows=parseCSV(csv);
+
+    if(rows.length<2){
+      throw new Error("Users sheet खाली छ।");
+    }
+
+    usersData=normalize(rows).filter(row=>
+      getNewsValue(row,"Username") &&
+      getNewsValue(row,"Password")
+    );
+
+    console.log("Authorized users loaded:",usersData.length);
+
+  }catch(error){
+    console.error("Users loading error:",error);
+    usersData=[];
+  }
+}
+
+function requestAdminAction(action,row){
+  if(isAdminLoggedIn){
+    runAdminAction(action,row);
+    return;
+  }
+
+  pendingAction=action;
+  pendingRow=row;
+
+  document.getElementById("adminLoginError").textContent="";
+  document.getElementById("adminUsername").value="";
+  document.getElementById("adminPassword").value="";
+  document.getElementById("adminLoginModal").classList.add("show");
+  document.getElementById("adminLoginModal").setAttribute("aria-hidden","false");
+
+  setTimeout(()=>document.getElementById("adminUsername").focus(),50);
+}
+
+function closeAdminLogin(){
+  document.getElementById("adminLoginModal").classList.remove("show");
+  document.getElementById("adminLoginModal").setAttribute("aria-hidden","true");
+  pendingAction=null;
+  pendingRow=null;
+}
+
+function verifyAdminLogin(){
+  const username=document.getElementById("adminUsername").value.trim();
+  const password=document.getElementById("adminPassword").value;
+  const errorBox=document.getElementById("adminLoginError");
+
+  if(!username || !password){
+    errorBox.textContent="Username र Password आवश्यक छ।";
+    return;
+  }
+
+  if(!usersData.length){
+    errorBox.textContent="Users data load भएको छैन। केही क्षणपछि फेरि प्रयास गर्नुहोस्।";
+    loadUsers();
+    return;
+  }
+
+  const user=usersData.find(row=>
+    getNewsValue(row,"Username")===username &&
+    getNewsValue(row,"Password")===password
+  );
+
+  if(!user){
+    errorBox.textContent="❌ Username वा Password गलत छ।";
+    return;
+  }
+
+  const action=pendingAction;
+  const row=pendingRow;
+
+  isAdminLoggedIn=true;
+  closeAdminLogin();
+
+  if(action && row){
+    runAdminAction(action,row);
+  }
+}
+
+function runAdminAction(action,row){
+  if(action==="gmail"){
+    openGmail(row);
+  }else if(action==="whatsapp"){
+    openWhatsApp(row);
+  }else if(action==="commentReply"){
+    openCommentReply(row);
+  }
+}
+
+function requestCommentReply(id){
+  const row=commentsData.find(r=>
+    String(getCommentValue(r,"ID"))===String(id)
+  );
+
+  if(!row){
+    alert("यो Comment भेटिएन। कृपया Refresh गर्नुहोस्।");
+    return;
+  }
+
+  if(isAdminLoggedIn){
+    openCommentReply(row);
+    return;
+  }
+
+  requestAdminAction("commentReply",row);
+}
+
+function openCommentReply(row){
+  const id=getCommentValue(row,"ID");
+  const box=document.getElementById("replyBox-"+id);
+  if(!box){
+    alert("Reply box भेटिएन।");
+    return;
+  }
+
+  box.classList.add("show");
+  const input=document.getElementById("replyInput-"+id);
+  if(input){
+    setTimeout(()=>input.focus(),50);
+  }
+}
+
+
+function createApplicationMessage(row){
+  const fullName=getNewsValue(row,"Full Name");
+  const contact=getNewsValue(row,"Contact");
+  const address=getNewsValue(row,"Address");
+  const position=getNewsValue(row,"position");
+  const toLine2=getNewsValue(row,"To-line 2");
+  const to=getNewsValue(row,"To");
+  const subject=getNewsValue(row,"Subject");
+  const details=getNewsValue(row,"Details");
+  const chalaniNo=getNewsValue(row,"Chalani No.");
+  const chalaniDate=getNewsValue(row,"Chalani Date");
+  const dartaNo=getNewsValue(row,"Darta No.");
+  const dartaDate=getNewsValue(row,"Darta Date");
+  const attachment=getNewsValue(row,"Attachment");
+
+  return [
+    fullName ? "नाम: "+fullName : "",
+    position ? "पद: "+position : "",
+    address ? "ठेगाना: "+address : "",
+    contact ? "सम्पर्क: "+contact : "",
+    toLine2 ? "To-line 2: "+toLine2 : "",
+    to ? "To: "+to : "",
+    subject ? "विषय: "+subject : "",
+    details ? "\nविवरण:\n"+details : "",
+    chalaniNo ? "\nचलानी नं.: "+chalaniNo : "",
+    chalaniDate ? "चलानी मिति: "+chalaniDate : "",
+    dartaNo ? "दर्ता नं.: "+dartaNo : "",
+    dartaDate ? "दर्ता मिति: "+dartaDate : "",
+    attachment ? "\nAttachment:\n"+attachment : ""
+  ].filter(Boolean).join("\n");
+}
+
+function openGmail(row){
+  const email=getNewsValue(row,"send to gmail");
+
+  if(!email){
+    alert("यो Application का लागि Gmail address छैन।");
+    return;
+  }
+
+  const subject=getNewsValue(row,"Subject") || "Application";
+  const message=createApplicationMessage(row);
+
+  const gmailURL=
+    "https://mail.google.com/mail/?view=cm&fs=1"+
+    "&to="+encodeURIComponent(email)+
+    "&su="+encodeURIComponent(subject)+
+    "&body="+encodeURIComponent(message);
+
+  window.open(gmailURL,"_blank","noopener");
+}
+
+function openWhatsApp(row){
+  let phone=getNewsValue(row,"send to Whatsapp");
+
+  if(!phone){
+    alert("यो Application का लागि WhatsApp नम्बर छैन।");
+    return;
+  }
+
+  phone=phone.replace(/\D/g,"");
+
+  if(!phone){
+    alert("WhatsApp नम्बर सही छैन। Country code सहित नम्बर राख्नुहोस्।");
+    return;
+  }
+
+  const message=createApplicationMessage(row);
+  const whatsappURL=
+    "https://wa.me/"+phone+
+    "?text="+encodeURIComponent(message);
+
+  window.open(whatsappURL,"_blank","noopener");
+}
+
+/* =========================================================
+   LOAD NEWS
+   ========================================================= */
+
+async function loadNews(){
+
+  const status=
+    document.getElementById("newsStatus");
+
+  const button=
+    document.getElementById("newsRefreshBtn");
+
+  button.disabled=true;
+
+  status.textContent=
+    "📰 Loading News/Application...";
+
+  try{
+
+    const url=
+      NEWS_CSV_URL+
+      "&_="+
+      Date.now();
+
+    const response=await fetch(
+      url,
+      {
+        method:"GET",
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP "+response.status
+      );
+    }
+
+    const csv=await response.text();
+
+    if(!csv.trim()){
+      throw new Error("Empty CSV");
+    }
+
+    const rows=parseCSV(csv);
+
+    if(rows.length<2){
+      throw new Error(
+        "CSV मा पर्याप्त rows भेटिएन।"
+      );
+    }
+
+    newsData=normalize(rows);
+
+    if(!newsData.length){
+      throw new Error("No News/Application data");
+    }
+
+    populateNewsFilters();
+    renderNews();
+
+    status.textContent=
+      "🟢 News/Application updated: "+
+      new Date().toLocaleTimeString();
+
+  }catch(error){
+
+    console.error(
+      "News/Application loading error:",
+      error
+    );
+
+    newsData=[];
+
+    document.getElementById("newsList").innerHTML=`
+      <div class="no-news">
+        ⚠️ News/Application data load हुन सकेन।<br>
+        Google Sheet Publish to web / CSV URL जाँच गर्नुहोस्।
+      </div>
+    `;
+
+    status.textContent=
+      "🔴 News/Application unavailable";
+
+  }finally{
+
+    button.disabled=false;
+  }
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+document
+.getElementById("search")
+.addEventListener("input",function(){
+
+  if(!data.length){
+    return;
+  }
+
+  const structure=getStructure(data);
+
+  renderTable(
+    data,
+    structure.headers,
+    structure.first
+  );
+});
+
+
+document
+.getElementById("ward")
+.addEventListener("change",function(){
+
+  if(!data.length){
+    return;
+  }
+
+  const structure=getStructure(data);
+
+  renderTable(
+    data,
+    structure.headers,
+    structure.first
+  );
+});
+
+
+document
+.getElementById("refreshBtn")
+.addEventListener(
+  "click",
+  loadData
+);
+
+
+document
+.getElementById("newsSearch")
+.addEventListener(
+  "input",
+  renderNews
+);
+
+
+document
+.getElementById("typeFilter")
+.addEventListener(
+  "change",
+  renderNews
+);
+
+
+document
+.getElementById("statusFilter")
+.addEventListener(
+  "change",
+  renderNews
+);
+
+
+document
+.getElementById("newsRefreshBtn")
+.addEventListener(
+  "click",
+  loadNews
+);
+
+/* =========================================================
+   A4 APPLICATION / CHALANI / DARTA PDF
+   ========================================================= */
+
+async function generateApplicationPDF(row){
+
+  let pdfPage = null;
+
+  try{
+
+    const { jsPDF } = window.jspdf;
+
+    /* ================================
+       GET GOOGLE SHEET DATA
+    ================================= */
+
+    const type =
+      getNewsValue(row,"Types") || "";
+
+    const normalizedType =
+      normalizeText(type);
+
+    const subject =
+      getNewsValue(row,"Subject") || "";
+
+    const details =
+      getNewsValue(row,"Details") || "";
+
+    const fullName =
+      getNewsValue(row,"Full Name") || "";
+
+    const contact =
+      getNewsValue(row,"Contact") || "";
+
+    const address =
+      getNewsValue(row,"Address") || "";
+
+    const positionName =
+      getNewsValue(row,"position") || "";
+
+    const toLine2 =
+      getNewsValue(row,"To-line 2") || "";
+
+    const to =
+      getNewsValue(row,"To") || "";
+
+    const chalaniNo =
+      getNewsValue(row,"Chalani No.") || "";
+
+    const chalaniDate =
+      getNewsValue(row,"Chalani Date") || "";
+
+    const dartaNo =
+      getNewsValue(row,"Darta No.") || "";
+
+    const dartaDate =
+      getNewsValue(row,"Darta Date") || "";
+
+    const status =
+      getNewsValue(row,"Status") || "";
+
+    const timestamp =
+      getNewsValue(row,"Timestamp") || "";
+
+
+    /* ================================
+       DOCUMENT TYPE
+       चलानी भए = चलानी
+       पत्र प्राप्त भए = दर्ता
+       News भए = समाचार
+    ================================= */
+
+    const isNews =
+      normalizedType.includes("news") ||
+      normalizedType.includes("समाचार");
+
+    const isReceivedLetter =
+      normalizedType.includes("पत्र प्राप्त") ||
+      normalizedType.includes("darta") ||
+      normalizedType.includes("दर्ता");
+
+    const isChalani =
+      normalizedType.includes("chalani") ||
+      normalizedType.includes("चलानी");
+
+    let documentLabel = "निवेदन";
+    let documentNumberLabel = "पत्र संख्या:";
+    let documentNumber = chalaniNo;
+    let documentDate = chalaniDate;
+
+    if(isNews){
+
+      documentLabel = "समाचार";
+      documentNumberLabel = "";
+      documentNumber = "";
+      documentDate =
+        timestamp ||
+        chalaniDate ||
+        dartaDate;
+
+    }else if(isReceivedLetter){
+
+      documentLabel = "पत्र प्राप्त / दर्ता";
+      documentNumberLabel = "दर्ता नं.:";
+      documentNumber = dartaNo;
+      documentDate =
+        dartaDate ||
+        timestamp;
+
+    }else if(isChalani || chalaniNo){
+
+      documentLabel = "चलानी पत्र";
+      documentNumberLabel = "चलानी नं.:";
+      documentNumber = chalaniNo;
+      documentDate =
+        chalaniDate ||
+        timestamp;
+    }
+
+
+    /* ================================
+       CREATE A4 PAGE
+    ================================= */
+
+    pdfPage = document.createElement("div");
+
+    pdfPage.style.cssText = `
+      position:absolute;
+      left:-10000px;
+      top:0;
+
+      width:794px;
+      min-height:1123px;
+
+      background:#ffffff;
+      color:#111827;
+
+      font-family:
+        "Noto Sans Devanagari",
+        "Nirmala UI",
+        Arial,
+        sans-serif;
+
+      box-sizing:border-box;
+      padding:55px 65px 70px;
+
+      font-size:14px;
+      line-height:1.8;
+
+      overflow:hidden;
+    `;
+
+
+    /* ================================
+       CREATE PDF CONTENT
+    ================================= */
+
+    pdfPage.innerHTML = `
+
+      <!-- =========================================
+           NEPALI CONGRESS WATERMARK BACKGROUND
+      ========================================== -->
+
+      <img
+        src="Nepali_Congress_alt_flag.svg"
+        crossorigin="anonymous"
+        alt=""
+        style="
+          position:absolute;
+          width:480px;
+          height:480px;
+          object-fit:contain;
+
+          left:50%;
+          top:50%;
+
+          transform:
+            translate(-50%,-50%);
+
+          opacity:0.055;
+
+          z-index:0;
+
+          pointer-events:none;
+        "
+      >
+
+
+      <!-- MAIN CONTENT -->
+
+      <div style="
+        position:relative;
+        z-index:1;
+      ">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:18px;
+          padding:12px 10px;
+          border-bottom:2px solid #071b5c;
+        ">
+
+          <!-- नेपाली कांग्रेस लोगो -->
+
+          <div style="
+            width:75px;
+            height:75px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0;
+          ">
+
+            <img
+              src="Nepali_Congress_alt_flag.svg"
+              crossorigin="anonymous"
+              alt="नेपाली कांग्रेस लोगो"
+              style="
+                width:75px;
+                height:75px;
+                object-fit:contain;
+              "
+            >
+
+          </div>
+
+
+          <!-- NAME -->
+
+          <div style="
+            text-align:center;
+            line-height:1.3;
+          ">
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#071b5c;
+            ">
+              नेपाली कांग्रेस
+            </div>
+
+            <div style="
+              font-size:15px;
+              font-weight:600;
+              margin-top:4px;
+            ">
+              मरीण गाउँपालिका, सिन्धुली
+            </div>
+
+            <div style="
+              font-size:13px;
+              margin-top:2px;
+            ">
+              बागमती प्रदेश, नेपाल
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- HEADER LINE -->
+
+        <div style="
+          border-top:3px solid #071b5c;
+          border-bottom:1px solid #b5121b;
+          margin-bottom:18px;
+        "></div>
+
+
+        <!-- ================= DOCUMENT TITLE ================= -->
+
+        ${
+          documentLabel
+          ? `
+            <div style="
+              text-align:center;
+              font-size:16px;
+              font-weight:700;
+              margin-bottom:15px;
+              color:#071b5c;
+            ">
+              ${escapeHtml(documentLabel)}
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= REFERENCE ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              margin-bottom:28px;
+              font-size:13px;
+            ">
+
+              <div>
+                <strong>
+                  ${escapeHtml(documentNumberLabel)}
+                </strong>
+                ${escapeHtml(documentNumber || "-")}
+              </div>
+
+              <div>
+                <strong>मिति:</strong>
+                ${escapeHtml(
+                  documentDate
+                    ? formatDate(documentDate)
+                    : "-"
+                )}
+              </div>
+
+            </div>
+          `
+          : `
+            <div style="
+              display:flex;
+              justify-content:flex-end;
+              margin-bottom:28px;
+              font-size:13px;
+            ">
+
+              <div>
+                <strong>मिति:</strong>
+                ${escapeHtml(
+                  documentDate
+                    ? formatDate(documentDate)
+                    : "-"
+                )}
+              </div>
+
+            </div>
+          `
+        }
+
+
+        <!-- ================= TO ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-bottom:22px;
+              line-height:2;
+            ">
+
+              ${
+                to
+                ? `
+                  <div>
+                    श्री ${escapeHtml(to)}
+                  </div>
+                `
+                : `
+                  <div>
+                    श्री ........................................
+                  </div>
+                `
+              }
+
+              ${
+                toLine2
+                ? `
+                  <div>
+                    ${escapeHtml(toLine2)}
+                  </div>
+                `
+                : ""
+              }
+
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= SUBJECT ================= -->
+
+        ${
+          subject
+          ? `
+            <div style="
+              text-align:center;
+              font-size:17px;
+              font-weight:700;
+              margin:20px 0 25px;
+              text-decoration:underline;
+            ">
+
+              ${
+                isNews
+                ? escapeHtml(subject)
+                : `विषय: ${escapeHtml(subject)}`
+              }
+
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= SALUTATION ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-bottom:12px;
+              font-weight:600;
+            ">
+              महोदय,
+            </div>
+          `
+          : ""
+        }
+
+
+        <!-- ================= DETAILS ================= -->
+
+        <div style="
+          text-align:justify;
+          white-space:pre-wrap;
+          line-height:2.05;
+          margin-bottom:28px;
+        ">
+          ${escapeHtml(details)}
+        </div>
+
+
+        <!-- ================= SIGNATURE / APPLICANT ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-top:35px;
+              margin-left:auto;
+              width:230px;
+              text-align:left;
+              line-height:1.9;
+            ">
+
+              <div style="
+                text-align:center;
+                margin-bottom:35px;
+              ">
+                ................................<br>
+                दस्तखत
+              </div>
+
+              ${
+                fullName
+                ? `
+                  <div>
+                    <strong>नाम:</strong>
+                    ${escapeHtml(fullName)}
+                  </div>
+                `
+                : `
+                  <div>
+                    <strong>नाम:</strong>
+                    ................................
+                  </div>
+                `
+              }
+
+              ${
+                positionName
+                ? `
+                  <div>
+                    <strong>पद:</strong>
+                    ${escapeHtml(positionName)}
+                  </div>
+                `
+                : ""
+              }
+
+              ${
+                address
+                ? `
+                  <div>
+                    <strong>ठेगाना:</strong>
+                    ${escapeHtml(address)}
+                  </div>
+                `
+                : ""
+              }
+
+              ${
+                contact
+                ? `
+                  <div>
+                    <strong>सम्पर्क:</strong>
+                    ${escapeHtml(contact)}
+                  </div>
+                `
+                : ""
+              }
+
+            </div>
+          `
+          : ""
+        }
+  <!-- ================= BOTTOM REFERENCE ================= -->
+
+        ${
+          !isNews
+          ? `
+            <div style="
+              margin-top:45px;
+              padding-top:12px;
+              border-top:1px solid #d1d5db;
+              display:flex;
+              justify-content:space-between;
+              font-size:11px;
+              color:#4b5563;
+            ">
+
+              ${
+                dartaNo
+                ? `
+                  <div>
+                    दर्ता नं.:
+                    ${escapeHtml(dartaNo)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+              ${
+                chalaniNo
+                ? `
+                  <div>
+                    चलानी नं.:
+                    ${escapeHtml(chalaniNo)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+              ${
+                status
+                ? `
+                  <div>
+                    स्थिति:
+                    ${escapeHtml(status)}
+                  </div>
+                `
+                : `<div></div>`
+              }
+
+            </div>
+
+      
+          `
+          : ""
+        }
+
+
+      </div>
+
+
+      <!-- ================= FOOTER ================= -->
+
+      <div style="
+        position:absolute;
+        bottom:25px;
+        left:65px;
+        right:65px;
+
+        border-top:1px solid #d1d5db;
+
+        padding-top:7px;
+
+        display:flex;
+        justify-content:space-between;
+
+        font-size:9px;
+        color:#6b7280;
+
+        z-index:2;
+      ">
+
+        <span>
+          Marin Gaupalika Dashboard
+        </span>
+
+        <span>
+          Electronic Document
+        </span>
+
+      </div>
+
+    `;
+
+
+    document.body.appendChild(pdfPage);
+
+
+    /* ================================
+       WAIT FOR FONT + IMAGE
+    ================================= */
+
+    if(document.fonts){
+      await document.fonts.ready;
+    }
+
+    const images =
+      pdfPage.querySelectorAll("img");
+
+    await Promise.all(
+      Array.from(images).map(img=>{
+
+        if(img.complete){
+          return Promise.resolve();
+        }
+
+        return new Promise(resolve=>{
+          img.onload=resolve;
+          img.onerror=resolve;
+        });
+
+      })
+    );
+
+    await new Promise(resolve =>
+      setTimeout(resolve,500)
+    );
+
+
+    /* ================================
+       HTML → CANVAS
+    ================================= */
+
+    const canvas =
+      await html2canvas(
+        pdfPage,
+        {
+          scale:2.5,
+          useCORS:true,
+          allowTaint:false,
+          backgroundColor:"#ffffff",
+          logging:false
+        }
+      );
+
+
+    /* ================================
+       CREATE A4 PDF
+    ================================= */
+
+    const pdf =
+      new jsPDF({
+        orientation:"portrait",
+        unit:"mm",
+        format:"a4",
+        compress:true
+      });
+
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const imageWidth = pageWidth;
+
+    const imageHeight =
+      canvas.height *
+      imageWidth /
+      canvas.width;
+
+
+    const imageData =
+      canvas.toDataURL(
+        "image/jpeg",
+        0.96
+      );
+
+
+    /* ================================
+       MULTI PAGE
+    ================================= */
+
+    let heightLeft = imageHeight;
+    let position = 0;
+
+    pdf.addImage(
+      imageData,
+      "JPEG",
+      0,
+      position,
+      imageWidth,
+      imageHeight
+    );
+
+    heightLeft -= pageHeight;
+
+
+    while(heightLeft > 0){
+
+      position =
+        heightLeft -
+        imageHeight;
+
+      pdf.addPage();
+
+      pdf.addImage(
+        imageData,
+        "JPEG",
+        0,
+        position,
+        imageWidth,
+        imageHeight
+      );
+
+      heightLeft -= pageHeight;
+    }
+
+
+    /* ================================
+       FILE NAME
+    ================================= */
+
+    const cleanName =
+      (fullName || subject || documentLabel || "Document")
+        .replace(
+          /[\\/:*?"<>|]/g,
+          "_"
+        )
+        .replace(
+          /\s+/g,
+          "_"
+        );
+
+
+    const cleanNo =
+      (
+        isReceivedLetter
+          ? dartaNo
+          : chalaniNo
+      )
+      .replace(
+        /[\\/:*?"<>|]/g,
+        "_"
+      );
+
+
+    const filename =
+      "Marin_Gaupalika_" +
+      cleanName +
+      (cleanNo ? "_" + cleanNo : "") +
+      ".pdf";
+
+
+    /* ================================
+       DOWNLOAD
+    ================================= */
+
+    pdf.save(filename);
+
+
+  }catch(error){
+
+    console.error(
+      "A4 PDF Error:",
+      error
+    );
+
+    alert(
+      "A4 PDF बनाउन सकिएन।"
+    );
+
+  }finally{
+
+    if(
+      pdfPage &&
+      pdfPage.parentNode
+    ){
+      pdfPage.parentNode.removeChild(
+        pdfPage
+      );
+    }
+
+  }
+
+}
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+function getCommentValue(row,name){
+
+  const key=Object.keys(row).find(k=>
+    normalizeText(k)===normalizeText(name)
+  );
+
+  return key
+    ? String(row[key] ?? "").trim()
+    : "";
+}
+
+
+/* ================= LOAD COMMENTS ================= */
+
+async function loadComments(){
+
+  const status=
+    document.getElementById("commentsStatusText");
+
+  const button=
+    document.getElementById("commentsRefreshBtn");
+
+  button.disabled=true;
+
+  status.textContent=
+    "💬 Loading Comments...";
+
+  try{
+
+    const url=
+      COMMENTS_CSV_URL+
+      "&_="+
+      Date.now();
+
+    const response=await fetch(
+      url,
+      {
+        method:"GET",
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP "+response.status
+      );
+    }
+
+    const csv=await response.text();
+
+    const rows=parseCSV(csv);
+
+    if(rows.length<2){
+      throw new Error(
+        "Comments sheet मा data छैन।"
+      );
+    }
+
+    commentsData=normalize(rows);
+
+    populateCommentFilters();
+
+    renderComments();
+
+    status.textContent=
+      "🟢 Comments updated: "+
+      new Date().toLocaleTimeString();
+
+  }catch(error){
+
+    console.error(
+      "Comments loading error:",
+      error
+    );
+
+    commentsData=[];
+
+    document.getElementById(
+      "commentsList"
+    ).innerHTML=`
+
+      <div class="no-news">
+
+        ⚠️ Comments load हुन सकेन।
+
+      </div>
+
+    `;
+
+    status.textContent=
+      "🔴 Comments unavailable";
+
+  }finally{
+
+    button.disabled=false;
+
+  }
+
+}
+
+
+/* ================= FILTERS ================= */
+
+function populateCommentFilters(){
+
+  const category=
+    document.getElementById(
+      "commentsCategory"
+    );
+
+  const status=
+    document.getElementById(
+      "commentsStatus"
+    );
+
+  const oldCategory=
+    category.value;
+
+  const oldStatus=
+    status.value;
+
+  const categories=[
+    ...new Set(
+      commentsData
+        .map(row=>
+          getCommentValue(row,"Category")
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const statuses=[
+    ...new Set(
+      commentsData
+        .map(row=>
+          getCommentValue(row,"Status")
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  category.innerHTML=
+    `<option value="all">All Category</option>`;
+
+  categories.forEach(value=>{
+
+    const option=
+      document.createElement("option");
+
+    option.value=value;
+    option.textContent=value;
+
+    category.appendChild(option);
+
+  });
+
+  status.innerHTML=
+    `<option value="all">All Status</option>`;
+
+  statuses.forEach(value=>{
+
+    const option=
+      document.createElement("option");
+
+    option.value=value;
+    option.textContent=value;
+
+    status.appendChild(option);
+
+  });
+
+  if(categories.includes(oldCategory)){
+    category.value=oldCategory;
+  }
+
+  if(statuses.includes(oldStatus)){
+    status.value=oldStatus;
+  }
+
+}
+
+
+/* ================= RENDER ================= */
+
+function renderComments(){
+
+  const list=
+    document.getElementById(
+      "commentsList"
+    );
+
+  const search=
+    normalizeText(
+      document.getElementById(
+        "commentsSearch"
+      ).value
+    );
+
+  const category=
+    document.getElementById(
+      "commentsCategory"
+    ).value;
+
+  const statusFilter=
+    document.getElementById(
+      "commentsStatus"
+    ).value;
+
+  let rows=[...commentsData];
+
+  rows=rows.filter(row=>{
+
+    const rowCategory=
+      getCommentValue(row,"Category");
+
+    const rowStatus=
+      getCommentValue(row,"Status");
+
+    if(
+      category!=="all" &&
+      rowCategory!==category
+    ){
+      return false;
+    }
+
+    if(
+      statusFilter!=="all" &&
+      rowStatus!==statusFilter
+    ){
+      return false;
+    }
+
+    if(!search){
+      return true;
+    }
+
+    const searchable=[
+      getCommentValue(row,"ID"),
+      getCommentValue(row,"Date"),
+      getCommentValue(row,"Time"),
+      getCommentValue(row,"Name"),
+      getCommentValue(row,"Address"),
+      getCommentValue(row,"Mobile"),
+      getCommentValue(row,"Email"),
+      getCommentValue(row,"Category"),
+      getCommentValue(row,"Subject"),
+      getCommentValue(row,"Message/Comment"),
+      getCommentValue(row,"Admin Reply"),
+      getCommentValue(row,"Status")
+    ].join(" ");
+
+    return normalizeText(searchable)
+      .includes(search);
+
+  });
+
+
+  /* newest first */
+
+  rows.sort((a,b)=>{
+
+    const da=
+      new Date(
+        getCommentValue(a,"Date")+" "+
+        getCommentValue(a,"Time")
+      ).getTime() || 0;
+
+    const db=
+      new Date(
+        getCommentValue(b,"Date")+" "+
+        getCommentValue(b,"Time")
+      ).getTime() || 0;
+
+    return db-da;
+
+  });
+
+
+  list.innerHTML="";
+
+
+  if(!rows.length){
+
+    list.innerHTML=`
+
+      <div class="no-news">
+
+        💬 कुनै Comments / गुनासो भेटिएन।
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  rows.forEach(row=>{
+
+    const id=
+      getCommentValue(row,"ID");
+
+    const date=
+      getCommentValue(row,"Date");
+
+    const time=
+      getCommentValue(row,"Time");
+
+    const name=
+      getCommentValue(row,"Name");
+
+    const address=
+      getCommentValue(row,"Address");
+
+    const mobile=
+      getCommentValue(row,"Mobile");
+
+    const email=
+      getCommentValue(row,"Email");
+
+    const categoryValue=
+      getCommentValue(row,"Category");
+
+    const subject=
+      getCommentValue(row,"Subject");
+
+    const message=
+      getCommentValue(
+        row,
+        "Message/Comment"
+      );
+
+    const attachment=
+      getCommentValue(
+        row,
+        "Attachment"
+      );
+
+    const rowStatus=
+      getCommentValue(
+        row,
+        "Status"
+      );
+
+    const adminReply=
+      getCommentValue(
+        row,
+        "Admin Reply"
+      );
+
+    const replyDate=
+      getCommentValue(
+        row,
+        "Reply Date"
+      );
+
+
+    const item=
+      document.createElement("article");
+
+    item.className=
+      "comment-item";
+
+
+    let attachmentHTML="";
+
+    if(attachment){
+
+      attachmentHTML=`
+
+        <a
+          class="btn-small"
+          href="${escapeHtml(attachment)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📎 Attachment
+        </a>
+
+      `;
+
+    }
+
+
+    const replyHTML=
+      adminReply
+      ? `
+
+        <div class="comment-reply">
+
+          <div class="comment-reply-title">
+            💬 Admin Reply
+          </div>
+
+          ${escapeHtml(adminReply)}
+
+          ${
+            replyDate
+            ? `
+              <div
+                style="
+                  margin-top:5px;
+                  font-size:11px;
+                  color:#667085;
+                "
+              >
+                📅 ${escapeHtml(replyDate)}
+              </div>
+            `
+            :""
+          }
+
+        </div>
+
+      `
+      :"";
+
+
+    item.innerHTML=`
+
+      <div class="comment-head">
+
+        <div>
+
+          <div class="comment-name">
+
+            👤 ${escapeHtml(
+              name || "Anonymous"
+            )}
+
+          </div>
+
+          ${
+            subject
+            ? `
+              <div class="comment-subject">
+                ${escapeHtml(subject)}
+              </div>
+            `
+            :""
+          }
+
+        </div>
+
+
+        <div>
+
+          ${
+            rowStatus
+            ? `
+              <span
+                class="
+                  comment-status
+                  ${
+                    normalizeText(rowStatus)
+                      .includes("reply")
+                    ? "replied"
+                    : "pending"
+                  }
+                "
+              >
+                ${escapeHtml(rowStatus)}
+              </span>
+            `
+            :""
+          }
+
+        </div>
+
+      </div>
+
+
+      <div class="news-meta">
+
+        ${
+          id
+          ? `<span class="meta">🆔 ${escapeHtml(id)}</span>`
+          :""
+        }
+
+        ${
+          date
+          ? `<span class="meta">📅 ${escapeHtml(date)}</span>`
+          :""
+        }
+
+        ${
+          time
+          ? `<span class="meta">⏰ ${escapeHtml(time)}</span>`
+          :""
+        }
+
+        ${
+          categoryValue
+          ? `<span class="meta">🏷️ ${escapeHtml(categoryValue)}</span>`
+          :""
+        }
+
+        ${
+          address
+          ? `<span class="meta">📍 ${escapeHtml(address)}</span>`
+          :""
+        }
+
+        ${
+          mobile
+          ? `<span class="meta">📞 ${escapeHtml(mobile)}</span>`
+          :""
+        }
+
+        ${
+          email
+          ? `<span class="meta">✉️ ${escapeHtml(email)}</span>`
+          :""
+        }
+
+      </div>
+
+
+      ${
+        message
+        ? `
+          <div class="comment-message">
+            ${escapeHtml(message)}
+          </div>
+        `
+        :""
+      }
+
+
+      ${replyHTML}
+
+
+      <div class="comment-actions">
+
+        ${attachmentHTML}
+
+        <button
+          type="button"
+          class="btn-small reply-btn"
+          onclick="requestCommentReply('${escapeHtml(id)}')"
+        >
+          💬 Reply
+        </button>
+
+      </div>
+
+
+      <div
+        id="replyBox-${escapeHtml(id)}"
+        class="reply-box"
+      >
+
+        <textarea
+          id="replyInput-${escapeHtml(id)}"
+          class="reply-input"
+          placeholder="यहाँ Admin Reply लेख्नुहोस्..."
+        ></textarea>
+
+        <button
+          type="button"
+          class="btn-small reply-save"
+          onclick="submitCommentReply('${escapeHtml(id)}')"
+        >
+          ✅ Send Reply
+        </button>
+
+      </div>
+
+    `;
+
+    list.appendChild(item);
+
+  });
+
+}
+
+
+/* ================= REPLY BOX ================= */
+
+function toggleReplyBox(id){
+
+  const box=
+    document.getElementById(
+      "replyBox-"+id
+    );
+
+  if(!box){
+    return;
+  }
+
+  box.classList.toggle("show");
+
+}
+
+
+/* ================= SEND REPLY ================= */
+
+async function submitCommentReply(id){
+
+  if(!isAdminLoggedIn){
+    requestCommentReply(id);
+    return;
+  }
+
+  const input =
+    document.getElementById(
+      "replyInput-" + id
+    );
+
+  if(!input){
+    alert("Reply box भेटिएन।");
+    return;
+  }
+
+  const reply =
+    input.value.trim();
+
+  if(!reply){
+
+    alert("कृपया Reply लेख्नुहोस्।");
+    input.focus();
+
+    return;
+  }
+
+
+  /* =====================================================
+     COMMENTS API URL
+  ===================================================== */
+
+  const COMMENTS_API_URL =
+    "https://script.google.com/macros/s/AKfycbxokQ-PfINDrvDQhj-4syeiNIxJpFo4ZQjeXQA6YXlgFMPiJoxp3qwPTCv5_DCVQGP6vg/exec";
+
+
+  /* =====================================================
+     BUTTON
+  ===================================================== */
+
+  const box =
+    document.getElementById(
+      "replyBox-" + id
+    );
+
+  const sendButton =
+    box
+      ? box.querySelector(".reply-save")
+      : null;
+
+
+  if(sendButton){
+
+    sendButton.disabled = true;
+
+    sendButton.textContent =
+      "⏳ Sending...";
+
+  }
+
+
+  try{
+
+    /* ===================================================
+       SEND TO GOOGLE APPS SCRIPT
+    =================================================== */
+
+    const response =
+      await fetch(
+        COMMENTS_API_URL,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:JSON.stringify({
+
+            action:"reply",
+
+            id:String(id),
+
+            reply:reply
+
+          })
+        }
+      );
+
+
+    /* ===================================================
+       READ RESPONSE
+    =================================================== */
+
+    const result =
+      await response.json();
+
+
+    /* ===================================================
+       CHECK RESULT
+    =================================================== */
+
+    if(!result.success){
+
+      throw new Error(
+        result.message ||
+        "Reply save हुन सकेन।"
+      );
+
+    }
+
+
+    /* ===================================================
+       SUCCESS
+    =================================================== */
+
+    alert(
+      "✅ Reply successfully sent."
+    );
+
+
+    /* Clear reply box */
+
+    input.value="";
+
+
+    /* Hide reply box */
+
+    if(box){
+
+      box.classList.remove("show");
+
+    }
+
+
+    /* ===================================================
+       REFRESH COMMENTS
+    =================================================== */
+
+    await loadComments();
+
+
+  }catch(error){
+
+    console.error(
+      "Comment Reply Error:",
+      error
+    );
+
+
+    alert(
+      "❌ Reply पठाउन सकिएन।\n\n"+
+      error.message
+    );
+
+
+  }finally{
+
+    if(sendButton){
+
+      sendButton.disabled = false;
+
+      sendButton.textContent =
+        "✅ Send Reply";
+
+    }
+
+  }
+
+}
+
+/* ================= MAIN TAB SWITCHING ================= */
+function showMainTab(tab){
+  const panels={
+    dashboard:document.getElementById("dashboardTab"),
+    news:document.getElementById("newsTab"),
+    comments:document.getElementById("commentsTab")
+  };
+
+  const buttons={
+    dashboard:document.getElementById("dashboardTabBtn"),
+    news:document.getElementById("newsTabBtn"),
+    comments:document.getElementById("commentsTabBtn")
+  };
+
+  Object.keys(panels).forEach(key=>{
+    if(panels[key]) panels[key].classList.toggle("active",key===tab);
+    if(buttons[key]){
+      buttons[key].classList.toggle("active",key===tab);
+      buttons[key].setAttribute("aria-selected",key===tab?"true":"false");
+    }
+  });
+}
+
+/* ================= EVENTS ================= */
+
+document
+  .getElementById(
+    "commentsSearch"
+  )
+  .addEventListener(
+    "input",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsCategory"
+  )
+  .addEventListener(
+    "change",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsStatus"
+  )
+  .addEventListener(
+    "change",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsRefreshBtn"
+  )
+  .addEventListener(
+    "click",
+    loadComments
+);
+
+
+/* INITIAL COMMENTS LOAD */
+
+loadComments();
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+render(INITIAL_DATA);
+
+loadData();
+
+loadNews();
+
+</script>
+
+</body>
+</html>
