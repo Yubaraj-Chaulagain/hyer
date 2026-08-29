@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nepali Congress – Marin Gaupalika Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;overflow-x:hidden}
+body{font-family:Arial,"Noto Sans Devanagari","Nirmala UI",sans-serif;background:#f3f5f9;color:#172033}
+.header{background:linear-gradient(135deg,#071b5c,#b5121b);color:#fff;padding:12px 18px}
+.header h1{margin:0;font-size:clamp(17px,2.4vw,25px);line-height:1.25}
+.header p{margin:4px 0 0;font-size:clamp(11px,1.4vw,14px);opacity:.9}
+.container{width:100%;max-width:1400px;margin:auto;padding:clamp(10px,2vw,18px)}
+.toolbar,.news-toolbar,.comments-toolbar{display:grid;grid-template-columns:minmax(180px,1fr) 180px auto auto;gap:10px;align-items:center;margin-bottom:16px}
+.search,.select,button{min-height:42px;border-radius:8px;padding:9px 13px;font-family:inherit;font-size:14px}
+.search,.select{width:100%;border:1px solid #d8dce5;background:#fff;color:#172033;outline:none}
+button{border:1px solid #071b5c;background:#071b5c;color:#fff;cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+.status{font-size:12px;color:#667085}
+.error{display:none;margin-bottom:15px;padding:11px 13px;border-radius:8px;color:#b42318;background:#fef3f2;border:1px solid #fecdca;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.card{background:#fff;border-radius:11px;padding:15px;border-top:4px solid #b5121b;box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.card .label{font-size:12px;color:#697386}.card .value{margin-top:6px;font-size:28px;font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:16px;margin-bottom:18px}
+.panel{min-width:0;background:#fff;border-radius:11px;padding:16px;box-shadow:0 3px 12px rgba(0,0,0,.07);margin-bottom:18px}
+.panel h2{margin:0 0 12px;font-size:17px}
+.chartbox{position:relative;width:100%;height:300px}
+.table-wrap{width:100%;overflow-x:auto}
+table{width:100%;min-width:760px;border-collapse:collapse}
+th,td{padding:10px 9px;border-bottom:1px solid #e7e9ee;text-align:right;white-space:nowrap;font-size:13px}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0}
+thead th{position:sticky;top:0;z-index:3;background:#071b5c;color:#fff}
+tbody td:first-child{z-index:2;background:#fff}
+.empty,.no-data{text-align:center;padding:30px;color:#667085}
+
+.news-list,.comments-list{display:grid;gap:12px}
+.news-item,.comment-card{border:1px solid #e5e7eb;border-left:5px solid #b5121b;border-radius:10px;padding:14px;background:#fff}
+.news-top,.comment-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.news-title,.comment-subject{font-size:16px;font-weight:700;color:#071b5c;line-height:1.4}
+.news-date,.comment-date{font-size:11px;color:#667085;white-space:nowrap}
+.badge,.status-badge,.meta{display:inline-block;padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge{margin-top:7px;background:#eef2ff;color:#3730a3}
+.badge.application{background:#fff1f2;color:#be123c}.badge.notice{background:#fff7ed;color:#c2410c}.badge.news{background:#ecfdf5;color:#047857}
+.status-badge{background:#f3f4f6;color:#374151}.status-badge.completed,.status-badge.approved,.status-badge.success{background:#dcfce7;color:#166534}
+.status-badge.pending{background:#fef3c7;color:#92400e}.status-badge.rejected{background:#fee2e2;color:#991b1b}
+.news-details,.comment-message{margin-top:10px;color:#4b5563;line-height:1.7;white-space:pre-wrap}
+.news-meta,.comment-meta,.news-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.meta{border-radius:6px;background:#f7f8fa;color:#596273}
+.btn-small{min-height:34px;padding:6px 11px;border-radius:6px;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:#071b5c;color:#fff;border:0}
+.btn-download{background:#b5121b}.btn-gmail{background:#0f766e}.btn-whatsapp{background:#166534}
+.reply-box{margin-top:12px;padding:11px;border-radius:8px;background:#f7f9fc;border-left:3px solid #071b5c}
+.reply-title{font-size:12px;font-weight:700;color:#071b5c}.reply-date{font-size:11px;color:#667085;margin-top:3px}
+.attachment{margin-top:10px}
+.footer{margin-top:25px;padding:20px 15px;text-align:center;background:linear-gradient(135deg,#071b5c,#0d2b83);color:#fff;border-top:4px solid #b5121b}
+.footer-title{margin-bottom:6px;font-size:15px;font-weight:700}.footer-developer{font-size:12px}.footer-copy{margin-top:6px;font-size:10px;opacity:.6}
+
+@media(max-width:1100px){
+ .toolbar,.news-toolbar,.comments-toolbar{grid-template-columns:1fr 1fr}
+ .toolbar .search,.news-toolbar .search,.comments-toolbar .search{grid-column:1/-1}
+ .cards{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+ .header{padding:10px}.header h1{font-size:16px}.container{padding:9px}
+ .toolbar,.news-toolbar,.comments-toolbar{grid-template-columns:1fr}
+ .toolbar .search,.news-toolbar .search,.comments-toolbar .search{grid-column:auto}
+ .cards{grid-template-columns:repeat(2,1fr);gap:8px}.card{padding:11px}.card .value{font-size:20px}
+ .panel{padding:11px}.chartbox{height:245px}.news-top,.comment-top{flex-direction:column}
+}
+</style>
+</head>
+
+<body>
+<header class="header">
+ <div class="container">
+  <h1>🏛️ Nepali Congress – Marin Gaupalika</h1>
+  <p>Ward-wise जनसांख्यिक तथा मतदाता Dashboard</p>
+ </div>
+</header>
+
+<main class="container">
+
+<!-- WARD DASHBOARD -->
+<div class="toolbar">
+ <input id="search" class="search" type="search" placeholder="Search particulars..." autocomplete="off">
+ <select id="ward" class="select"><option value="all">All Wards</option></select>
+ <button id="refreshBtn">🔄 Refresh Data</button>
+ <span id="status" class="status">Loading...</span>
+</div>
+<div id="error" class="error"></div>
+<section id="cards" class="cards"></section>
+
+<div class="grid">
+ <div class="panel"><h2>📊 Ward Comparison</h2><div class="chartbox"><canvas id="wardChart"></canvas></div></div>
+ <div class="panel"><h2>👥 Gender Summary</h2><div class="chartbox"><canvas id="genderChart"></canvas></div></div>
+</div>
+
+<div class="panel">
+ <h2>📋 Detailed Summary</h2>
+ <div class="table-wrap"><table id="dataTable"></table></div>
+</div>
+
+<!-- NEWS / APPLICATION -->
+<div class="panel">
+ <h2>📰 News / Application</h2>
+ <div class="news-toolbar">
+  <input id="newsSearch" class="search" type="search" placeholder="Search news/application...">
+  <select id="typeFilter" class="select"><option value="all">All Types</option></select>
+  <select id="statusFilter" class="select"><option value="all">All Status</option></select>
+  <button id="newsRefreshBtn">🔄 Refresh</button>
+ </div>
+ <div id="newsStatus" class="status">Loading News/Application...</div>
+ <div id="newsList" class="news-list"></div>
+</div>
+
+<!-- COMMENTS / CHAT VIEW -->
+<div class="panel" id="commentsSection">
+ <h2>💬 Comments / जनगुनासो</h2>
+
+ <div class="comments-toolbar">
+  <input id="commentsSearch" class="search" type="search" placeholder="Search Name, Subject, Message, Address...">
+  <select id="commentsCategory" class="select"><option value="all">All Category</option></select>
+  <select id="commentsStatus" class="select"><option value="all">All Status</option></select>
+  <button id="commentsRefreshBtn">🔄 Refresh</button>
+ </div>
+
+ <div id="commentsStatusText" class="status" style="margin-bottom:12px">
+  Loading Comments...
+ </div>
+
+ <div id="commentsList" class="comments-list"></div>
+</div>
+
+</main>
+
+<footer class="footer">
+ <div class="footer-title">🏛️ Marin Gaupalika Dashboard</div>
+ <div class="footer-developer">Designed & Developed by <strong>Yubaraj Chaulagain (Saroj)</strong></div>
+ <div class="footer-copy">© 2026 Yubaraj Chaulagain (Saroj). All Rights Reserved.</div>
+</footer>
+
+<script>
+"use strict";
+
+/* ================= GOOGLE SHEETS ================= */
+const GVIZ_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub";
+
+const NEWS_CSV_URL =
+GVIZ_URL+"?gid=382649531&single=true&output=csv";
+
+const COMMENTS_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=740624513&single=true&output=csv";
+
+/* ================= STATE ================= */
+let data=[],newsData=[],commentsData=[];
+let wardChart=null,genderChart=null;
+
+/* ================= HELPERS ================= */
+function normalizeText(v){return String(v??"").trim().toLowerCase()}
+function num(v){const n=parseFloat(String(v??"").replace(/,/g,"").replace(/[^\d.-]/g,""));return Number.isFinite(n)?n:0}
+function formatNumber(v){return Number(v||0).toLocaleString("en-US")}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+function parseCSV(text){
+ const rows=[];let row=[],cell="",quotes=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i],n=text[i+1];
+  if(c=='"'&&quotes&&n=='"'){cell+='"';i++;continue}
+  if(c=='"'){quotes=!quotes;continue}
+  if(c==","&&!quotes){row.push(cell.trim());cell="";continue}
+  if((c=="\n"||c=="\r")&&!quotes){
+   if(c=="\r"&&n=="\n")i++;
+   row.push(cell.trim());if(row.some(v=>v!==""))rows.push(row);
+   row=[];cell="";continue
+  }
+  cell+=c
+ }
+ if(cell!==""||row.length){row.push(cell.trim());if(row.some(v=>v!==""))rows.push(row)}
+ return rows
+}
+function normalize(rows){
+ if(!rows||rows.length<2)return [];
+ const headers=rows[0].map(x=>String(x||"").trim());
+ return rows.slice(1).map(r=>{
+  const o={};headers.forEach((h,i)=>o[h]=r[i]!==undefined?String(r[i]).trim():"");return o
+ }).filter(r=>r[headers[0]]!=="")
+}
+function getValue(row,name){
+ const key=Object.keys(row||{}).find(k=>normalizeText(k)===normalizeText(name));
+ return key?String(row[key]??"").trim():""
+}
+function formatDate(v){
+ if(!v)return "";
+ const d=new Date(v);return Number.isNaN(d.getTime())?v:d.toLocaleDateString("en-GB",{year:"numeric",month:"short",day:"numeric"})
+}
+function findRow(rows,first,label){const t=normalizeText(label);return rows.find(r=>normalizeText(r[first])===t)}
+
+/* ================= WARD DATA ================= */
+function render(rows){
+ data=rows;const headers=Object.keys(rows[0]||{}),first=headers[0];
+ const wards=headers.filter(h=>h!==first&&normalizeText(h)!=="grand total"&&normalizeText(h)!=="total");
+ const sel=document.getElementById("ward"),old=sel.value;
+ sel.innerHTML='<option value="all">All Wards</option>'+wards.map(w=>`<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+ sel.value=wards.includes(old)?old:"all";
+
+ const wanted=["Number of Households","Total Family Members","Total Male","Total Female","Total Voters"];
+ document.getElementById("cards").innerHTML=wanted.map(label=>{
+  const r=findRow(rows,first,label);if(!r)return "";
+  const total=headers.includes("Grand Total")?num(r["Grand Total"]):wards.reduce((s,w)=>s+num(r[w]),0);
+  return `<div class="card"><div class="label">${escapeHtml(label)}</div><div class="value">${formatNumber(total)}</div></div>`
+ }).join("");
+
+ renderTable(rows,headers,first);
+ renderCharts(rows,headers,first,wards);
+}
+function renderTable(rows,headers,first){
+ const q=normalizeText(document.getElementById("search").value),w=document.getElementById("ward").value;
+ const hs=w==="all"?headers:headers.filter(h=>h===first||h===w);
+ const filtered=rows.filter(r=>!q||normalizeText(r[first]).includes(q));
+ let html="<thead><tr>"+hs.map(h=>`<th>${escapeHtml(h)}</th>`).join("")+"</tr></thead><tbody>";
+ if(!filtered.length)html+=`<tr><td class="empty" colspan="${hs.length}">No matching data found.</td></tr>`;
+ else filtered.forEach(r=>html+="<tr>"+hs.map(h=>`<td>${escapeHtml(r[h])}</td>`).join("")+"</tr>");
+ html+="</tbody>";document.getElementById("dataTable").innerHTML=html;
+}
+function getTotal(row,headers,wards){return row?(headers.includes("Grand Total")?num(row["Grand Total"]):wards.reduce((s,w)=>s+num(row[w]),0)):0}
+function renderCharts(rows,headers,first,wards){
+ const male=findRow(rows,first,"Total Male"),female=findRow(rows,first,"Total Female"),voters=findRow(rows,first,"Total Voters");
+ if(wardChart)wardChart.destroy();
+ wardChart=new Chart(document.getElementById("wardChart"),{
+  type:"bar",data:{labels:wards,datasets:[
+   {label:"Male",data:wards.map(w=>num(male?.[w])),backgroundColor:"#071b5c"},
+   {label:"Female",data:wards.map(w=>num(female?.[w])),backgroundColor:"#b5121b"},
+   {label:"Voters",data:wards.map(w=>num(voters?.[w])),backgroundColor:"#f59e0b"}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+ });
+ if(genderChart)genderChart.destroy();
+ const mt=getTotal(male,headers,wards),ft=getTotal(female,headers,wards);
+ genderChart=new Chart(document.getElementById("genderChart"),{
+  type:"doughnut",data:{labels:["Male","Female"],datasets:[{data:[mt,ft],backgroundColor:["#071b5c","#b5121b"],borderWidth:2,borderColor:"#fff"}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:"62%",plugins:{legend:{position:"bottom"}}}
+ });
+}
+async function loadData(){
+ const status=document.getElementById("status"),err=document.getElementById("error"),btn=document.getElementById("refreshBtn");
+ btn.disabled=true;err.style.display="none";status.textContent="Loading live Google Sheet...";
+ try{
+  const r=await fetch(GVIZ_URL+"?output=csv&_="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw Error("HTTP "+r.status);
+  const rows=normalize(parseCSV(await r.text()));if(!rows.length)throw Error("Empty sheet");
+  render(rows);status.textContent="🟢 Live data updated: "+new Date().toLocaleTimeString()
+ }catch(e){console.error(e);err.style.display="block";err.textContent="⚠️ Main Google Sheet data load भएन।";status.textContent="🔴 Data unavailable"}
+ finally{btn.disabled=false}
+}
+
+/* ================= NEWS ================= */
+function typeClass(t){t=normalizeText(t);return t.includes("application")||t.includes("आवेदन")?"application":t.includes("notice")||t.includes("सूचना")?"notice":t.includes("news")||t.includes("समाचार")?"news":""}
+function statusClass(s){s=normalizeText(s);return s.includes("complete")||s.includes("approved")||s.includes("success")||s.includes("सम्पन्न")||s.includes("स्वीकृत")?"completed":s.includes("pending")||s.includes("process")||s.includes("प्रक्रिया")?"pending":s.includes("reject")||s.includes("अस्वीकार")?"rejected":""}
+function populateNewsFilters(){
+ const types=[...new Set(newsData.map(r=>getValue(r,"Types")).filter(Boolean))],sts=[...new Set(newsData.map(r=>getValue(r,"Status")).filter(Boolean))];
+ document.getElementById("typeFilter").innerHTML='<option value="all">All Types</option>'+types.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
+ document.getElementById("statusFilter").innerHTML='<option value="all">All Status</option>'+sts.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
+}
+function renderNews(){
+ const q=normalizeText(document.getElementById("newsSearch").value),tf=document.getElementById("typeFilter").value,sf=document.getElementById("statusFilter").value;
+ let rows=newsData.filter(r=>{
+  const type=getValue(r,"Types"),st=getValue(r,"Status");
+  if(tf!=="all"&&type!==tf)return false;if(sf!=="all"&&st!==sf)return false;
+  return !q||normalizeText(Object.values(r).join(" ")).includes(q)
+ }).sort((a,b)=>(new Date(getValue(b,"Timestamp")).getTime()||0)-(new Date(getValue(a,"Timestamp")).getTime()||0));
+ const list=document.getElementById("newsList");
+ if(!rows.length){list.innerHTML='<div class="no-data">📰 कुनै News / Application भेटिएन।</div>';return}
+ list.innerHTML=rows.map(r=>{
+  const type=getValue(r,"Types"),st=getValue(r,"Status"),title=getValue(r,"Subject")||"Untitled",details=getValue(r,"Details"),date=getValue(r,"Timestamp")||getValue(r,"Chalani Date")||getValue(r,"Darta Date"),att=getValue(r,"Attachment");
+  return `<article class="news-item"><div class="news-top"><div><div class="news-title">${escapeHtml(title)}</div>${type?`<span class="badge ${typeClass(type)}">${escapeHtml(type)}</span>`:""}</div>${date?`<div class="news-date">📅 ${escapeHtml(formatDate(date))}</div>`:""}</div>${st?`<div style="margin-top:8px"><span class="status-badge ${statusClass(st)}">${escapeHtml(st)}</span></div>`:""}${details?`<div class="news-details">${escapeHtml(details)}</div>`:""}<div class="news-meta">${getValue(r,"Full Name")?`<span class="meta">👤 ${escapeHtml(getValue(r,"Full Name"))}</span>`:""}${getValue(r,"Contact")?`<span class="meta">📞 ${escapeHtml(getValue(r,"Contact"))}</span>`:""}${getValue(r,"Address")?`<span class="meta">📍 ${escapeHtml(getValue(r,"Address"))}</span>`:""}</div>${att?`<div class="news-actions"><a class="btn-small" href="${escapeHtml(att)}" target="_blank" rel="noopener">📎 Attachment</a></div>`:""}</article>`
+ }).join("")
+}
+async function loadNews(){
+ const btn=document.getElementById("newsRefreshBtn"),st=document.getElementById("newsStatus");btn.disabled=true;st.textContent="📰 Loading News/Application...";
+ try{const r=await fetch(NEWS_CSV_URL+"&_="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error();newsData=normalize(parseCSV(await r.text()));populateNewsFilters();renderNews();st.textContent="🟢 News/Application updated: "+new Date().toLocaleTimeString()}
+ catch(e){console.error(e);newsData=[];document.getElementById("newsList").innerHTML='<div class="no-data">⚠️ News/Application data load हुन सकेन।</div>';st.textContent="🔴 News/Application unavailable"}
+ finally{btn.disabled=false}
+}
+
+/* ================= COMMENTS CHAT VIEW ================= */
+function populateCommentFilters(){
+ const cats=[...new Set(commentsData.map(r=>getValue(r,"Category")).filter(Boolean))];
+ const sts=[...new Set(commentsData.map(r=>getValue(r,"Status")).filter(Boolean))];
+ document.getElementById("commentsCategory").innerHTML='<option value="all">All Category</option>'+cats.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
+ document.getElementById("commentsStatus").innerHTML='<option value="all">All Status</option>'+sts.map(x=>`<option>${escapeHtml(x)}</option>`).join("");
+}
+function renderComments(){
+ const q=normalizeText(document.getElementById("commentsSearch").value),cat=document.getElementById("commentsCategory").value,st=document.getElementById("commentsStatus").value;
+ let rows=commentsData.filter(r=>{
+  const c=getValue(r,"Category"),s=getValue(r,"Status");
+  if(cat!=="all"&&c!==cat)return false;if(st!=="all"&&s!==st)return false;
+  return !q||normalizeText(Object.values(r).join(" ")).includes(q)
+ }).sort((a,b)=>{
+  const da=new Date((getValue(a,"Date")+" "+getValue(a,"Time")).trim()).getTime()||0;
+  const db=new Date((getValue(b,"Date")+" "+getValue(b,"Time")).trim()).getTime()||0;
+  return db-da
+ });
+ const list=document.getElementById("commentsList");
+ if(!rows.length){list.innerHTML='<div class="no-data">💬 कुनै Comments / जनगुनासो भेटिएन।</div>';return}
+ list.innerHTML=rows.map(r=>{
+  const name=getValue(r,"Name"),address=getValue(r,"Address"),mobile=getValue(r,"Mobile"),email=getValue(r,"Email"),cat=getValue(r,"Category"),subject=getValue(r,"Subject"),msg=getValue(r,"Message/Comment"),att=getValue(r,"Attachment"),status=getValue(r,"Status"),reply=getValue(r,"Admin Reply"),replyDate=getValue(r,"Reply Date"),date=getValue(r,"Date"),time=getValue(r,"Time");
+  return `<article class="comment-card">
+   <div class="comment-top">
+    <div>
+     <div class="comment-subject">${escapeHtml(subject||"Comments / जनगुनासो")}</div>
+     ${cat?`<span class="badge">${escapeHtml(cat)}</span>`:""}
+    </div>
+    <div class="comment-date">${date?`📅 ${escapeHtml(date)}`:""} ${time?`⏰ ${escapeHtml(time)}`:""}</div>
+   </div>
+   ${status?`<div style="margin-top:8px"><span class="status-badge ${statusClass(status)}">${escapeHtml(status)}</span></div>`:""}
+   <div class="comment-meta">
+    ${name?`<span class="meta">👤 ${escapeHtml(name)}</span>`:""}
+    ${address?`<span class="meta">📍 ${escapeHtml(address)}</span>`:""}
+    ${mobile?`<span class="meta">📞 ${escapeHtml(mobile)}</span>`:""}
+    ${email?`<span class="meta">✉️ ${escapeHtml(email)}</span>`:""}
+   </div>
+   ${msg?`<div class="comment-message">${escapeHtml(msg)}</div>`:""}
+   ${att?`<div class="attachment"><a class="btn-small btn-download" href="${escapeHtml(att)}" target="_blank" rel="noopener">📎 View Attachment</a></div>`:""}
+   ${reply?`<div class="reply-box"><div class="reply-title">↩️ Admin Reply</div><div class="comment-message">${escapeHtml(reply)}</div>${replyDate?`<div class="reply-date">📅 ${escapeHtml(replyDate)}</div>`:""}</div>`:""}
+  </article>`
+ }).join("")
+}
+async function loadComments(){
+ const btn=document.getElementById("commentsRefreshBtn"),st=document.getElementById("commentsStatusText");
+ btn.disabled=true;st.textContent="💬 Loading Comments...";
+ try{
+  const r=await fetch(COMMENTS_CSV_URL+"&_="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw Error("HTTP "+r.status);
+  commentsData=normalize(parseCSV(await r.text()));
+  if(!commentsData.length)throw Error("Empty comments sheet");
+  populateCommentFilters();renderComments();
+  st.textContent="🟢 Comments updated: "+new Date().toLocaleTimeString()+" • "+commentsData.length+" records";
+ }catch(e){
+  console.error("Comments error:",e);commentsData=[];
+  document.getElementById("commentsList").innerHTML='<div class="no-data">⚠️ Comments sheet बाट data load हुन सकेन। Sheet लाई Publish to web गरिएको छ कि छैन जाँच गर्नुहोस्।</div>';
+  st.textContent="🔴 Comments unavailable";
+ }finally{btn.disabled=false}
+}
+
+/* ================= EVENTS ================= */
+document.getElementById("search").addEventListener("input",()=>{if(data.length){const h=Object.keys(data[0]);renderTable(data,h,h[0])}});
+document.getElementById("ward").addEventListener("change",()=>{if(data.length){const h=Object.keys(data[0]);renderTable(data,h,h[0])}});
+document.getElementById("refreshBtn").addEventListener("click",loadData);
+document.getElementById("newsSearch").addEventListener("input",renderNews);
+document.getElementById("typeFilter").addEventListener("change",renderNews);
+document.getElementById("statusFilter").addEventListener("change",renderNews);
+document.getElementById("newsRefreshBtn").addEventListener("click",loadNews);
+document.getElementById("commentsSearch").addEventListener("input",renderComments);
+document.getElementById("commentsCategory").addEventListener("change",renderComments);
+document.getElementById("commentsStatus").addEventListener("change",renderComments);
+document.getElementById("commentsRefreshBtn").addEventListener("click",loadComments);
+
+/* ================= INITIAL LOAD ================= */
+loadData();
+loadNews();
+loadComments();
+</script>
+</body>
+</html>
