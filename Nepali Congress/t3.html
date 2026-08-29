@@ -4007,61 +4007,68 @@ function toggleReplyBox(id){
 
 async function submitCommentReply(id){
 
-  if(!isAdminLoggedIn){
-
-    alert(
-      "Reply गर्न Admin Login आवश्यक छ।"
-    );
-
-    return;
-
-  }
-
-
-  const input=
+  const input =
     document.getElementById(
-      "replyInput-"+id
+      "replyInput-" + id
     );
 
   if(!input){
+    alert("Reply box भेटिएन।");
     return;
   }
 
-
-  const reply=
+  const reply =
     input.value.trim();
-
 
   if(!reply){
 
-    alert(
-      "कृपया Reply लेख्नुहोस्।"
-    );
+    alert("कृपया Reply लेख्नुहोस्।");
+    input.focus();
 
     return;
-
   }
 
 
-  if(
-    !COMMENTS_API_URL ||
-    COMMENTS_API_URL.includes(
-      "YOUR_SCRIPT_ID"
-    )
-  ){
+  /* =====================================================
+     COMMENTS API URL
+  ===================================================== */
 
-    alert(
-      "Comments API URL सेट गरिएको छैन।"
+  const COMMENTS_API_URL =
+    "https://script.google.com/macros/s/AKfycbxokQ-PfINDrvDQhj-4syeiNIxJpFo4ZQjeXQA6YXlgFMPiJoxp3qwPTCv5_DCVQGP6vg/exec";
+
+
+  /* =====================================================
+     BUTTON
+  ===================================================== */
+
+  const box =
+    document.getElementById(
+      "replyBox-" + id
     );
 
-    return;
+  const sendButton =
+    box
+      ? box.querySelector(".reply-save")
+      : null;
+
+
+  if(sendButton){
+
+    sendButton.disabled = true;
+
+    sendButton.textContent =
+      "⏳ Sending...";
 
   }
 
 
   try{
 
-    const response=
+    /* ===================================================
+       SEND TO GOOGLE APPS SCRIPT
+    =================================================== */
+
+    const response =
       await fetch(
         COMMENTS_API_URL,
         {
@@ -4076,36 +4083,63 @@ async function submitCommentReply(id){
 
             action:"reply",
 
-            id:id,
+            id:String(id),
 
             reply:reply
 
           })
-
         }
       );
 
 
-    const result=
+    /* ===================================================
+       READ RESPONSE
+    =================================================== */
+
+    const result =
       await response.json();
 
+
+    /* ===================================================
+       CHECK RESULT
+    =================================================== */
 
     if(!result.success){
 
       throw new Error(
         result.message ||
-        "Reply save भएन।"
+        "Reply save हुन सकेन।"
       );
 
     }
 
+
+    /* ===================================================
+       SUCCESS
+    =================================================== */
 
     alert(
       "✅ Reply successfully sent."
     );
 
 
+    /* Clear reply box */
+
     input.value="";
+
+
+    /* Hide reply box */
+
+    if(box){
+
+      box.classList.remove("show");
+
+    }
+
+
+    /* ===================================================
+       REFRESH COMMENTS
+    =================================================== */
 
     await loadComments();
 
@@ -4113,19 +4147,31 @@ async function submitCommentReply(id){
   }catch(error){
 
     console.error(
-      "Reply error:",
+      "Comment Reply Error:",
       error
     );
 
+
     alert(
-      "❌ Reply पठाउन सकिएन।\n"+
+      "❌ Reply पठाउन सकिएन।\n\n"+
       error.message
     );
+
+
+  }finally{
+
+    if(sendButton){
+
+      sendButton.disabled = false;
+
+      sendButton.textContent =
+        "✅ Send Reply";
+
+    }
 
   }
 
 }
-
 
 /* ================= EVENTS ================= */
 
