@@ -591,6 +591,129 @@ tbody tr:hover td{
 .btn-gmail{background:#0f766e;}
 .btn-whatsapp{background:#166534;}
 
+/* ================= COMMENTS ================= */
+
+.comment-item{
+  border:1px solid #e5e7eb;
+  border-left:5px solid #071b5c;
+  border-radius:10px;
+  padding:15px;
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.comment-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.comment-name{
+  font-size:16px;
+  font-weight:700;
+  color:#071b5c;
+}
+
+.comment-subject{
+  margin-top:4px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.comment-message{
+  margin-top:12px;
+  padding:12px;
+  background:#f7f9fc;
+  border-radius:8px;
+  line-height:1.7;
+  white-space:pre-line;
+  font-size:13px;
+}
+
+.comment-reply{
+  margin-top:12px;
+  padding:12px;
+  background:#ecfdf5;
+  border-left:4px solid #047857;
+  border-radius:7px;
+  line-height:1.7;
+  white-space:pre-line;
+  font-size:13px;
+}
+
+.comment-reply-title{
+  font-weight:700;
+  color:#047857;
+  margin-bottom:4px;
+}
+
+.comment-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.reply-btn{
+  background:#071b5c;
+}
+
+.reply-box{
+  display:none;
+  margin-top:12px;
+  padding:12px;
+  background:#f8fafc;
+  border:1px solid #d8dce5;
+  border-radius:8px;
+}
+
+.reply-box.show{
+  display:block;
+}
+
+.reply-input{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  padding:10px;
+  border:1px solid #d8dce5;
+  border-radius:7px;
+  font-family:inherit;
+  font-size:13px;
+}
+
+.reply-save{
+  margin-top:8px;
+  background:#047857;
+}
+
+.comment-status{
+  display:inline-block;
+  padding:4px 9px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+  background:#f3f4f6;
+}
+
+.comment-status.replied{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.comment-status.pending{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+@media(max-width:700px){
+
+  .comment-head{
+    flex-direction:column;
+  }
+
+}
 </style>
 </head>
 
@@ -716,6 +839,54 @@ tbody tr:hover td{
     <div id="newsList" class="news-list"></div>
 
   </div>
+<!-- =====================================================
+     COMMENTS / GRIEVANCE
+===================================================== -->
+
+<div class="panel" id="commentsSection">
+
+  <h2>💬 Comments / सुझाव / गुनासो</h2>
+
+  <div class="news-toolbar">
+
+    <input
+      id="commentsSearch"
+      class="search"
+      type="search"
+      placeholder="नाम, विषय वा सन्देश खोज्नुहोस्..."
+    >
+
+    <select id="commentsCategory" class="select">
+      <option value="all">All Category</option>
+    </select>
+
+    <select id="commentsStatus" class="select">
+      <option value="all">All Status</option>
+    </select>
+
+    <button
+      id="commentsRefreshBtn"
+      type="button"
+    >
+      🔄 Refresh
+    </button>
+
+  </div>
+
+  <div
+    id="commentsStatusText"
+    class="status"
+    style="margin-bottom:12px;"
+  >
+    Loading Comments...
+  </div>
+
+  <div
+    id="commentsList"
+    class="news-list"
+  ></div>
+
+</div>
 
 </main>
 
@@ -765,6 +936,18 @@ const NEWS_CSV_URL =
 const USERS_CSV_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=680228645&single=true&output=csv";
 
+
+const COMMENTS_CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQAJ7HwXWUW_8E2_jpMKAKFSxlmS1cOdX4_TKh9pObACuiiYYqsBURXedli_iTj4ENtYA_1dQdrlw5n/pub?gid=740624513&single=true&output=csv";
+
+/*
+  Google Apps Script Web App URL
+  Apps Script deploy गरेपछि यहाँ URL राख्नुहोस्।
+*/
+const COMMENTS_API_URL =
+"https://script.google.com/macros/s/AKfycbxokQ-PfINDrvDQhj-4syeiNIxJpFo4ZQjeXQA6YXlgFMPiJoxp3qwPTCv5_DCVQGP6vg/exec";
+
+let commentsData=[];
 
 /* =========================================================
    FALLBACK DATA
@@ -3218,6 +3401,777 @@ async function generateApplicationPDF(row){
   }
 
 }
+
+/* =========================================================
+   COMMENTS
+========================================================= */
+
+function getCommentValue(row,name){
+
+  const key=Object.keys(row).find(k=>
+    normalizeText(k)===normalizeText(name)
+  );
+
+  return key
+    ? String(row[key] ?? "").trim()
+    : "";
+}
+
+
+/* ================= LOAD COMMENTS ================= */
+
+async function loadComments(){
+
+  const status=
+    document.getElementById("commentsStatusText");
+
+  const button=
+    document.getElementById("commentsRefreshBtn");
+
+  button.disabled=true;
+
+  status.textContent=
+    "💬 Loading Comments...";
+
+  try{
+
+    const url=
+      COMMENTS_CSV_URL+
+      "&_="+
+      Date.now();
+
+    const response=await fetch(
+      url,
+      {
+        method:"GET",
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "HTTP "+response.status
+      );
+    }
+
+    const csv=await response.text();
+
+    const rows=parseCSV(csv);
+
+    if(rows.length<2){
+      throw new Error(
+        "Comments sheet मा data छैन।"
+      );
+    }
+
+    commentsData=normalize(rows);
+
+    populateCommentFilters();
+
+    renderComments();
+
+    status.textContent=
+      "🟢 Comments updated: "+
+      new Date().toLocaleTimeString();
+
+  }catch(error){
+
+    console.error(
+      "Comments loading error:",
+      error
+    );
+
+    commentsData=[];
+
+    document.getElementById(
+      "commentsList"
+    ).innerHTML=`
+
+      <div class="no-news">
+
+        ⚠️ Comments load हुन सकेन।
+
+      </div>
+
+    `;
+
+    status.textContent=
+      "🔴 Comments unavailable";
+
+  }finally{
+
+    button.disabled=false;
+
+  }
+
+}
+
+
+/* ================= FILTERS ================= */
+
+function populateCommentFilters(){
+
+  const category=
+    document.getElementById(
+      "commentsCategory"
+    );
+
+  const status=
+    document.getElementById(
+      "commentsStatus"
+    );
+
+  const oldCategory=
+    category.value;
+
+  const oldStatus=
+    status.value;
+
+  const categories=[
+    ...new Set(
+      commentsData
+        .map(row=>
+          getCommentValue(row,"Category")
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const statuses=[
+    ...new Set(
+      commentsData
+        .map(row=>
+          getCommentValue(row,"Status")
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  category.innerHTML=
+    `<option value="all">All Category</option>`;
+
+  categories.forEach(value=>{
+
+    const option=
+      document.createElement("option");
+
+    option.value=value;
+    option.textContent=value;
+
+    category.appendChild(option);
+
+  });
+
+  status.innerHTML=
+    `<option value="all">All Status</option>`;
+
+  statuses.forEach(value=>{
+
+    const option=
+      document.createElement("option");
+
+    option.value=value;
+    option.textContent=value;
+
+    status.appendChild(option);
+
+  });
+
+  if(categories.includes(oldCategory)){
+    category.value=oldCategory;
+  }
+
+  if(statuses.includes(oldStatus)){
+    status.value=oldStatus;
+  }
+
+}
+
+
+/* ================= RENDER ================= */
+
+function renderComments(){
+
+  const list=
+    document.getElementById(
+      "commentsList"
+    );
+
+  const search=
+    normalizeText(
+      document.getElementById(
+        "commentsSearch"
+      ).value
+    );
+
+  const category=
+    document.getElementById(
+      "commentsCategory"
+    ).value;
+
+  const statusFilter=
+    document.getElementById(
+      "commentsStatus"
+    ).value;
+
+  let rows=[...commentsData];
+
+  rows=rows.filter(row=>{
+
+    const rowCategory=
+      getCommentValue(row,"Category");
+
+    const rowStatus=
+      getCommentValue(row,"Status");
+
+    if(
+      category!=="all" &&
+      rowCategory!==category
+    ){
+      return false;
+    }
+
+    if(
+      statusFilter!=="all" &&
+      rowStatus!==statusFilter
+    ){
+      return false;
+    }
+
+    if(!search){
+      return true;
+    }
+
+    const searchable=[
+      getCommentValue(row,"ID"),
+      getCommentValue(row,"Date"),
+      getCommentValue(row,"Time"),
+      getCommentValue(row,"Name"),
+      getCommentValue(row,"Address"),
+      getCommentValue(row,"Mobile"),
+      getCommentValue(row,"Email"),
+      getCommentValue(row,"Category"),
+      getCommentValue(row,"Subject"),
+      getCommentValue(row,"Message/Comment"),
+      getCommentValue(row,"Admin Reply"),
+      getCommentValue(row,"Status")
+    ].join(" ");
+
+    return normalizeText(searchable)
+      .includes(search);
+
+  });
+
+
+  /* newest first */
+
+  rows.sort((a,b)=>{
+
+    const da=
+      new Date(
+        getCommentValue(a,"Date")+" "+
+        getCommentValue(a,"Time")
+      ).getTime() || 0;
+
+    const db=
+      new Date(
+        getCommentValue(b,"Date")+" "+
+        getCommentValue(b,"Time")
+      ).getTime() || 0;
+
+    return db-da;
+
+  });
+
+
+  list.innerHTML="";
+
+
+  if(!rows.length){
+
+    list.innerHTML=`
+
+      <div class="no-news">
+
+        💬 कुनै Comments / गुनासो भेटिएन।
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  rows.forEach(row=>{
+
+    const id=
+      getCommentValue(row,"ID");
+
+    const date=
+      getCommentValue(row,"Date");
+
+    const time=
+      getCommentValue(row,"Time");
+
+    const name=
+      getCommentValue(row,"Name");
+
+    const address=
+      getCommentValue(row,"Address");
+
+    const mobile=
+      getCommentValue(row,"Mobile");
+
+    const email=
+      getCommentValue(row,"Email");
+
+    const categoryValue=
+      getCommentValue(row,"Category");
+
+    const subject=
+      getCommentValue(row,"Subject");
+
+    const message=
+      getCommentValue(
+        row,
+        "Message/Comment"
+      );
+
+    const attachment=
+      getCommentValue(
+        row,
+        "Attachment"
+      );
+
+    const rowStatus=
+      getCommentValue(
+        row,
+        "Status"
+      );
+
+    const adminReply=
+      getCommentValue(
+        row,
+        "Admin Reply"
+      );
+
+    const replyDate=
+      getCommentValue(
+        row,
+        "Reply Date"
+      );
+
+
+    const item=
+      document.createElement("article");
+
+    item.className=
+      "comment-item";
+
+
+    let attachmentHTML="";
+
+    if(attachment){
+
+      attachmentHTML=`
+
+        <a
+          class="btn-small"
+          href="${escapeHtml(attachment)}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📎 Attachment
+        </a>
+
+      `;
+
+    }
+
+
+    const replyHTML=
+      adminReply
+      ? `
+
+        <div class="comment-reply">
+
+          <div class="comment-reply-title">
+            💬 Admin Reply
+          </div>
+
+          ${escapeHtml(adminReply)}
+
+          ${
+            replyDate
+            ? `
+              <div
+                style="
+                  margin-top:5px;
+                  font-size:11px;
+                  color:#667085;
+                "
+              >
+                📅 ${escapeHtml(replyDate)}
+              </div>
+            `
+            :""
+          }
+
+        </div>
+
+      `
+      :"";
+
+
+    item.innerHTML=`
+
+      <div class="comment-head">
+
+        <div>
+
+          <div class="comment-name">
+
+            👤 ${escapeHtml(
+              name || "Anonymous"
+            )}
+
+          </div>
+
+          ${
+            subject
+            ? `
+              <div class="comment-subject">
+                ${escapeHtml(subject)}
+              </div>
+            `
+            :""
+          }
+
+        </div>
+
+
+        <div>
+
+          ${
+            rowStatus
+            ? `
+              <span
+                class="
+                  comment-status
+                  ${
+                    normalizeText(rowStatus)
+                      .includes("reply")
+                    ? "replied"
+                    : "pending"
+                  }
+                "
+              >
+                ${escapeHtml(rowStatus)}
+              </span>
+            `
+            :""
+          }
+
+        </div>
+
+      </div>
+
+
+      <div class="news-meta">
+
+        ${
+          id
+          ? `<span class="meta">🆔 ${escapeHtml(id)}</span>`
+          :""
+        }
+
+        ${
+          date
+          ? `<span class="meta">📅 ${escapeHtml(date)}</span>`
+          :""
+        }
+
+        ${
+          time
+          ? `<span class="meta">⏰ ${escapeHtml(time)}</span>`
+          :""
+        }
+
+        ${
+          categoryValue
+          ? `<span class="meta">🏷️ ${escapeHtml(categoryValue)}</span>`
+          :""
+        }
+
+        ${
+          address
+          ? `<span class="meta">📍 ${escapeHtml(address)}</span>`
+          :""
+        }
+
+        ${
+          mobile
+          ? `<span class="meta">📞 ${escapeHtml(mobile)}</span>`
+          :""
+        }
+
+        ${
+          email
+          ? `<span class="meta">✉️ ${escapeHtml(email)}</span>`
+          :""
+        }
+
+      </div>
+
+
+      ${
+        message
+        ? `
+          <div class="comment-message">
+            ${escapeHtml(message)}
+          </div>
+        `
+        :""
+      }
+
+
+      ${replyHTML}
+
+
+      <div class="comment-actions">
+
+        ${attachmentHTML}
+
+        <button
+          type="button"
+          class="btn-small reply-btn"
+          onclick="toggleReplyBox('${escapeHtml(id)}')"
+        >
+          💬 Reply
+        </button>
+
+      </div>
+
+
+      <div
+        id="replyBox-${escapeHtml(id)}"
+        class="reply-box"
+      >
+
+        <textarea
+          id="replyInput-${escapeHtml(id)}"
+          class="reply-input"
+          placeholder="यहाँ Admin Reply लेख्नुहोस्..."
+        ></textarea>
+
+        <button
+          type="button"
+          class="btn-small reply-save"
+          onclick="submitCommentReply('${escapeHtml(id)}')"
+        >
+          ✅ Send Reply
+        </button>
+
+      </div>
+
+    `;
+
+    list.appendChild(item);
+
+  });
+
+}
+
+
+/* ================= REPLY BOX ================= */
+
+function toggleReplyBox(id){
+
+  const box=
+    document.getElementById(
+      "replyBox-"+id
+    );
+
+  if(!box){
+    return;
+  }
+
+  box.classList.toggle("show");
+
+}
+
+
+/* ================= SEND REPLY ================= */
+
+async function submitCommentReply(id){
+
+  if(!isAdminLoggedIn){
+
+    alert(
+      "Reply गर्न Admin Login आवश्यक छ।"
+    );
+
+    return;
+
+  }
+
+
+  const input=
+    document.getElementById(
+      "replyInput-"+id
+    );
+
+  if(!input){
+    return;
+  }
+
+
+  const reply=
+    input.value.trim();
+
+
+  if(!reply){
+
+    alert(
+      "कृपया Reply लेख्नुहोस्।"
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !COMMENTS_API_URL ||
+    COMMENTS_API_URL.includes(
+      "YOUR_SCRIPT_ID"
+    )
+  ){
+
+    alert(
+      "Comments API URL सेट गरिएको छैन।"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const response=
+      await fetch(
+        COMMENTS_API_URL,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:JSON.stringify({
+
+            action:"reply",
+
+            id:id,
+
+            reply:reply
+
+          })
+
+        }
+      );
+
+
+    const result=
+      await response.json();
+
+
+    if(!result.success){
+
+      throw new Error(
+        result.message ||
+        "Reply save भएन।"
+      );
+
+    }
+
+
+    alert(
+      "✅ Reply successfully sent."
+    );
+
+
+    input.value="";
+
+    await loadComments();
+
+
+  }catch(error){
+
+    console.error(
+      "Reply error:",
+      error
+    );
+
+    alert(
+      "❌ Reply पठाउन सकिएन।\n"+
+      error.message
+    );
+
+  }
+
+}
+
+
+/* ================= EVENTS ================= */
+
+document
+  .getElementById(
+    "commentsSearch"
+  )
+  .addEventListener(
+    "input",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsCategory"
+  )
+  .addEventListener(
+    "change",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsStatus"
+  )
+  .addEventListener(
+    "change",
+    renderComments
+  );
+
+
+document
+  .getElementById(
+    "commentsRefreshBtn"
+  )
+  .addEventListener(
+    "click",
+    loadComments
+);
+
+
+/* INITIAL COMMENTS LOAD */
+
+loadComments();
 
 
 /* =========================================================
