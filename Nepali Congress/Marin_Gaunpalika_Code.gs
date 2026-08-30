@@ -26,7 +26,7 @@ const CONFIG = {
    * यहाँ तपाईंले notification प्राप्त गर्ने Gmail राख्नुहोस्।
    */
   ADMIN_EMAIL:
-    'YOUR_EMAIL@gmail.com',
+    'Nepalicongressmarin@gmail.com',
 
 
   /* ================= SHEET NAMES ================= */
