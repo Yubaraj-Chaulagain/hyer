@@ -1832,3 +1832,19 @@ function testAdminEmail() {
 
   return 'Test email sent to ' + email;
 }
+function testSpreadsheetAccess() {
+  try {
+    const ss = SpreadsheetApp.openById(
+      '1WwIGRZdjpmI9aD35lV2P2xddNzVMwUECwj_OEAf3zKM'
+    );
+
+    Logger.log('Name: ' + ss.getName());
+    Logger.log('ID: ' + ss.getId());
+
+    return 'SUCCESS - ' + ss.getName();
+
+  } catch (e) {
+    Logger.log(e.stack);
+    throw e;
+  }
+}
