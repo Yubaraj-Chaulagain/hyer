@@ -33,7 +33,7 @@
 
 const CONFIG = {
   SPREADSHEET_ID: '1WwIGRZdjpmI9aD35lV2P2xddNzVMwUECwj_OEAf3zKM',
-  ADMIN_EMAIL: 'Nepalicongressmarin@gmail.com',
+  ADMIN_EMAIL: 'yubarajchaulagain5@gmail.com',
   TOKEN_TTL_SECONDS: 21600,
   MAX_BODY_LENGTH: 500000,
   TIMEZONE: 'Asia/Kathmandu',
