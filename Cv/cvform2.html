@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CV Search & Print</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:#f1f4f5;
+  color:#222;
+  padding:20px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+}
+
+/* SEARCH */
+
+.search-box{
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 3px 15px rgba(0,0,0,.10);
+  margin-bottom:20px;
+}
+
+.search-box h1{
+  text-align:center;
+  color:#176b65;
+  margin-bottom:20px;
+}
+
+.search-row{
+  display:flex;
+  gap:10px;
+}
+
+.search-row input{
+  flex:1;
+  padding:14px;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-size:16px;
+}
+
+.search-row button{
+  padding:14px 25px;
+  border:0;
+  border-radius:7px;
+  background:#176b65;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.search-row button:hover{
+  background:#10514d;
+}
+
+/* RESULT */
+
+#results{
+  margin-top:20px;
+}
+
+.result-card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.result-card h3{
+  color:#176b65;
+  margin-bottom:8px;
+}
+
+.result-card p{
+  margin:5px 0;
+}
+
+.view-btn{
+  margin-top:12px;
+  padding:10px 18px;
+  background:#176b65;
+  color:white;
+  border:0;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* CV */
+
+#cvArea{
+  display:none;
+}
+
+.cv{
+  max-width:900px;
+  margin:20px auto;
+  background:white;
+  box-shadow:0 2px 15px rgba(0,0,0,.15);
+  min-height:1120px;
+  display:grid;
+  grid-template-columns:260px 1fr;
+}
+
+.left{
+  background:#105f59;
+  color:white;
+  padding:25px 20px;
+}
+
+.right{
+  padding:30px;
+}
+
+.profile{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.profile img{
+  width:115px;
+  height:115px;
+  object-fit:cover;
+  border-radius:50%;
+  border:4px solid white;
+  display:none;
+  margin:auto;
+}
+
+.profile h1{
+  margin-top:15px;
+  font-size:25px;
+}
+
+.left-title{
+  font-size:18px;
+  font-weight:bold;
+  text-decoration:underline;
+  margin:25px 0 12px;
+}
+
+.contact-item{
+  margin-bottom:15px;
+}
+
+.contact-item strong{
+  display:block;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.contact-item span{
+  font-size:13px;
+}
+
+.skill{
+  font-size:13px;
+  margin:8px 0;
+}
+
+.language{
+  font-size:13px;
+  line-height:1.6;
+}
+
+.right h2{
+  background:#176b65;
+  color:white;
+  padding:9px 14px;
+  border-radius:6px;
+  font-size:16px;
+  margin-bottom:15px;
+  text-transform:uppercase;
+}
+
+.section{
+  margin-bottom:25px;
+}
+
+.summary{
+  font-size:13px;
+  line-height:1.7;
+  text-align:justify;
+}
+
+.work{
+  margin-bottom:20px;
+}
+
+.job-title{
+  color:#176b65;
+  font-weight:bold;
+  font-size:15px;
+}
+
+.company{
+  font-weight:bold;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.date,
+.work-location{
+  font-size:12px;
+  color:#666;
+  margin-top:4px;
+}
+
+.description{
+  font-size:12px;
+  line-height:1.6;
+  margin-top:6px;
+}
+
+.education{
+  font-size:13px;
+}
+
+.responsibility{
+  font-size:13px;
+  margin-bottom:8px;
+  line-height:1.5;
+}
+
+.cv-actions{
+  max-width:900px;
+  margin:15px auto;
+  display:flex;
+  gap:10px;
+}
+
+.cv-actions button{
+  flex:1;
+  padding:14px;
+  border:0;
+  border-radius:7px;
+  background:#176b65;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.close-btn{
+  background:#555 !important;
+}
+
+/* LOADING */
+
+.message{
+  background:white;
+  padding:20px;
+  border-radius:8px;
+  text-align:center;
+  margin-top:15px;
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  body{
+    padding:10px;
+  }
+
+  .search-row{
+    flex-direction:column;
+  }
+
+  .cv{
+    grid-template-columns:1fr;
+  }
+
+  .left{
+    padding:25px;
+  }
+
+  .right{
+    padding:25px 20px;
+  }
+
+  .cv-actions{
+    flex-direction:column;
+  }
+}
+
+/* PRINT */
+
+@media print{
+
+  body{
+    background:white;
+    padding:0;
+  }
+
+  .search-box,
+  #results,
+  .cv-actions{
+    display:none !important;
+  }
+
+  #cvArea{
+    display:block !important;
+  }
+
+  .cv{
+    display:grid;
+    margin:0;
+    width:100%;
+    max-width:none;
+    box-shadow:none;
+    min-height:0;
+  }
+
+  @page{
+    size:A4;
+    margin:0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- SEARCH -->
+  <div class="search-box">
+
+    <h1>Search CV</h1>
+
+    <div class="search-row">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by CV ID, Name, Phone or Email..."
+        autocomplete="off"
+      >
+
+      <button onclick="searchCV()">
+        Search
+      </button>
+
+    </div>
+
+    <div id="loading" class="message">
+      Loading CV data...
+    </div>
+
+  </div>
+
+
+  <!-- SEARCH RESULTS -->
+
+  <div id="results"></div>
+
+
+  <!-- CV AREA -->
+
+  <div id="cvArea">
+
+    <div class="cv">
+
+      <!-- LEFT -->
+
+      <div class="left">
+
+        <div class="profile">
+
+          <img id="cvPhoto">
+
+          <h1 id="cvName"></h1>
+
+        </div>
+
+
+        <div class="left-title">
+          CONTACT
+        </div>
+
+        <div class="contact-item">
+          <strong>Location:</strong>
+          <span id="cvLocation"></span>
+        </div>
+
+        <div class="contact-item">
+          <strong>Phone:</strong>
+          <span id="cvPhone"></span>
+        </div>
+
+        <div class="contact-item">
+          <strong>Email:</strong>
+          <span id="cvEmail"></span>
+        </div>
+
+        <div class="contact-item">
+          <strong>DOB:</strong>
+          <span id="cvDob"></span>
+        </div>
+
+        <div class="contact-item">
+          <strong>Gender:</strong>
+          <span id="cvGender"></span>
+        </div>
+
+        <div class="contact-item">
+          <strong>Nationality:</strong>
+          <span id="cvNationality"></span>
+        </div>
+
+
+        <!-- SKILLS -->
+
+        <div class="left-title">
+          SKILLS
+        </div>
+
+        <div id="cvSkills"></div>
+
+
+        <!-- LANGUAGES -->
+
+        <div class="left-title">
+          LANGUAGES
+        </div>
+
+        <div class="language" id="cvLanguages"></div>
+
+      </div>
+
+
+      <!-- RIGHT -->
+
+      <div class="right">
+
+        <!-- SUMMARY -->
+
+        <div class="section">
+
+          <h2>
+            PROFESSIONAL SUMMARY
+          </h2>
+
+          <div
+            class="summary"
+            id="cvSummary">
+          </div>
+
+        </div>
+
+
+        <!-- WORK HISTORY -->
+
+        <div class="section">
+
+          <h2>
+            WORK HISTORY
+          </h2>
+
+
+          <div class="work">
+
+            <div
+              class="job-title"
+              id="jobTitle1">
+            </div>
+
+            <div
+              class="company"
+              id="company1">
+            </div>
+
+            <div
+              class="date"
+              id="date1">
+            </div>
+
+            <div
+              class="work-location"
+              id="location1">
+            </div>
+
+            <div
+              class="description"
+              id="description1">
+            </div>
+
+          </div>
+
+
+          <div class="work">
+
+            <div
+              class="job-title"
+              id="jobTitle2">
+            </div>
+
+            <div
+              class="company"
+              id="company2">
+            </div>
+
+            <div
+              class="date"
+              id="date2">
+            </div>
+
+            <div
+              class="work-location"
+              id="location2">
+            </div>
+
+            <div
+              class="description"
+              id="description2">
+            </div>
+
+          </div>
+
+
+          <div class="work">
+
+            <div
+              class="job-title"
+              id="jobTitle3">
+            </div>
+
+            <div
+              class="company"
+              id="company3">
+            </div>
+
+            <div
+              class="date"
+              id="date3">
+            </div>
+
+            <div
+              class="work-location"
+              id="location3">
+            </div>
+
+            <div
+              class="description"
+              id="description3">
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- EDUCATION -->
+
+        <div class="section">
+
+          <h2>
+            EDUCATION
+          </h2>
+
+          <div
+            class="education"
+            id="cvEducation">
+          </div>
+
+        </div>
+
+
+        <!-- RESPONSIBILITIES -->
+
+        <div class="section">
+
+          <h2>
+            RESPONSIBILITIES
+          </h2>
+
+          <div
+            class="responsibility"
+            id="responsibility1">
+          </div>
+
+          <div
+            class="responsibility"
+            id="responsibility2">
+          </div>
+
+          <div
+            class="responsibility"
+            id="responsibility3">
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div class="cv-actions">
+
+      <button onclick="window.print()">
+        🖨 Print / Save PDF
+      </button>
+
+      <button
+        class="close-btn"
+        onclick="closeCV()">
+        ✕ Close CV
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   GOOGLE SHEET CSV
+===================================================== */
+
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vSuLfJpHVdcwhskx36i4OE0BdWWHTNs4dpKMv-bJ5DvrvD9MhZD1DMlwypSR5Z4aT0ieJygDLVCMO2s/pub?gid=0&single=true&output=csv";
+
+
+let cvData = [];
+
+
+/* =====================================================
+   CSV PARSER
+===================================================== */
+
+function parseCSV(text){
+
+  const rows = [];
+
+  let row = [];
+  let value = "";
+  let insideQuotes = false;
+
+  for(let i=0;i<text.length;i++){
+
+    const char = text[i];
+    const next = text[i+1];
+
+    if(char === '"' && insideQuotes && next === '"'){
+      value += '"';
+      i++;
+      continue;
+    }
+
+    if(char === '"'){
+      insideQuotes = !insideQuotes;
+      continue;
+    }
+
+    if(char === ',' && !insideQuotes){
+
+      row.push(value);
+      value = "";
+      continue;
+    }
+
+    if((char === '\n' || char === '\r') && !insideQuotes){
+
+      if(char === '\r' && next === '\n'){
+        i++;
+      }
+
+      row.push(value);
+      value = "";
+
+      if(row.some(x => x.trim() !== "")){
+        rows.push(row);
+      }
+
+      row = [];
+      continue;
+    }
+
+    value += char;
+  }
+
+  if(value !== "" || row.length){
+
+    row.push(value);
+
+    if(row.some(x => x.trim() !== "")){
+      rows.push(row);
+    }
+  }
+
+  return rows;
+}
+
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+async function loadCVData(){
+
+  const loading =
+    document.getElementById("loading");
+
+  try{
+
+    const response =
+      await fetch(CSV_URL + "&t=" + Date.now());
+
+    if(!response.ok){
+      throw new Error("Google Sheet could not be loaded");
+    }
+
+    const text =
+      await response.text();
+
+    const rows =
+      parseCSV(text);
+
+    if(rows.length < 2){
+      throw new Error("No CV data found");
+    }
+
+    const headers =
+      rows[0].map(h => h.trim());
+
+    cvData =
+      rows.slice(1).map(row => {
+
+        const obj = {};
+
+        headers.forEach((header,index)=>{
+          obj[header] =
+            (row[index] || "").trim();
+        });
+
+        return obj;
+
+      });
+
+    loading.innerHTML =
+      "✓ CV data loaded successfully";
+
+    setTimeout(()=>{
+      loading.style.display="none";
+    },1500);
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    loading.innerHTML =
+      "❌ Failed to load Google Sheet data.";
+
+  }
+}
+
+
+/* =====================================================
+   GET VALUE
+===================================================== */
+
+function getValue(obj, names){
+
+  for(const name of names){
+
+    if(
+      obj[name] !== undefined &&
+      obj[name] !== null &&
+      String(obj[name]).trim() !== ""
+    ){
+
+      return String(obj[name]).trim();
+
+    }
+
+  }
+
+  return "";
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+function searchCV(){
+
+  const keyword =
+    document
+      .getElementById("searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const results =
+    document.getElementById("results");
+
+  results.innerHTML = "";
+
+  if(!keyword){
+
+    results.innerHTML =
+      `<div class="message">
+        Please enter CV ID, Name, Phone or Email.
+       </div>`;
+
+    return;
+  }
+
+
+  const matches =
+    cvData.filter(cv => {
+
+      const id =
+        getValue(cv,[
+          "CV ID",
+          "cv_id",
+          "CV_ID",
+          "ID",
+          "Id"
+        ]).toLowerCase();
+
+      const name =
+        getValue(cv,[
+          "Full Name",
+          "fullName",
+          "Name",
+          "name"
+        ]).toLowerCase();
+
+      const phone =
+        getValue(cv,[
+          "Phone",
+          "phone"
+        ]).toLowerCase();
+
+      const email =
+        getValue(cv,[
+          "Email",
+          "email"
+        ]).toLowerCase();
+
+      return (
+        id.includes(keyword) ||
+        name.includes(keyword) ||
+        phone.includes(keyword) ||
+        email.includes(keyword)
+      );
+
+    });
+
+
+  if(matches.length === 0){
+
+    results.innerHTML =
+      `<div class="message">
+        ❌ No CV found.
+       </div>`;
+
+    return;
+  }
+
+
+  matches.forEach((cv,index)=>{
+
+    const name =
+      getValue(cv,[
+        "Full Name",
+        "fullName",
+        "Name",
+        "name"
+      ]);
+
+    const phone =
+      getValue(cv,[
+        "Phone",
+        "phone"
+      ]);
+
+    const email =
+      getValue(cv,[
+        "Email",
+        "email"
+      ]);
+
+    const id =
+      getValue(cv,[
+        "CV ID",
+        "cv_id",
+        "CV_ID",
+        "ID",
+        "Id"
+      ]);
+
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "result-card";
+
+
+    card.innerHTML = `
+
+      <h3>${escapeHTML(name || "Unnamed")}</h3>
+
+      <p><strong>CV ID:</strong>
+        ${escapeHTML(id)}
+      </p>
+
+      <p><strong>Phone:</strong>
+        ${escapeHTML(phone)}
+      </p>
+
+      <p><strong>Email:</strong>
+        ${escapeHTML(email)}
+      </p>
+
+      <button class="view-btn">
+        View CV
+      </button>
+    `;
+
+
+    card
+      .querySelector("button")
+      .onclick = function(){
+
+        showCV(cv);
+
+      };
+
+
+    results.appendChild(card);
+
+  });
+
+}
+
+
+/* =====================================================
+   SHOW CV
+===================================================== */
+
+function showCV(cv){
+
+  document.getElementById("results")
+    .style.display="none";
+
+  document.getElementById("cvArea")
+    .style.display="block";
+
+
+  /* PERSONAL */
+
+  setText(
+    "cvName",
+    getValue(cv,[
+      "Full Name",
+      "fullName",
+      "Name",
+      "name"
+    ])
+  );
+
+  setText(
+    "cvLocation",
+    getValue(cv,[
+      "Location",
+      "location"
+    ])
+  );
+
+  setText(
+    "cvPhone",
+    getValue(cv,[
+      "Phone",
+      "phone"
+    ])
+  );
+
+  setText(
+    "cvEmail",
+    getValue(cv,[
+      "Email",
+      "email"
+    ])
+  );
+
+  setText(
+    "cvDob",
+    getValue(cv,[
+      "Date of Birth",
+      "dob",
+      "DOB"
+    ])
+  );
+
+  setText(
+    "cvGender",
+    getValue(cv,[
+      "Gender",
+      "gender"
+    ])
+  );
+
+  setText(
+    "cvNationality",
+    getValue(cv,[
+      "Nationality",
+      "nationality"
+    ])
+  );
+
+
+  /* PHOTO */
+
+  const photo =
+    getValue(cv,[
+      "Profile Photo",
+      "profilePhoto",
+      "Photo",
+      "photo",
+      "Image",
+      "image"
+    ]);
+
+  const photoElement =
+    document.getElementById("cvPhoto");
+
+  if(photo){
+
+    photoElement.src = photo;
+    photoElement.style.display="block";
+
+  }
+  else{
+
+    photoElement.style.display="none";
+
+  }
+
+
+  /* SUMMARY */
+
+  setText(
+    "cvSummary",
+    getValue(cv,[
+      "Professional Summary",
+      "professionalSummary",
+      "Summary",
+      "summary"
+    ])
+  );
+
+
+  /* WORK HISTORY */
+
+  loadWork(cv,1);
+  loadWork(cv,2);
+  loadWork(cv,3);
+
+
+  /* EDUCATION */
+
+  setText(
+    "cvEducation",
+    getValue(cv,[
+      "Education",
+      "education",
+      "Education / Qualification",
+      "Qualification"
+    ])
+  );
+
+
+  /* SKILLS */
+
+  const skills =
+    getValue(cv,[
+      "Skills",
+      "skills"
+    ]);
+
+  const skillBox =
+    document.getElementById("cvSkills");
+
+  skillBox.innerHTML = "";
+
+  if(skills){
+
+    skills
+      .split(/[,;\n]+/)
+      .map(s=>s.trim())
+      .filter(Boolean)
+      .forEach(skill=>{
+
+        const div =
+          document.createElement("div");
+
+        div.className="skill";
+
+        div.textContent =
+          "- " + skill;
+
+        skillBox.appendChild(div);
+
+      });
+
+  }
+
+
+  /* LANGUAGES */
+
+  setText(
+    "cvLanguages",
+    getValue(cv,[
+      "Languages",
+      "languages"
+    ])
+  );
+
+
+  /* RESPONSIBILITIES */
+
+  setText(
+    "responsibility1",
+    getValue(cv,[
+      "Responsibility 1",
+      "responsibility1"
+    ])
+  );
+
+  setText(
+    "responsibility2",
+    getValue(cv,[
+      "Responsibility 2",
+      "responsibility2"
+    ])
+  );
+
+  setText(
+    "responsibility3",
+    getValue(cv,[
+      "Responsibility 3",
+      "responsibility3"
+    ])
+  );
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================================
+   WORK HISTORY
+===================================================== */
+
+function loadWork(cv,n){
+
+  const job =
+    getValue(cv,[
+      `Job Title ${n}`,
+      `jobTitle${n}`,
+      `JobTitle${n}`
+    ]);
+
+  const company =
+    getValue(cv,[
+      `Company Name ${n}`,
+      `companyName${n}`,
+      `Company${n}`
+    ]);
+
+  const start =
+    getValue(cv,[
+      `Start Date ${n}`,
+      `startDate${n}`,
+      `StartDate${n}`
+    ]);
+
+  const end =
+    getValue(cv,[
+      `End Date ${n}`,
+      `endDate${n}`,
+      `EndDate${n}`
+    ]);
+
+  const location =
+    getValue(cv,[
+      `Work Location ${n}`,
+      `workLocation${n}`,
+      `Location ${n}`,
+      `WorkLocation${n}`
+    ]);
+
+  const description =
+    getValue(cv,[
+      `Work Description ${n}`,
+      `workDescription${n}`,
+      `Description ${n}`,
+      `WorkDescription${n}`
+    ]);
+
+
+  setText(
+    `jobTitle${n}`,
+    job
+  );
+
+  setText(
+    `company${n}`,
+    company
+  );
+
+  setText(
+    `date${n}`,
+    start || end
+      ? `${start}${start && end ? " - " : ""}${end}`
+      : ""
+  );
+
+  setText(
+    `location${n}`,
+    location
+  );
+
+  setText(
+    `description${n}`,
+    description
+  );
+
+
+  /* Hide empty work */
+
+  const work =
+    document
+      .getElementById(`jobTitle${n}`)
+      .closest(".work");
+
+  if(!job && !company && !description){
+
+    work.style.display="none";
+
+  }
+  else{
+
+    work.style.display="block";
+
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE CV
+===================================================== */
+
+function closeCV(){
+
+  document.getElementById("cvArea")
+    .style.display="none";
+
+  document.getElementById("results")
+    .style.display="block";
+
+}
+
+
+/* =====================================================
+   TEXT HELPER
+===================================================== */
+
+function setText(id,value){
+
+  const element =
+    document.getElementById(id);
+
+  if(element){
+
+    element.textContent =
+      value || "";
+
+  }
+
+}
+
+
+/* =====================================================
+   HTML SECURITY
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   ENTER KEY SEARCH
+===================================================== */
+
+document
+  .getElementById("searchInput")
+  .addEventListener("keydown",function(e){
+
+    if(e.key === "Enter"){
+
+      searchCV();
+
+    }
+
+  });
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadCVData();
+
+</script>
+
+</body>
+</html>
