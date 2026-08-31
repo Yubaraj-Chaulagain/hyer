@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV Data Entry & Resume Maker</title>
+
+<!-- PDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f3;font-family:Arial,sans-serif;color:#222}
+.container{max-width:1050px;margin:20px auto;background:#fff;padding:20px;border-radius:12px}
+h1{text-align:center;color:#126b65;margin:5px 0 20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button{width:auto;padding:11px 18px}
+button{border:0;border-radius:7px;padding:12px 18px;background:#176b65;color:#fff;font-weight:bold;cursor:pointer}
+button:hover{background:#10544f}
+input,textarea,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:6px;font-size:15px}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.full{grid-column:1/-1}.group{display:flex;flex-direction:column;gap:6px}
+.section{margin:18px 0}.title{background:#176b65;color:#fff;padding:12px;border-radius:7px;font-size:17px;font-weight:bold;margin-bottom:14px}
+.work{border:1px solid #ddd;background:#fafafa;padding:14px;border-radius:8px;margin-bottom:12px}
+.work h3{color:#176b65;margin:0 0 12px}
+.skills{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.skill{display:flex;gap:7px;align-items:center}.skill input{width:auto}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions button{flex:1;min-width:140px}
+#msg{margin-top:15px;padding:12px;border-radius:7px;display:none}
+.ok{background:#dff5e8;color:#12633c}.err{background:#ffe1e1;color:#a50000}
+.searchbox{display:flex;gap:8px;margin-bottom:14px}.searchbox input{flex:1}
+.results{display:grid;gap:8px}.result{border:1px solid #ddd;padding:10px;border-radius:7px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.result button{padding:8px 12px}
+#resumeArea{display:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.skills{grid-template-columns:1fr}.container{margin:0;padding:12px}.result{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+
+<body>
+<div class="container">
+<h1>CV Data Entry & Resume Maker</h1>
+
+<div class="tabs">
+<button onclick="showEntry()">Data Entry</button>
+<button onclick="showSearch()">Search / Print CV</button>
+</div>
+
+<div id="entryPage">
+<form id="cvForm">
+
+<div class="section"><div class="title">PERSONAL INFORMATION</div>
+<div class="grid">
+<div class="group full"><label>Profile Photo</label><input id="photo" type="file" accept="image/*"></div>
+<div class="group"><label>Full Name</label><input id="fullName" required></div>
+<div class="group"><label>Location</label><input id="location"></div>
+<div class="group"><label>Phone</label><input id="phone"></div>
+<div class="group"><label>Email</label><input id="email" type="email" required></div>
+<div class="group"><label>Date of Birth</label><input id="dob" placeholder="1992/05/18"></div>
+<div class="group"><label>Gender</label><select id="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+<div class="group"><label>Nationality</label><input id="nationality"></div>
+</div></div>
+
+<div class="section"><div class="title">PROFESSIONAL SUMMARY</div>
+<textarea id="summary" placeholder="Professional summary..."></textarea></div>
+
+<div class="section"><div class="title">WORKING HISTORY</div>
+<div id="works"></div></div>
+
+<div class="section"><div class="title">EDUCATION</div>
+<input id="education" placeholder="Example: Grade 8">
+</div>
+
+<div class="section"><div class="title">SKILLS</div>
+<div class="skills">
+<label class="skill"><input type="checkbox" name="skill" value="Masonry & Blockwork">Masonry & Blockwork</label>
+<label class="skill"><input type="checkbox" name="skill" value="Brickwork & Plastering">Brickwork & Plastering</label>
+<label class="skill"><input type="checkbox" name="skill" value="Repair & Maintenance">Repair & Maintenance</label>
+<label class="skill"><input type="checkbox" name="skill" value="Concrete Work">Concrete Work</label>
+<label class="skill"><input type="checkbox" name="skill" value="Construction Support">Construction Support</label>
+<label class="skill"><input type="checkbox" name="skill" value="Housekeeping">Housekeeping</label>
+<label class="skill"><input type="checkbox" name="skill" value="Hand & Power Tools">Hand & Power Tools</label>
+<label class="skill"><input type="checkbox" name="skill" value="Workplace Safety">Workplace Safety</label>
+<label class="skill"><input type="checkbox" name="skill" value="Teamwork">Teamwork</label>
+</div></div>
+
+<div class="section"><div class="title">LANGUAGES</div>
+<input id="languages" placeholder="Nepali, English, Hindi">
+</div>
+
+<div class="section"><div class="title">RESPONSIBILITIES</div>
+<div class="grid">
+<input id="resp1" placeholder="Responsibility 1">
+<input id="resp2" placeholder="Responsibility 2">
+<input id="resp3" class="full" placeholder="Responsibility 3">
+</div></div>
+
+<div class="actions">
+<button type="submit" id="submitBtn">Submit CV Application</button>
+<button type="button" onclick="resetForm()">Clear</button>
+</div>
+</form>
+</div>
+
+<div id="searchPage" style="display:none">
+<div class="title">SEARCH CV</div>
+<div class="searchbox">
+<input id="searchInput" placeholder="Search by ID, name, phone or email">
+<button onclick="searchCV()">Search</button>
+</div>
+<div id="results"></div>
+</div>
+
+<div id="msg"></div>
+</div>
+
+<div id="resumeArea"></div>
+
+<script>
+/* ================= SETTINGS ================= */
+const SHEETDB_URL="https://sheetdb.io/api/v1/mp8z1v3ymc8jc";
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vSuLfJpHVdcwhskx36i4OE0BdWWHTNs4dpKMv-bJ5DvrvD9MhZD1DMlwypSR5Z4aT0ieJygDLVCMO2s/pub?gid=0&single=true&output=csv";
+
+const IMGBB_API_KEY="52ae8561eb90c44178b46a0c95d6664c";
+const EMAILJS_PUBLIC_KEY="8IoHedtvplHJpOPXe";
+const EMAILJS_SERVICE_ID="service_aifj3bl";
+const EMAILJS_TEMPLATE_ID="template_uc5h3vx";
+
+emailjs.init({publicKey:EMAILJS_PUBLIC_KEY});
+
+const jobs=[
+  {n:1,title:"Work History 1"},
+  {n:2,title:"Work History 2"},
+  {n:3,title:"Work History 3"}
+];
+
+document.getElementById("works").innerHTML=jobs.map(j=>`
+<div class="work">
+<h3>${j.title}</h3>
+<div class="grid">
+<div class="group"><label>Job Title</label><input id="jobTitle${j.n}"></div>
+<div class="group"><label>Company Name</label><input id="company${j.n}"></div>
+<div class="group"><label>Start Date</label><input id="start${j.n}" placeholder="2024/01/01"></div>
+<div class="group"><label>End Date</label><input id="end${j.n}" placeholder="Present"></div>
+<div class="group"><label>Location</label><input id="workLocation${j.n}"></div>
+<div class="group full"><label>Work Description</label><textarea id="workDescription${j.n}"></textarea></div>
+</div></div>`).join("");
+
+function v(id){return document.getElementById(id).value.trim()}
+function setv(id,val){document.getElementById(id).value=val||""}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+function showMsg(text,ok=false){
+ const m=document.getElementById("msg");m.textContent=text;m.className=ok?"ok":"err";m.style.display="block";
+ window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+}
+function showEntry(){document.getElementById("entryPage").style.display="block";document.getElementById("searchPage").style.display="none"}
+function showSearch(){document.getElementById("entryPage").style.display="none";document.getElementById("searchPage").style.display="block";document.getElementById("results").innerHTML=""}
+
+async function uploadImgBB(file){
+ const fd=new FormData();fd.append("key",IMGBB_API_KEY);fd.append("image",file);
+ const r=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:fd});
+ const j=await r.json();
+ if(!j.success) throw new Error("Photo upload failed");
+ return j.data.display_url;
+}
+
+function makeId(){
+ const now=new Date();
+ return "CV-"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+"-"+Math.random().toString(36).slice(2,7).toUpperCase();
+}
+
+function getSkills(){return [...document.querySelectorAll('input[name="skill"]:checked')].map(x=>x.value).join(", ")}
+
+function collectData(photoUrl="",id=""){
+ const d={};
+ d.ID=id||makeId();
+ d.FullName=v("fullName"); d.Location=v("location"); d.Phone=v("phone"); d.Email=v("email");
+ d.DOB=v("dob"); d.Gender=v("gender"); d.Nationality=v("nationality"); d.Professional_Summary=v("summary");
+ for(let i=1;i<=3;i++){
+   d["Job_Title_"+i]=v("jobTitle"+i);d["Company_"+i]=v("company"+i);
+   d["Start_Date_"+i]=v("start"+i);d["End_Date_"+i]=v("end"+i);
+   d["Work_Location_"+i]=v("workLocation"+i);d["Work_Description_"+i]=v("workDescription"+i);
+ }
+ d.Education=v("education");d.Skills=getSkills();d.Languages=v("languages");
+ d.Responsibility_1=v("resp1");d.Responsibility_2=v("resp2");d.Responsibility_3=v("resp3");
+ d.CV_Image_Link=photoUrl;d.Submitted_At=new Date().toLocaleString();
+ return d;
+}
+
+async function submitSheet(data){
+ const r=await fetch(SHEETDB_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({data:data})});
+ if(!r.ok) throw new Error("Google Sheet submission failed ("+r.status+")");
+ return await r.json();
+}
+
+async function sendEmail(data,pdfUrl=""){
+ /* The EmailJS template should contain:
+    {{email}}, {{name}}, {{cv_id}}, {{pdf_url}}
+ */
+ const params={
+   email:data.Email,
+   name:data.FullName,
+   cv_id:data.ID,
+   pdf_url:pdfUrl,
+   message:"Your CV application has been successfully submitted."
+ };
+ return emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,params);
+}
+
+document.getElementById("cvForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const btn=document.getElementById("submitBtn");btn.disabled=true;btn.textContent="Submitting...";
+ try{
+   let photoUrl="";
+   const file=document.getElementById("photo").files[0];
+   if(file) photoUrl=await uploadImgBB(file);
+
+   const data=collectData(photoUrl);
+   await submitSheet(data);
+
+   /* EmailJS sends the customer email. PDF is generated for printing/download.
+      A browser-generated PDF cannot itself be uploaded to ImgBB as a PDF.
+      The photo link is saved in Google Sheet and can be included in email. */
+   await sendEmail(data,photoUrl);
+
+   showMsg("CV submitted successfully. ID: "+data.ID+" — Email sent to "+data.Email,true);
+   renderResume(data);
+ }catch(err){
+   console.error(err);showMsg("Submission failed: "+(err?.message||JSON.stringify(err)));
+ }finally{btn.disabled=false;btn.textContent="Submit CV Application"}
+});
+
+function resetForm(){document.getElementById("cvForm").reset();document.getElementById("msg").style.display="none"}
+
+function renderResume(d){
+ const jobsHtml=[1,2,3].map(i=>{
+   if(!d["Job_Title_"+i] && !d["Company_"+i]) return "";
+   return `<div class="job"><b>${esc(d["Job_Title_"+i])}</b><div>${esc(d["Company_"+i])}</div>
+   <small>${esc(d["Start_Date_"+i])} - ${esc(d["End_Date_"+i])} | ${esc(d["Work_Location_"+i])}</small>
+   <p>${esc(d["Work_Description_"+i])}</p></div>`
+ }).join("");
+ const skills=(d.Skills||"").split(",").filter(Boolean).map(x=>`<li>${esc(x.trim())}</li>`).join("");
+ const photo=d.CV_Image_Link?`<img src="${esc(d.CV_Image_Link)}">`:"";
+ const area=document.getElementById("resumeArea");
+ area.innerHTML=`<div id="printCV" class="cv">
+ <aside>${photo}<h3>CONTACT</h3><b>Location</b><p>${esc(d.Location)}</p><b>Phone</b><p>${esc(d.Phone)}</p><b>Email</b><p>${esc(d.Email)}</p>
+ <b>DOB</b><p>${esc(d.DOB)}</p><b>Gender</b><p>${esc(d.Gender)}</p><b>Nationality</b><p>${esc(d.Nationality)}</p>
+ <h3>SKILLS</h3><ul>${skills}</ul><h3>LANGUAGES</h3><p>${esc(d.Languages)}</p></aside>
+ <main><h1>${esc(d.FullName)}</h1><h2>PROFESSIONAL SUMMARY</h2><p>${esc(d.Professional_Summary)}</p>
+ <h2>WORK HISTORY</h2>${jobsHtml}<h2>EDUCATION</h2><p>${esc(d.Education)}</p>
+ <h2>RESPONSIBILITIES</h2><p>${esc(d.Responsibility_1)}</p><p>${esc(d.Responsibility_2)}</p><p>${esc(d.Responsibility_3)}</p></main></div>
+ <button class="printBtn" onclick="printCurrent()">PRINT / SAVE PDF</button>`;
+ area.style.display="block";
+}
+
+async function searchCV(){
+ const q=v("searchInput").toLowerCase();
+ const out=document.getElementById("results");out.innerHTML="Searching...";
+ try{
+   const r=await fetch(CSV_URL+"&t="+Date.now());
+   if(!r.ok) throw new Error("CSV could not be loaded");
+   const text=await r.text();const rows=parseCSV(text);
+   if(!rows.length){out.innerHTML="No data found";return}
+   const headers=rows[0];
+   const data=rows.slice(1).filter(row=>row.some(x=>x));
+   const matches=data.filter(row=>{
+     const obj={};headers.forEach((h,i)=>obj[h]=row[i]||"");
+     return !q || Object.values(obj).join(" ").toLowerCase().includes(q);
+   });
+   out.innerHTML=matches.length?matches.map((row,idx)=>{
+     const obj={};headers.forEach((h,i)=>obj[h]=row[i]||"");
+     return `<div class="result"><div><b>${esc(obj.ID)}</b> — ${esc(obj.FullName)}<br><small>${esc(obj.Phone)} | ${esc(obj.Email)}</small></div>
+     <button onclick='loadCV(${JSON.stringify(obj)})'>View / Print</button></div>`;
+   }).join(""):"No matching CV found.";
+ }catch(e){out.innerHTML="<span style='color:red'>Search failed: "+esc(e.message)+"</span>"}
+}
+
+/* Simple CSV parser, including quoted commas/newlines */
+function parseCSV(str){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<str.length;i++){const c=str[i],n=str[i+1];
+  if(c=='"'&&quoted&&n=='"'){cell+='"';i++;continue}
+  if(c=='"'){quoted=!quoted;continue}
+  if(c==','&&!quoted){row.push(cell);cell="";continue}
+  if((c=='\n'||c=='\r')&&!quoted){if(c=='\r'&&n=='\n')i++;row.push(cell);if(row.some(x=>x!==""))rows.push(row);row=[];cell="";continue}
+  cell+=c;
+ }
+ row.push(cell);if(row.some(x=>x!==""))rows.push(row);return rows;
+}
+
+function loadCV(d){
+ const map={
+  fullName:d.FullName,location:d.Location,phone:d.Phone,email:d.Email,dob:d.DOB,gender:d.Gender,nationality:d.Nationality,
+  summary:d.Professional_Summary,education:d.Education,languages:d.Languages,resp1:d.Responsibility_1,resp2:d.Responsibility_2,resp3:d.Responsibility_3
+ };
+ Object.entries(map).forEach(([k,val])=>setv(k,val));
+ for(let i=1;i<=3;i++){setv("jobTitle"+i,d["Job_Title_"+i]);setv("company"+i,d["Company_"+i]);setv("start"+i,d["Start_Date_"+i]);setv("end"+i,d["End_Date_"+i]);setv("workLocation"+i,d["Work_Location_"+i]);setv("workDescription"+i,d["Work_Description_"+i])}
+ document.querySelectorAll('input[name="skill"]').forEach(x=>x.checked=(d.Skills||"").split(",").map(s=>s.trim()).includes(x.value));
+ showEntry();renderResume(d);
+}
+
+function printCurrent(){
+ const el=document.getElementById("printCV");
+ html2pdf().set({margin:0,filename:"CV-"+Date.now()+".pdf",image:{type:"jpeg",quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(el).save();
+}
+
+const css=document.createElement("style");css.textContent=`
+.cv{width:794px;min-height:1123px;margin:20px auto;background:white;display:grid;grid-template-columns:240px 1fr;box-shadow:0 0 5px #aaa;font-family:Arial;color:#222}
+.cv aside{background:#126b65;color:#fff;padding:28px 20px}.cv aside img{width:115px;height:115px;object-fit:cover;border-radius:50%;display:block;margin:0 auto 22px;border:3px solid #fff}
+.cv aside h3{font-size:15px;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:6px;margin:22px 0 10px}.cv aside p,.cv aside li{font-size:11px;line-height:1.5}.cv aside ul{padding-left:17px}
+.cv main{padding:30px}.cv main h1{font-size:28px;text-align:left;margin:0 0 20px;color:#10233c}.cv main h2{font-size:14px;letter-spacing:1px;background:#178077;color:#fff;padding:8px 12px;border-radius:5px;margin:18px 0 10px}.cv main p{font-size:11px;line-height:1.6;margin:7px 0}.cv .job{margin:10px 0}.cv .job b{font-size:12px;color:#126b65}.cv .job div{font-size:12px;font-weight:bold;margin:3px 0}.cv .job small{font-size:10px;color:#777}.printBtn{display:block;width:794px;margin:10px auto 30px}
+@media print{body{background:#fff}.cv{margin:0;box-shadow:none}.printBtn{display:none}}
+`;document.head.appendChild(css);
+</script>
+</body>
+</html>
