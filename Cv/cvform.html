@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CV Application Form</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f3f5f7;
+    padding:20px;
+}
+
+.form-container{
+    max-width:1000px;
+    margin:auto;
+    background:#fff;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+h1{
+    text-align:center;
+    color:#155e59;
+    margin-bottom:30px;
+}
+
+.section{
+    margin-bottom:30px;
+}
+
+.section-title{
+    background:#176b65;
+    color:white;
+    padding:12px 15px;
+    font-size:18px;
+    font-weight:bold;
+    border-radius:6px;
+    margin-bottom:20px;
+    text-transform:uppercase;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.full-width{
+    grid-column:1/-1;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    font-weight:bold;
+    margin-bottom:7px;
+    color:#333;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:15px;
+    outline:none;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#176b65;
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+.work-box{
+    border:1px solid #ddd;
+    padding:20px;
+    border-radius:8px;
+    margin-bottom:20px;
+    background:#fafafa;
+}
+
+.work-box h3{
+    color:#176b65;
+    margin-bottom:18px;
+}
+
+.skills-box{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.skill-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.skill-item input{
+    width:auto;
+}
+
+.submit-btn{
+    width:100%;
+    padding:15px;
+    background:#176b65;
+    color:white;
+    border:none;
+    border-radius:6px;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.submit-btn:hover{
+    background:#124e4a;
+}
+
+.submit-btn:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+#status{
+    display:none;
+    margin-top:20px;
+    padding:15px;
+    border-radius:6px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.success{
+    background:#d9f5e9;
+    color:#126b48;
+}
+
+.error{
+    background:#ffe0e0;
+    color:#a00000;
+}
+
+
+/* ==============================
+   HIDDEN CV
+============================== */
+
+#cvPreview{
+    position:fixed;
+    left:-10000px;
+    top:0;
+    width:794px;
+    min-height:1123px;
+    background:#fff;
+}
+
+.cv-page{
+    width:794px;
+    min-height:1123px;
+    display:flex;
+    background:#fff;
+}
+
+.cv-left{
+    width:245px;
+    background:#075e59;
+    color:white;
+    padding:30px 22px;
+}
+
+.cv-right{
+    width:549px;
+    padding:35px 30px;
+    color:#222;
+}
+
+.cv-photo{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid white;
+    display:block;
+    margin:0 auto 20px;
+}
+
+.cv-name{
+    font-size:27px;
+    font-weight:bold;
+    margin-bottom:25px;
+}
+
+.cv-contact-title{
+    font-size:14px;
+    font-weight:bold;
+    text-decoration:underline;
+    margin-bottom:15px;
+}
+
+.cv-contact-label{
+    font-weight:bold;
+    font-size:11px;
+    margin-top:14px;
+}
+
+.cv-contact-value{
+    font-size:10px;
+    margin-top:5px;
+    line-height:1.4;
+    word-break:break-word;
+}
+
+.cv-right h1{
+    text-align:left;
+    color:#15213a;
+    margin-bottom:20px;
+    font-size:28px;
+}
+
+.cv-section-title{
+    background:#176b65;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:4px;
+    font-size:13px;
+    font-weight:bold;
+    margin:0 0 13px;
+    text-transform:uppercase;
+}
+
+.cv-right p{
+    font-size:11px;
+    line-height:1.6;
+}
+
+.cv-skill{
+    font-size:10px;
+    margin:7px 0;
+}
+
+.cv-language{
+    font-size:10px;
+    line-height:1.5;
+}
+
+.cv-work{
+    margin-bottom:16px;
+}
+
+.cv-job{
+    color:#176b65;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.cv-company{
+    font-size:11px;
+    margin-top:3px;
+}
+
+.cv-date,
+.cv-location{
+    font-size:9px;
+    color:#777;
+    margin-top:3px;
+}
+
+.cv-description{
+    font-size:10px;
+    line-height:1.45;
+    margin-top:4px;
+    white-space:pre-line;
+}
+
+.cv-responsibility{
+    font-size:10px;
+    line-height:1.5;
+    margin-bottom:6px;
+}
+
+@media(max-width:700px){
+    body{
+        padding:10px;
+    }
+
+    .form-container{
+        padding:18px 12px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .skills-box{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-container">
+
+<h1>CV Application Form</h1>
+
+<form id="cvForm">
+
+<!-- PERSONAL INFORMATION -->
+
+<div class="section">
+
+<div class="section-title">Personal Information</div>
+
+<div class="grid">
+
+<div class="form-group full-width">
+<label>Profile Photo</label>
+<input type="file" id="profilePhoto" accept="image/*" required>
+</div>
+
+<div class="form-group">
+<label>Full Name</label>
+<input type="text" id="fullName" required>
+</div>
+
+<div class="form-group">
+<label>Location</label>
+<input type="text" id="location" placeholder="Sharjah, UAE">
+</div>
+
+<div class="form-group">
+<label>Phone</label>
+<input type="tel" id="phone">
+</div>
+
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="email" required>
+</div>
+
+<div class="form-group">
+<label>Date of Birth</label>
+<input type="date" id="dob">
+</div>
+
+<div class="form-group">
+<label>Gender</label>
+<select id="gender">
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Nationality</label>
+<input type="text" id="nationality" placeholder="Nepali">
+</div>
+
+</div>
+</div>
+
+
+<!-- PROFESSIONAL SUMMARY -->
+
+<div class="section">
+
+<div class="section-title">Professional Summary</div>
+
+<div class="form-group">
+<label>Professional Summary</label>
+<textarea id="professionalSummary"
+placeholder="Write your professional summary..."></textarea>
+</div>
+
+</div>
+
+
+<!-- WORK HISTORY -->
+
+<div class="section">
+
+<div class="section-title">Working History</div>
+
+<!-- WORK 1 -->
+
+<div class="work-box">
+
+<h3>Work History 1</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Job Title</label>
+<input type="text" id="jobTitle1">
+</div>
+
+<div class="form-group">
+<label>Company Name</label>
+<input type="text" id="companyName1">
+</div>
+
+<div class="form-group">
+<label>Start Date</label>
+<input type="text" id="startDate1" placeholder="2024/10/08">
+</div>
+
+<div class="form-group">
+<label>End Date</label>
+<input type="text" id="endDate1" placeholder="Present">
+</div>
+
+<div class="form-group full-width">
+<label>Location</label>
+<input type="text" id="workLocation1" placeholder="Ajman, UAE">
+</div>
+
+<div class="form-group full-width">
+<label>Work Description</label>
+<textarea id="workDescription1"
+placeholder="Describe your work..."></textarea>
+</div>
+
+</div>
+</div>
+
+
+<!-- WORK 2 -->
+
+<div class="work-box">
+
+<h3>Work History 2</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Job Title</label>
+<input type="text" id="jobTitle2">
+</div>
+
+<div class="form-group">
+<label>Company Name</label>
+<input type="text" id="companyName2">
+</div>
+
+<div class="form-group">
+<label>Start Date</label>
+<input type="text" id="startDate2">
+</div>
+
+<div class="form-group">
+<label>End Date</label>
+<input type="text" id="endDate2">
+</div>
+
+<div class="form-group full-width">
+<label>Location</label>
+<input type="text" id="workLocation2">
+</div>
+
+<div class="form-group full-width">
+<label>Work Description</label>
+<textarea id="workDescription2"
+placeholder="Describe your work..."></textarea>
+</div>
+
+</div>
+</div>
+
+
+<!-- WORK 3 -->
+
+<div class="work-box">
+
+<h3>Work History 3</h3>
+
+<div class="grid">
+
+<div class="form-group">
+<label>Job Title</label>
+<input type="text" id="jobTitle3">
+</div>
+
+<div class="form-group">
+<label>Company Name</label>
+<input type="text" id="companyName3">
+</div>
+
+<div class="form-group">
+<label>Start Date</label>
+<input type="text" id="startDate3">
+</div>
+
+<div class="form-group">
+<label>End Date</label>
+<input type="text" id="endDate3">
+</div>
+
+<div class="form-group full-width">
+<label>Location</label>
+<input type="text" id="workLocation3">
+</div>
+
+<div class="form-group full-width">
+<label>Work Description</label>
+<textarea id="workDescription3"
+placeholder="Describe your work..."></textarea>
+</div>
+
+</div>
+</div>
+
+</div>
+
+
+<!-- EDUCATION -->
+
+<div class="section">
+
+<div class="section-title">Education</div>
+
+<div class="form-group">
+
+<label>Education / Qualification</label>
+
+<input type="text"
+id="education"
+placeholder="Example: Grade 8">
+
+</div>
+
+</div>
+
+
+<!-- SKILLS -->
+
+<div class="section">
+
+<div class="section-title">Skills</div>
+
+<div class="skills-box">
+
+<div class="skill-item">
+<input type="checkbox" value="Masonry & Blockwork">
+<label>Masonry & Blockwork</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Brickwork & Plastering">
+<label>Brickwork & Plastering</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Repair & Maintenance">
+<label>Repair & Maintenance</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Concrete Work">
+<label>Concrete Work</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Construction Support">
+<label>Construction Support</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Housekeeping">
+<label>Housekeeping</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Hand & Power Tools">
+<label>Hand & Power Tools</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Workplace Safety">
+<label>Workplace Safety</label>
+</div>
+
+<div class="skill-item">
+<input type="checkbox" value="Teamwork">
+<label>Teamwork</label>
+</div>
+
+</div>
+</div>
+
+
+<!-- LANGUAGES -->
+
+<div class="section">
+
+<div class="section-title">Languages</div>
+
+<div class="form-group">
+
+<label>Languages</label>
+
+<input type="text"
+id="languages"
+placeholder="Nepali, Hindi, Basic English">
+
+</div>
+
+</div>
+
+
+<!-- RESPONSIBILITIES -->
+
+<div class="section">
+
+<div class="section-title">Responsibilities</div>
+
+<div class="form-group">
+<label>Responsibility 1</label>
+<input type="text" id="responsibility1">
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Responsibility 2</label>
+<input type="text" id="responsibility2">
+</div>
+
+<br>
+
+<div class="form-group">
+<label>Responsibility 3</label>
+<input type="text" id="responsibility3">
+</div>
+
+</div>
+
+
+<button type="submit"
+id="submitBtn"
+class="submit-btn">
+Submit CV Application
+</button>
+
+<div id="status"></div>
+
+</form>
+</div>
+
+
+<!-- =========================
+     HIDDEN CV
+========================= -->
+
+<div id="cvPreview">
+
+<div class="cv-page">
+
+<div class="cv-left">
+
+<img id="cvPhoto" class="cv-photo">
+
+<div class="cv-contact-title">
+Contact
+</div>
+
+<div class="cv-contact-label">Location</div>
+<div class="cv-contact-value" id="cvLocation"></div>
+
+<div class="cv-contact-label">Phone</div>
+<div class="cv-contact-value" id="cvPhone"></div>
+
+<div class="cv-contact-label">Email</div>
+<div class="cv-contact-value" id="cvEmail"></div>
+
+<div class="cv-contact-label">Date of Birth</div>
+<div class="cv-contact-value" id="cvDob"></div>
+
+<div class="cv-contact-label">Gender</div>
+<div class="cv-contact-value" id="cvGender"></div>
+
+<div class="cv-contact-label">Nationality</div>
+<div class="cv-contact-value" id="cvNationality"></div>
+
+<br>
+
+<div class="cv-contact-title">Skills</div>
+<div id="cvSkills"></div>
+
+<br>
+
+<div class="cv-contact-title">Languages</div>
+<div class="cv-language" id="cvLanguages"></div>
+
+</div>
+
+
+<div class="cv-right">
+
+<h1 id="cvName"></h1>
+
+<div class="cv-section-title">
+Professional Summary
+</div>
+
+<p id="cvSummary"></p>
+
+<br>
+
+<div class="cv-section-title">
+Work History
+</div>
+
+<div id="cvWork"></div>
+
+<div class="cv-section-title">
+Education
+</div>
+
+<p id="cvEducation"></p>
+
+<br>
+
+<div class="cv-section-title">
+Responsibilities
+</div>
+
+<div id="cvResponsibilities"></div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const SHEETDB_API =
+"https://sheetdb.io/api/v1/mp8z1v3ymc8jc";
+
+const IMGBB_API_KEY =
+"52ae8561eb90c44178b46a0c95d6664c";
+
+const EMAILJS_SERVICE_ID =
+"service_aifj3bl";
+
+const EMAILJS_TEMPLATE_ID =
+"template_uc5h3vx";
+
+const EMAILJS_PUBLIC_KEY =
+"8IoHedtvplHJpOPXe";
+
+
+emailjs.init({
+    publicKey: EMAILJS_PUBLIC_KEY
+});
+
+
+/* =====================================================
+   GET VALUE
+===================================================== */
+
+function val(id){
+
+    const el =
+        document.getElementById(id);
+
+    return el ? el.value.trim() : "";
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function status(message,type){
+
+    const box =
+        document.getElementById("status");
+
+    box.innerHTML = message;
+
+    box.className = type;
+
+    box.style.display = "block";
+
+}
+
+
+/* =====================================================
+   IMAGE TO DATA URL
+===================================================== */
+
+function fileToDataURL(file){
+
+    return new Promise((resolve,reject)=>{
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+            () => resolve(reader.result);
+
+        reader.onerror =
+            reject;
+
+        reader.readAsDataURL(file);
+
+    });
+
+}
+
+
+/* =====================================================
+   GET NEXT CV ID
+===================================================== */
+
+async function getNextID(){
+
+    try{
+
+        const response =
+            await fetch(SHEETDB_API);
+
+        if(!response.ok){
+
+            return "CV-" +
+                Date.now();
+
+        }
+
+        const rows =
+            await response.json();
+
+        let max = 0;
+
+        if(Array.isArray(rows)){
+
+            rows.forEach(row=>{
+
+                const id =
+                    String(
+                        row.ID || ""
+                    );
+
+                const match =
+                    id.match(
+                        /CV-(\d+)/i
+                    );
+
+                if(match){
+
+                    const number =
+                        parseInt(
+                            match[1],
+                            10
+                        );
+
+                    if(number > max){
+                        max = number;
+                    }
+
+                }
+
+            });
+
+        }
+
+        return "CV-" +
+            String(max + 1)
+            .padStart(4,"0");
+
+    }catch(error){
+
+        console.error(
+            "ID error:",
+            error
+        );
+
+        return "CV-" +
+            Date.now();
+
+    }
+
+}
+
+
+/* =====================================================
+   BUILD CV
+===================================================== */
+
+async function buildCV(){
+
+    const file =
+        document.getElementById(
+            "profilePhoto"
+        ).files[0];
+
+    if(!file){
+
+        throw new Error(
+            "Please select a profile photo."
+        );
+
+    }
+
+    const image =
+        await fileToDataURL(file);
+
+    document.getElementById(
+        "cvPhoto"
+    ).src = image;
+
+
+    document.getElementById(
+        "cvName"
+    ).textContent =
+        val("fullName");
+
+    document.getElementById(
+        "cvLocation"
+    ).textContent =
+        val("location");
+
+    document.getElementById(
+        "cvPhone"
+    ).textContent =
+        val("phone");
+
+    document.getElementById(
+        "cvEmail"
+    ).textContent =
+        val("email");
+
+    document.getElementById(
+        "cvDob"
+    ).textContent =
+        val("dob");
+
+    document.getElementById(
+        "cvGender"
+    ).textContent =
+        val("gender");
+
+    document.getElementById(
+        "cvNationality"
+    ).textContent =
+        val("nationality");
+
+    document.getElementById(
+        "cvSummary"
+    ).textContent =
+        val("professionalSummary");
+
+    document.getElementById(
+        "cvEducation"
+    ).textContent =
+        val("education");
+
+    document.getElementById(
+        "cvLanguages"
+    ).textContent =
+        val("languages");
+
+
+    /* SKILLS */
+
+    const skills =
+        [...document.querySelectorAll(
+            ".skills-box input[type=checkbox]:checked"
+        )]
+        .map(x=>x.value);
+
+    document.getElementById(
+        "cvSkills"
+    ).innerHTML =
+        skills.map(
+            x =>
+            `<div class="cv-skill">• ${x}</div>`
+        ).join("");
+
+
+    /* WORK */
+
+    let workHTML = "";
+
+    for(let i=1;i<=3;i++){
+
+        const job =
+            val("jobTitle"+i);
+
+        const company =
+            val("companyName"+i);
+
+        const start =
+            val("startDate"+i);
+
+        const end =
+            val("endDate"+i);
+
+        const location =
+            val("workLocation"+i);
+
+        const description =
+            val("workDescription"+i);
+
+
+        if(
+            !job &&
+            !company &&
+            !start &&
+            !end &&
+            !location &&
+            !description
+        ){
+            continue;
+        }
+
+
+        workHTML += `
+
+        <div class="cv-work">
+
+            <div class="cv-job">
+                ${job}
+            </div>
+
+            <div class="cv-company">
+                ${company}
+            </div>
+
+            <div class="cv-date">
+                ${start}
+                ${start || end ? " - " : ""}
+                ${end}
+            </div>
+
+            <div class="cv-location">
+                ${location}
+            </div>
+
+            <div class="cv-description">
+                ${description}
+            </div>
+
+        </div>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "cvWork"
+    ).innerHTML =
+        workHTML;
+
+
+    /* RESPONSIBILITIES */
+
+    let resHTML = "";
+
+    for(let i=1;i<=3;i++){
+
+        const text =
+            val("responsibility"+i);
+
+        if(text){
+
+            resHTML +=
+                `<div class="cv-responsibility">
+                • ${text}
+                </div>`;
+
+        }
+
+    }
+
+    document.getElementById(
+        "cvResponsibilities"
+    ).innerHTML =
+        resHTML;
+
+
+    await new Promise(resolve=>{
+
+        const img =
+            document.getElementById(
+                "cvPhoto"
+            );
+
+        if(img.complete){
+
+            resolve();
+
+        }else{
+
+            img.onload = resolve;
+            img.onerror = resolve;
+
+        }
+
+    });
+
+}
+
+
+/* =====================================================
+   CREATE PDF + IMAGE
+===================================================== */
+
+async function createCVFile(){
+
+    const element =
+        document.getElementById(
+            "cvPreview"
+        );
+
+
+    const canvas =
+        await html2canvas(
+            element,
+            {
+                scale:2,
+                useCORS:true,
+                backgroundColor:"#ffffff"
+            }
+        );
+
+
+    const imageData =
+        canvas.toDataURL(
+            "image/jpeg",
+            0.92
+        );
+
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const pdf =
+        new jsPDF(
+            "p",
+            "mm",
+            "a4"
+        );
+
+
+    const pageWidth =
+        pdf.internal.pageSize.getWidth();
+
+    const pageHeight =
+        pdf.internal.pageSize.getHeight();
+
+
+    const ratio =
+        Math.min(
+            pageWidth / canvas.width,
+            pageHeight / canvas.height
+        );
+
+
+    const width =
+        canvas.width * ratio;
+
+    const height =
+        canvas.height * ratio;
+
+
+    const x =
+        (pageWidth - width) / 2;
+
+    const y =
+        (pageHeight - height) / 2;
+
+
+    pdf.addImage(
+        imageData,
+        "JPEG",
+        x,
+        y,
+        width,
+        height
+    );
+
+
+    return {
+        pdf:pdf,
+        image:imageData
+    };
+
+}
+
+
+/* =====================================================
+   IMGBB UPLOAD
+===================================================== */
+
+async function uploadImgBB(
+    imageData,
+    fileName
+){
+
+    const form =
+        new FormData();
+
+    form.append(
+        "key",
+        IMGBB_API_KEY
+    );
+
+    form.append(
+        "image",
+        imageData.split(",")[1]
+    );
+
+    form.append(
+        "name",
+        fileName
+    );
+
+
+    const response =
+        await fetch(
+            "https://api.imgbb.com/1/upload",
+            {
+                method:"POST",
+                body:form
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if(
+        !response.ok ||
+        !result.success
+    ){
+
+        throw new Error(
+            result.error?.message ||
+            "ImgBB upload failed."
+        );
+
+    }
+
+
+    return result.data;
+
+}
+
+
+/* =====================================================
+   SAVE GOOGLE SHEET
+===================================================== */
+
+async function saveSheet(data){
+
+    const response =
+        await fetch(
+            SHEETDB_API,
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    data:data
+                })
+            }
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if(!response.ok){
+
+        throw new Error(
+            result.error ||
+            "Google Sheet save failed."
+        );
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =====================================================
+   SEND CUSTOMER EMAIL
+===================================================== */
+
+async function sendCustomerEmail(
+    email,
+    name,
+    cvID,
+    imageURL
+){
+
+    const templateParams = {
+
+        to_email:email,
+
+        email:email,
+
+        name:name,
+
+        customer_name:name,
+
+        cv_id:cvID,
+
+        cv_image:imageURL,
+
+        message:
+`Dear ${name},
+
+Your CV application has been successfully submitted.
+
+Application ID: ${cvID}
+
+You can view your CV here:
+${imageURL}
+
+Thank you.`
+
+    };
+
+
+    return await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams
+    );
+
+}
+
+
+/* =====================================================
+   SUBMIT
+===================================================== */
+
+document
+.getElementById("cvForm")
+.addEventListener(
+    "submit",
+    async function(e){
+
+        e.preventDefault();
+
+
+        const button =
+            document.getElementById(
+                "submitBtn"
+            );
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "Submitting...";
+
+
+        document.getElementById(
+            "status"
+        ).style.display =
+            "none";
+
+
+        try{
+
+            /* 1. AUTO ID */
+
+            const cvID =
+                await getNextID();
+
+
+            /* 2. BUILD CV */
+
+            await buildCV();
+
+
+            /* 3. CREATE PDF */
+
+            const cv =
+                await createCVFile();
+
+
+            /* 4. DOWNLOAD PDF */
+
+            const safeName =
+                val("fullName")
+                .replace(
+                    /[^a-z0-9]/gi,
+                    "_"
+                );
+
+
+            cv.pdf.save(
+                `${cvID}_${safeName}.pdf`
+            );
+
+
+            /* 5. UPLOAD IMAGE */
+
+            const img =
+                await uploadImgBB(
+                    cv.image,
+                    `${cvID}_CV`
+                );
+
+
+            const imageURL =
+                img.display_url ||
+                img.url;
+
+
+            const viewerURL =
+                img.url_viewer ||
+                "";
+
+
+            /* 6. SKILLS */
+
+            const skills =
+                [...document.querySelectorAll(
+                    ".skills-box input[type=checkbox]:checked"
+                )]
+                .map(x=>x.value)
+                .join(", ");
+
+
+            /* 7. SHEET DATA */
+
+            const sheetData = {
+
+                ID:cvID,
+
+                Full_Name:
+                    val("fullName"),
+
+                Location:
+                    val("location"),
+
+                Phone:
+                    val("phone"),
+
+                Email:
+                    val("email"),
+
+                DOB:
+                    val("dob"),
+
+                Gender:
+                    val("gender"),
+
+                Nationality:
+                    val("nationality"),
+
+                Professional_Summary:
+                    val("professionalSummary"),
+
+
+                Job_Title_1:
+                    val("jobTitle1"),
+
+                Company_1:
+                    val("companyName1"),
+
+                Start_Date_1:
+                    val("startDate1"),
+
+                End_Date_1:
+                    val("endDate1"),
+
+                Work_Location_1:
+                    val("workLocation1"),
+
+                Work_Description_1:
+                    val("workDescription1"),
+
+
+                Job_Title_2:
+                    val("jobTitle2"),
+
+                Company_2:
+                    val("companyName2"),
+
+                Start_Date_2:
+                    val("startDate2"),
+
+                End_Date_2:
+                    val("endDate2"),
+
+                Work_Location_2:
+                    val("workLocation2"),
+
+                Work_Description_2:
+                    val("workDescription2"),
+
+
+                Job_Title_3:
+                    val("jobTitle3"),
+
+                Company_3:
+                    val("companyName3"),
+
+                Start_Date_3:
+                    val("startDate3"),
+
+                End_Date_3:
+                    val("endDate3"),
+
+                Work_Location_3:
+                    val("workLocation3"),
+
+                Work_Description_3:
+                    val("workDescription3"),
+
+
+                Education:
+                    val("education"),
+
+                Skills:
+                    skills,
+
+                Languages:
+                    val("languages"),
+
+                Responsibility_1:
+                    val("responsibility1"),
+
+                Responsibility_2:
+                    val("responsibility2"),
+
+                Responsibility_3:
+                    val("responsibility3"),
+
+
+                CV_Image_Link:
+                    imageURL,
+
+                CV_View_Link:
+                    viewerURL,
+
+                Submitted_At:
+                    new Date().toLocaleString()
+
+            };
+
+
+            /* 8. SAVE SHEET */
+
+            await saveSheet(
+                sheetData
+            );
+
+
+            /* 9. SEND EMAIL */
+
+            await sendCustomerEmail(
+                val("email"),
+                val("fullName"),
+                cvID,
+                imageURL
+            );
+
+
+            /* 10. SUCCESS */
+
+            status(
+
+                `
+                ✓ CV Application Submitted Successfully!<br><br>
+
+                Application ID:
+                <strong>${cvID}</strong><br><br>
+
+                <a href="${imageURL}"
+                   target="_blank"
+                   style="color:#176b65;">
+                   View CV Image
+                </a>
+                `,
+
+                "success"
+            );
+
+
+            /* 11. RESET */
+
+            document
+                .getElementById("cvForm")
+                .reset();
+
+
+        }catch(error){
+
+            console.error(
+                "SUBMISSION ERROR:",
+                error
+            );
+
+
+            status(
+                "❌ Submission failed:<br>" +
+                error.message,
+                "error"
+            );
+
+
+        }finally{
+
+            button.disabled = false;
+
+            button.textContent =
+                "Submit CV Application";
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
