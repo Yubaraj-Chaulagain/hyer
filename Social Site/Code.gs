@@ -16,7 +16,7 @@
  */
 
 const CONFIG = {
-  SPREADSHEET_ID: "", // खाली राख्दा यो Apps Script सँग जोडिएको Sheet प्रयोग हुन्छ।
+  SPREADSHEET_ID: "1A5f_xd2qDZQvU69DeHXD_M67SINoO6QfYbiVLHRQzOQ", // खाली राख्दा यो Apps Script सँग जोडिएको Sheet प्रयोग हुन्छ।
   REPORT_SHEET: "Reports",
   USERS_SHEET: "Users",
   LOGS_SHEET: "Logs",
