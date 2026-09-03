@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मरिण सुरक्षित समाज</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans Devanagari","Nirmala UI",Arial,sans-serif;background:#f4f7f8;color:#172033}a{text-decoration:none}button,input,select,textarea{font:inherit}
+.header{position:sticky;top:0;z-index:50;background:#075e54;color:#fff;box-shadow:0 2px 10px #0002}.head{width:min(1100px,94%);margin:auto;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:9px}.logo{width:40px;height:40px;border-radius:50%;background:#fff;color:#075e54;display:grid;place-items:center;font-weight:800}.brand b{font-size:16px;display:block}.brand small{font-size:9px;opacity:.85}.nav{display:flex;gap:4px}.nav a{color:#fff;padding:7px 9px;border-radius:6px;font-size:11px}.nav a:hover{background:#ffffff22}
+.hero{background:linear-gradient(135deg,#075e54,#0b806f);color:#fff;padding:42px 0}.container{width:min(1100px,94%);margin:auto}.hero{text-align:center}.hero h1{font-size:clamp(25px,6vw,40px);margin:0 0 10px}.hero p{max-width:720px;margin:auto;font-size:13px}.actions{margin-top:20px;display:flex;justify-content:center;gap:9px;flex-wrap:wrap}.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:700;cursor:pointer}.primary{background:#fff;color:#075e54}.dark{background:#075e54;color:#fff}.outline{background:#ffffff18;color:#fff;border:1px solid #ffffff66}
+section{padding:34px 0}.title{text-align:center;color:#075e54;font-size:23px;margin:0 0 5px}.sub{text-align:center;color:#64748b;font-size:12px;margin:0 0 20px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:#fff;padding:18px 12px;border-radius:11px;text-align:center;box-shadow:0 3px 12px #0000000d}.card .ico{font-size:29px}.card h3{font-size:14px;margin:5px 0}.card p{font-size:11px;color:#64748b;margin:0}
+.form-card,.track-card,.admin-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 4px 20px #00000012;max-width:780px;margin:auto}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:10px;outline:none;background:#fff;font-size:13px}textarea{min-height:110px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#075e54;box-shadow:0 0 0 2px #075e5414}
+.priority{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.priority label{border:1px solid #cbd5e1;border-radius:8px;padding:9px;text-align:center;cursor:pointer;font-weight:500}.priority input{display:none}.priority input:checked+label{border-color:#075e54;background:#e6f4f1;color:#075e54;font-weight:700}
+.anon{background:#f8fafc;border:1px solid #e2e8f0;padding:11px;border-radius:8px;font-size:12px}.anon label{display:flex;gap:8px;align-items:center;margin:0}.anon input{width:auto}.hint{font-size:11px;color:#64748b;margin-top:4px}
+.success{display:none;background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:20px;border-radius:11px;text-align:center}.ref{display:inline-block;background:#fff;border:1px solid #a7f3d0;padding:8px 14px;border-radius:7px;font-weight:800;margin:8px}
+.trackrow{display:flex;gap:8px}.trackrow input{flex:1}.result{margin-top:13px}.status{background:#f8fafc;border-radius:9px;padding:14px;font-size:13px}
+#adminPanel{display:none;background:#eef2f4}.login{max-width:430px;margin:auto;background:#fff;padding:20px;border-radius:14px;box-shadow:0 4px 20px #00000012}.adminbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#fff;padding:14px;border-radius:10px;text-align:center}.stat b{font-size:22px;color:#075e54;display:block}.stat small{color:#64748b}.tablewrap{overflow:auto;background:#fff;border-radius:10px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:9px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:11px}.table th{background:#f8fafc;color:#334155}.tag{padding:3px 7px;border-radius:20px;background:#e2e8f0}.danger{background:#fee2e2;color:#991b1b}.successTag{background:#dcfce7;color:#166534}.warning{background:#fef3c7;color:#92400e}
+footer{background:#172033;color:#94a3b8;padding:28px 0;margin-top:0;font-size:11px}.foot{text-align:center}.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,120px);opacity:0;background:#172033;color:#fff;padding:11px 17px;border-radius:8px;z-index:100;transition:.3s;max-width:90%;text-align:center}.toast.show{transform:translate(-50%,0);opacity:1}.spinner{display:inline-block;width:14px;height:14px;border:2px solid #ffffff66;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.head{min-height:56px}.brand b{font-size:14px}.nav a{font-size:10px;padding:5px}.hero{padding:32px 0}.grid{grid-template-columns:1fr}.full{grid-column:auto}.priority{grid-template-columns:1fr}.trackrow{flex-direction:column}.cards{grid-template-columns:1fr 1fr}.form-card,.track-card,.admin-card{padding:15px}}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="head">
+<div class="brand"><div class="logo">म</div><div><b>मरिण सुरक्षित समाज</b><small>नागरिक सूचना तथा सहयोग प्रणाली</small></div></div>
+<nav class="nav"><a href="#home">गृहपृष्ठ</a><a href="#report">सूचना</a><a href="#track">Status</a><a href="#admin">Admin</a></nav>
+</div>
+</header>
+
+<section class="hero" id="home">
+<div class="container">
+<h1>सुरक्षित मरिणका लागि तपाईंको सूचना महत्वपूर्ण छ</h1>
+<p>मदिरापान, धुम्रपान, लागूपदार्थ, अनैतिक क्रियाकलाप, सार्वजनिक अशान्ति वा अन्य सामाजिक समस्या देखिएमा सूचना दिनुहोस्।</p>
+<div class="actions"><a class="btn primary" href="#report">🚨 सूचना दिनुहोस्</a><a class="btn outline" href="#track">🔎 Status हेर्नुहोस्</a><button class="btn outline" onclick="showFormQR()">📱 Form QR</button></div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2 class="title">कुन विषयमा सूचना दिन सकिन्छ?</h2><p class="sub">सम्बन्धित विषय छानेर विवरण पठाउनुहोस्।</p>
+<div class="cards">
+<div class="card"><div class="ico">🍺</div><h3>मदिरापान</h3><p>सार्वजनिक स्थानमा अव्यवस्थित मदिरापान</p></div>
+<div class="card"><div class="ico">🚭</div><h3>धुम्रपान</h3><p>सार्वजनिक स्थानमा धुम्रपान सम्बन्धी समस्या</p></div>
+<div class="card"><div class="ico">⚠️</div><h3>सामाजिक समस्या</h3><p>अशान्ति तथा अन्य सामाजिक समस्या</p></div>
+<div class="card"><div class="ico">🛡️</div><h3>सुरक्षा</h3><p>समुदायको सुरक्षासँग सम्बन्धित सूचना</p></div>
+</div>
+</div>
+</section>
+
+<section id="report" style="background:#fff">
+<div class="container">
+<h2 class="title">सूचना / गुनासो दर्ता</h2><p class="sub">सम्भव भएसम्म स्पष्ट जानकारी दिनुहोस्।</p>
+<div class="form-card">
+
+<div class="success" id="successBox">
+<div style="font-size:36px">✅</div><h3>सूचना सफलतापूर्वक दर्ता भयो</h3>
+<p>तपाईंको Reference ID:</p><div class="ref" id="referenceID"></div>
+<p>तलको QR Code सुरक्षित राख्नुहोस्। पछि QR scan गर्दा सिधै यसै सूचनाको Status खुल्छ।</p>
+<div id="qrBox" style="background:#fff;padding:12px;display:inline-block;border-radius:10px;margin:8px auto"></div>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
+<button class="btn dark" onclick="downloadQR()">⬇️ QR Download</button>
+<button class="btn" style="background:#e2e8f0;color:#172033" onclick="printQR()">🖨️ Print</button>
+</div>
+<p class="hint">QR scan गरेपछि वेबसाइट URL टाइप गर्नुपर्दैन।</p>
+<button class="btn dark" onclick="newReport()">अर्को सूचना दिनुहोस्</button>
+</div>
+
+<form id="reportForm">
+<div class="grid">
+<div><label>समस्याको प्रकार <span style="color:red">*</span></label><select id="category" required><option value="">-- छान्नुहोस् --</option><option>मदिरापान</option><option>धुम्रपान</option><option>लागूपदार्थ</option><option>अनैतिक क्रियाकलाप</option><option>सार्वजनिक अशान्ति</option><option>सुरक्षा समस्या</option><option>अन्य सामाजिक समस्या</option></select></div>
+<div><label>स्थान <span style="color:red">*</span></label><input id="location" required placeholder="जस्तै: मरिण–५, बजार क्षेत्र"></div>
+<div><div><label>घटना भएको मिति</label><input type="date" id="eventDate"></div></div>
+<div><div><label>घटना भएको समय</label><input type="time" id="eventTime"></div></div>
+
+<div class="full"><label>प्राथमिकता</label><div class="priority">
+<div><input type="radio" id="p1" name="priority" value="सामान्य" checked><label for="p1">🟢 सामान्य</label></div>
+<div><input type="radio" id="p2" name="priority" value="महत्त्वपूर्ण"><label for="p2">🟠 महत्त्वपूर्ण</label></div>
+<div><input type="radio" id="p3" name="priority" value="तत्काल"><label for="p3">🔴 तत्काल</label></div>
+</div></div>
+
+<div class="full"><label>घटनाको विवरण <span style="color:red">*</span></label><textarea id="description" required placeholder="के भएको हो? कहाँ भएको हो? स्पष्ट रूपमा लेख्नुहोस्।"></textarea></div>
+<div class="full"><label>थप जानकारी</label><textarea id="additional" placeholder="सम्बन्धित अन्य जानकारी भए लेख्नुहोस्।"></textarea></div>
+<div><label>तपाईंको नाम</label><input id="reporterName" placeholder="नाम"></div>
+<div><label>मोबाइल नम्बर</label><input id="phone" type="tel" placeholder="98XXXXXXXX"></div>
+
+<div class="full"><div class="anon"><label><input type="checkbox" id="anonymous"> म यो सूचना गोप्य रूपमा दिन चाहन्छु।</label><div class="hint">गोप्य विकल्प छानेमा तपाईंको नाम/फोन सार्वजनिक रूपमा देखाइने छैन।</div></div></div>
+
+<div class="full"><button class="btn dark" style="width:100%" id="submitBtn">🚨 सूचना पठाउनुहोस्</button></div>
+</div>
+</form>
+</div>
+</div>
+</section>
+
+<section id="track">
+<div class="container">
+<h2 class="title">आफ्नो सूचना हेर्नुहोस्</h2><p class="sub">Reference ID राखेर स्थिति हेर्नुहोस्।</p>
+<div class="track-card"><div class="trackrow"><input id="trackID" placeholder="Reference ID राख्नुहोस्"><button class="btn dark" onclick="trackReport()">🔎 खोज्नुहोस्</button></div><div class="result" id="trackResult"></div></div>
+</div>
+</section>
+
+<section id="adminPanel">
+<div class="container">
+<div class="admin-card" id="loginBox">
+<h2 class="title">Admin Login</h2><p class="sub">अधिकृत Admin मात्र प्रवेश गर्नुहोस्।</p>
+<div><label>Gmail</label><input id="adminEmail" type="email" autocomplete="username"></div>
+<div style="margin-top:10px"><label>Password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
+<button class="btn dark" style="width:100%;margin-top:14px" onclick="adminLogin()">🔐 Login</button>
+</div>
+
+<div id="dashboard" style="display:none">
+<div class="adminbar"><div><h2 style="margin:0;color:#075e54">Admin Dashboard</h2><small id="loggedUser"></small></div>
+<div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn dark" onclick="showAdminTab('reportsTab')">📋 Reports</button><button class="btn dark" onclick="showAdminTab('usersTab');loadUsers()">👥 Users</button><button class="btn dark" onclick="loadReports()">🔄 Refresh</button><button class="btn" style="background:#fee2e2;color:#991b1b" onclick="adminLogout()">Logout</button></div></div>
+<div class="stats"><div class="stat"><b id="totalStat">0</b><small>कुल सूचना</small></div><div class="stat"><b id="newStat">0</b><small>नयाँ</small></div><div class="stat"><b id="urgentStat">0</b><small>तत्काल</small></div><div class="stat"><b id="closedStat">0</b><small>सम्पन्न</small></div></div>
+<div id="reportsTab" style="margin-top:14px"><div class="admin-card" style="padding:14px">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input id="adminSearch" placeholder="Reference ID, स्थान, category खोज्नुहोस्" oninput="renderReports()" style="flex:1;min-width:180px">
+<select id="statusFilter" onchange="renderReports()" style="width:auto;min-width:140px"><option value="">सबै Status</option><option>नयाँ</option><option>जाँच हुँदैछ</option><option>कारबाही हुँदैछ</option><option>सम्पन्न</option></select></div>
+<div class="tablewrap"><table class="table"><thead><tr><th>ID</th><th>Category</th><th>स्थान</th><th>Priority</th><th>Status</th><th>मिति</th><th>Action</th></tr></thead><tbody id="reportRows"><tr><td colspan="7">Data छैन।</td></tr></tbody></table></div></div></div>
+<div id="usersTab" style="display:none;margin-top:14px"><div class="admin-card"><h3 style="margin-top:0;color:#075e54">नयाँ Admin / Operator</h3>
+<div class="grid"><div><label>नाम</label><input id="newUserName" placeholder="नाम"></div><div><label>Gmail</label><input id="newUserEmail" type="email" placeholder="admin@gmail.com"></div>
+<div><label>Password</label><input id="newUserPassword" type="password" placeholder="कम्तीमा 8 characters"></div><div><label>Role</label><select id="newUserRole"><option>Admin</option><option>Operator</option></select></div>
+<div class="full"><button class="btn dark" onclick="createUser()">➕ User थप्नुहोस्</button></div></div></div>
+<div style="height:14px"></div><div class="admin-card" style="padding:14px"><h3 style="margin-top:0;color:#075e54">Users List</h3>
+<div class="tablewrap"><table class="table"><thead><tr><th>User ID</th><th>Name</th><th>Gmail</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="userRows"><tr><td colspan="6">Data load हुँदैछ...</td></tr></tbody></table></div></div></div>
+</div>
+</div>
+</section>
+
+<div id="formQRModal" style="display:none;position:fixed;inset:0;background:#0008;z-index:90;padding:25px">
+<div style="background:#fff;max-width:390px;margin:8vh auto;padding:22px;border-radius:14px;text-align:center">
+<h3 style="color:#075e54;margin-top:0">सूचना Form खोल्ने QR</h3>
+<p style="font-size:12px;color:#64748b">यो QR scan गर्दा सिधै सूचना Form खुल्छ।</p>
+<div id="formQR" style="background:#fff;padding:12px;display:inline-block"></div>
+<br><button class="btn dark" onclick="downloadFormQR()">⬇️ QR Download</button>
+<button class="btn" style="background:#e2e8f0" onclick="closeFormQR()">बन्द गर्नुहोस्</button>
+</div></div>
+
+<footer><div class="container foot">© 2026 मरिण सुरक्षित समाज · नागरिक सूचना प्रणाली</div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/*
+  =========================================================
+  IMPORTANT
+  =========================================================
+  आफ्नो Google Apps Script Web App URL यहाँ राख्नुहोस्।
+  उदाहरण:
+  https://script.google.com/macros/s/XXXXXXXX/exec
+*/
+const API_URL="PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+let adminToken="";
+let reports=[];
+
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3500)}
+async function apiPost(data){
+  const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(data)});
+  return await r.json();
+}
+
+document.getElementById("reportForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(API_URL.includes("PASTE_YOUR")){toast("पहिला Google Apps Script Web App URL राख्नुहोस्।");return}
+ const b=document.getElementById("submitBtn");b.disabled=true;b.innerHTML='<span class="spinner"></span> पठाउँदै...';
+ try{
+  const result=await apiPost({
+   action:"submitReport",
+   category:document.getElementById("category").value,
+   location:document.getElementById("location").value.trim(),
+   eventDate:document.getElementById("eventDate").value,
+   eventTime:document.getElementById("eventTime").value,
+   priority:document.querySelector('input[name="priority"]:checked').value,
+   description:document.getElementById("description").value.trim(),
+   additional:document.getElementById("additional").value.trim(),
+   reporterName:document.getElementById("reporterName").value.trim(),
+   phone:document.getElementById("phone").value.trim(),
+   anonymous:document.getElementById("anonymous").checked?"हो":"होइन"
+  });
+  if(!result.success)throw new Error(result.message||"सूचना पठाउन सकिएन।");
+  document.getElementById("reportForm").style.display="none";
+  document.getElementById("successBox").style.display="block";
+  const ref=result.id||result.referenceId||"प्राप्त भयो";
+  document.getElementById("referenceID").textContent=ref;
+  makeStatusQR(ref);
+ }catch(err){toast("❌ "+err.message)}finally{b.disabled=false;b.innerHTML="🚨 सूचना पठाउनुहोस्"}
+});
+
+function newReport(){document.getElementById("successBox").style.display="none";document.getElementById("reportForm").style.display="block";document.getElementById("reportForm").reset();document.getElementById("p1").checked=true}
+
+async function trackReport(){
+ const id=document.getElementById("trackID").value.trim();const box=document.getElementById("trackResult");
+ if(!id){box.innerHTML='<div class="status">कृपया Reference ID राख्नुहोस्।</div>';return}
+ if(API_URL.includes("PASTE_YOUR")){box.innerHTML='<div class="status">Google Apps Script Web App URL राख्न बाँकी छ।</div>';return}
+ box.innerHTML='<div class="status">⏳ खोज्दैछ...</div>';
+ try{
+  const r=await apiPost({action:"getPublicReport",id:id});
+  if(!r.success)throw new Error(r.message||"सूचना भेटिएन।");
+  box.innerHTML='<div class="status"><b>Reference ID:</b> '+esc(r.id||id)+'<br><b>स्थिति:</b> '+esc(r.status||"प्राप्त")+'<br><b>समस्या:</b> '+esc(r.category||"")+'</div>';
+ }catch(e){box.innerHTML='<div class="status">❌ '+esc(e.message)+'</div>'}
+}
+
+function showAdmin(){document.getElementById("adminPanel").style.display="block";document.getElementById("adminPanel").scrollIntoView({behavior:"smooth"})}
+document.querySelector('a[href="#admin"]').addEventListener("click",e=>{e.preventDefault();showAdmin()});
+
+async function adminLogin(){
+ if(API_URL.includes("PASTE_YOUR")){toast("Web App URL राख्नुहोस्।");return}
+ const email=document.getElementById("adminEmail").value.trim(),password=document.getElementById("adminPassword").value;
+ if(!email||!password){toast("Gmail र Password दुवै राख्नुहोस्।");return}
+ try{
+  const r=await apiPost({action:"adminLogin",email,password});
+  if(!r.success)throw new Error(r.message||"Login असफल भयो।");
+  adminToken=r.token||"";
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+  document.getElementById("loggedUser").textContent=email;
+  loadReports();
+ }catch(e){toast("❌ "+e.message)}
+}
+
+async function loadReports(){
+ if(!adminToken)return;
+ try{
+  const r=await apiPost({action:"getReports",token:adminToken});
+  if(!r.success)throw new Error(r.message||"Data load भएन।");
+  reports=r.reports||r.data||[];
+  renderReports();updateStats();
+ }catch(e){toast("❌ "+e.message)}
+}
+
+function renderReports(){
+ const q=(document.getElementById("adminSearch")?.value||"").toLowerCase(), sf=(document.getElementById("statusFilter")?.value||"");
+ const rows=reports.filter(x=>JSON.stringify(x).toLowerCase().includes(q)&&(!sf||(x.status||x.Status||"नयाँ")===sf));
+ const body=document.getElementById("reportRows");
+ if(!rows.length){body.innerHTML='<tr><td colspan="7">कुनै सूचना भेटिएन।</td></tr>';return}
+ body.innerHTML=rows.map(x=>{const id=x.id||x.referenceId||x.ID||"",st=x.status||x.Status||"नयाँ",pr=x.priority||x.Priority||"सामान्य";
+ return `<tr><td>${esc(id)}</td><td>${esc(x.category||x.Category||"")}</td><td>${esc(x.location||x.Location||"")}</td><td><span class="tag ${pr==="तत्काल"?"danger":pr==="महत्त्वपूर्ण"?"warning":""}">${esc(pr)}</span></td><td><span class="tag ${st==="सम्पन्न"?"successTag":""}">${esc(st)}</span></td><td>${esc(x.timestamp||x.date||x.Date||"")}</td><td style="white-space:nowrap"><select onchange="updateStatus('${encodeURIComponent(id)}',this.value)" style="width:130px"><option value="">Status</option><option>नयाँ</option><option>जाँच हुँदैछ</option><option>कारबाही हुँदैछ</option><option>सम्पन्न</option></select> <button class="btn" style="padding:7px;background:#fee2e2;color:#991b1b" onclick="deleteReport('${encodeURIComponent(id)}')">🗑️</button></td></tr>`}).join("");
+}
+async function updateStatus(encodedId,status){if(!status)return;try{const r=await apiPost({action:"updateReportStatus",token:adminToken,id:decodeURIComponent(encodedId),status});if(!r.success)throw new Error(r.message||"Update भएन");toast("Status update भयो।");loadReports()}catch(e){toast("❌ "+e.message)}}
+async function deleteReport(encodedId){const id=decodeURIComponent(encodedId);if(!confirm("यो report delete गर्ने हो?"))return;try{const r=await apiPost({action:"deleteReport",token:adminToken,id});if(!r.success)throw new Error(r.message||"Delete भएन");toast("Report delete भयो।");loadReports()}catch(e){toast("❌ "+e.message)}}
+function showAdminTab(tab){document.getElementById("reportsTab").style.display=tab==="reportsTab"?"block":"none";document.getElementById("usersTab").style.display=tab==="usersTab"?"block":"none"}
+async function loadUsers(){try{const r=await apiPost({action:"getUsers",token:adminToken});if(!r.success)throw new Error(r.message||"Users load भएन");const users=r.users||[],body=document.getElementById("userRows");if(!users.length){body.innerHTML='<tr><td colspan="6">Users छैनन्।</td></tr>';return}body.innerHTML=users.map(u=>`<tr><td>${esc(u.userId)}</td><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td><span class="tag ${u.status==="Active"?"successTag":"danger"}">${esc(u.status)}</span></td><td><button class="btn" style="padding:6px;background:#e2e8f0" onclick="toggleUser('${encodeURIComponent(u.userId)}','${encodeURIComponent(u.status)}')">${u.status==="Active"?"Disable":"Enable"}</button> <button class="btn" style="padding:6px;background:#fee2e2;color:#991b1b" onclick="removeUser('${encodeURIComponent(u.userId)}')">🗑️</button></td></tr>`).join("")}catch(e){toast("❌ "+e.message)}}
+async function createUser(){const name=document.getElementById("newUserName").value.trim(),email=document.getElementById("newUserEmail").value.trim(),password=document.getElementById("newUserPassword").value,role=document.getElementById("newUserRole").value;if(!name||!email||!password){toast("Name, Gmail र password राख्नुहोस्।");return}try{const r=await apiPost({action:"createUser",token:adminToken,name,email,password,role});if(!r.success)throw new Error(r.message||"User बनाउन सकिएन");toast("User तयार भयो र Gmail notification पठाइयो।");document.getElementById("newUserName").value="";document.getElementById("newUserEmail").value="";document.getElementById("newUserPassword").value="";loadUsers()}catch(e){toast("❌ "+e.message)}}
+async function toggleUser(encodedId,encodedStatus){const userId=decodeURIComponent(encodedId),status=decodeURIComponent(encodedStatus)==="Active"?"Inactive":"Active";if(!confirm("यो user लाई "+status+" गर्ने हो?"))return;try{const r=await apiPost({action:"updateUser",token:adminToken,userId,status});if(!r.success)throw new Error(r.message||"Update भएन");loadUsers();toast("User status update भयो।")}catch(e){toast("❌ "+e.message)}}
+async function removeUser(encodedId){const userId=decodeURIComponent(encodedId);if(!confirm("यो user delete गर्ने हो?"))return;try{const r=await apiPost({action:"deleteUser",token:adminToken,userId});if(!r.success)throw new Error(r.message||"Delete भएन");loadUsers();toast("User delete भयो।")}catch(e){toast("❌ "+e.message)}}
+
+function updateStats(){
+ const total=reports.length,newN=reports.filter(x=>(x.status||x.Status||"नयाँ")==="नयाँ").length,urgent=reports.filter(x=>(x.priority||x.Priority)==="तत्काल").length,closed=reports.filter(x=>(x.status||x.Status)==="सम्पन्न").length;
+ document.getElementById("totalStat").textContent=total;document.getElementById("newStat").textContent=newN;document.getElementById("urgentStat").textContent=urgent;document.getElementById("closedStat").textContent=closed;
+}
+function adminLogout(){adminToken="";reports=[];document.getElementById("dashboard").style.display="none";document.getElementById("loginBox").style.display="block";document.getElementById("adminPassword").value="";toast("Logout भयो।")}
+
+function siteURL(){
+  return window.location.origin + window.location.pathname;
+}
+function makeStatusQR(id){
+  const box=document.getElementById("qrBox");
+  box.innerHTML="";
+  const url=siteURL()+"?track="+encodeURIComponent(id);
+  new QRCode(box,{text:url,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});
+}
+function downloadQR(){
+  const img=document.querySelector("#qrBox img");
+  const canvas=document.querySelector("#qrBox canvas");
+  if(img){
+    const a=document.createElement("a");a.href=img.src;a.download="MARIN-"+(document.getElementById("referenceID").textContent||"STATUS")+".png";a.click();return;
+  }
+  if(canvas){
+    const a=document.createElement("a");a.href=canvas.toDataURL("image/png");a.download="MARIN-"+(document.getElementById("referenceID").textContent||"STATUS")+".png";a.click();
+  }
+}
+function printQR(){
+  const w=window.open("","_blank","width=450,height=600");
+  const img=document.querySelector("#qrBox img");
+  const canvas=document.querySelector("#qrBox canvas");
+  const src=img?img.src:(canvas?canvas.toDataURL("image/png"):"");
+  w.document.write("<html><body style='text-align:center;font-family:Arial;padding:25px'><h2>मरिण सुरक्षित समाज</h2><p>Reference ID</p><h3>"+esc(document.getElementById("referenceID").textContent)+"</h3><img src='"+src+"' style='width:250px'><p>QR Scan गरेर Status हेर्नुहोस्</p><script>window.print()<\/script></body></html>");
+  w.document.close();
+}
+function showFormQR(){
+  const modal=document.getElementById("formQRModal"),box=document.getElementById("formQR");
+  box.innerHTML="";
+  new QRCode(box,{text:siteURL()+"?form=1",width:220,height:220,correctLevel:QRCode.CorrectLevel.M});
+  modal.style.display="block";
+}
+function closeFormQR(){document.getElementById("formQRModal").style.display="none"}
+function downloadFormQR(){
+  const img=document.querySelector("#formQR img"),canvas=document.querySelector("#formQR canvas");
+  const a=document.createElement("a");a.download="MARIN-FORM-QR.png";
+  if(img)a.href=img.src;else if(canvas)a.href=canvas.toDataURL("image/png");else return;
+  a.click();
+}
+function handleQRRoute(){
+  const q=new URLSearchParams(window.location.search);
+  const track=q.get("track"),form=q.get("form");
+  if(track){
+    document.getElementById("trackID").value=track;
+    document.getElementById("track").scrollIntoView({behavior:"smooth"});
+    setTimeout(trackReport,250);
+  }else if(form){
+    document.getElementById("report").scrollIntoView({behavior:"smooth"});
+    setTimeout(()=>document.getElementById("category").focus(),300);
+  }
+}
+window.addEventListener("load",handleQRRoute);
+
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+function escAttr(v){return esc(v).replace(/`/g,"&#096;")}
+</script>
+</body>
+</html>
