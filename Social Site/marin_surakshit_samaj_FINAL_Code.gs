@@ -45,8 +45,8 @@ const CONFIG = {
   SETTINGS_SHEET: "Settings",
 
   FIRST_ADMIN_NAME: "Main Admin",
-  FIRST_ADMIN_EMAIL: "youradmin@gmail.com",
-  FIRST_ADMIN_PASSWORD: "ChangeThisPassword123!",
+  FIRST_ADMIN_EMAIL: "yubarajchaulagain5@gmail.com",
+  FIRST_ADMIN_PASSWORD: "Sarojkumar643",
 
   SESSION_SECONDS: 21600
 };
