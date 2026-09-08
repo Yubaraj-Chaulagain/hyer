@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Search & Player</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+  header{background:#fff;padding:18px 14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0001}
+  h1{margin:0 0 14px;font-size:22px}
+  .search{display:flex;gap:8px}
+  input{flex:1;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+  button{border:0;border-radius:8px;padding:0 18px;background:#e62117;color:#fff;font-size:16px;font-weight:bold}
+  main{max-width:900px;margin:auto;padding:15px}
+  #player{display:none;background:#000;border-radius:10px;overflow:hidden;margin-bottom:18px}
+  #player iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+  .status{text-align:center;padding:20px;color:#666}
+  .video{background:#fff;border-radius:10px;margin:12px 0;overflow:hidden;display:flex;cursor:pointer;box-shadow:0 1px 5px #0001}
+  .thumb{width:220px;height:124px;object-fit:cover;flex:none}
+  .info{padding:12px}
+  .title{font-size:17px;font-weight:bold;line-height:1.35}
+  .channel{margin-top:9px;color:#777;font-size:14px}
+  @media(max-width:600px){
+    .video{display:block}
+    .thumb{width:100%;height:auto;aspect-ratio:16/9}
+    .info{padding:10px}
+    .title{font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>▶ YouTube Search</h1>
+  <div class="search">
+    <input id="q" type="search" placeholder="Search YouTube..." />
+    <button onclick="searchYouTube()">Search</button>
+  </div>
+</header>
+
+<main>
+  <div id="player">
+    <iframe id="frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <div id="results" class="status">Enter a search term above.</div>
+</main>
+
+<script>
+/*
+  1. Google Cloud मा YouTube Data API v3 enable गर्नुहोस्।
+  2. आफ्नो API key तल राख्नुहोस्।
+*/
+const API_KEY = "PASTE_YOUR_YOUTUBE_API_KEY_HERE";
+
+async function searchYouTube(){
+  const q = document.getElementById("q").value.trim();
+  const results = document.getElementById("results");
+
+  if(!q){
+    results.innerHTML = '<div class="status">Please enter something to search.</div>';
+    return;
+  }
+
+  if(API_KEY === "PASTE_YOUR_YOUTUBE_API_KEY_HERE"){
+    results.innerHTML = `
+      <div class="status">
+        <b>API key राख्नुहोस्।</b><br><br>
+        HTML को code मा <code>PASTE_YOUR_YOUTUBE_API_KEY_HERE</code>
+        लाई आफ्नो YouTube API key ले replace गर्नुहोस्।
+      </div>`;
+    return;
+  }
+
+  results.innerHTML = '<div class="status">Searching...</div>';
+
+  try{
+    const url =
+      "https://www.googleapis.com/youtube/v3/search" +
+      "?part=snippet&type=video&maxResults=20&q=" +
+      encodeURIComponent(q) + "&key=" + encodeURIComponent(API_KEY);
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(!res.ok){
+      throw new Error(data.error?.message || "YouTube API error");
+    }
+
+    if(!data.items || data.items.length === 0){
+      results.innerHTML = '<div class="status">No videos found.</div>';
+      return;
+    }
+
+    results.innerHTML = "";
+
+    data.items.forEach(item => {
+      const id = item.id.videoId;
+      const s = item.snippet;
+      const div = document.createElement("div");
+      div.className = "video";
+      div.innerHTML = `
+        <img class="thumb" src="${s.thumbnails.high?.url || s.thumbnails.default.url}" alt="">
+        <div class="info">
+          <div class="title">${escapeHtml(s.title)}</div>
+          <div class="channel">${escapeHtml(s.channelTitle)}</div>
+        </div>
+      `;
+      div.onclick = () => playVideo(id);
+      results.appendChild(div);
+    });
+
+  }catch(err){
+    results.innerHTML =
+      '<div class="status">Error: ' + escapeHtml(err.message) + '</div>';
+  }
+}
+
+function playVideo(id){
+  const player = document.getElementById("player");
+  const frame = document.getElementById("frame");
+  frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(id) + "?autoplay=1";
+  player.style.display = "block";
+  player.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function escapeHtml(text){
+  const d = document.createElement("div");
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+document.getElementById("q").addEventListener("keydown", e => {
+  if(e.key === "Enter") searchYouTube();
+});
+</script>
+
+</body>
+</html>
