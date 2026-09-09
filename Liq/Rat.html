@@ -2,48 +2,1718 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>YouTube Search & Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Mini Browser + Video Player</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-header{background:#fff;padding:18px 14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0001}
-h1{margin:0 0 14px;font-size:22px}.search{display:flex;gap:8px}
-input{flex:1;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-button{border:0;border-radius:8px;padding:0 18px;background:#e62117;color:#fff;font-size:16px;font-weight:bold}
-main{max-width:900px;margin:auto;padding:15px}#player{display:none;background:#000;border-radius:10px;overflow:hidden;margin-bottom:18px}
-#player iframe{width:100%;aspect-ratio:16/9;border:0;display:block}.status{text-align:center;padding:20px;color:#666}
-.video{background:#fff;border-radius:10px;margin:12px 0;overflow:hidden;display:flex;cursor:pointer;box-shadow:0 1px 5px #0001}
-.thumb{width:220px;height:124px;object-fit:cover;flex:none}.info{padding:12px}.title{font-size:17px;font-weight:bold;line-height:1.35}
-.channel{margin-top:9px;color:#777;font-size:14px}@media(max-width:600px){.video{display:block}.thumb{width:100%;height:auto;aspect-ratio:16/9}.info{padding:10px}.title{font-size:16px}}
+*{
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    margin:0;
+    background:#101010;
+    color:white;
+}
+
+.app{
+    max-width:1200px;
+    margin:auto;
+    padding:10px;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tabs{
+    display:flex;
+    gap:6px;
+    overflow-x:auto;
+    margin-bottom:8px;
+}
+
+.tab{
+    min-width:120px;
+    max-width:180px;
+    padding:10px;
+    background:#242424;
+    border-radius:8px 8px 0 0;
+    cursor:pointer;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.tab.active{
+    background:#444;
+}
+
+.new-tab{
+    min-width:42px;
+    text-align:center;
+    font-size:20px;
+}
+
+/* =========================
+   BROWSER TOOLBAR
+========================= */
+
+.toolbar{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    margin-bottom:8px;
+}
+
+.toolbar button{
+    border:0;
+    border-radius:8px;
+    background:#292929;
+    color:white;
+    padding:10px 12px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.toolbar button:hover{
+    background:#444;
+}
+
+.address{
+    flex:1;
+    min-width:80px;
+    padding:11px;
+    border:1px solid #444;
+    border-radius:8px;
+    background:#181818;
+    color:white;
+    outline:none;
+}
+
+.go-btn{
+    background:#e50914 !important;
+}
+
+/* =========================
+   BROWSER
+========================= */
+
+.browser-box{
+    width:100%;
+    height:65vh;
+    background:white;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+#browserFrame{
+    width:100%;
+    height:100%;
+    border:0;
+    background:white;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.section{
+    margin-top:15px;
+    background:#171717;
+    padding:12px;
+    border-radius:10px;
+}
+
+.section h2{
+    margin:0 0 12px;
+    font-size:19px;
+}
+
+/* =========================
+   BOOKMARK / HISTORY
+========================= */
+
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    max-height:300px;
+    overflow-y:auto;
+}
+
+.list-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    background:#242424;
+    border-radius:8px;
+}
+
+.list-item span{
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    cursor:pointer;
+}
+
+.list-item button{
+    border:0;
+    border-radius:6px;
+    padding:7px 10px;
+    cursor:pointer;
+    background:#e50914;
+    color:white;
+}
+
+/* =========================
+   VIDEO PLAYER
+========================= */
+
+.player-box{
+    width:100%;
+    aspect-ratio:16/9;
+    background:black;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+#youtubePlayer,
+#localPlayer{
+    width:100%;
+    height:100%;
+}
+
+#localPlayer{
+    display:none;
+    object-fit:contain;
+}
+
+/* =========================
+   VIDEO CONTROLS
+========================= */
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    justify-content:center;
+    margin-top:10px;
+}
+
+.controls button,
+.video-button{
+    border:0;
+    border-radius:8px;
+    padding:10px 13px;
+    background:#292929;
+    color:white;
+    cursor:pointer;
+}
+
+.controls button:hover{
+    background:#444;
+}
+
+.local-upload{
+    display:inline-block;
+    margin-top:10px;
+    background:#075e54;
+    padding:10px 13px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.local-upload input{
+    display:none;
+}
+
+/* =========================
+   VIDEO LIST
+========================= */
+
+.video-list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.video-item{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    padding:8px;
+    background:#242424;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.video-thumb{
+    width:110px;
+    aspect-ratio:16/9;
+    object-fit:cover;
+    border-radius:6px;
+    background:black;
+}
+
+.video-info{
+    flex:1;
+    min-width:0;
+}
+
+.video-title{
+    font-weight:bold;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.video-type{
+    color:#999;
+    font-size:12px;
+    margin-top:5px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:600px){
+
+    .app{
+        padding:7px;
+    }
+
+    .toolbar{
+        flex-wrap:wrap;
+    }
+
+    .address{
+        width:100%;
+        order:10;
+        flex-basis:100%;
+    }
+
+    .browser-box{
+        height:60vh;
+    }
+
+    .toolbar button{
+        padding:9px;
+    }
+
+    .controls button{
+        flex:1 1 28%;
+        padding:10px 5px;
+    }
+
+    .video-thumb{
+        width:90px;
+    }
+}
 </style>
 </head>
+
 <body>
-<header><h1>▶ YouTube Search</h1><div class="search">
-<input id="q" type="search" placeholder="Search YouTube..."><button onclick="searchYouTube()">Search</button>
-</div></header>
-<main><div id="player"><iframe id="frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
-<div id="results" class="status">Enter a search term above.</div></main>
+
+<div class="app">
+
+<!-- =========================
+     BROWSER TABS
+========================= -->
+
+<div class="tabs" id="tabs"></div>
+
+
+<!-- =========================
+     TOOLBAR
+========================= -->
+
+<div class="toolbar">
+
+    <button onclick="goBack()">⬅</button>
+
+    <button onclick="goForward()">➡</button>
+
+    <button onclick="refreshPage()">🔄</button>
+
+    <button onclick="goHome()">🏠</button>
+
+    <input
+        type="text"
+        id="address"
+        class="address"
+        placeholder="Search Google or enter URL..."
+        onkeydown="addressKey(event)"
+    >
+
+    <button
+        class="go-btn"
+        onclick="goAddress()"
+    >
+        Go
+    </button>
+
+    <button onclick="addBookmark()">
+        ⭐
+    </button>
+
+</div>
+
+
+<!-- =========================
+     BROWSER FRAME
+========================= -->
+
+<div class="browser-box">
+
+    <iframe
+        id="browserFrame"
+        src="https://example.com"
+    ></iframe>
+
+</div>
+
+
+<!-- =========================
+     BOOKMARKS
+========================= -->
+
+<div class="section">
+
+    <h2>⭐ Bookmarks</h2>
+
+    <div
+        id="bookmarkList"
+        class="list"
+    ></div>
+
+</div>
+
+
+<!-- =========================
+     BROWSER HISTORY
+========================= -->
+
+<div class="section">
+
+    <h2>🕘 Browser History</h2>
+
+    <div
+        id="browserHistory"
+        class="list"
+    ></div>
+
+</div>
+
+
+<!-- =========================
+     VIDEO PLAYER
+========================= -->
+
+<div class="section">
+
+    <h2>▶ YouTube + Mobile Video Player</h2>
+
+    <div class="player-box">
+
+        <div id="youtubePlayer"></div>
+
+        <video
+            id="localPlayer"
+            playsinline
+        ></video>
+
+    </div>
+
+
+    <!-- VIDEO CONTROLS -->
+
+    <div class="controls">
+
+        <button onclick="previousVideo()">
+            ⏮ Prev
+        </button>
+
+        <button onclick="seekVideo(-10)">
+            ↶ 10
+        </button>
+
+        <button onclick="playVideo()">
+            ▶ Play
+        </button>
+
+        <button onclick="pauseVideo()">
+            ⏸ Pause
+        </button>
+
+        <button onclick="seekVideo(10)">
+            10 ↷
+        </button>
+
+        <button onclick="nextVideo()">
+            Next ⏭
+        </button>
+
+    </div>
+
+
+    <!-- LOCAL VIDEO -->
+
+    <label class="local-upload">
+
+        📱 Select Mobile Videos
+
+        <input
+            type="file"
+            id="localFiles"
+            accept="video/*"
+            multiple
+        >
+
+    </label>
+
+</div>
+
+
+<!-- =========================
+     LOCAL VIDEO LIST
+========================= -->
+
+<div class="section">
+
+    <h2>📱 Mobile Videos</h2>
+
+    <div
+        id="localVideoList"
+        class="video-list"
+    ></div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     YOUTUBE API
+========================= -->
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
 <script>
-const API_KEY="AIzaSyAB3PfCCRcf0l1Yw8W2ZWoYBYfbne6n_Bc";
-async function searchYouTube(){
- const q=document.getElementById("q").value.trim(),r=document.getElementById("results");
- if(!q){r.innerHTML='<div class="status">Please enter something to search.</div>';return}
- r.innerHTML='<div class="status">Searching...</div>';
- try{
-  const url="https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q="+encodeURIComponent(q)+"&key="+encodeURIComponent(API_KEY);
-  const res=await fetch(url),data=await res.json();
-  if(!res.ok)throw new Error(data.error?.message||"YouTube API error");
-  if(!data.items?.length){r.innerHTML='<div class="status">No videos found.</div>';return}
-  r.innerHTML="";
-  data.items.forEach(item=>{
-   const id=item.id.videoId,s=item.snippet,d=document.createElement("div");d.className="video";
-   d.innerHTML='<img class="thumb" src="'+(s.thumbnails.high?.url||s.thumbnails.default.url)+'" alt=""><div class="info"><div class="title">'+escapeHtml(s.title)+'</div><div class="channel">'+escapeHtml(s.channelTitle)+'</div></div>';
-   d.onclick=()=>playVideo(id);r.appendChild(d);
-  });
- }catch(e){r.innerHTML='<div class="status">Error: '+escapeHtml(e.message)+'</div>'}
+
+/* ==========================================
+   BROWSER SYSTEM
+========================================== */
+
+let tabs = [];
+
+let activeTab = 0;
+
+
+/* Create first tab */
+
+createTab(
+    "https://example.com",
+    "Home"
+);
+
+
+/* ==========================================
+   CREATE TAB
+========================================== */
+
+function createTab(url,title){
+
+    tabs.push({
+
+        url:url,
+
+        title:title,
+
+        history:[url],
+
+        historyIndex:0
+
+    });
+
+
+    activeTab =
+        tabs.length - 1;
+
+
+    renderTabs();
+
+
+    loadTab();
+
 }
-function playVideo(id){const p=document.getElementById("player"),f=document.getElementById("frame");f.src="https://www.youtube.com/embed/"+encodeURIComponent(id)+"?autoplay=1";p.style.display="block";p.scrollIntoView({behavior:"smooth"})}
-function escapeHtml(t){const d=document.createElement("div");d.textContent=t;return d.innerHTML}
-document.getElementById("q").addEventListener("keydown",e=>{if(e.key==="Enter")searchYouTube()});
+
+
+/* ==========================================
+   RENDER TABS
+========================================== */
+
+function renderTabs(){
+
+    const box =
+        document.getElementById(
+            "tabs"
+        );
+
+
+    box.innerHTML = "";
+
+
+    tabs.forEach(
+        function(tab,index){
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            element.className =
+                "tab";
+
+
+            if(
+                index === activeTab
+            ){
+
+                element.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            element.textContent =
+                tab.title;
+
+
+            element.onclick =
+                function(){
+
+                    activeTab = index;
+
+                    renderTabs();
+
+                    loadTab();
+
+                };
+
+
+            box.appendChild(
+                element
+            );
+
+        }
+    );
+
+
+    const newTab =
+        document.createElement(
+            "div"
+        );
+
+
+    newTab.className =
+        "tab new-tab";
+
+
+    newTab.textContent =
+        "+";
+
+
+    newTab.onclick =
+        function(){
+
+            createTab(
+                "https://example.com",
+                "New Tab"
+            );
+
+        };
+
+
+    box.appendChild(
+        newTab
+    );
+
+}
+
+
+/* ==========================================
+   LOAD TAB
+========================================== */
+
+function loadTab(){
+
+    if(
+        !tabs[activeTab]
+    ){
+
+        return;
+
+    }
+
+
+    const tab =
+        tabs[activeTab];
+
+
+    document
+        .getElementById(
+            "browserFrame"
+        )
+        .src =
+        tab.url;
+
+
+    document
+        .getElementById(
+            "address"
+        )
+        .value =
+        tab.url;
+
+
+    renderBrowserHistory();
+
+}
+
+
+/* ==========================================
+   GO ADDRESS
+========================================== */
+
+function goAddress(){
+
+    let value =
+        document
+        .getElementById(
+            "address"
+        )
+        .value
+        .trim();
+
+
+    if(!value){
+
+        return;
+
+    }
+
+
+    let url;
+
+
+    /*
+       URL or Search
+    */
+
+    if(
+        value.startsWith("http://") ||
+        value.startsWith("https://")
+    ){
+
+        url = value;
+
+    }
+
+    else if(
+        value.includes(".") &&
+        !value.includes(" ")
+    ){
+
+        url =
+            "https://" +
+            value;
+
+    }
+
+    else{
+
+        url =
+            "https://www.google.com/search?q=" +
+            encodeURIComponent(
+                value
+            );
+
+    }
+
+
+    const tab =
+        tabs[activeTab];
+
+
+    /*
+       Remove forward history
+    */
+
+    tab.history =
+        tab.history.slice(
+            0,
+            tab.historyIndex + 1
+        );
+
+
+    tab.history.push(
+        url
+    );
+
+
+    tab.historyIndex =
+        tab.history.length - 1;
+
+
+    tab.url =
+        url;
+
+
+    tab.title =
+        value;
+
+
+    renderTabs();
+
+    loadTab();
+
+}
+
+
+/* ==========================================
+   ENTER KEY
+========================================== */
+
+function addressKey(event){
+
+    if(
+        event.key === "Enter"
+    ){
+
+        goAddress();
+
+    }
+
+}
+
+
+/* ==========================================
+   BACK
+========================================== */
+
+function goBack(){
+
+    const tab =
+        tabs[activeTab];
+
+
+    if(
+        tab.historyIndex <= 0
+    ){
+
+        return;
+
+    }
+
+
+    tab.historyIndex--;
+
+
+    tab.url =
+        tab.history[
+            tab.historyIndex
+        ];
+
+
+    loadTab();
+
+}
+
+
+/* ==========================================
+   FORWARD
+========================================== */
+
+function goForward(){
+
+    const tab =
+        tabs[activeTab];
+
+
+    if(
+        tab.historyIndex >=
+        tab.history.length - 1
+    ){
+
+        return;
+
+    }
+
+
+    tab.historyIndex++;
+
+
+    tab.url =
+        tab.history[
+            tab.historyIndex
+        ];
+
+
+    loadTab();
+
+}
+
+
+/* ==========================================
+   REFRESH
+========================================== */
+
+function refreshPage(){
+
+    document
+        .getElementById(
+            "browserFrame"
+        )
+        .src =
+        tabs[
+            activeTab
+        ].url;
+
+}
+
+
+/* ==========================================
+   HOME
+========================================== */
+
+function goHome(){
+
+    document
+        .getElementById(
+            "address"
+        )
+        .value =
+        "https://example.com";
+
+
+    goAddress();
+
+}
+
+
+/* ==========================================
+   BOOKMARK
+========================================== */
+
+function addBookmark(){
+
+    const tab =
+        tabs[
+            activeTab
+        ];
+
+
+    let bookmarks =
+        JSON.parse(
+            localStorage.getItem(
+                "bookmarks"
+            ) ||
+            "[]"
+        );
+
+
+    const exists =
+        bookmarks.some(
+            b =>
+            b.url === tab.url
+        );
+
+
+    if(!exists){
+
+        bookmarks.push({
+
+            title:
+                tab.title,
+
+            url:
+                tab.url
+
+        });
+
+
+        localStorage.setItem(
+            "bookmarks",
+            JSON.stringify(
+                bookmarks
+            )
+        );
+
+    }
+
+
+    renderBookmarks();
+
+}
+
+
+/* ==========================================
+   RENDER BOOKMARKS
+========================================== */
+
+function renderBookmarks(){
+
+    const box =
+        document.getElementById(
+            "bookmarkList"
+        );
+
+
+    const bookmarks =
+        JSON.parse(
+            localStorage.getItem(
+                "bookmarks"
+            ) ||
+            "[]"
+        );
+
+
+    box.innerHTML = "";
+
+
+    if(
+        !bookmarks.length
+    ){
+
+        box.innerHTML =
+            "<p>No bookmarks.</p>";
+
+        return;
+
+    }
+
+
+    bookmarks.forEach(
+        function(bookmark,index){
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "list-item";
+
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.textContent =
+                bookmark.title;
+
+
+            text.onclick =
+                function(){
+
+                    document
+                    .getElementById(
+                        "address"
+                    )
+                    .value =
+                    bookmark.url;
+
+
+                    goAddress();
+
+                };
+
+
+            const remove =
+                document.createElement(
+                    "button"
+                );
+
+
+            remove.textContent =
+                "✕";
+
+
+            remove.onclick =
+                function(){
+
+                    bookmarks.splice(
+                        index,
+                        1
+                    );
+
+
+                    localStorage.setItem(
+                        "bookmarks",
+                        JSON.stringify(
+                            bookmarks
+                        )
+                    );
+
+
+                    renderBookmarks();
+
+                };
+
+
+            item.appendChild(
+                text
+            );
+
+
+            item.appendChild(
+                remove
+            );
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   BROWSER HISTORY
+========================================== */
+
+function renderBrowserHistory(){
+
+    const box =
+        document.getElementById(
+            "browserHistory"
+        );
+
+
+    box.innerHTML = "";
+
+
+    const tab =
+        tabs[
+            activeTab
+        ];
+
+
+    tab.history
+    .slice()
+    .reverse()
+    .forEach(
+        function(url){
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "list-item";
+
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.textContent =
+                url;
+
+
+            text.onclick =
+                function(){
+
+                    document
+                    .getElementById(
+                        "address"
+                    )
+                    .value =
+                    url;
+
+
+                    goAddress();
+
+                };
+
+
+            item.appendChild(
+                text
+            );
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   VIDEO PLAYER
+========================================== */
+
+let player;
+
+let playerReady =
+    false;
+
+
+let videoMode =
+    "youtube";
+
+
+let localVideos =
+    [];
+
+
+let localIndex =
+    -1;
+
+
+/* ==========================================
+   YOUTUBE READY
+========================================== */
+
+function onYouTubeIframeAPIReady(){
+
+    player =
+        new YT.Player(
+
+            "youtubePlayer",
+
+            {
+
+                height:"100%",
+
+                width:"100%",
+
+                videoId:"",
+
+                playerVars:{
+
+                    autoplay:0,
+
+                    controls:1,
+
+                    rel:0,
+
+                    playsinline:1
+
+                },
+
+                events:{
+
+                    onReady:function(){
+
+                        playerReady =
+                            true;
+
+                    },
+
+                    onStateChange:
+                        function(event){
+
+                            if(
+
+                                event.data ===
+                                YT.PlayerState
+                                .ENDED
+
+                            ){
+
+                                nextVideo();
+
+                            }
+
+                        }
+
+                }
+
+            }
+
+        );
+
+}
+
+
+/* ==========================================
+   SELECT LOCAL VIDEOS
+========================================== */
+
+document
+.getElementById(
+    "localFiles"
+)
+.addEventListener(
+
+    "change",
+
+    function(event){
+
+        const files =
+            Array.from(
+                event.target.files
+            );
+
+
+        localVideos =
+            files.map(
+
+                function(file){
+
+                    return{
+
+                        name:
+                            file.name,
+
+                        url:
+                            URL
+                            .createObjectURL(
+                                file
+                            )
+
+                    };
+
+                }
+
+            );
+
+
+        renderLocalVideos();
+
+
+        if(
+            localVideos.length
+        ){
+
+            playLocalVideo(
+                0
+            );
+
+        }
+
+    }
+
+);
+
+
+/* ==========================================
+   PLAY LOCAL
+========================================== */
+
+function playLocalVideo(index){
+
+    if(
+        !localVideos.length
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        index < 0
+    ){
+
+        index =
+            localVideos.length -
+            1;
+
+    }
+
+
+    if(
+        index >=
+        localVideos.length
+    ){
+
+        index =
+            0;
+
+    }
+
+
+    localIndex =
+        index;
+
+
+    videoMode =
+        "local";
+
+
+    document
+    .getElementById(
+        "youtubePlayer"
+    )
+    .style.display =
+        "none";
+
+
+    const video =
+        document
+        .getElementById(
+            "localPlayer"
+        );
+
+
+    video.style.display =
+        "block";
+
+
+    video.src =
+        localVideos[
+            index
+        ].url;
+
+
+    video.play();
+
+}
+
+
+/* ==========================================
+   LOCAL AUTO NEXT
+========================================== */
+
+document
+.getElementById(
+    "localPlayer"
+)
+.addEventListener(
+
+    "ended",
+
+    function(){
+
+        if(
+            videoMode ===
+            "local"
+        ){
+
+            nextVideo();
+
+        }
+
+    }
+
+);
+
+
+/* ==========================================
+   NEXT VIDEO
+========================================== */
+
+function nextVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        if(
+            !localVideos.length
+        ){
+
+            return;
+
+        }
+
+
+        playLocalVideo(
+            localIndex + 1
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   PREVIOUS VIDEO
+========================================== */
+
+function previousVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        if(
+            !localVideos.length
+        ){
+
+            return;
+
+        }
+
+
+        playLocalVideo(
+            localIndex - 1
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   PLAY
+========================================== */
+
+function playVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        document
+        .getElementById(
+            "localPlayer"
+        )
+        .play();
+
+        return;
+
+    }
+
+
+    if(
+        playerReady
+    ){
+
+        player.playVideo();
+
+    }
+
+}
+
+
+/* ==========================================
+   PAUSE
+========================================== */
+
+function pauseVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        document
+        .getElementById(
+            "localPlayer"
+        )
+        .pause();
+
+        return;
+
+    }
+
+
+    if(
+        playerReady
+    ){
+
+        player.pauseVideo();
+
+    }
+
+}
+
+
+/* ==========================================
+   SEEK
+========================================== */
+
+function seekVideo(seconds){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        const video =
+            document
+            .getElementById(
+                "localPlayer"
+            );
+
+
+        video.currentTime =
+            Math.max(
+
+                0,
+
+                video.currentTime +
+                seconds
+
+            );
+
+
+        return;
+
+    }
+
+
+    if(
+        playerReady
+    ){
+
+        const time =
+            player.getCurrentTime();
+
+
+        player.seekTo(
+
+            Math.max(
+                0,
+                time + seconds
+            ),
+
+            true
+
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   RENDER LOCAL VIDEOS
+========================================== */
+
+function renderLocalVideos(){
+
+    const box =
+        document
+        .getElementById(
+            "localVideoList"
+        );
+
+
+    box.innerHTML =
+        "";
+
+
+    if(
+        !localVideos.length
+    ){
+
+        box.innerHTML =
+            "<p>No mobile videos.</p>";
+
+        return;
+
+    }
+
+
+    localVideos.forEach(
+
+        function(video,index){
+
+            const item =
+                document
+                .createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "video-item";
+
+
+            item.innerHTML =
+                `
+
+                <div
+                    class="video-thumb"
+                    style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-size:25px;
+                    "
+                >
+                    📱
+                </div>
+
+                <div
+                    class="video-info"
+                >
+
+                    <div
+                        class="video-title"
+                    >
+                        ${video.name}
+                    </div>
+
+                    <div
+                        class="video-type"
+                    >
+                        Mobile Video
+                    </div>
+
+                </div>
+
+                `;
+
+
+            item.onclick =
+                function(){
+
+                    playLocalVideo(
+                        index
+                    );
+
+                };
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+renderBookmarks();
+
 </script>
-</body></html>
+
+</body>
+</html>
