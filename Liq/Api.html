@@ -3,136 +3,540 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YouTube Search & Player</title>
+
+<title>YouTube Pro Player</title>
+
 <style>
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
-  header{background:#fff;padding:18px 14px;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px #0001}
-  h1{margin:0 0 14px;font-size:22px}
-  .search{display:flex;gap:8px}
-  input{flex:1;padding:13px;border:1px solid #ccc;border-radius:8px;font-size:16px}
-  button{border:0;border-radius:8px;padding:0 18px;background:#e62117;color:#fff;font-size:16px;font-weight:bold}
-  main{max-width:900px;margin:auto;padding:15px}
-  #player{display:none;background:#000;border-radius:10px;overflow:hidden;margin-bottom:18px}
-  #player iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
-  .status{text-align:center;padding:20px;color:#666}
-  .video{background:#fff;border-radius:10px;margin:12px 0;overflow:hidden;display:flex;cursor:pointer;box-shadow:0 1px 5px #0001}
-  .thumb{width:220px;height:124px;object-fit:cover;flex:none}
-  .info{padding:12px}
-  .title{font-size:17px;font-weight:bold;line-height:1.35}
-  .channel{margin-top:9px;color:#777;font-size:14px}
-  @media(max-width:600px){
-    .video{display:block}
-    .thumb{width:100%;height:auto;aspect-ratio:16/9}
-    .info{padding:10px}
-    .title{font-size:16px}
-  }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0b0b0b;
+    color: white;
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    color: #ff0000;
+    font-size: 28px;
+}
+
+header p {
+    color: #aaa;
+    margin-top: 8px;
+}
+
+/* SEARCH */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    background: #1b1b1b;
+    color: white;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 0 25px;
+    border: none;
+    border-radius: 10px;
+    background: #ff0000;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* PLAYER */
+.player-box {
+    background: #111;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255,0,0,.15);
+}
+
+.player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+}
+
+/* CONTROLS */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.controls button {
+    background: #222;
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.controls button:hover {
+    background: #ff0000;
+}
+
+/* VOLUME */
+.volume-box {
+    margin-top: 20px;
+}
+
+.volume-box label {
+    color: #aaa;
+}
+
+.volume-box input {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* HISTORY */
+.history {
+    margin-top: 30px;
+}
+
+.history h2 {
+    margin-bottom: 15px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #161616;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.history-item button {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* MOBILE */
+@media(max-width: 600px) {
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        padding: 14px;
+    }
+
+    .controls button {
+        flex: 1 1 40%;
+    }
+}
 </style>
 </head>
+
 <body>
 
+<div class="app">
+
 <header>
-  <h1>▶ YouTube Search</h1>
-  <div class="search">
-    <input id="q" type="search" placeholder="Search YouTube..." />
-    <button onclick="searchYouTube()">Search</button>
-  </div>
+    <h1>▶ YouTube Pro Player</h1>
+    <p>Professional YouTube Player • No Search API Required</p>
 </header>
 
-<main>
-  <div id="player">
-    <iframe id="frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-  </div>
-  <div id="results" class="status">Enter a search term above.</div>
-</main>
+<div class="search-box">
+    <input
+        type="text"
+        id="youtubeUrl"
+        placeholder="Paste YouTube Video URL or Video ID"
+    >
+
+    <button onclick="loadVideo()">Load Video</button>
+</div>
+
+<div class="player-box">
+
+    <div class="player">
+        <div id="player"></div>
+    </div>
+
+    <div class="controls">
+
+        <button onclick="previousVideo()">⏮ Previous</button>
+
+        <button onclick="backward()">⏪ -10 sec</button>
+
+        <button onclick="playVideo()">▶ Play</button>
+
+        <button onclick="pauseVideo()">⏸ Pause</button>
+
+        <button onclick="forward()">⏩ +10 sec</button>
+
+        <button onclick="stopVideo()">⏹ Cancel</button>
+
+    </div>
+
+    <div class="volume-box">
+        <label>🔊 Volume</label>
+
+        <input
+            type="range"
+            min="0"
+            max="100"
+            value="100"
+            onchange="changeVolume(this.value)"
+        >
+    </div>
+
+</div>
+
+<div class="history">
+
+    <h2>📜 Previous Videos</h2>
+
+    <div class="history-list" id="historyList"></div>
+
+</div>
+
+</div>
+
+
+<!-- YouTube IFrame API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
-/*
-  1. Google Cloud मा YouTube Data API v3 enable गर्नुहोस्।
-  2. आफ्नो API key तल राख्नुहोस्।
-*/
-const API_KEY = "AIzaSyAB3PfCCRcf0l1Yw8W2ZWoYBYfbne6n_Bc";
 
-async function searchYouTube(){
-  const q = document.getElementById("q").value.trim();
-  const results = document.getElementById("results");
+let player;
+let playlist = [];
+let currentIndex = -1;
 
-  if(!q){
-    results.innerHTML = '<div class="status">Please enter something to search.</div>';
-    return;
-  }
 
-  if(API_KEY === "AIzaSyAB3PfCCRcf0l1Yw8W2ZWoYBYfbne6n_Bc"){
-    results.innerHTML = `
-      <div class="status">
-        <b>API key राख्नुहोस्।</b><br><br>
-        HTML को code मा <code>PASTE_YOUR_YOUTUBE_API_KEY_HERE</code>
-        लाई आफ्नो YouTube API key ले replace गर्नुहोस्।
-      </div>`;
-    return;
-  }
+/* YOUTUBE PLAYER READY */
 
-  results.innerHTML = '<div class="status">Searching...</div>';
+function onYouTubeIframeAPIReady() {
 
-  try{
-    const url =
-      "https://www.googleapis.com/youtube/v3/search" +
-      "?part=snippet&type=video&maxResults=20&q=" +
-      encodeURIComponent(q) + "&key=" + encodeURIComponent(API_KEY);
+    player = new YT.Player("player", {
 
-    const res = await fetch(url);
-    const data = await res.json();
+        height: "100%",
+        width: "100%",
 
-    if(!res.ok){
-      throw new Error(data.error?.message || "YouTube API error");
-    }
+        videoId: "",
 
-    if(!data.items || data.items.length === 0){
-      results.innerHTML = '<div class="status">No videos found.</div>';
-      return;
-    }
+        playerVars: {
+            autoplay: 0,
+            controls: 1,
+            rel: 0
+        }
 
-    results.innerHTML = "";
-
-    data.items.forEach(item => {
-      const id = item.id.videoId;
-      const s = item.snippet;
-      const div = document.createElement("div");
-      div.className = "video";
-      div.innerHTML = `
-        <img class="thumb" src="${s.thumbnails.high?.url || s.thumbnails.default.url}" alt="">
-        <div class="info">
-          <div class="title">${escapeHtml(s.title)}</div>
-          <div class="channel">${escapeHtml(s.channelTitle)}</div>
-        </div>
-      `;
-      div.onclick = () => playVideo(id);
-      results.appendChild(div);
     });
 
-  }catch(err){
-    results.innerHTML =
-      '<div class="status">Error: ' + escapeHtml(err.message) + '</div>';
-  }
 }
 
-function playVideo(id){
-  const player = document.getElementById("player");
-  const frame = document.getElementById("frame");
-  frame.src = "https://www.youtube.com/embed/" + encodeURIComponent(id) + "?autoplay=1";
-  player.style.display = "block";
-  player.scrollIntoView({behavior:"smooth", block:"start"});
+
+/* EXTRACT VIDEO ID */
+
+function extractVideoID(url) {
+
+    if (!url) return null;
+
+    // Direct Video ID
+    if (
+        url.length === 11 &&
+        !url.includes("/") &&
+        !url.includes(".")
+    ) {
+        return url;
+    }
+
+    let match = url.match(
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/ ]{11})/
+    );
+
+    return match ? match[1] : null;
 }
 
-function escapeHtml(text){
-  const d = document.createElement("div");
-  d.textContent = text;
-  return d.innerHTML;
+
+/* LOAD VIDEO */
+
+function loadVideo() {
+
+    let input =
+        document.getElementById("youtubeUrl");
+
+    let value =
+        input.value.trim();
+
+    let videoID =
+        extractVideoID(value);
+
+
+    if (!videoID) {
+
+        alert(
+            "Please enter a valid YouTube URL or Video ID"
+        );
+
+        return;
+    }
+
+
+    // Prevent duplicates
+    let existing =
+        playlist.indexOf(videoID);
+
+
+    if (existing !== -1) {
+
+        currentIndex = existing;
+
+    } else {
+
+        playlist.push(videoID);
+
+        currentIndex =
+            playlist.length - 1;
+
+    }
+
+
+    player.loadVideoById(videoID);
+
+
+    input.value = "";
+
+
+    renderHistory();
+
 }
 
-document.getElementById("q").addEventListener("keydown", e => {
-  if(e.key === "Enter") searchYouTube();
-});
+
+/* PLAY */
+
+function playVideo() {
+
+    if (player)
+        player.playVideo();
+
+}
+
+
+/* PAUSE */
+
+function pauseVideo() {
+
+    if (player)
+        player.pauseVideo();
+
+}
+
+
+/* STOP / CANCEL */
+
+function stopVideo() {
+
+    if (player) {
+
+        player.stopVideo();
+
+    }
+
+}
+
+
+/* BACKWARD 10 SEC */
+
+function backward() {
+
+    if (!player) return;
+
+    let current =
+        player.getCurrentTime();
+
+    player.seekTo(
+        Math.max(0, current - 10),
+        true
+    );
+
+}
+
+
+/* FORWARD 10 SEC */
+
+function forward() {
+
+    if (!player) return;
+
+    let current =
+        player.getCurrentTime();
+
+    player.seekTo(
+        current + 10,
+        true
+    );
+
+}
+
+
+/* VOLUME */
+
+function changeVolume(value) {
+
+    if (player)
+        player.setVolume(value);
+
+}
+
+
+/* PREVIOUS VIDEO */
+
+function previousVideo() {
+
+    if (
+        playlist.length === 0 ||
+        currentIndex <= 0
+    ) {
+        return;
+    }
+
+
+    currentIndex--;
+
+
+    let videoID =
+        playlist[currentIndex];
+
+
+    player.loadVideoById(videoID);
+
+    renderHistory();
+
+}
+
+
+/* PLAY HISTORY VIDEO */
+
+function playHistory(index) {
+
+    currentIndex = index;
+
+
+    player.loadVideoById(
+        playlist[index]
+    );
+
+
+    renderHistory();
+
+}
+
+
+/* RENDER HISTORY */
+
+function renderHistory() {
+
+    let container =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    container.innerHTML = "";
+
+
+    playlist.forEach(
+        (videoID, index) => {
+
+
+            let item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "history-item";
+
+
+            let text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.innerText =
+                "YouTube Video: " +
+                videoID;
+
+
+            let button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.innerText =
+                "Play";
+
+
+            button.onclick =
+                () =>
+                playHistory(index);
+
+
+            item.appendChild(text);
+
+            item.appendChild(button);
+
+
+            container.appendChild(item);
+
+        }
+    );
+
+}
+
 </script>
 
 </body>
