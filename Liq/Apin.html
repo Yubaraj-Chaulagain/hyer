@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>YouTube Pro Player</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#0b0b0b;
+    color:white;
+}
+
+.app{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+header h1{
+    color:#ff0000;
+}
+
+header p{
+    color:#999;
+    margin-top:8px;
+}
+
+/* INPUT */
+
+.input-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.input-box input{
+    flex:1;
+    padding:15px;
+    border:none;
+    outline:none;
+    border-radius:10px;
+    background:#1b1b1b;
+    color:white;
+}
+
+.input-box button{
+    background:#ff0000;
+    color:white;
+    border:none;
+    padding:0 25px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* PLAYER */
+
+.player-container{
+    background:#111;
+    padding:15px;
+    border-radius:15px;
+}
+
+.player{
+    width:100%;
+    aspect-ratio:16/9;
+    background:black;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+/* CONTROLS */
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    margin-top:18px;
+}
+
+.controls button{
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    background:#222;
+    color:white;
+    cursor:pointer;
+}
+
+.controls button:hover{
+    background:#ff0000;
+}
+
+/* PLAYLIST */
+
+.playlist{
+    margin-top:30px;
+}
+
+.playlist h2{
+    margin-bottom:15px;
+}
+
+.playlist-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px;
+    margin-bottom:8px;
+    background:#151515;
+    border-radius:8px;
+}
+
+.playlist-item.active{
+    border:1px solid #ff0000;
+}
+
+.playlist-info{
+    flex:1;
+    overflow:hidden;
+}
+
+.playlist-info span{
+    color:#aaa;
+    font-size:13px;
+}
+
+.playlist-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.playlist-buttons button{
+    border:none;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    color:white;
+    background:#333;
+}
+
+.playlist-buttons .delete{
+    background:#aa0000;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .input-box{
+        flex-direction:column;
+    }
+
+    .input-box button{
+        padding:15px;
+    }
+
+    .controls button{
+        flex:1 1 40%;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>▶ YouTube Pro Player</h1>
+<p>Temporary Playlist • No API Key • No Local Storage</p>
+</header>
+
+
+<!-- ADD VIDEO -->
+
+<div class="input-box">
+
+<input
+id="youtubeUrl"
+type="text"
+placeholder="Paste YouTube URL or Video ID"
+>
+
+<button onclick="addVideo()">
+Add Video
+</button>
+
+</div>
+
+
+<!-- PLAYER -->
+
+<div class="player-container">
+
+<div class="player">
+<div id="player"></div>
+</div>
+
+
+<!-- CONTROLS -->
+
+<div class="controls">
+
+<button onclick="previousVideo()">
+⏮ Previous
+</button>
+
+<button onclick="backward()">
+⏪ -10 sec
+</button>
+
+<button onclick="playVideo()">
+▶ Play
+</button>
+
+<button onclick="pauseVideo()">
+⏸ Pause
+</button>
+
+<button onclick="forward()">
+⏩ +10 sec
+</button>
+
+<button onclick="nextVideo()">
+⏭ Next
+</button>
+
+<button onclick="stopVideo()">
+⏹ Cancel
+</button>
+
+</div>
+
+</div>
+
+
+<!-- PLAYLIST -->
+
+<div class="playlist">
+
+<h2>📋 Current Playlist</h2>
+
+<div id="playlistContainer"></div>
+
+</div>
+
+</div>
+
+
+<!-- YOUTUBE IFRAME API -->
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+
+<script>
+
+let player;
+
+let playlist = [];
+
+let currentIndex = -1;
+
+
+/* PLAYER READY */
+
+function onYouTubeIframeAPIReady(){
+
+    player = new YT.Player("player",{
+
+        width:"100%",
+
+        height:"100%",
+
+        playerVars:{
+            autoplay:0,
+            controls:1,
+            rel:0
+        },
+
+        events:{
+
+            onStateChange:onPlayerStateChange
+
+        }
+
+    });
+
+}
+
+
+/* EXTRACT VIDEO ID */
+
+function extractVideoID(value){
+
+    if(!value) return null;
+
+
+    /* Direct ID */
+
+    if(
+        value.length === 11 &&
+        !value.includes("/") &&
+        !value.includes(".")
+    ){
+
+        return value;
+
+    }
+
+
+    let match = value.match(
+
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/ ]{11})/
+
+    );
+
+
+    return match ? match[1] : null;
+
+}
+
+
+/* ADD VIDEO */
+
+function addVideo(){
+
+    let input =
+    document.getElementById("youtubeUrl");
+
+
+    let value =
+    input.value.trim();
+
+
+    let videoID =
+    extractVideoID(value);
+
+
+    if(!videoID){
+
+        alert("Invalid YouTube URL");
+
+        return;
+
+    }
+
+
+    /* ADD */
+
+    playlist.push(videoID);
+
+
+    /* FIRST VIDEO */
+
+    if(currentIndex === -1){
+
+        currentIndex = 0;
+
+        player.loadVideoById(videoID);
+
+    }
+
+
+    input.value = "";
+
+
+    renderPlaylist();
+
+}
+
+
+/* PLAY VIDEO */
+
+function loadVideo(index){
+
+    if(index < 0) return;
+
+    if(index >= playlist.length) return;
+
+
+    currentIndex = index;
+
+
+    player.loadVideoById(
+
+        playlist[currentIndex]
+
+    );
+
+
+    renderPlaylist();
+
+}
+
+
+/* PLAY */
+
+function playVideo(){
+
+    if(player){
+
+        player.playVideo();
+
+    }
+
+}
+
+
+/* PAUSE */
+
+function pauseVideo(){
+
+    if(player){
+
+        player.pauseVideo();
+
+    }
+
+}
+
+
+/* STOP */
+
+function stopVideo(){
+
+    if(player){
+
+        player.stopVideo();
+
+    }
+
+}
+
+
+/* BACKWARD */
+
+function backward(){
+
+    if(!player) return;
+
+
+    let time =
+
+    player.getCurrentTime();
+
+
+    player.seekTo(
+
+        Math.max(0,time-10),
+
+        true
+
+    );
+
+}
+
+
+/* FORWARD */
+
+function forward(){
+
+    if(!player) return;
+
+
+    let time =
+
+    player.getCurrentTime();
+
+
+    player.seekTo(
+
+        time+10,
+
+        true
+
+    );
+
+}
+
+
+/* NEXT */
+
+function nextVideo(){
+
+    if(
+
+        currentIndex + 1 <
+
+        playlist.length
+
+    ){
+
+        loadVideo(
+
+            currentIndex + 1
+
+        );
+
+    }
+
+}
+
+
+/* PREVIOUS */
+
+function previousVideo(){
+
+    if(
+
+        currentIndex - 1 >= 0
+
+    ){
+
+        loadVideo(
+
+            currentIndex - 1
+
+        );
+
+    }
+
+}
+
+
+/* AUTO NEXT */
+
+function onPlayerStateChange(event){
+
+    if(
+
+        event.data ===
+
+        YT.PlayerState.ENDED
+
+    ){
+
+        nextVideo();
+
+    }
+
+}
+
+
+/* DELETE VIDEO */
+
+function deleteVideo(index){
+
+    playlist.splice(
+
+        index,
+
+        1
+
+    );
+
+
+    if(
+
+        index < currentIndex
+
+    ){
+
+        currentIndex--;
+
+    }
+
+
+    else if(
+
+        index === currentIndex
+
+    ){
+
+        if(
+
+            playlist.length === 0
+
+        ){
+
+            currentIndex = -1;
+
+            player.stopVideo();
+
+        }
+
+        else{
+
+            currentIndex =
+
+            Math.min(
+
+                index,
+
+                playlist.length-1
+
+            );
+
+
+            player.loadVideoById(
+
+                playlist[currentIndex]
+
+            );
+
+        }
+
+    }
+
+
+    renderPlaylist();
+
+}
+
+
+/* RENDER PLAYLIST */
+
+function renderPlaylist(){
+
+    let container =
+
+    document.getElementById(
+
+        "playlistContainer"
+
+    );
+
+
+    container.innerHTML = "";
+
+
+    playlist.forEach(
+
+        (videoID,index)=>{
+
+
+            let item =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+
+            item.className =
+
+            "playlist-item";
+
+
+            if(
+
+                index === currentIndex
+
+            ){
+
+                item.classList.add(
+
+                    "active"
+
+                );
+
+            }
+
+
+            item.innerHTML = `
+
+<div class="playlist-info">
+
+<b>Video ${index+1}</b>
+
+<br>
+
+<span>
+
+${videoID}
+
+</span>
+
+</div>
+
+
+<div class="playlist-buttons">
+
+<button onclick="loadVideo(${index})">
+
+▶ Play
+
+</button>
+
+
+<button
+
+class="delete"
+
+onclick="deleteVideo(${index})"
+
+>
+
+✕ Remove
+
+</button>
+
+</div>
+
+`;
+
+
+            container.appendChild(
+
+                item
+
+            );
+
+        }
+
+    );
+
+}
+
+</script>
+
+</body>
+</html>
