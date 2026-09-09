@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Mini Browser + Video Player</title>
+<title>Mini Browser + YouTube Player</title>
 
 <style>
 *{
@@ -14,19 +14,26 @@
 
 body{
     margin:0;
-    background:#101010;
+    background:#0b0b0b;
     color:white;
 }
 
 .app{
-    max-width:1200px;
+    max-width:1100px;
     margin:auto;
-    padding:10px;
+    padding:12px;
 }
 
 /* =========================
-   TABS
+   BROWSER
 ========================= */
+
+.browser-section{
+    background:#151515;
+    border-radius:12px;
+    padding:10px;
+    margin-bottom:18px;
+}
 
 .tabs{
     display:flex;
@@ -38,9 +45,9 @@ body{
 .tab{
     min-width:120px;
     max-width:180px;
-    padding:10px;
-    background:#242424;
-    border-radius:8px 8px 0 0;
+    padding:9px 12px;
+    background:#252525;
+    border-radius:8px;
     cursor:pointer;
     white-space:nowrap;
     overflow:hidden;
@@ -52,14 +59,10 @@ body{
 }
 
 .new-tab{
-    min-width:42px;
+    min-width:45px;
     text-align:center;
-    font-size:20px;
+    font-size:18px;
 }
-
-/* =========================
-   BROWSER TOOLBAR
-========================= */
 
 .toolbar{
     display:flex;
@@ -69,41 +72,31 @@ body{
 }
 
 .toolbar button{
-    border:0;
-    border-radius:8px;
     background:#292929;
     color:white;
-    padding:10px 12px;
+    border:none;
+    border-radius:8px;
+    padding:10px;
     cursor:pointer;
-    font-size:16px;
 }
 
-.toolbar button:hover{
-    background:#444;
-}
-
-.address{
+.toolbar input{
     flex:1;
     min-width:80px;
     padding:11px;
+    background:#1b1b1b;
+    color:white;
     border:1px solid #444;
     border-radius:8px;
-    background:#181818;
-    color:white;
-    outline:none;
 }
 
 .go-btn{
     background:#e50914 !important;
 }
 
-/* =========================
-   BROWSER
-========================= */
-
 .browser-box{
     width:100%;
-    height:65vh;
+    height:55vh;
     background:white;
     border-radius:10px;
     overflow:hidden;
@@ -113,67 +106,46 @@ body{
     width:100%;
     height:100%;
     border:0;
-    background:white;
 }
 
 /* =========================
-   SECTIONS
+   PLAYER
 ========================= */
 
 .section{
-    margin-top:15px;
-    background:#171717;
+    background:#151515;
     padding:12px;
-    border-radius:10px;
+    border-radius:12px;
+    margin-top:15px;
 }
 
 .section h2{
-    margin:0 0 12px;
-    font-size:19px;
+    margin-top:0;
 }
 
-/* =========================
-   BOOKMARK / HISTORY
-========================= */
-
-.list{
+.search-box{
     display:flex;
-    flex-direction:column;
-    gap:7px;
-    max-height:300px;
-    overflow-y:auto;
-}
-
-.list-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
     gap:8px;
-    padding:10px;
-    background:#242424;
+    margin-bottom:12px;
+}
+
+.search-box input{
+    flex:1;
+    padding:13px;
+    background:#1b1b1b;
+    color:white;
+    border:1px solid #444;
     border-radius:8px;
 }
 
-.list-item span{
-    flex:1;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    cursor:pointer;
-}
-
-.list-item button{
-    border:0;
-    border-radius:6px;
-    padding:7px 10px;
-    cursor:pointer;
+.search-box button{
+    padding:12px 18px;
     background:#e50914;
     color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
 }
-
-/* =========================
-   VIDEO PLAYER
-========================= */
 
 .player-box{
     width:100%;
@@ -192,39 +164,46 @@ body{
 #localPlayer{
     display:none;
     object-fit:contain;
+    background:black;
 }
-
-/* =========================
-   VIDEO CONTROLS
-========================= */
 
 .controls{
     display:flex;
     flex-wrap:wrap;
-    gap:7px;
     justify-content:center;
-    margin-top:10px;
+    gap:8px;
+    margin-top:12px;
 }
 
-.controls button,
-.video-button{
-    border:0;
+.controls button{
+    padding:11px 14px;
+    border:none;
     border-radius:8px;
-    padding:10px 13px;
     background:#292929;
     color:white;
     cursor:pointer;
 }
 
 .controls button:hover{
-    background:#444;
+    background:#e50914;
+}
+
+.volume-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:12px;
+}
+
+.volume-box input{
+    flex:1;
 }
 
 .local-upload{
     display:inline-block;
-    margin-top:10px;
+    margin-top:12px;
     background:#075e54;
-    padding:10px 13px;
+    padding:11px 15px;
     border-radius:8px;
     cursor:pointer;
 }
@@ -237,24 +216,48 @@ body{
    VIDEO LIST
 ========================= */
 
+.video-search{
+    width:100%;
+    padding:12px;
+    background:#1b1b1b;
+    border:1px solid #444;
+    border-radius:8px;
+    color:white;
+    margin-bottom:10px;
+}
+
+.status{
+    color:#aaa;
+    font-size:13px;
+    margin-bottom:10px;
+}
+
 .video-list{
     display:flex;
     flex-direction:column;
-    gap:7px;
+    gap:8px;
 }
 
 .video-item{
     display:flex;
-    gap:10px;
     align-items:center;
+    gap:10px;
     padding:8px;
-    background:#242424;
+    background:#202020;
     border-radius:8px;
     cursor:pointer;
 }
 
+.video-item:hover{
+    background:#303030;
+}
+
+.video-item.active{
+    border:2px solid #e50914;
+}
+
 .video-thumb{
-    width:110px;
+    width:120px;
     aspect-ratio:16/9;
     object-fit:cover;
     border-radius:6px;
@@ -267,10 +270,8 @@ body{
 }
 
 .video-title{
+    font-size:15px;
     font-weight:bold;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
 }
 
 .video-type{
@@ -279,41 +280,67 @@ body{
     margin-top:5px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.list-item{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:#202020;
+    padding:9px;
+    border-radius:8px;
+}
+
+.list-item span{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    cursor:pointer;
+}
+
+.list-item button{
+    background:#e50914;
+    border:none;
+    color:white;
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+}
 
 @media(max-width:600px){
-
-    .app{
-        padding:7px;
-    }
 
     .toolbar{
         flex-wrap:wrap;
     }
 
-    .address{
-        width:100%;
+    .toolbar input{
         order:10;
         flex-basis:100%;
     }
 
     .browser-box{
-        height:60vh;
+        height:50vh;
     }
 
-    .toolbar button{
-        padding:9px;
+    .search-box{
+        flex-direction:column;
+    }
+
+    .search-box button{
+        width:100%;
     }
 
     .controls button{
-        flex:1 1 28%;
-        padding:10px 5px;
+        flex:1 1 30%;
     }
 
     .video-thumb{
-        width:90px;
+        width:95px;
     }
 }
 </style>
@@ -323,66 +350,57 @@ body{
 
 <div class="app">
 
-<!-- =========================
-     BROWSER TABS
-========================= -->
+<!-- =========================================
+     MINI BROWSER
+========================================= -->
 
-<div class="tabs" id="tabs"></div>
+<div class="browser-section">
 
+    <div class="tabs" id="tabs"></div>
 
-<!-- =========================
-     TOOLBAR
-========================= -->
+    <div class="toolbar">
 
-<div class="toolbar">
+        <button onclick="browserBack()">⬅</button>
 
-    <button onclick="goBack()">⬅</button>
+        <button onclick="browserForward()">➡</button>
 
-    <button onclick="goForward()">➡</button>
+        <button onclick="browserRefresh()">🔄</button>
 
-    <button onclick="refreshPage()">🔄</button>
+        <button onclick="browserHome()">🏠</button>
 
-    <button onclick="goHome()">🏠</button>
+        <input
+            id="browserAddress"
+            type="text"
+            placeholder="Search or enter website..."
+            onkeydown="browserEnter(event)"
+        >
 
-    <input
-        type="text"
-        id="address"
-        class="address"
-        placeholder="Search Google or enter URL..."
-        onkeydown="addressKey(event)"
-    >
+        <button
+            class="go-btn"
+            onclick="browserGo()"
+        >
+            Go
+        </button>
 
-    <button
-        class="go-btn"
-        onclick="goAddress()"
-    >
-        Go
-    </button>
+        <button onclick="addBookmark()">⭐</button>
 
-    <button onclick="addBookmark()">
-        ⭐
-    </button>
+    </div>
 
-</div>
+    <div class="browser-box">
 
+        <iframe
+            id="browserFrame"
+            src="about:blank"
+        ></iframe>
 
-<!-- =========================
-     BROWSER FRAME
-========================= -->
-
-<div class="browser-box">
-
-    <iframe
-        id="browserFrame"
-        src="https://example.com"
-    ></iframe>
+    </div>
 
 </div>
 
 
-<!-- =========================
+<!-- =========================================
      BOOKMARKS
-========================= -->
+========================================= -->
 
 <div class="section">
 
@@ -391,34 +409,34 @@ body{
     <div
         id="bookmarkList"
         class="list"
-    ></div>
+    >
+    </div>
 
 </div>
 
 
-<!-- =========================
-     BROWSER HISTORY
-========================= -->
+<!-- =========================================
+     YOUTUBE PLAYER
+========================================= -->
 
 <div class="section">
 
-    <h2>🕘 Browser History</h2>
+    <h2>▶ YouTube Pro Player</h2>
 
-    <div
-        id="browserHistory"
-        class="list"
-    ></div>
+    <div class="search-box">
 
-</div>
+        <input
+            type="text"
+            id="youtubeUrl"
+            placeholder="Paste YouTube Video URL or Video ID"
+        >
 
+        <button onclick="loadManualYouTube()">
+            Load Video
+        </button>
 
-<!-- =========================
-     VIDEO PLAYER
-========================= -->
+    </div>
 
-<div class="section">
-
-    <h2>▶ YouTube + Mobile Video Player</h2>
 
     <div class="player-box">
 
@@ -427,21 +445,20 @@ body{
         <video
             id="localPlayer"
             playsinline
+            preload="metadata"
         ></video>
 
     </div>
 
 
-    <!-- VIDEO CONTROLS -->
-
     <div class="controls">
 
         <button onclick="previousVideo()">
-            ⏮ Prev
+            ⏮ Previous
         </button>
 
         <button onclick="seekVideo(-10)">
-            ↶ 10
+            ⏪ -10 sec
         </button>
 
         <button onclick="playVideo()">
@@ -453,17 +470,39 @@ body{
         </button>
 
         <button onclick="seekVideo(10)">
-            10 ↷
+            ⏩ +10 sec
         </button>
 
         <button onclick="nextVideo()">
-            Next ⏭
+            ⏭ Next
+        </button>
+
+        <button onclick="stopVideo()">
+            ⏹ Stop
         </button>
 
     </div>
 
 
-    <!-- LOCAL VIDEO -->
+    <div class="volume-box">
+
+        🔊
+
+        <input
+            id="volume"
+            type="range"
+            min="0"
+            max="100"
+            value="100"
+            oninput="changeVolume(this.value)"
+        >
+
+        <span id="volumeText">
+            100%
+        </span>
+
+    </div>
+
 
     <label class="local-upload">
 
@@ -481,9 +520,41 @@ body{
 </div>
 
 
-<!-- =========================
-     LOCAL VIDEO LIST
-========================= -->
+<!-- =========================================
+     GOOGLE SHEET VIDEO LIST
+========================================= -->
+
+<div class="section">
+
+    <h2>🎬 Google Sheet YouTube Videos</h2>
+
+    <input
+        type="text"
+        id="videoSearch"
+        class="video-search"
+        placeholder="🔎 Search videos..."
+        oninput="searchVideos()"
+    >
+
+    <div
+        id="status"
+        class="status"
+    >
+        Loading videos...
+    </div>
+
+    <div
+        id="sheetList"
+        class="video-list"
+    >
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     MOBILE VIDEO LIST
+========================================= -->
 
 <div class="section">
 
@@ -492,216 +563,190 @@ body{
     <div
         id="localVideoList"
         class="video-list"
-    ></div>
+    >
+        <p style="color:#888">
+            No mobile videos selected.
+        </p>
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     HISTORY
+========================================= -->
+
+<div class="section">
+
+    <h2>📜 Video History</h2>
+
+    <div
+        id="historyList"
+        class="video-list"
+    >
+        <p style="color:#888">
+            No videos played yet.
+        </p>
+    </div>
 
 </div>
 
 </div>
 
 
-<!-- =========================
+<!-- =========================================
      YOUTUBE API
-========================= -->
+========================================= -->
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
 
 <script>
 
-/* ==========================================
+/* =====================================================
+   GOOGLE SHEET CSV
+===================================================== */
+
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQfLCxJaz-eDFB7SGeROjZDepLOHg1ZggZhYf5kfWJc8S-l1H9frmOshuakfD7_4ocFZd2tvRvEaLN9/pub?gid=281133690&single=true&output=csv";
+
+
+/* =====================================================
    BROWSER SYSTEM
-========================================== */
+===================================================== */
 
-let tabs = [];
+let browserTabs = [];
 
-let activeTab = 0;
+let activeBrowserTab = 0;
 
 
 /* Create first tab */
 
-createTab(
-    "https://example.com",
-    "Home"
-);
+browserTabs.push({
 
+    title:"Home",
 
-/* ==========================================
-   CREATE TAB
-========================================== */
+    url:"about:blank",
 
-function createTab(url,title){
+    history:["about:blank"],
 
-    tabs.push({
+    historyIndex:0
 
-        url:url,
+});
 
-        title:title,
-
-        history:[url],
-
-        historyIndex:0
-
-    });
-
-
-    activeTab =
-        tabs.length - 1;
-
-
-    renderTabs();
-
-
-    loadTab();
-
-}
-
-
-/* ==========================================
-   RENDER TABS
-========================================== */
 
 function renderTabs(){
 
     const box =
-        document.getElementById(
-            "tabs"
-        );
-
+        document.getElementById("tabs");
 
     box.innerHTML = "";
 
 
-    tabs.forEach(
-        function(tab,index){
+    browserTabs.forEach(function(tab,index){
 
-            const element =
-                document.createElement(
-                    "div"
-                );
+        const item =
+            document.createElement("div");
 
+        item.className =
+            "tab";
 
-            element.className =
-                "tab";
+        if(index === activeBrowserTab){
 
-
-            if(
-                index === activeTab
-            ){
-
-                element.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            element.textContent =
-                tab.title;
-
-
-            element.onclick =
-                function(){
-
-                    activeTab = index;
-
-                    renderTabs();
-
-                    loadTab();
-
-                };
-
-
-            box.appendChild(
-                element
-            );
+            item.classList.add("active");
 
         }
-    );
 
 
-    const newTab =
-        document.createElement(
-            "div"
-        );
+        item.textContent =
+            tab.title;
 
 
-    newTab.className =
+        item.onclick =
+            function(){
+
+                activeBrowserTab = index;
+
+                renderTabs();
+
+                loadBrowserTab();
+
+            };
+
+
+        box.appendChild(item);
+
+    });
+
+
+    const plus =
+        document.createElement("div");
+
+    plus.className =
         "tab new-tab";
 
-
-    newTab.textContent =
+    plus.textContent =
         "+";
 
-
-    newTab.onclick =
+    plus.onclick =
         function(){
 
-            createTab(
-                "https://example.com",
-                "New Tab"
-            );
+            browserTabs.push({
+
+                title:"New Tab",
+
+                url:"about:blank",
+
+                history:["about:blank"],
+
+                historyIndex:0
+
+            });
+
+
+            activeBrowserTab =
+                browserTabs.length - 1;
+
+
+            renderTabs();
+
+            loadBrowserTab();
 
         };
 
 
-    box.appendChild(
-        newTab
-    );
+    box.appendChild(plus);
 
 }
 
 
-/* ==========================================
-   LOAD TAB
-========================================== */
-
-function loadTab(){
-
-    if(
-        !tabs[activeTab]
-    ){
-
-        return;
-
-    }
-
+function loadBrowserTab(){
 
     const tab =
-        tabs[activeTab];
+        browserTabs[
+            activeBrowserTab
+        ];
 
 
     document
-        .getElementById(
-            "browserFrame"
-        )
-        .src =
-        tab.url;
-
-
-    document
-        .getElementById(
-            "address"
-        )
+        .getElementById("browserAddress")
         .value =
         tab.url;
 
 
-    renderBrowserHistory();
+    document
+        .getElementById("browserFrame")
+        .src =
+        tab.url;
 
 }
 
 
-/* ==========================================
-   GO ADDRESS
-========================================== */
-
-function goAddress(){
+function browserGo(){
 
     let value =
         document
-        .getElementById(
-            "address"
-        )
+        .getElementById("browserAddress")
         .value
         .trim();
 
@@ -715,10 +760,6 @@ function goAddress(){
 
     let url;
 
-
-    /*
-       URL or Search
-    */
 
     if(
         value.startsWith("http://") ||
@@ -744,20 +785,16 @@ function goAddress(){
 
         url =
             "https://www.google.com/search?q=" +
-            encodeURIComponent(
-                value
-            );
+            encodeURIComponent(value);
 
     }
 
 
     const tab =
-        tabs[activeTab];
+        browserTabs[
+            activeBrowserTab
+        ];
 
-
-    /*
-       Remove forward history
-    */
 
     tab.history =
         tab.history.slice(
@@ -766,18 +803,14 @@ function goAddress(){
         );
 
 
-    tab.history.push(
-        url
-    );
+    tab.history.push(url);
 
 
     tab.historyIndex =
         tab.history.length - 1;
 
 
-    tab.url =
-        url;
-
+    tab.url = url;
 
     tab.title =
         value;
@@ -785,41 +818,31 @@ function goAddress(){
 
     renderTabs();
 
-    loadTab();
+    loadBrowserTab();
 
 }
 
 
-/* ==========================================
-   ENTER KEY
-========================================== */
+function browserEnter(event){
 
-function addressKey(event){
+    if(event.key === "Enter"){
 
-    if(
-        event.key === "Enter"
-    ){
-
-        goAddress();
+        browserGo();
 
     }
 
 }
 
 
-/* ==========================================
-   BACK
-========================================== */
-
-function goBack(){
+function browserBack(){
 
     const tab =
-        tabs[activeTab];
+        browserTabs[
+            activeBrowserTab
+        ];
 
 
-    if(
-        tab.historyIndex <= 0
-    ){
+    if(tab.historyIndex <= 0){
 
         return;
 
@@ -835,19 +858,17 @@ function goBack(){
         ];
 
 
-    loadTab();
+    loadBrowserTab();
 
 }
 
 
-/* ==========================================
-   FORWARD
-========================================== */
-
-function goForward(){
+function browserForward(){
 
     const tab =
-        tabs[activeTab];
+        browserTabs[
+            activeBrowserTab
+        ];
 
 
     if(
@@ -869,77 +890,83 @@ function goForward(){
         ];
 
 
-    loadTab();
+    loadBrowserTab();
 
 }
 
 
-/* ==========================================
-   REFRESH
-========================================== */
+function browserRefresh(){
 
-function refreshPage(){
-
-    document
-        .getElementById(
+    const frame =
+        document.getElementById(
             "browserFrame"
-        )
-        .src =
-        tabs[
-            activeTab
-        ].url;
+        );
+
+
+    frame.src =
+        frame.src;
 
 }
 
 
-/* ==========================================
-   HOME
-========================================== */
+function browserHome(){
 
-function goHome(){
-
-    document
-        .getElementById(
-            "address"
-        )
-        .value =
-        "https://example.com";
+    const tab =
+        browserTabs[
+            activeBrowserTab
+        ];
 
 
-    goAddress();
+    tab.url =
+        "about:blank";
+
+
+    tab.title =
+        "Home";
+
+
+    loadBrowserTab();
 
 }
 
 
-/* ==========================================
+/* =====================================================
    BOOKMARK
-========================================== */
+===================================================== */
 
 function addBookmark(){
 
     const tab =
-        tabs[
-            activeTab
+        browserTabs[
+            activeBrowserTab
         ];
+
+
+    if(
+        tab.url ===
+        "about:blank"
+    ){
+
+        return;
+
+    }
 
 
     let bookmarks =
         JSON.parse(
             localStorage.getItem(
-                "bookmarks"
+                "browserBookmarks"
             ) ||
             "[]"
         );
 
 
-    const exists =
-        bookmarks.some(
-            b =>
-            b.url === tab.url
-        );
-
-
-    if(!exists){
+    if(
+        !bookmarks.some(
+            item =>
+            item.url === tab.url
+        )
+    ){
 
         bookmarks.push({
 
@@ -953,10 +980,13 @@ function addBookmark(){
 
 
         localStorage.setItem(
-            "bookmarks",
+
+            "browserBookmarks",
+
             JSON.stringify(
                 bookmarks
             )
+
         );
 
     }
@@ -966,10 +996,6 @@ function addBookmark(){
 
 }
 
-
-/* ==========================================
-   RENDER BOOKMARKS
-========================================== */
 
 function renderBookmarks(){
 
@@ -981,22 +1007,25 @@ function renderBookmarks(){
 
     const bookmarks =
         JSON.parse(
+
             localStorage.getItem(
-                "bookmarks"
-            ) ||
+                "browserBookmarks"
+            )
+
+            ||
+
             "[]"
+
         );
 
 
     box.innerHTML = "";
 
 
-    if(
-        !bookmarks.length
-    ){
+    if(!bookmarks.length){
 
         box.innerHTML =
-            "<p>No bookmarks.</p>";
+            "<p style='color:#888'>No bookmarks yet.</p>";
 
         return;
 
@@ -1007,20 +1036,14 @@ function renderBookmarks(){
         function(bookmark,index){
 
             const item =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             item.className =
                 "list-item";
 
 
             const text =
-                document.createElement(
-                    "span"
-                );
-
+                document.createElement("span");
 
             text.textContent =
                 bookmark.title;
@@ -1031,22 +1054,19 @@ function renderBookmarks(){
 
                     document
                     .getElementById(
-                        "address"
+                        "browserAddress"
                     )
                     .value =
                     bookmark.url;
 
 
-                    goAddress();
+                    browserGo();
 
                 };
 
 
             const remove =
-                document.createElement(
-                    "button"
-                );
-
+                document.createElement("button");
 
             remove.textContent =
                 "✕";
@@ -1062,10 +1082,13 @@ function renderBookmarks(){
 
 
                     localStorage.setItem(
-                        "bookmarks",
+
+                        "browserBookmarks",
+
                         JSON.stringify(
                             bookmarks
                         )
+
                     );
 
 
@@ -1074,19 +1097,11 @@ function renderBookmarks(){
                 };
 
 
-            item.appendChild(
-                text
-            );
+            item.appendChild(text);
 
+            item.appendChild(remove);
 
-            item.appendChild(
-                remove
-            );
-
-
-            box.appendChild(
-                item
-            );
+            box.appendChild(item);
 
         }
     );
@@ -1094,109 +1109,30 @@ function renderBookmarks(){
 }
 
 
-/* ==========================================
-   BROWSER HISTORY
-========================================== */
-
-function renderBrowserHistory(){
-
-    const box =
-        document.getElementById(
-            "browserHistory"
-        );
-
-
-    box.innerHTML = "";
-
-
-    const tab =
-        tabs[
-            activeTab
-        ];
-
-
-    tab.history
-    .slice()
-    .reverse()
-    .forEach(
-        function(url){
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "list-item";
-
-
-            const text =
-                document.createElement(
-                    "span"
-                );
-
-
-            text.textContent =
-                url;
-
-
-            text.onclick =
-                function(){
-
-                    document
-                    .getElementById(
-                        "address"
-                    )
-                    .value =
-                    url;
-
-
-                    goAddress();
-
-                };
-
-
-            item.appendChild(
-                text
-            );
-
-
-            box.appendChild(
-                item
-            );
-
-        }
-    );
-
-}
-
-
-/* ==========================================
-   VIDEO PLAYER
-========================================== */
+/* =====================================================
+   VIDEO VARIABLES
+===================================================== */
 
 let player;
 
-let playerReady =
-    false;
+let playerReady = false;
+
+let sheetVideos = [];
+
+let currentIndex = -1;
+
+let localVideos = [];
+
+let localIndex = -1;
+
+let videoMode = "youtube";
+
+let videoHistory = [];
 
 
-let videoMode =
-    "youtube";
-
-
-let localVideos =
-    [];
-
-
-let localIndex =
-    -1;
-
-
-/* ==========================================
-   YOUTUBE READY
-========================================== */
+/* =====================================================
+   YOUTUBE API READY
+===================================================== */
 
 function onYouTubeIframeAPIReady(){
 
@@ -1229,27 +1165,12 @@ function onYouTubeIframeAPIReady(){
 
                     onReady:function(){
 
-                        playerReady =
-                            true;
+                        playerReady = true;
 
                     },
 
                     onStateChange:
-                        function(event){
-
-                            if(
-
-                                event.data ===
-                                YT.PlayerState
-                                .ENDED
-
-                            ){
-
-                                nextVideo();
-
-                            }
-
-                        }
+                        onPlayerStateChange
 
                 }
 
@@ -1260,9 +1181,697 @@ function onYouTubeIframeAPIReady(){
 }
 
 
-/* ==========================================
-   SELECT LOCAL VIDEOS
-========================================== */
+function onPlayerStateChange(event){
+
+    if(
+        event.data ===
+        YT.PlayerState.ENDED
+    ){
+
+        if(
+            videoMode ===
+            "youtube"
+        ){
+
+            setTimeout(
+                nextVideo,
+                500
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   EXTRACT YOUTUBE ID
+===================================================== */
+
+function extractVideoID(input){
+
+    if(!input){
+
+        return null;
+
+    }
+
+
+    input =
+        input.trim();
+
+
+    if(
+        /^[a-zA-Z0-9_-]{11}$/
+        .test(input)
+    ){
+
+        return input;
+
+    }
+
+
+    try{
+
+        const url =
+            new URL(input);
+
+
+        if(
+            url.hostname.includes(
+                "youtu.be"
+            )
+        ){
+
+            return url.pathname
+                .split("/")
+                .filter(Boolean)[0];
+
+        }
+
+
+        if(
+            url.hostname.includes(
+                "youtube.com"
+            )
+        ){
+
+            let id =
+                url.searchParams
+                .get("v");
+
+
+            if(id){
+
+                return id;
+
+            }
+
+
+            const parts =
+                url.pathname
+                .split("/");
+
+
+            const embedIndex =
+                parts.indexOf("embed");
+
+
+            if(
+                embedIndex !== -1 &&
+                parts[embedIndex + 1]
+            ){
+
+                return parts[
+                    embedIndex + 1
+                ];
+
+            }
+
+
+            const shortsIndex =
+                parts.indexOf("shorts");
+
+
+            if(
+                shortsIndex !== -1 &&
+                parts[shortsIndex + 1]
+            ){
+
+                return parts[
+                    shortsIndex + 1
+                ];
+
+            }
+
+        }
+
+    }
+
+    catch(error){
+
+        return null;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   MANUAL YOUTUBE
+===================================================== */
+
+function loadManualYouTube(){
+
+    const input =
+        document.getElementById(
+            "youtubeUrl"
+        );
+
+
+    const id =
+        extractVideoID(
+            input.value
+        );
+
+
+    if(!id){
+
+        alert(
+            "Valid YouTube URL राख्नुहोस्"
+        );
+
+        return;
+
+    }
+
+
+    const index =
+        sheetVideos.findIndex(
+            video =>
+            video.id === id
+        );
+
+
+    if(index !== -1){
+
+        loadYouTubeVideo(index);
+
+        return;
+
+    }
+
+
+    videoMode =
+        "youtube";
+
+
+    showYouTube();
+
+
+    currentIndex =
+        -1;
+
+
+    if(
+        playerReady
+    ){
+
+        player.loadVideoById(id);
+
+        addVideoHistory({
+
+            id:id,
+
+            title:"Manual YouTube Video",
+
+            type:"YouTube"
+
+        });
+
+    }
+
+
+    input.value = "";
+
+}
+
+
+/* =====================================================
+   LOAD YOUTUBE VIDEO
+===================================================== */
+
+function loadYouTubeVideo(index){
+
+    if(
+        !sheetVideos.length
+    ){
+
+        return;
+
+    }
+
+
+    if(index < 0){
+
+        index =
+            sheetVideos.length - 1;
+
+    }
+
+
+    if(
+        index >=
+        sheetVideos.length
+    ){
+
+        index = 0;
+
+    }
+
+
+    currentIndex =
+        index;
+
+
+    const video =
+        sheetVideos[index];
+
+
+    videoMode =
+        "youtube";
+
+
+    showYouTube();
+
+
+    if(!playerReady){
+
+        setStatus(
+            "YouTube player loading..."
+        );
+
+        return;
+
+    }
+
+
+    player.loadVideoById(
+        video.id
+    );
+
+
+    setStatus(
+        "Playing: " +
+        video.title
+    );
+
+
+    addVideoHistory({
+
+        id:video.id,
+
+        title:video.title,
+
+        type:"Google Sheet"
+
+    });
+
+
+    renderSheetVideos();
+
+}
+
+
+/* =====================================================
+   SHOW YOUTUBE
+===================================================== */
+
+function showYouTube(){
+
+    document
+        .getElementById(
+            "youtubePlayer"
+        )
+        .style.display =
+        "block";
+
+
+    document
+        .getElementById(
+            "localPlayer"
+        )
+        .style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   SHOW LOCAL
+===================================================== */
+
+function showLocal(){
+
+    document
+        .getElementById(
+            "youtubePlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "localPlayer"
+        )
+        .style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   NEXT VIDEO
+===================================================== */
+
+function nextVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        if(
+            !localVideos.length
+        ){
+
+            return;
+
+        }
+
+
+        playLocalVideo(
+            localIndex + 1
+        );
+
+        return;
+
+    }
+
+
+    /*
+       YouTube Sheet Auto Next
+    */
+
+    if(
+        !sheetVideos.length
+    ){
+
+        return;
+
+    }
+
+
+    /*
+       If manual video,
+       start Sheet from first
+    */
+
+    if(
+        currentIndex === -1
+    ){
+
+        currentIndex = 0;
+
+    }
+
+    else{
+
+        currentIndex++;
+
+    }
+
+
+    if(
+        currentIndex >=
+        sheetVideos.length
+    ){
+
+        currentIndex = 0;
+
+    }
+
+
+    loadYouTubeVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =====================================================
+   PREVIOUS VIDEO
+===================================================== */
+
+function previousVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        if(
+            !localVideos.length
+        ){
+
+            return;
+
+        }
+
+
+        playLocalVideo(
+            localIndex - 1
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !sheetVideos.length
+    ){
+
+        return;
+
+    }
+
+
+    if(
+        currentIndex <= 0
+    ){
+
+        currentIndex =
+            sheetVideos.length - 1;
+
+    }
+
+    else{
+
+        currentIndex--;
+
+    }
+
+
+    loadYouTubeVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =====================================================
+   PLAY
+===================================================== */
+
+function playVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        document
+        .getElementById(
+            "localPlayer"
+        )
+        .play()
+        .catch(function(){});
+
+        return;
+
+    }
+
+
+    if(playerReady){
+
+        player.playVideo();
+
+    }
+
+}
+
+
+/* =====================================================
+   PAUSE
+===================================================== */
+
+function pauseVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        document
+        .getElementById(
+            "localPlayer"
+        )
+        .pause();
+
+        return;
+
+    }
+
+
+    if(playerReady){
+
+        player.pauseVideo();
+
+    }
+
+}
+
+
+/* =====================================================
+   STOP
+===================================================== */
+
+function stopVideo(){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        const video =
+            document.getElementById(
+                "localPlayer"
+            );
+
+
+        video.pause();
+
+        video.currentTime = 0;
+
+        return;
+
+    }
+
+
+    if(playerReady){
+
+        player.stopVideo();
+
+    }
+
+}
+
+
+/* =====================================================
+   SEEK
+===================================================== */
+
+function seekVideo(seconds){
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        const video =
+            document.getElementById(
+                "localPlayer"
+            );
+
+
+        video.currentTime =
+            Math.max(
+
+                0,
+
+                video.currentTime +
+                seconds
+
+            );
+
+        return;
+
+    }
+
+
+    if(playerReady){
+
+        const time =
+            player.getCurrentTime();
+
+
+        player.seekTo(
+
+            Math.max(
+                0,
+                time + seconds
+            ),
+
+            true
+
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   VOLUME
+===================================================== */
+
+function changeVolume(value){
+
+    document
+        .getElementById(
+            "volumeText"
+        )
+        .textContent =
+        value + "%";
+
+
+    if(
+        videoMode ===
+        "local"
+    ){
+
+        document
+        .getElementById(
+            "localPlayer"
+        )
+        .volume =
+        value / 100;
+
+        return;
+
+    }
+
+
+    if(playerReady){
+
+        player.setVolume(
+            Number(value)
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOCAL VIDEOS
+===================================================== */
 
 document
 .getElementById(
@@ -1276,31 +1885,42 @@ document
 
         const files =
             Array.from(
-                event.target.files
+                event.target.files ||
+                []
             );
+
+
+        /*
+           Release old URLs
+        */
+
+        localVideos.forEach(
+            video =>
+
+            URL.revokeObjectURL(
+                video.url
+            )
+
+        );
 
 
         localVideos =
             files.map(
+                file => ({
 
-                function(file){
+                    title:file.name,
 
-                    return{
+                    url:
+                    URL.createObjectURL(
+                        file
+                    )
 
-                        name:
-                            file.name,
-
-                        url:
-                            URL
-                            .createObjectURL(
-                                file
-                            )
-
-                    };
-
-                }
-
+                })
             );
+
+
+        localIndex =
+            -1;
 
 
         renderLocalVideos();
@@ -1310,9 +1930,7 @@ document
             localVideos.length
         ){
 
-            playLocalVideo(
-                0
-            );
+            playLocalVideo(0);
 
         }
 
@@ -1321,9 +1939,9 @@ document
 );
 
 
-/* ==========================================
-   PLAY LOCAL
-========================================== */
+/* =====================================================
+   PLAY LOCAL VIDEO
+===================================================== */
 
 function playLocalVideo(index){
 
@@ -1336,13 +1954,10 @@ function playLocalVideo(index){
     }
 
 
-    if(
-        index < 0
-    ){
+    if(index < 0){
 
         index =
-            localVideos.length -
-            1;
+            localVideos.length - 1;
 
     }
 
@@ -1352,8 +1967,7 @@ function playLocalVideo(index){
         localVideos.length
     ){
 
-        index =
-            0;
+        index = 0;
 
     }
 
@@ -1366,39 +1980,54 @@ function playLocalVideo(index){
         "local";
 
 
-    document
-    .getElementById(
-        "youtubePlayer"
-    )
-    .style.display =
-        "none";
+    showLocal();
 
 
     const video =
-        document
-        .getElementById(
+        document.getElementById(
             "localPlayer"
         );
 
 
-    video.style.display =
-        "block";
+    const item =
+        localVideos[index];
 
 
     video.src =
-        localVideos[
-            index
-        ].url;
+        item.url;
 
 
-    video.play();
+    video.volume =
+        document
+        .getElementById(
+            "volume"
+        )
+        .value / 100;
+
+
+    video.play()
+        .catch(function(){});
+
+
+    addVideoHistory({
+
+        id:"local-" + index,
+
+        title:item.title,
+
+        type:"Mobile"
+
+    });
+
+
+    renderLocalVideos();
 
 }
 
 
-/* ==========================================
+/* =====================================================
    LOCAL AUTO NEXT
-========================================== */
+===================================================== */
 
 document
 .getElementById(
@@ -1424,203 +2053,19 @@ document
 );
 
 
-/* ==========================================
-   NEXT VIDEO
-========================================== */
-
-function nextVideo(){
-
-    if(
-        videoMode ===
-        "local"
-    ){
-
-        if(
-            !localVideos.length
-        ){
-
-            return;
-
-        }
-
-
-        playLocalVideo(
-            localIndex + 1
-        );
-
-    }
-
-}
-
-
-/* ==========================================
-   PREVIOUS VIDEO
-========================================== */
-
-function previousVideo(){
-
-    if(
-        videoMode ===
-        "local"
-    ){
-
-        if(
-            !localVideos.length
-        ){
-
-            return;
-
-        }
-
-
-        playLocalVideo(
-            localIndex - 1
-        );
-
-    }
-
-}
-
-
-/* ==========================================
-   PLAY
-========================================== */
-
-function playVideo(){
-
-    if(
-        videoMode ===
-        "local"
-    ){
-
-        document
-        .getElementById(
-            "localPlayer"
-        )
-        .play();
-
-        return;
-
-    }
-
-
-    if(
-        playerReady
-    ){
-
-        player.playVideo();
-
-    }
-
-}
-
-
-/* ==========================================
-   PAUSE
-========================================== */
-
-function pauseVideo(){
-
-    if(
-        videoMode ===
-        "local"
-    ){
-
-        document
-        .getElementById(
-            "localPlayer"
-        )
-        .pause();
-
-        return;
-
-    }
-
-
-    if(
-        playerReady
-    ){
-
-        player.pauseVideo();
-
-    }
-
-}
-
-
-/* ==========================================
-   SEEK
-========================================== */
-
-function seekVideo(seconds){
-
-    if(
-        videoMode ===
-        "local"
-    ){
-
-        const video =
-            document
-            .getElementById(
-                "localPlayer"
-            );
-
-
-        video.currentTime =
-            Math.max(
-
-                0,
-
-                video.currentTime +
-                seconds
-
-            );
-
-
-        return;
-
-    }
-
-
-    if(
-        playerReady
-    ){
-
-        const time =
-            player.getCurrentTime();
-
-
-        player.seekTo(
-
-            Math.max(
-                0,
-                time + seconds
-            ),
-
-            true
-
-        );
-
-    }
-
-}
-
-
-/* ==========================================
+/* =====================================================
    RENDER LOCAL VIDEOS
-========================================== */
+===================================================== */
 
 function renderLocalVideos(){
 
     const box =
-        document
-        .getElementById(
+        document.getElementById(
             "localVideoList"
         );
 
 
-    box.innerHTML =
-        "";
+    box.innerHTML = "";
 
 
     if(
@@ -1628,7 +2073,9 @@ function renderLocalVideos(){
     ){
 
         box.innerHTML =
-            "<p>No mobile videos.</p>";
+            "<p style='color:#888'>" +
+            "No mobile videos selected." +
+            "</p>";
 
         return;
 
@@ -1636,12 +2083,10 @@ function renderLocalVideos(){
 
 
     localVideos.forEach(
-
         function(video,index){
 
             const item =
-                document
-                .createElement(
+                document.createElement(
                     "div"
                 );
 
@@ -1650,40 +2095,57 @@ function renderLocalVideos(){
                 "video-item";
 
 
+            if(
+                index ===
+                localIndex
+            ){
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
             item.innerHTML =
-                `
 
-                <div
-                    class="video-thumb"
-                    style="
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-size:25px;
-                    "
-                >
-                    📱
-                </div>
+                '<div class="video-thumb" ' +
 
-                <div
-                    class="video-info"
-                >
+                'style="' +
 
-                    <div
-                        class="video-title"
-                    >
-                        ${video.name}
-                    </div>
+                'display:flex;' +
 
-                    <div
-                        class="video-type"
-                    >
-                        Mobile Video
-                    </div>
+                'align-items:center;' +
 
-                </div>
+                'justify-content:center;' +
 
-                `;
+                'font-size:25px' +
+
+                '">' +
+
+                '📱' +
+
+                '</div>' +
+
+                '<div class="video-info">' +
+
+                '<div class="video-title">' +
+
+                escapeHTML(
+                    video.title
+                ) +
+
+                '</div>' +
+
+                '<div class="video-type">' +
+
+                'Mobile Video ' +
+
+                (index + 1) +
+
+                '</div>' +
+
+                '</div>';
 
 
             item.onclick =
@@ -1701,17 +2163,752 @@ function renderLocalVideos(){
             );
 
         }
+    );
+
+}
+
+
+/* =====================================================
+   LOAD GOOGLE SHEET
+===================================================== */
+
+async function loadSheetVideos(){
+
+    setStatus(
+        "Loading Google Sheet..."
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                CSV_URL
+            );
+
+
+        if(
+            !response.ok
+        ){
+
+            throw new Error(
+                "Unable to load CSV"
+            );
+
+        }
+
+
+        const csv =
+            await response.text();
+
+
+        sheetVideos =
+            parseCSV(csv);
+
+
+        setStatus(
+
+            sheetVideos.length +
+
+            " videos loaded"
+
+        );
+
+
+        renderSheetVideos();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+
+        setStatus(
+            "❌ Unable to load Google Sheet videos"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CSV PARSER
+===================================================== */
+
+function parseCSV(csv){
+
+    const lines =
+        csv
+        .replace(
+            /\r/g,
+            ""
+        )
+        .split("\n");
+
+
+    const videos =
+        [];
+
+
+    /*
+       Skip Header
+    */
+
+    for(
+
+        let i = 1;
+
+        i < lines.length;
+
+        i++
+
+    ){
+
+        const line =
+            lines[i]
+            .trim();
+
+
+        if(!line){
+
+            continue;
+
+        }
+
+
+        const columns =
+            splitCSV(
+                line
+            );
+
+
+        if(
+            columns.length < 2
+        ){
+
+            continue;
+
+        }
+
+
+        const title =
+            columns[0]
+            .trim();
+
+
+        const url =
+            columns[1]
+            .trim();
+
+
+        const id =
+            extractVideoID(
+                url
+            );
+
+
+        if(!id){
+
+            continue;
+
+        }
+
+
+        videos.push({
+
+            title:
+
+                title ||
+
+                "YouTube Video",
+
+            url:url,
+
+            id:id
+
+        });
+
+    }
+
+
+    return videos;
+
+}
+
+
+/* =====================================================
+   SPLIT CSV
+===================================================== */
+
+function splitCSV(line){
+
+    const result =
+        [];
+
+    let current =
+        "";
+
+    let insideQuotes =
+        false;
+
+
+    for(
+
+        let i = 0;
+
+        i < line.length;
+
+        i++
+
+    ){
+
+        const char =
+            line[i];
+
+
+        if(
+            char === '"'
+        ){
+
+            insideQuotes =
+                !insideQuotes;
+
+        }
+
+
+        else if(
+
+            char === "," &&
+
+            !insideQuotes
+
+        ){
+
+            result.push(
+                current
+            );
+
+
+            current =
+                "";
+
+        }
+
+
+        else{
+
+            current +=
+                char;
+
+        }
+
+    }
+
+
+    result.push(
+        current
+    );
+
+
+    return result.map(
+
+        value =>
+
+        value.replace(
+            /^"|"$/g,
+            ""
+        )
 
     );
 
 }
 
 
-/* ==========================================
+/* =====================================================
+   RENDER SHEET VIDEOS
+===================================================== */
+
+function renderSheetVideos(){
+
+    const box =
+        document.getElementById(
+            "sheetList"
+        );
+
+
+    const query =
+        document
+        .getElementById(
+            "videoSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    box.innerHTML =
+        "";
+
+
+    const videos =
+        sheetVideos.filter(
+
+            video =>
+
+            video.title
+            .toLowerCase()
+            .includes(query)
+
+            ||
+
+            video.id
+            .toLowerCase()
+            .includes(query)
+
+        );
+
+
+    if(
+        !videos.length
+    ){
+
+        box.innerHTML =
+            "<p style='color:#888'>" +
+            "No videos found." +
+            "</p>";
+
+        return;
+
+    }
+
+
+    videos.forEach(
+
+        function(video){
+
+            const index =
+                sheetVideos.indexOf(
+                    video
+                );
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "video-item";
+
+
+            if(
+
+                videoMode ===
+                "youtube"
+
+                &&
+
+                index ===
+                currentIndex
+
+            ){
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            const thumbnail =
+                document.createElement(
+                    "img"
+                );
+
+
+            thumbnail.className =
+                "video-thumb";
+
+
+            thumbnail.src =
+
+                "https://img.youtube.com/vi/" +
+
+                video.id +
+
+                "/hqdefault.jpg";
+
+
+            thumbnail.alt =
+                video.title;
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "video-info";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "video-title";
+
+
+            title.textContent =
+                video.title;
+
+
+            const type =
+                document.createElement(
+                    "div"
+                );
+
+
+            type.className =
+                "video-type";
+
+
+            type.textContent =
+                "YouTube • Sheet #" +
+                (index + 1);
+
+
+            info.appendChild(
+                title
+            );
+
+
+            info.appendChild(
+                type
+            );
+
+
+            item.appendChild(
+                thumbnail
+            );
+
+
+            item.appendChild(
+                info
+            );
+
+
+            item.onclick =
+                function(){
+
+                    loadYouTubeVideo(
+                        index
+                    );
+
+                };
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH VIDEOS
+===================================================== */
+
+function searchVideos(){
+
+    renderSheetVideos();
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(text){
+
+    document
+        .getElementById(
+            "status"
+        )
+        .textContent =
+        text;
+
+}
+
+
+/* =====================================================
+   VIDEO HISTORY
+===================================================== */
+
+function addVideoHistory(video){
+
+    videoHistory =
+        videoHistory.filter(
+
+            item =>
+
+            !(
+
+                item.id ===
+                video.id
+
+                &&
+
+                item.type ===
+                video.type
+
+            )
+
+        );
+
+
+    videoHistory.unshift(
+        video
+    );
+
+
+    if(
+        videoHistory.length > 20
+    ){
+
+        videoHistory =
+            videoHistory.slice(
+                0,
+                20
+            );
+
+    }
+
+
+    renderVideoHistory();
+
+}
+
+
+function renderVideoHistory(){
+
+    const box =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    box.innerHTML =
+        "";
+
+
+    if(
+        !videoHistory.length
+    ){
+
+        box.innerHTML =
+            "<p style='color:#888'>" +
+            "No videos played yet." +
+            "</p>";
+
+        return;
+
+    }
+
+
+    videoHistory.forEach(
+
+        function(video){
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "video-item";
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "video-info";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "video-title";
+
+
+            title.textContent =
+                video.title;
+
+
+            const type =
+                document.createElement(
+                    "div"
+                );
+
+
+            type.className =
+                "video-type";
+
+
+            type.textContent =
+                video.type;
+
+
+            info.appendChild(
+                title
+            );
+
+
+            info.appendChild(
+                type
+            );
+
+
+            item.appendChild(
+                info
+            );
+
+
+            item.onclick =
+                function(){
+
+                    if(
+                        video.type ===
+                        "Mobile"
+                    ){
+
+                        return;
+
+                    }
+
+
+                    const index =
+                        sheetVideos.findIndex(
+
+                            item =>
+
+                            item.id ===
+                            video.id
+
+                        );
+
+
+                    if(
+                        index !== -1
+                    ){
+
+                        loadYouTubeVideo(
+                            index
+                        );
+
+                    }
+
+                    else{
+
+                        videoMode =
+                            "youtube";
+
+
+                        showYouTube();
+
+
+                        if(
+                            playerReady
+                        ){
+
+                            player.loadVideoById(
+                                video.id
+                            );
+
+                        }
+
+                    }
+
+                };
+
+
+            box.appendChild(
+                item
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
    START
-========================================== */
+===================================================== */
+
+renderTabs();
 
 renderBookmarks();
+
+loadSheetVideos();
 
 </script>
 
