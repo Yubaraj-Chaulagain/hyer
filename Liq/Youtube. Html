@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>YouTube Pro Search Player</title>
+
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --panel: #181818;
+      --panel2: #222;
+      --text: #ffffff;
+      --muted: #aaaaaa;
+      --red: #ff0033;
+      --border: #303030;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1400px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    /* HEADER */
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .logo-icon {
+      background: var(--red);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .search-box {
+      display: flex;
+      flex: 1;
+      max-width: 700px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 15px;
+      background: transparent;
+      color: white;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      border: none;
+      background: var(--red);
+      color: white;
+      padding: 0 25px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* MAIN GRID */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    /* PLAYER */
+
+    .player-panel {
+      background: var(--panel);
+      padding: 15px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .player-wrapper {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: black;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    #player {
+      width: 100%;
+      height: 100%;
+    }
+
+    .video-info {
+      padding: 15px 5px;
+    }
+
+    #nowPlaying {
+      font-size: 20px;
+      line-height: 1.4;
+    }
+
+    /* CONTROLS */
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 10px;
+    }
+
+    .controls button {
+      background: var(--panel2);
+      color: white;
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    .controls button:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    /* VOLUME */
+
+    .volume {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 10px;
+    }
+
+    .volume input {
+      flex: 1;
+    }
+
+    /* QUEUE */
+
+    .queue-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px;
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    .queue-panel h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .queue-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #202020;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .queue-item:hover,
+    .queue-item.active {
+      background: #2c2c2c;
+      outline: 1px solid var(--red);
+    }
+
+    .queue-item img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 7px;
+    }
+
+    .queue-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .queue-title {
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .queue-channel {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    /* RESULTS */
+
+    .results-section {
+      margin-top: 30px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .video-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--red);
+    }
+
+    .thumbnail {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-info {
+      padding: 12px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-channel {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* LOADING / EMPTY */
+
+    .message {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .queue-panel {
+        max-height: 400px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 12px;
+      }
+
+      header {
+        align-items: stretch;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .controls button {
+        flex: 1 1 40%;
+      }
+
+      .results-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .card-info {
+        padding: 8px;
+      }
+
+      .card-title {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+
+    <header>
+
+      <div class="logo">
+        <span class="logo-icon">▶</span>
+        <span>YouTube Pro</span>
+      </div>
+
+      <div class="search-box">
+
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search YouTube videos..."
+        />
+
+        <button onclick="searchVideos()">
+          🔍 Search
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- PLAYER + QUEUE -->
+
+    <div class="main-grid">
+
+      <div class="player-panel">
+
+        <div class="player-wrapper">
+          <div id="player"></div>
+        </div>
+
+        <div class="video-info">
+          <h2 id="nowPlaying">
+            Search and select a video
+          </h2>
+        </div>
+
+        <!-- CONTROLS -->
+
+        <div class="controls">
+
+          <button onclick="previousVideo()">
+            ⏮ Previous
+          </button>
+
+          <button onclick="backward()">
+            ⏪ -10s
+          </button>
+
+          <button onclick="playVideo()">
+            ▶ Play
+          </button>
+
+          <button onclick="pauseVideo()">
+            ⏸ Pause
+          </button>
+
+          <button onclick="forward()">
+            ⏩ +10s
+          </button>
+
+          <button onclick="nextVideo()">
+            ⏭ Next
+          </button>
+
+          <button onclick="cancelVideo()">
+            ⏹ Cancel
+          </button>
+
+        </div>
+
+        <!-- VOLUME -->
+
+        <div class="volume">
+
+          <span>🔊</span>
+
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="80"
+            oninput="changeVolume(this.value)"
+          />
+
+          <span id="volumeValue">80%</span>
+
+        </div>
+
+      </div>
+
+
+      <!-- QUEUE -->
+
+      <div class="queue-panel">
+
+        <h2>📋 Queue</h2>
+
+        <div id="queueContainer">
+
+          <div class="message">
+            Your selected videos will appear here.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- SEARCH RESULTS -->
+
+    <section class="results-section">
+
+      <div class="results-header">
+
+        <h2>Search Results</h2>
+
+        <span id="resultCount"></span>
+
+      </div>
+
+      <div
+        id="resultsContainer"
+        class="results-grid"
+      >
+
+        <div class="message">
+          Search for a YouTube video to begin.
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- YOUTUBE IFRAME PLAYER API -->
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+
+  <script>
+
+    /* =====================================
+       CONFIGURATION
+    ===================================== */
+
+    const API_KEY = "9fc5b64dea0e6400318994c473d314e0e5ada40ea7804b0aa6b015165ca7bb80";
+
+
+    /* =====================================
+       VARIABLES
+    ===================================== */
+
+    let player;
+
+    let queue = [];
+
+    let currentIndex = -1;
+
+    let playerReady = false;
+
+
+    /* =====================================
+       YOUTUBE PLAYER READY
+    ===================================== */
+
+    function onYouTubeIframeAPIReady() {
+
+      player = new YT.Player("player", {
+
+        width: "100%",
+
+        height: "100%",
+
+        playerVars: {
+
+          autoplay: 0,
+
+          controls: 1,
+
+          rel: 0
+
+        },
+
+        events: {
+
+          onReady: function() {
+
+            playerReady = true;
+
+            player.setVolume(80);
+
+          },
+
+          onStateChange: onPlayerStateChange
+
+        }
+
+      });
+
+    }
+
+
+    /* =====================================
+       SEARCH VIDEOS
+    ===================================== */
+
+    async function searchVideos() {
+
+      const query =
+        document
+          .getElementById("searchInput")
+          .value
+          .trim();
+
+
+      if (!query) {
+
+        alert("Please enter something to search.");
+
+        return;
+
+      }
+
+
+      const container =
+        document.getElementById(
+          "resultsContainer"
+        );
+
+
+      container.innerHTML =
+        `<div class="message">
+          Searching YouTube...
+        </div>`;
+
+
+      try {
+
+        const url =
+
+          "https://www.googleapis.com/youtube/v3/search" +
+
+          "?part=snippet" +
+
+          "&type=video" +
+
+          "&maxResults=20" +
+
+          "&q=" +
+
+          encodeURIComponent(query) +
+
+          "&key=" +
+
+          API_KEY;
+
+
+        const response =
+          await fetch(url);
+
+
+        const data =
+          await response.json();
+
+
+        if (data.error) {
+
+          console.error(data.error);
+
+          throw new Error(
+            data.error.message
+          );
+
+        }
+
+
+        displayResults(
+          data.items
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        container.innerHTML =
+
+          `<div class="message">
+
+            Search failed.<br><br>
+
+            Check your YouTube API key
+            and make sure YouTube Data API v3
+            is enabled.
+
+          </div>`;
+
+      }
+
+    }
+
+
+    /* =====================================
+       ENTER KEY SEARCH
+    ===================================== */
+
+    document
+      .getElementById("searchInput")
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Enter") {
+
+            searchVideos();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================
+       DISPLAY RESULTS
+    ===================================== */
+
+    function displayResults(items) {
+
+      const container =
+        document.getElementById(
+          "resultsContainer"
+        );
+
+
+      container.innerHTML = "";
+
+
+      document
+        .getElementById("resultCount")
+        .innerText =
+        items.length + " videos";
+
+
+      items.forEach(function(item) {
+
+        const videoID =
+          item.id.videoId;
+
+
+        const title =
+          item.snippet.title;
+
+
+        const channel =
+          item.snippet.channelTitle;
+
+
+        const thumbnail =
+          item.snippet.thumbnails.high
+          ? item.snippet.thumbnails.high.url
+          : item.snippet.thumbnails.medium.url;
+
+
+        const card =
+          document.createElement("div");
+
+
+        card.className =
+          "video-card";
+
+
+        card.innerHTML =
+
+          `<img
+            class="thumbnail"
+            src="${thumbnail}"
+            alt=""
+          >
+
+          <div class="card-info">
+
+            <div class="card-title">
+              ${escapeHTML(title)}
+            </div>
+
+            <div class="card-channel">
+              ${escapeHTML(channel)}
+            </div>
+
+          </div>`;
+
+
+        card.addEventListener(
+          "click",
+          function() {
+
+            addToQueue({
+
+              videoID:
+
+                videoID,
+
+              title:
+
+                title,
+
+              channel:
+
+                channel,
+
+              thumbnail:
+
+                thumbnail
+
+            });
+
+          }
+        );
+
+
+        container.appendChild(card);
+
+      });
+
+    }
+
+
+    /* =====================================
+       ADD VIDEO TO QUEUE
+    ===================================== */
+
+    function addToQueue(video) {
+
+      queue.push(video);
+
+
+      if (currentIndex === -1) {
+
+        currentIndex = 0;
+
+        loadCurrentVideo();
+
+      }
+
+
+      renderQueue();
+
+    }
+
+
+    /* =====================================
+       LOAD CURRENT VIDEO
+    ===================================== */
+
+    function loadCurrentVideo() {
+
+      if (!playerReady) {
+
+        alert(
+          "Player is still loading."
+        );
+
+        return;
+
+      }
+
+
+      if (
+        currentIndex < 0 ||
+        currentIndex >= queue.length
+      ) {
+
+        return;
+
+      }
+
+
+      const video =
+        queue[currentIndex];
+
+
+      player.loadVideoById(
+        video.videoID
+      );
+
+
+      document
+        .getElementById("nowPlaying")
+        .innerText =
+        video.title;
+
+
+      renderQueue();
+
+    }
+
+
+    /* =====================================
+       PLAY VIDEO FROM QUEUE
+    ===================================== */
+
+    function playQueueVideo(index) {
+
+      currentIndex = index;
+
+      loadCurrentVideo();
+
+    }
+
+
+    /* =====================================
+       PLAY
+    ===================================== */
+
+    function playVideo() {
+
+      if (
+        playerReady &&
+        currentIndex >= 0
+      ) {
+
+        player.playVideo();
+
+      }
+
+    }
+
+
+    /* =====================================
+       PAUSE
+    ===================================== */
+
+    function pauseVideo() {
+
+      if (playerReady) {
+
+        player.pauseVideo();
+
+      }
+
+    }
+
+
+    /* =====================================
+       CANCEL / STOP
+    ===================================== */
+
+    function cancelVideo() {
+
+      if (playerReady) {
+
+        player.stopVideo();
+
+      }
+
+    }
+
+
+    /* =====================================
+       BACKWARD
+    ===================================== */
+
+    function backward() {
+
+      if (
+        !playerReady ||
+        currentIndex < 0
+      ) {
+
+        return;
+
+      }
+
+
+      const currentTime =
+        player.getCurrentTime();
+
+
+      player.seekTo(
+
+        Math.max(
+          0,
+          currentTime - 10
+        ),
+
+        true
+
+      );
+
+    }
+
+
+    /* =====================================
+       FORWARD
+    ===================================== */
+
+    function forward() {
+
+      if (
+        !playerReady ||
+        currentIndex < 0
+      ) {
+
+        return;
+
+      }
+
+
+      const currentTime =
+        player.getCurrentTime();
+
+
+      player.seekTo(
+
+        currentTime + 10,
+
+        true
+
+      );
+
+    }
+
+
+    /* =====================================
+       NEXT
+    ===================================== */
+
+    function nextVideo() {
+
+      if (
+        currentIndex + 1 <
+        queue.length
+      ) {
+
+        currentIndex++;
+
+        loadCurrentVideo();
+
+      }
+
+    }
+
+
+    /* =====================================
+       PREVIOUS
+    ===================================== */
+
+    function previousVideo() {
+
+      if (
+        currentIndex - 1 >= 0
+      ) {
+
+        currentIndex--;
+
+        loadCurrentVideo();
+
+      }
+
+    }
+
+
+    /* =====================================
+       AUTO NEXT
+    ===================================== */
+
+    function onPlayerStateChange(event) {
+
+      if (
+
+        event.data ===
+        YT.PlayerState.ENDED
+
+      ) {
+
+        if (
+
+          currentIndex + 1 <
+          queue.length
+
+        ) {
+
+          currentIndex++;
+
+          loadCurrentVideo();
+
+        }
+
+      }
+
+    }
+
+
+    /* =====================================
+       REMOVE FROM QUEUE
+    ===================================== */
+
+    function removeFromQueue(index) {
+
+      queue.splice(
+        index,
+        1
+      );
+
+
+      if (
+        queue.length === 0
+      ) {
+
+        currentIndex = -1;
+
+
+        if (playerReady) {
+
+          player.stopVideo();
+
+        }
+
+
+        document
+          .getElementById("nowPlaying")
+          .innerText =
+          "Search and select a video";
+
+
+      } else {
+
+        if (
+          index < currentIndex
+        ) {
+
+          currentIndex--;
+
+        }
+
+
+        else if (
+          currentIndex >= queue.length
+        ) {
+
+          currentIndex =
+            queue.length - 1;
+
+        }
+
+      }
+
+
+      renderQueue();
+
+    }
+
+
+    /* =====================================
+       RENDER QUEUE
+    ===================================== */
+
+    function renderQueue() {
+
+      const container =
+        document.getElementById(
+          "queueContainer"
+        );
+
+
+      if (
+        queue.length === 0
+      ) {
+
+        container.innerHTML =
+
+          `<div class="message">
+
+            Your selected videos
+            will appear here.
+
+          </div>`;
+
+        return;
+
+      }
+
+
+      container.innerHTML = "";
+
+
+      queue.forEach(
+
+        function(video, index) {
+
+
+          const item =
+            document.createElement("div");
+
+
+          item.className =
+            "queue-item";
+
+
+          if (
+            index === currentIndex
+          ) {
+
+            item.classList.add(
+              "active"
+            );
+
+          }
+
+
+          item.innerHTML =
+
+            `<img
+              src="${video.thumbnail}"
+              alt=""
+            >
+
+            <div class="queue-text">
+
+              <div class="queue-title">
+                ${escapeHTML(video.title)}
+              </div>
+
+              <div class="queue-channel">
+                ${escapeHTML(video.channel)}
+              </div>
+
+            </div>
+
+            <button
+              style="
+                background:#aa0000;
+                color:white;
+                border:none;
+                border-radius:7px;
+                padding:8px;
+                cursor:pointer;
+              "
+              title="Remove"
+            >
+              ✕
+            </button>`;
+
+
+          item.addEventListener(
+            "click",
+            function(event) {
+
+              if (
+                event.target.tagName ===
+                "BUTTON"
+              ) {
+
+                removeFromQueue(
+                  index
+                );
+
+              }
+
+              else {
+
+                playQueueVideo(
+                  index
+                );
+
+              }
+
+            }
+          );
+
+
+          container.appendChild(
+            item
+          );
+
+        }
+
+      );
+
+    }
+
+
+    /* =====================================
+       VOLUME
+    ===================================== */
+
+    function changeVolume(value) {
+
+      document
+        .getElementById("volumeValue")
+        .innerText =
+        value + "%";
+
+
+      if (playerReady) {
+
+        player.setVolume(
+          Number(value)
+        );
+
+      }
+
+    }
+
+
+    /* =====================================
+       HTML ESCAPE
+    ===================================== */
+
+    function escapeHTML(text) {
+
+      const div =
+        document.createElement("div");
+
+
+      div.textContent =
+        text;
+
+
+      return div.innerHTML;
+
+    }
+
+  </script>
+
+</body>
+</html>
