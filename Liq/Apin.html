@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>YouTube Pro Player</title>
 
 <style>
 *{
-    box-sizing:border-box;
     margin:0;
     padding:0;
+    box-sizing:border-box;
     font-family:Arial,sans-serif;
 }
 
 body{
     background:#0b0b0b;
     color:white;
+    min-height:100vh;
 }
 
 .app{
@@ -32,22 +32,22 @@ header{
 
 header h1{
     color:#ff0000;
+    font-size:28px;
 }
 
 header p{
-    color:#999;
+    color:#aaa;
     margin-top:8px;
 }
 
-/* INPUT */
-
-.input-box{
+/* SEARCH / URL */
+.search-box{
     display:flex;
     gap:10px;
-    margin-bottom:20px;
+    margin-bottom:25px;
 }
 
-.input-box input{
+.search-box input{
     flex:1;
     padding:15px;
     border:none;
@@ -55,23 +55,29 @@ header p{
     border-radius:10px;
     background:#1b1b1b;
     color:white;
+    font-size:16px;
 }
 
-.input-box button{
+.search-box button{
+    padding:0 25px;
+    border:none;
+    border-radius:10px;
     background:#ff0000;
     color:white;
-    border:none;
-    padding:0 25px;
-    border-radius:10px;
+    font-size:16px;
     cursor:pointer;
 }
 
-/* PLAYER */
+.search-box button:hover{
+    background:#cc0000;
+}
 
-.player-container{
+/* PLAYER */
+.player-box{
     background:#111;
     padding:15px;
     border-radius:15px;
+    box-shadow:0 0 30px rgba(255,0,0,.15);
 }
 
 .player{
@@ -82,98 +88,204 @@ header p{
     overflow:hidden;
 }
 
-/* CONTROLS */
+#player{
+    width:100%;
+    height:100%;
+}
 
+/* CONTROLS */
 .controls{
     display:flex;
     flex-wrap:wrap;
-    gap:10px;
     justify-content:center;
+    gap:10px;
     margin-top:18px;
 }
 
 .controls button{
-    padding:12px 18px;
-    border:none;
-    border-radius:8px;
     background:#222;
+    border:none;
     color:white;
+    padding:12px 18px;
+    border-radius:8px;
     cursor:pointer;
+    font-size:15px;
 }
 
 .controls button:hover{
     background:#ff0000;
 }
 
-/* PLAYLIST */
+/* VOLUME */
+.volume-box{
+    margin-top:20px;
+}
 
-.playlist{
+.volume-box label{
+    color:#aaa;
+}
+
+.volume-box input{
+    width:100%;
+    margin-top:8px;
+}
+
+/* VIDEO LIST */
+.video-section{
     margin-top:30px;
 }
 
-.playlist h2{
+.video-section h2{
     margin-bottom:15px;
 }
 
-.playlist-item{
+.video-search{
+    width:100%;
+    padding:14px;
+    background:#1b1b1b;
+    border:none;
+    outline:none;
+    border-radius:10px;
+    color:white;
+    font-size:16px;
+    margin-bottom:15px;
+}
+
+.video-list{
     display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.video-item{
+    display:flex;
+    gap:15px;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    padding:12px;
+    background:#161616;
+    padding:10px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.video-item:hover{
+    background:#222;
+}
+
+.video-item.active{
+    border:2px solid #ff0000;
+}
+
+.video-thumb{
+    width:160px;
+    aspect-ratio:16/9;
+    object-fit:cover;
+    border-radius:8px;
+    background:black;
+}
+
+.video-info{
+    flex:1;
+}
+
+.video-title{
+    font-size:17px;
+    font-weight:bold;
     margin-bottom:8px;
-    background:#151515;
+}
+
+.video-id{
+    font-size:12px;
+    color:#888;
+}
+
+.play-btn{
+    background:#ff0000;
+    color:white;
+    border:none;
+    padding:10px 15px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+/* HISTORY */
+.history{
+    margin-top:30px;
+}
+
+.history h2{
+    margin-bottom:15px;
+}
+
+.history-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.history-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#161616;
+    padding:12px;
     border-radius:8px;
 }
 
-.playlist-item.active{
-    border:1px solid #ff0000;
-}
-
-.playlist-info{
-    flex:1;
+.history-item span{
     overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin-right:10px;
 }
 
-.playlist-info span{
-    color:#aaa;
-    font-size:13px;
-}
-
-.playlist-buttons{
-    display:flex;
-    gap:8px;
-}
-
-.playlist-buttons button{
+.history-item button{
+    background:#ff0000;
+    color:white;
     border:none;
-    padding:8px 12px;
+    padding:7px 12px;
     border-radius:6px;
     cursor:pointer;
-    color:white;
-    background:#333;
 }
 
-.playlist-buttons .delete{
-    background:#aa0000;
+/* STATUS */
+.status{
+    color:#aaa;
+    margin-bottom:15px;
+    font-size:14px;
 }
 
 /* MOBILE */
-
 @media(max-width:600px){
 
-    .input-box{
+    .app{
+        padding:12px;
+    }
+
+    .search-box{
         flex-direction:column;
     }
 
-    .input-box button{
-        padding:15px;
+    .search-box button{
+        padding:14px;
     }
 
     .controls button{
         flex:1 1 40%;
     }
 
+    .video-item{
+        align-items:flex-start;
+        flex-wrap:wrap;
+    }
+
+    .video-thumb{
+        width:120px;
+    }
+
+    .play-btn{
+        width:100%;
+    }
 }
 </style>
 </head>
@@ -183,23 +295,23 @@ header p{
 <div class="app">
 
 <header>
-<h1>▶ YouTube Pro Player</h1>
-<p>Temporary Playlist • No API Key • No Local Storage</p>
+    <h1>▶ YouTube Pro Player</h1>
+    <p>YouTube Player • Google Sheet Video List</p>
 </header>
 
 
-<!-- ADD VIDEO -->
+<!-- URL INPUT -->
 
-<div class="input-box">
+<div class="search-box">
 
 <input
-id="youtubeUrl"
-type="text"
-placeholder="Paste YouTube URL or Video ID"
+    type="text"
+    id="youtubeUrl"
+    placeholder="Paste YouTube Video URL or Video ID"
 >
 
-<button onclick="addVideo()">
-Add Video
+<button onclick="loadVideo()">
+    Load Video
 </button>
 
 </div>
@@ -207,10 +319,10 @@ Add Video
 
 <!-- PLAYER -->
 
-<div class="player-container">
+<div class="player-box">
 
 <div class="player">
-<div id="player"></div>
+    <div id="player"></div>
 </div>
 
 
@@ -219,45 +331,94 @@ Add Video
 <div class="controls">
 
 <button onclick="previousVideo()">
-⏮ Previous
+    ⏮ Previous
 </button>
 
 <button onclick="backward()">
-⏪ -10 sec
+    ⏪ -10 sec
 </button>
 
 <button onclick="playVideo()">
-▶ Play
+    ▶ Play
 </button>
 
 <button onclick="pauseVideo()">
-⏸ Pause
+    ⏸ Pause
 </button>
 
 <button onclick="forward()">
-⏩ +10 sec
+    ⏩ +10 sec
 </button>
 
 <button onclick="nextVideo()">
-⏭ Next
+    ⏭ Next
 </button>
 
 <button onclick="stopVideo()">
-⏹ Cancel
+    ⏹ Cancel
 </button>
 
 </div>
 
+
+<!-- VOLUME -->
+
+<div class="volume-box">
+
+<label>🔊 Volume</label>
+
+<input
+    type="range"
+    min="0"
+    max="100"
+    value="100"
+    oninput="changeVolume(this.value)"
+>
+
+</div>
+
 </div>
 
 
-<!-- PLAYLIST -->
+<!-- GOOGLE SHEET -->
 
-<div class="playlist">
+<div class="video-section">
 
-<h2>📋 Current Playlist</h2>
+<h2>🎬 YouTube Videos</h2>
 
-<div id="playlistContainer"></div>
+<input
+    type="text"
+    class="video-search"
+    id="videoSearch"
+    placeholder="🔎 Search videos..."
+    oninput="searchVideos()"
+>
+
+<div
+    class="status"
+    id="status"
+>
+    Loading videos...
+</div>
+
+<div
+    class="video-list"
+    id="videoList"
+></div>
+
+</div>
+
+
+<!-- HISTORY -->
+
+<div class="history">
+
+<h2>📜 Previous Videos</h2>
+
+<div
+    class="history-list"
+    id="historyList"
+></div>
 
 </div>
 
@@ -268,35 +429,81 @@ Add Video
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
-
 <script>
 
-let player;
+/* =========================================
+   GOOGLE SHEET CSV URL
+========================================= */
+
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQfLCxJaz-eDFB7SGeROjZDepLOHg1ZggZhYf5kfWJc8S-l1H9frmOshuakfD7_4ocFZd2tvRvEaLN9/pub?gid=281133690&single=true&output=csv";
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let player = null;
+
+let playerReady = false;
 
 let playlist = [];
 
 let currentIndex = -1;
 
+let sheetVideos = [];
 
-/* PLAYER READY */
+let historyVideos = [];
+
+let pendingIndex = -1;
+
+
+/* =========================================
+   YOUTUBE API READY
+========================================= */
 
 function onYouTubeIframeAPIReady(){
 
     player = new YT.Player("player",{
 
+        height:"100%",
+
         width:"100%",
 
-        height:"100%",
+        videoId:"",
 
         playerVars:{
             autoplay:0,
             controls:1,
-            rel:0
+            rel:0,
+            playsinline:1
         },
 
         events:{
 
-            onStateChange:onPlayerStateChange
+            onReady:function(){
+
+                playerReady = true;
+
+                /*
+                If user clicked a video
+                before YouTube API was ready
+                */
+
+                if(pendingIndex !== -1){
+
+                    const index =
+                        pendingIndex;
+
+                    pendingIndex = -1;
+
+                    loadPlaylistVideo(index);
+                }
+
+            },
+
+            onStateChange:
+                onPlayerStateChange
 
         }
 
@@ -305,116 +512,361 @@ function onYouTubeIframeAPIReady(){
 }
 
 
-/* EXTRACT VIDEO ID */
+/* =========================================
+   IMPORTANT:
+   AUTO NEXT WHEN VIDEO ENDS
+========================================= */
 
-function extractVideoID(value){
+function onPlayerStateChange(event){
 
-    if(!value) return null;
-
-
-    /* Direct ID */
+    /*
+    YT.PlayerState.ENDED = 0
+    */
 
     if(
-        value.length === 11 &&
-        !value.includes("/") &&
-        !value.includes(".")
+        event.data ===
+        YT.PlayerState.ENDED
     ){
 
-        return value;
+        console.log(
+            "Video ended - playing next video"
+        );
+
+        /*
+        Small delay makes the transition
+        more reliable on mobile
+        */
+
+        setTimeout(function(){
+
+            nextVideo();
+
+        },300);
 
     }
-
-
-    let match = value.match(
-
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/ ]{11})/
-
-    );
-
-
-    return match ? match[1] : null;
 
 }
 
 
-/* ADD VIDEO */
+/* =========================================
+   EXTRACT VIDEO ID
+========================================= */
 
-function addVideo(){
+function extractVideoID(input){
 
-    let input =
-    document.getElementById("youtubeUrl");
+    if(!input)
+        return null;
+
+    input =
+        input.trim();
 
 
-    let value =
-    input.value.trim();
+    /* Direct Video ID */
+
+    if(
+        /^[a-zA-Z0-9_-]{11}$/.test(input)
+    ){
+
+        return input;
+
+    }
 
 
-    let videoID =
-    extractVideoID(value);
+    try{
+
+        const url =
+            new URL(input);
+
+
+        /* youtu.be */
+
+        if(
+            url.hostname.includes(
+                "youtu.be"
+            )
+        ){
+
+            return url.pathname
+                .split("/")
+                .filter(Boolean)[0] || null;
+
+        }
+
+
+        /* youtube.com */
+
+        if(
+            url.hostname.includes(
+                "youtube.com"
+            )
+        ){
+
+            let videoID =
+                url.searchParams.get("v");
+
+
+            if(videoID)
+                return videoID;
+
+
+            let parts =
+                url.pathname
+                .split("/")
+                .filter(Boolean);
+
+
+            /* embed */
+
+            let embedIndex =
+                parts.indexOf("embed");
+
+
+            if(
+                embedIndex !== -1 &&
+                parts[embedIndex + 1]
+            ){
+
+                return parts[
+                    embedIndex + 1
+                ];
+
+            }
+
+
+            /* shorts */
+
+            let shortsIndex =
+                parts.indexOf("shorts");
+
+
+            if(
+                shortsIndex !== -1 &&
+                parts[shortsIndex + 1]
+            ){
+
+                return parts[
+                    shortsIndex + 1
+                ];
+
+            }
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Invalid URL"
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================
+   LOAD MANUAL VIDEO
+========================================= */
+
+function loadVideo(){
+
+    const input =
+        document.getElementById(
+            "youtubeUrl"
+        );
+
+    const value =
+        input.value.trim();
+
+    const videoID =
+        extractVideoID(value);
 
 
     if(!videoID){
 
-        alert("Invalid YouTube URL");
+        alert(
+            "Please enter a valid YouTube URL or Video ID"
+        );
 
         return;
 
     }
 
 
-    /* ADD */
+    /*
+    If this video already exists
+    in Google Sheet, use its exact
+    Sheet position.
+    */
 
-    playlist.push(videoID);
+    let sheetIndex =
+        sheetVideos.findIndex(
+            video =>
+            video.id === videoID
+        );
 
 
-    /* FIRST VIDEO */
+    if(sheetIndex !== -1){
 
-    if(currentIndex === -1){
+        /*
+        Make sure playlist follows
+        Google Sheet order.
+        */
 
-        currentIndex = 0;
+        syncPlaylistWithSheet();
 
-        player.loadVideoById(videoID);
+        currentIndex =
+            sheetIndex;
+
+        loadPlaylistVideo(
+            currentIndex
+        );
+
+    }
+
+    else{
+
+        /*
+        Manual video not in Sheet.
+        Add it to the end.
+        */
+
+        let existing =
+            playlist.findIndex(
+                video =>
+                video.id === videoID
+            );
+
+
+        if(existing !== -1){
+
+            currentIndex =
+                existing;
+
+        }
+
+        else{
+
+            playlist.push({
+
+                id:videoID,
+
+                title:"YouTube Video",
+
+                url:value
+
+            });
+
+            currentIndex =
+                playlist.length - 1;
+
+        }
+
+
+        loadPlaylistVideo(
+            currentIndex
+        );
 
     }
 
 
     input.value = "";
 
+}
 
-    renderPlaylist();
+
+/* =========================================
+   SYNC PLAYLIST WITH GOOGLE SHEET
+========================================= */
+
+function syncPlaylistWithSheet(){
+
+    /*
+    Google Sheet order is the main playlist.
+    */
+
+    playlist =
+        sheetVideos.map(
+            video => ({
+                id:video.id,
+                title:video.title,
+                url:video.url
+            })
+        );
 
 }
 
 
-/* PLAY VIDEO */
+/* =========================================
+   LOAD PLAYLIST VIDEO
+========================================= */
 
-function loadVideo(index){
+function loadPlaylistVideo(index){
 
-    if(index < 0) return;
+    if(
+        index < 0 ||
+        index >= playlist.length
+    ){
 
-    if(index >= playlist.length) return;
+        return;
+
+    }
 
 
-    currentIndex = index;
+    currentIndex =
+        index;
+
+
+    const video =
+        playlist[index];
+
+
+    if(
+        !playerReady ||
+        !player ||
+        !player.loadVideoById
+    ){
+
+        /*
+        Wait until YouTube API is ready.
+        */
+
+        pendingIndex =
+            index;
+
+        return;
+
+    }
 
 
     player.loadVideoById(
-
-        playlist[currentIndex]
-
+        video.id
     );
 
 
-    renderPlaylist();
+    addToHistory(video);
+
+    renderVideos();
+
+    renderHistory();
 
 }
 
 
-/* PLAY */
+/* =========================================
+   PLAY
+========================================= */
 
 function playVideo(){
 
-    if(player){
+    if(
+        player &&
+        player.playVideo
+    ){
 
         player.playVideo();
 
@@ -423,11 +875,16 @@ function playVideo(){
 }
 
 
-/* PAUSE */
+/* =========================================
+   PAUSE
+========================================= */
 
 function pauseVideo(){
 
-    if(player){
+    if(
+        player &&
+        player.pauseVideo
+    ){
 
         player.pauseVideo();
 
@@ -436,11 +893,16 @@ function pauseVideo(){
 }
 
 
-/* STOP */
+/* =========================================
+   STOP / CANCEL
+========================================= */
 
 function stopVideo(){
 
-    if(player){
+    if(
+        player &&
+        player.stopVideo
+    ){
 
         player.stopVideo();
 
@@ -449,68 +911,78 @@ function stopVideo(){
 }
 
 
-/* BACKWARD */
+/* =========================================
+   BACKWARD
+========================================= */
 
 function backward(){
 
-    if(!player) return;
+    if(
+        !player ||
+        !player.getCurrentTime
+    ){
+
+        return;
+
+    }
 
 
-    let time =
-
-    player.getCurrentTime();
+    const current =
+        player.getCurrentTime();
 
 
     player.seekTo(
-
-        Math.max(0,time-10),
-
+        Math.max(
+            0,
+            current - 10
+        ),
         true
-
     );
 
 }
 
 
-/* FORWARD */
+/* =========================================
+   FORWARD
+========================================= */
 
 function forward(){
 
-    if(!player) return;
+    if(
+        !player ||
+        !player.getCurrentTime
+    ){
+
+        return;
+
+    }
 
 
-    let time =
-
-    player.getCurrentTime();
+    const current =
+        player.getCurrentTime();
 
 
     player.seekTo(
-
-        time+10,
-
+        current + 10,
         true
-
     );
 
 }
 
 
-/* NEXT */
+/* =========================================
+   VOLUME
+========================================= */
 
-function nextVideo(){
+function changeVolume(value){
 
     if(
-
-        currentIndex + 1 <
-
-        playlist.length
-
+        player &&
+        player.setVolume
     ){
 
-        loadVideo(
-
-            currentIndex + 1
-
+        player.setVolume(
+            Number(value)
         );
 
     }
@@ -518,221 +990,851 @@ function nextVideo(){
 }
 
 
-/* PREVIOUS */
+/* =========================================
+   PREVIOUS VIDEO
+========================================= */
 
 function previousVideo(){
 
-    if(
+    /*
+    If Sheet exists, always use Sheet order.
+    */
 
-        currentIndex - 1 >= 0
+    if(sheetVideos.length > 0){
 
-    ){
-
-        loadVideo(
-
-            currentIndex - 1
-
-        );
+        syncPlaylistWithSheet();
 
     }
 
-}
-
-
-/* AUTO NEXT */
-
-function onPlayerStateChange(event){
 
     if(
-
-        event.data ===
-
-        YT.PlayerState.ENDED
-
+        playlist.length === 0
     ){
 
-        nextVideo();
+        return;
 
     }
 
-}
-
-
-/* DELETE VIDEO */
-
-function deleteVideo(index){
-
-    playlist.splice(
-
-        index,
-
-        1
-
-    );
-
 
     if(
-
-        index < currentIndex
-
+        currentIndex <= 0
     ){
+
+        currentIndex =
+            playlist.length - 1;
+
+    }
+
+    else{
 
         currentIndex--;
 
     }
 
 
-    else if(
+    loadPlaylistVideo(
+        currentIndex
+    );
 
-        index === currentIndex
+}
 
+
+/* =========================================
+   NEXT VIDEO
+========================================= */
+
+function nextVideo(){
+
+    /*
+    IMPORTANT:
+    Google Sheet is the main queue.
+    */
+
+    if(sheetVideos.length > 0){
+
+        syncPlaylistWithSheet();
+
+    }
+
+
+    if(
+        playlist.length === 0
     ){
 
+        return;
+
+    }
+
+
+    if(
+        currentIndex >=
+        playlist.length - 1
+    ){
+
+        /*
+        When last Sheet video ends,
+        start again from first video.
+        */
+
+        currentIndex = 0;
+
+    }
+
+    else{
+
+        currentIndex++;
+
+    }
+
+
+    loadPlaylistVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =========================================
+   LOAD GOOGLE SHEET
+========================================= */
+
+async function loadSheetVideos(){
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    try{
+
+        status.innerText =
+            "Loading videos...";
+
+
+        const response =
+            await fetch(
+                CSV_URL
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Unable to load CSV"
+            );
+
+        }
+
+
+        const csv =
+            await response.text();
+
+
+        sheetVideos =
+            parseCSV(csv);
+
+
+        /*
+        VERY IMPORTANT:
+        Create playlist from ALL
+        Google Sheet rows in exact order.
+        */
+
+        syncPlaylistWithSheet();
+
+
+        status.innerText =
+            sheetVideos.length +
+            " videos loaded";
+
+
+        renderVideos();
+
+        renderHistory();
+
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+
+        status.innerText =
+            "❌ Unable to load Google Sheet videos";
+
+    }
+
+}
+
+
+/* =========================================
+   CSV PARSER
+========================================= */
+
+function parseCSV(csv){
+
+    const lines =
+        csv
+        .replace(/\r/g,"")
+        .split("\n");
+
+
+    const videos = [];
+
+
+    /*
+    Skip header
+    */
+
+    for(
+        let i = 1;
+        i < lines.length;
+        i++
+    ){
+
+        const line =
+            lines[i].trim();
+
+
+        if(!line)
+            continue;
+
+
+        const columns =
+            splitCSV(line);
+
+
         if(
-
-            playlist.length === 0
-
+            columns.length < 2
         ){
 
-            currentIndex = -1;
+            continue;
 
-            player.stopVideo();
+        }
+
+
+        const title =
+            columns[0].trim();
+
+
+        const url =
+            columns[1].trim();
+
+
+        const id =
+            extractVideoID(url);
+
+
+        if(!id)
+            continue;
+
+
+        videos.push({
+
+            title:
+                title ||
+                "YouTube Video",
+
+            url:url,
+
+            id:id
+
+        });
+
+    }
+
+
+    return videos;
+
+}
+
+
+/* =========================================
+   SPLIT CSV
+========================================= */
+
+function splitCSV(line){
+
+    const result = [];
+
+    let current = "";
+
+    let insideQuotes = false;
+
+
+    for(
+        let i = 0;
+        i < line.length;
+        i++
+    ){
+
+        const char =
+            line[i];
+
+
+        if(char === '"'){
+
+            /*
+            Handle escaped quotes
+            */
+
+            if(
+                insideQuotes &&
+                line[i + 1] === '"'
+            ){
+
+                current += '"';
+
+                i++;
+
+            }
+
+            else{
+
+                insideQuotes =
+                    !insideQuotes;
+
+            }
+
+        }
+
+        else if(
+            char === "," &&
+            !insideQuotes
+        ){
+
+            result.push(
+                current
+            );
+
+            current = "";
 
         }
 
         else{
 
-            currentIndex =
-
-            Math.min(
-
-                index,
-
-                playlist.length-1
-
-            );
-
-
-            player.loadVideoById(
-
-                playlist[currentIndex]
-
-            );
+            current += char;
 
         }
 
     }
 
 
-    renderPlaylist();
+    result.push(
+        current
+    );
+
+
+    return result.map(
+        value =>
+        value
+        .replace(/^"|"$/g,"")
+        .trim()
+    );
 
 }
 
 
-/* RENDER PLAYLIST */
+/* =========================================
+   RENDER VIDEO LIST
+========================================= */
 
-function renderPlaylist(){
+function renderVideos(
+    videos = sheetVideos
+){
 
-    let container =
-
-    document.getElementById(
-
-        "playlistContainer"
-
-    );
+    const container =
+        document.getElementById(
+            "videoList"
+        );
 
 
     container.innerHTML = "";
 
 
-    playlist.forEach(
+    if(
+        videos.length === 0
+    ){
 
-        (videoID,index)=>{
+        container.innerHTML =
+            "<p style='color:#888'>No videos found.</p>";
+
+        return;
+
+    }
 
 
-            let item =
+    videos.forEach(
+        video => {
 
-            document.createElement(
-
-                "div"
-
-            );
+            const item =
+                document.createElement(
+                    "div"
+                );
 
 
             item.className =
+                "video-item";
 
-            "playlist-item";
 
+            /*
+            Active video
+            */
 
             if(
-
-                index === currentIndex
-
+                currentIndex >= 0 &&
+                playlist[currentIndex] &&
+                playlist[currentIndex].id ===
+                video.id
             ){
 
                 item.classList.add(
-
                     "active"
-
                 );
 
             }
 
 
-            item.innerHTML = `
+            /*
+            Thumbnail
+            */
 
-<div class="playlist-info">
-
-<b>Video ${index+1}</b>
-
-<br>
-
-<span>
-
-${videoID}
-
-</span>
-
-</div>
+            const thumbnail =
+                document.createElement(
+                    "img"
+                );
 
 
-<div class="playlist-buttons">
-
-<button onclick="loadVideo(${index})">
-
-▶ Play
-
-</button>
+            thumbnail.className =
+                "video-thumb";
 
 
-<button
+            thumbnail.src =
+                "https://img.youtube.com/vi/" +
+                video.id +
+                "/hqdefault.jpg";
 
-class="delete"
 
-onclick="deleteVideo(${index})"
+            thumbnail.alt =
+                video.title;
 
->
 
-✕ Remove
+            /*
+            Info
+            */
 
-</button>
+            const info =
+                document.createElement(
+                    "div"
+                );
 
-</div>
 
-`;
+            info.className =
+                "video-info";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "video-title";
+
+
+            title.innerText =
+                video.title;
+
+
+            const id =
+                document.createElement(
+                    "div"
+                );
+
+
+            id.className =
+                "video-id";
+
+
+            id.innerText =
+                video.id;
+
+
+            info.appendChild(
+                title
+            );
+
+
+            info.appendChild(
+                id
+            );
+
+
+            /*
+            Play button
+            */
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "play-btn";
+
+
+            button.innerText =
+                "▶ Play";
+
+
+            button.onclick =
+                event => {
+
+                    event.stopPropagation();
+
+                    playSheetVideo(
+                        video
+                    );
+
+                };
+
+
+            item.onclick =
+                () =>
+                playSheetVideo(
+                    video
+                );
+
+
+            item.appendChild(
+                thumbnail
+            );
+
+
+            item.appendChild(
+                info
+            );
+
+
+            item.appendChild(
+                button
+            );
 
 
             container.appendChild(
-
                 item
-
             );
 
         }
-
     );
 
 }
+
+
+/* =========================================
+   PLAY GOOGLE SHEET VIDEO
+========================================= */
+
+function playSheetVideo(video){
+
+    /*
+    Always rebuild playlist from
+    Google Sheet to preserve exact order.
+    */
+
+    syncPlaylistWithSheet();
+
+
+    const index =
+        sheetVideos.findIndex(
+            item =>
+            item.id === video.id
+        );
+
+
+    if(index === -1){
+
+        return;
+
+    }
+
+
+    currentIndex =
+        index;
+
+
+    loadPlaylistVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+function searchVideos(){
+
+    const query =
+        document
+        .getElementById(
+            "videoSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    if(!query){
+
+        renderVideos(
+            sheetVideos
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+        sheetVideos.filter(
+            video =>
+
+            video.title
+            .toLowerCase()
+            .includes(query)
+
+            ||
+
+            video.id
+            .toLowerCase()
+            .includes(query)
+
+            ||
+
+            video.url
+            .toLowerCase()
+            .includes(query)
+
+        );
+
+
+    renderVideos(
+        filtered
+    );
+
+}
+
+
+/* =========================================
+   HISTORY
+========================================= */
+
+function addToHistory(video){
+
+    /*
+    Don't duplicate the same video
+    repeatedly.
+    */
+
+    historyVideos =
+        historyVideos.filter(
+            item =>
+            item.id !== video.id
+        );
+
+
+    historyVideos.unshift({
+
+        id:video.id,
+
+        title:video.title,
+
+        url:video.url
+
+    });
+
+
+    /*
+    Keep last 20
+    */
+
+    if(
+        historyVideos.length > 20
+    ){
+
+        historyVideos =
+            historyVideos.slice(
+                0,
+                20
+            );
+
+    }
+
+
+    renderHistory();
+
+}
+
+
+/* =========================================
+   RENDER HISTORY
+========================================= */
+
+function renderHistory(){
+
+    const container =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if(
+        historyVideos.length === 0
+    ){
+
+        container.innerHTML =
+            "<p style='color:#888'>No videos played yet.</p>";
+
+        return;
+
+    }
+
+
+    historyVideos.forEach(
+        video => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "history-item";
+
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.innerText =
+                video.title;
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.innerText =
+                "▶ Play";
+
+
+            button.onclick =
+                () => {
+
+                    /*
+                    If history video is in
+                    Google Sheet, use Sheet order.
+                    */
+
+                    const sheetIndex =
+                        sheetVideos.findIndex(
+                            v =>
+                            v.id === video.id
+                        );
+
+
+                    if(
+                        sheetIndex !== -1
+                    ){
+
+                        syncPlaylistWithSheet();
+
+                        loadPlaylistVideo(
+                            sheetIndex
+                        );
+
+                    }
+
+                    else{
+
+                        /*
+                        Manual video
+                        */
+
+                        playlist.push(
+                            video
+                        );
+
+                        loadPlaylistVideo(
+                            playlist.length - 1
+                        );
+
+                    }
+
+                };
+
+
+            item.appendChild(
+                text
+            );
+
+            item.appendChild(
+                button
+            );
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+document
+.getElementById(
+    "youtubeUrl"
+)
+.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key === "Enter"
+        ){
+
+            loadVideo();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+loadSheetVideos();
 
 </script>
 
