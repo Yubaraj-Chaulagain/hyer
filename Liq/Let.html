@@ -1,0 +1,1541 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>YouTube Pro Player</title><style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #0b0b0b;
+    color: white;
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+header h1 {
+    color: #ff0000;
+    font-size: 28px;
+}
+
+header p {
+    color: #aaa;
+    margin-top: 8px;
+}
+
+/* SEARCH / URL INPUT */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    background: #1b1b1b;
+    color: white;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 0 25px;
+    border: none;
+    border-radius: 10px;
+    background: #ff0000;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background: #cc0000;
+}
+
+/* PLAYER */
+.player-box {
+    background: #111;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255,0,0,.15);
+}
+
+.player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: black;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#player {
+    width: 100%;
+    height: 100%;
+}
+
+/* CONTROLS */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.controls button {
+    background: #222;
+    border: none;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.controls button:hover {
+    background: #ff0000;
+}
+
+/* VOLUME */
+.volume-box {
+    margin-top: 20px;
+}
+
+.volume-box label {
+    color: #aaa;
+}
+
+.volume-box input {
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* VIDEO LIST */
+.video-section {
+    margin-top: 30px;
+}
+
+.video-section h2 {
+    margin-bottom: 15px;
+}
+
+.video-search {
+    width: 100%;
+    padding: 14px;
+    background: #1b1b1b;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.video-item {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #161616;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.video-item:hover {
+    background: #222;
+}
+
+.video-item.active {
+    border: 2px solid #ff0000;
+}
+
+.video-thumb {
+    width: 160px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    background: black;
+}
+
+.video-info {
+    flex: 1;
+}
+
+.video-title {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.video-id {
+    font-size: 12px;
+    color: #888;
+}
+
+.play-btn {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+/* HISTORY */
+.history {
+    margin-top: 30px;
+}
+
+.history h2 {
+    margin-bottom: 15px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #161616;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.history-item span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.history-item button {
+    background: #ff0000;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* STATUS */
+.status {
+    color: #aaa;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* MOBILE */
+@media(max-width: 600px) {
+
+    .app {
+        padding: 12px;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        padding: 14px;
+    }
+
+    .controls button {
+        flex: 1 1 40%;
+    }
+
+    .video-item {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .video-thumb {
+        width: 120px;
+    }
+
+    .play-btn {
+        width: 100%;
+    }
+
+}
+</style></head><body><div class="app"><header>
+    <h1>▶ YouTube Pro Player</h1>
+    <p>YouTube Player • Google Sheet Video List</p>
+</header><!-- URL / VIDEO ID PASTE SYSTEM --><div class="search-box"><input
+    type="text"
+    id="youtubeUrl"
+    placeholder="Paste YouTube Video URL or Video ID"
+>
+
+<button onclick="loadVideo()">
+    Load Video
+</button>
+
+</div><!-- PLAYER --><div class="player-box"><div class="player">
+    <div id="player"></div>
+</div>
+
+
+<!-- CONTROLS -->
+<div class="controls">
+
+    <button onclick="previousVideo()">
+        ⏮ Previous
+    </button>
+
+    <button onclick="backward()">
+        ⏪ -10 sec
+    </button>
+
+    <button onclick="playVideo()">
+        ▶ Play
+    </button>
+
+    <button onclick="pauseVideo()">
+        ⏸ Pause
+    </button>
+
+    <button onclick="forward()">
+        ⏩ +10 sec
+    </button>
+
+    <button onclick="nextVideo()">
+        ⏭ Next
+    </button>
+
+    <button onclick="stopVideo()">
+        ⏹ Cancel
+    </button>
+
+</div>
+
+
+<!-- VOLUME -->
+<div class="volume-box">
+
+    <label>
+        🔊 Volume
+    </label>
+
+    <input
+        type="range"
+        min="0"
+        max="100"
+        value="100"
+        oninput="changeVolume(this.value)"
+    >
+
+</div>
+
+</div><!-- GOOGLE SHEET VIDEO LIST --><div class="video-section"><h2>🎬 YouTube Videos</h2>
+
+<input
+    type="text"
+    class="video-search"
+    id="videoSearch"
+    placeholder="🔎 Search videos..."
+    oninput="searchVideos()"
+>
+
+<div
+    class="status"
+    id="status"
+>
+    Loading videos...
+</div>
+
+<div
+    class="video-list"
+    id="videoList"
+></div>
+
+</div><!-- HISTORY --><div class="history"><h2>📜 Previous Videos</h2>
+
+<div
+    class="history-list"
+    id="historyList"
+></div>
+
+</div></div><!-- YOUTUBE IFRAME API --><script src="https://www.youtube.com/iframe_api"></script><script>
+
+/* =========================================
+   GOOGLE SHEET CSV URL
+========================================= */
+
+const CSV_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQfLCxJaz-eDFB7SGeROjZDepLOHg1ZggZhYf5kfWJc8S-l1H9frmOshuakfD7_4ocFZd2tvRvEaLN9/pub?gid=281133690&single=true&output=csv";
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let player;
+
+let playlist = [];
+
+let currentIndex = -1;
+
+let sheetVideos = [];
+
+
+/* =========================================
+   YOUTUBE API READY
+========================================= */
+
+function onYouTubeIframeAPIReady() {
+
+    player = new YT.Player("player", {
+
+        height: "100%",
+
+        width: "100%",
+
+        videoId: "",
+
+        playerVars: {
+
+            autoplay: 0,
+
+            controls: 1,
+
+            rel: 0
+
+        }
+
+    });
+
+}
+
+
+/* =========================================
+   EXTRACT VIDEO ID
+========================================= */
+
+function extractVideoID(input) {
+
+    if (!input)
+        return null;
+
+
+    input = input.trim();
+
+
+    /* Direct Video ID */
+
+    if (
+        /^[a-zA-Z0-9_-]{11}$/.test(input)
+    ) {
+
+        return input;
+
+    }
+
+
+    /* YouTube URL */
+
+    try {
+
+        const url =
+            new URL(input);
+
+
+        /* youtu.be */
+
+        if (
+            url.hostname.includes(
+                "youtu.be"
+            )
+        ) {
+
+            return url.pathname
+                .split("/")
+                .filter(Boolean)[0];
+
+        }
+
+
+        /* youtube.com */
+
+        if (
+            url.hostname.includes(
+                "youtube.com"
+            )
+        ) {
+
+            let videoID =
+                url.searchParams.get("v");
+
+
+            if (videoID)
+                return videoID;
+
+
+            let parts =
+                url.pathname.split("/");
+
+
+            let embedIndex =
+                parts.indexOf("embed");
+
+
+            if (
+                embedIndex !== -1 &&
+                parts[embedIndex + 1]
+            ) {
+
+                return parts[
+                    embedIndex + 1
+                ];
+
+            }
+
+
+            let shortsIndex =
+                parts.indexOf("shorts");
+
+
+            if (
+                shortsIndex !== -1 &&
+                parts[shortsIndex + 1]
+            ) {
+
+                return parts[
+                    shortsIndex + 1
+                ];
+
+            }
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Invalid URL"
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================
+   LOAD VIDEO FROM URL INPUT
+========================================= */
+
+function loadVideo() {
+
+    const input =
+        document.getElementById(
+            "youtubeUrl"
+        );
+
+
+    const value =
+        input.value.trim();
+
+
+    const videoID =
+        extractVideoID(value);
+
+
+    if (!videoID) {
+
+        alert(
+            "Please enter a valid YouTube URL or Video ID"
+        );
+
+        return;
+
+    }
+
+
+    /* Add to playlist */
+
+    let existing =
+        playlist.findIndex(
+            video =>
+            video.id === videoID
+        );
+
+
+    if (
+        existing !== -1
+    ) {
+
+        currentIndex =
+            existing;
+
+    }
+
+    else {
+
+        playlist.push({
+
+            id: videoID,
+
+            title:
+                "YouTube Video"
+
+        });
+
+
+        currentIndex =
+            playlist.length - 1;
+
+    }
+
+
+    loadPlaylistVideo(
+        currentIndex
+    );
+
+
+    input.value = "";
+
+}
+
+
+/* =========================================
+   LOAD VIDEO
+========================================= */
+
+function loadPlaylistVideo(index) {
+
+    if (
+        index < 0 ||
+        index >= playlist.length
+    ) {
+
+        return;
+
+    }
+
+
+    currentIndex =
+        index;
+
+
+    const video =
+        playlist[index];
+
+
+    if (
+        player &&
+        player.loadVideoById
+    ) {
+
+        player.loadVideoById(
+            video.id
+        );
+
+    }
+
+
+    renderVideos();
+
+    renderHistory();
+
+}
+
+
+/* =========================================
+   PLAY
+========================================= */
+
+function playVideo() {
+
+    if (
+        player &&
+        player.playVideo
+    ) {
+
+        player.playVideo();
+
+    }
+
+}
+
+
+/* =========================================
+   PAUSE
+========================================= */
+
+function pauseVideo() {
+
+    if (
+        player &&
+        player.pauseVideo
+    ) {
+
+        player.pauseVideo();
+
+    }
+
+}
+
+
+/* =========================================
+   STOP / CANCEL
+========================================= */
+
+function stopVideo() {
+
+    if (
+        player &&
+        player.stopVideo
+    ) {
+
+        player.stopVideo();
+
+    }
+
+}
+
+
+/* =========================================
+   BACKWARD 10 SEC
+========================================= */
+
+function backward() {
+
+    if (
+        !player ||
+        !player.getCurrentTime
+    ) {
+
+        return;
+
+    }
+
+
+    const current =
+        player.getCurrentTime();
+
+
+    player.seekTo(
+        Math.max(
+            0,
+            current - 10
+        ),
+        true
+    );
+
+}
+
+
+/* =========================================
+   FORWARD 10 SEC
+========================================= */
+
+function forward() {
+
+    if (
+        !player ||
+        !player.getCurrentTime
+    ) {
+
+        return;
+
+    }
+
+
+    const current =
+        player.getCurrentTime();
+
+
+    player.seekTo(
+        current + 10,
+        true
+    );
+
+}
+
+
+/* =========================================
+   VOLUME
+========================================= */
+
+function changeVolume(value) {
+
+    if (
+        player &&
+        player.setVolume
+    ) {
+
+        player.setVolume(
+            Number(value)
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PREVIOUS VIDEO
+========================================= */
+
+function previousVideo() {
+
+    if (
+        playlist.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentIndex <= 0
+    ) {
+
+        currentIndex =
+            playlist.length - 1;
+
+    }
+
+    else {
+
+        currentIndex--;
+
+    }
+
+
+    loadPlaylistVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =========================================
+   NEXT VIDEO
+========================================= */
+
+function nextVideo() {
+
+    if (
+        playlist.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentIndex >=
+        playlist.length - 1
+    ) {
+
+        currentIndex = 0;
+
+    }
+
+    else {
+
+        currentIndex++;
+
+    }
+
+
+    loadPlaylistVideo(
+        currentIndex
+    );
+
+}
+
+
+/* =========================================
+   LOAD GOOGLE SHEET CSV
+========================================= */
+
+async function loadSheetVideos() {
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    try {
+
+        status.innerText =
+            "Loading videos...";
+
+
+        const response =
+            await fetch(
+                CSV_URL
+            );
+
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                "Unable to load CSV"
+            );
+
+        }
+
+
+        const csv =
+            await response.text();
+
+
+        sheetVideos =
+            parseCSV(csv);
+
+
+        status.innerText =
+            sheetVideos.length +
+            " videos loaded";
+
+
+        renderVideos();
+
+    }
+
+    catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        status.innerText =
+            "❌ Unable to load Google Sheet videos";
+
+    }
+
+}
+
+
+/* =========================================
+   CSV PARSER
+========================================= */
+
+function parseCSV(csv) {
+
+    const lines =
+        csv
+        .replace(
+            /\r/g,
+            ""
+        )
+        .split("\n");
+
+
+    const videos = [];
+
+
+    /* Skip header row */
+
+    for (
+        let i = 1;
+        i < lines.length;
+        i++
+    ) {
+
+        const line =
+            lines[i].trim();
+
+
+        if (!line)
+            continue;
+
+
+        /*
+        Simple CSV parser
+        Supports:
+        "Title","URL"
+        */
+
+
+        const columns =
+            splitCSV(line);
+
+
+        if (
+            columns.length < 2
+        ) {
+
+            continue;
+
+        }
+
+
+        const title =
+            columns[0]
+            .trim();
+
+
+        const url =
+            columns[1]
+            .trim();
+
+
+        const id =
+            extractVideoID(url);
+
+
+        if (
+            !id
+        ) {
+
+            continue;
+
+        }
+
+
+        videos.push({
+
+            title:
+                title ||
+                "YouTube Video",
+
+            url:
+                url,
+
+            id:
+                id
+
+        });
+
+    }
+
+
+    return videos;
+
+}
+
+
+/* =========================================
+   SPLIT CSV LINE
+========================================= */
+
+function splitCSV(line) {
+
+    const result = [];
+
+    let current = "";
+
+    let insideQuotes =
+        false;
+
+
+    for (
+        let i = 0;
+        i < line.length;
+        i++
+    ) {
+
+        const char =
+            line[i];
+
+
+        if (
+            char === '"'
+        ) {
+
+            insideQuotes =
+                !insideQuotes;
+
+        }
+
+        else if (
+            char === "," &&
+            !insideQuotes
+        ) {
+
+            result.push(
+                current
+            );
+
+
+            current = "";
+
+        }
+
+        else {
+
+            current +=
+                char;
+
+        }
+
+    }
+
+
+    result.push(
+        current
+    );
+
+
+    return result.map(
+        value =>
+        value.replace(
+            /^"|"$/g,
+            ""
+        )
+    );
+
+}
+
+
+/* =========================================
+   RENDER VIDEO LIST
+========================================= */
+
+function renderVideos(
+    videos = sheetVideos
+) {
+
+    const container =
+        document.getElementById(
+            "videoList"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        videos.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p style='color:#888'>No videos found.</p>";
+
+        return;
+
+    }
+
+
+    videos.forEach(
+        video => {
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "video-item";
+
+
+            /* Active video */
+
+            if (
+                currentIndex >= 0 &&
+                playlist[
+                    currentIndex
+                ] &&
+                playlist[
+                    currentIndex
+                ].id ===
+                video.id
+            ) {
+
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            /* Thumbnail */
+
+            const thumbnail =
+                document.createElement(
+                    "img"
+                );
+
+
+            thumbnail.className =
+                "video-thumb";
+
+
+            thumbnail.src =
+                "https://img.youtube.com/vi/" +
+                video.id +
+                "/hqdefault.jpg";
+
+
+            thumbnail.alt =
+                video.title;
+
+
+            /* Info */
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "video-info";
+
+
+            const title =
+                document.createElement(
+                    "div"
+                );
+
+
+            title.className =
+                "video-title";
+
+
+            title.innerText =
+                video.title;
+
+
+            const id =
+                document.createElement(
+                    "div"
+                );
+
+
+            id.className =
+                "video-id";
+
+
+            id.innerText =
+                video.id;
+
+
+            info.appendChild(
+                title
+            );
+
+
+            info.appendChild(
+                id
+            );
+
+
+            /* Play button */
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "play-btn";
+
+
+            button.innerText =
+                "▶ Play";
+
+
+            button.onclick =
+                event => {
+
+                    event.stopPropagation();
+
+                    playSheetVideo(
+                        video
+                    );
+
+                };
+
+
+            item.onclick =
+                () =>
+                playSheetVideo(
+                    video
+                );
+
+
+            item.appendChild(
+                thumbnail
+            );
+
+
+            item.appendChild(
+                info
+            );
+
+
+            item.appendChild(
+                button
+            );
+
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   PLAY GOOGLE SHEET VIDEO
+========================================= */
+
+function playSheetVideo(
+    video
+) {
+
+    let index =
+        playlist.findIndex(
+            item =>
+            item.id ===
+            video.id
+        );
+
+
+    if (
+        index === -1
+    ) {
+
+        playlist.push({
+
+            id:
+                video.id,
+
+            title:
+                video.title
+
+        });
+
+
+        index =
+            playlist.length - 1;
+
+    }
+
+
+    loadPlaylistVideo(
+        index
+    );
+
+}
+
+
+/* =========================================
+   SEARCH GOOGLE SHEET VIDEOS
+========================================= */
+
+function searchVideos() {
+
+    const query =
+        document
+        .getElementById(
+            "videoSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    if (!query) {
+
+        renderVideos(
+            sheetVideos
+        );
+
+        return;
+
+    }
+
+
+    const filtered =
+        sheetVideos.filter(
+            video =>
+
+            video.title
+            .toLowerCase()
+            .includes(query)
+
+            ||
+
+            video.id
+            .toLowerCase()
+            .includes(query)
+
+            ||
+
+            video.url
+            .toLowerCase()
+            .includes(query)
+
+        );
+
+
+    renderVideos(
+        filtered
+    );
+
+}
+
+
+/* =========================================
+   HISTORY
+========================================= */
+
+function renderHistory() {
+
+    const container =
+        document.getElementById(
+            "historyList"
+        );
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        playlist.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p style='color:#888'>No videos played yet.</p>";
+
+        return;
+
+    }
+
+
+    playlist.forEach(
+        (
+            video,
+            index
+        ) => {
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "history-item";
+
+
+            const text =
+                document.createElement(
+                    "span"
+                );
+
+
+            text.innerText =
+                video.title;
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.innerText =
+                "▶ Play";
+
+
+            button.onclick =
+                () =>
+                loadPlaylistVideo(
+                    index
+                );
+
+
+            item.appendChild(
+                text
+            );
+
+
+            item.appendChild(
+                button
+            );
+
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   ENTER KEY
+========================================= */
+
+document
+.getElementById(
+    "youtubeUrl"
+)
+.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            loadVideo();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   START
+========================================= */
+
+loadSheetVideos();
+
+</script></body>
+</html>
