@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Video Player</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+    background:#101114;color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+button{border:0;border-radius:8px;padding:10px 14px;background:#2563eb;color:#fff;cursor:pointer;font-weight:bold}
+button:hover{opacity:.9}
+button:active{transform:scale(.98)}
+
+/* ================= TOP / SIDE NAV ================= */
+.nav-toggle{
+    position:fixed;left:15px;top:15px;z-index:1200;
+    width:44px;height:44px;padding:0;font-size:22px;
+    background:#2563eb;border-radius:8px;
+}
+.nav-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);
+    z-index:1050;display:none;
+}
+.nav-overlay.show{display:block}
+.side-nav{
+    position:fixed;left:0;top:0;bottom:0;width:275px;
+    z-index:1300;background:#181a1f;
+    box-shadow:4px 0 20px rgba(0,0,0,.3);
+    transform:translateX(-100%);transition:.25s;overflow-y:auto;
+}
+.side-nav.open{transform:translateX(0)}
+.nav-head{
+    height:64px;padding:0 16px;display:flex;align-items:center;
+    justify-content:space-between;border-bottom:1px solid #292c33;
+}
+.nav-logo{font-weight:800;letter-spacing:3px;font-size:17px}
+.nav-close{background:transparent;font-size:30px;padding:2px 8px;color:#bbb}
+.side-nav nav{padding:10px}
+.nav-link,.dropdown-btn{
+    width:100%;display:flex;align-items:center;gap:12px;
+    padding:14px;border-radius:8px;background:transparent;color:#eee;
+    text-decoration:none;text-align:left;font-size:15px;
+}
+.nav-link:hover,.dropdown-btn:hover{background:#24272e}
+.dropdown-btn b{margin-left:auto;transition:.2s}
+.nav-group.open .dropdown-btn b{transform:rotate(180deg)}
+.dropdown-menu{max-height:0;overflow:hidden;transition:max-height .25s;margin-left:25px}
+.nav-group.open .dropdown-menu{max-height:400px}
+.dropdown-menu a{
+    display:block;padding:11px 13px;color:#aaa;text-decoration:none;
+    border-left:2px solid #333;font-size:14px;
+}
+.dropdown-menu a:hover{color:#fff;background:#202329}
+
+/* ================= CONTAINER ================= */
+.container{
+    width:100%;max-width:1000px;margin:auto;padding:15px;
+}
+@media(max-width:768px){
+    .container{padding-top:52px;}
+    h1{margin-top:0;}
+}
+h1{text-align:center;margin:5px 0 18px;font-size:25px}
+
+/* URL */
+.url-row{display:flex;gap:8px;margin-bottom:12px}
+.url-row input,.search-box input{
+    flex:1;min-width:0;padding:12px;border-radius:8px;
+    border:1px solid #333;background:#1b1d22;color:#fff;outline:none;
+}
+.url-row button{flex:none}
+
+/* PLAYER */
+.player-box{
+    width:100%;background:#000;border-radius:12px;overflow:hidden;
+    margin-bottom:12px;position:relative;
+}
+#youtube-player,#tiktok-player,#local-player{
+    width:100%;aspect-ratio:16/9;display:none;border:0;
+}
+#youtube-player,#tiktok-player{background:#000}
+#local-player{background:#000;object-fit:contain}
+
+/* Controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.controls button{min-width:80px}
+.seek-row{display:flex;align-items:center;gap:10px;margin:8px 0 14px}
+.seek-row input{flex:1}
+.volume-row{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+.volume-row input{flex:1}
+
+/* TABS */
+.tabs{
+    display:flex;gap:5px;background:#191b20;padding:5px;
+    border-radius:10px;margin-top:15px;margin-bottom:10px;
+}
+.tab-btn{flex:1;background:transparent;color:#bbb;padding:12px 8px;border-radius:8px}
+.tab-btn.active{background:#2563eb;color:#fff}
+
+/* PANELS */
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* LIST */
+.search-box{margin:10px 0}
+.video-list{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;
+}
+.video-card{
+    background:#1a1c21;border:1px solid #292c33;border-radius:10px;
+    overflow:hidden;cursor:pointer;transition:.2s;
+}
+.video-card:hover{border-color:#2563eb;transform:translateY(-2px)}
+.video-card.active{border:2px solid #2563eb}
+.thumb{
+    width:100%;aspect-ratio:16/9;background:#080808;
+    object-fit:cover;display:block;
+}
+.video-info{padding:9px}
+.video-title{font-size:14px;font-weight:bold;line-height:1.35;word-break:break-word}
+.video-type{color:#aaa;font-size:12px;margin-top:5px}
+
+/* OFFLINE */
+.offline-tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.file-label{
+    display:inline-flex;align-items:center;justify-content:center;
+    padding:10px 14px;background:#16a34a;border-radius:8px;
+    cursor:pointer;font-weight:bold;
+}
+.file-label input{display:none}
+.clear-btn{background:#dc2626}
+
+/* HISTORY / STATUS */
+.empty{padding:25px 10px;text-align:center;color:#999;background:#181a1f;border-radius:10px}
+.history-section{margin-top:20px}
+.history-title{font-size:18px;font-weight:bold;margin-bottom:10px}
+.history-list{display:flex;flex-direction:column;gap:6px}
+.history-item{background:#1a1c21;border-radius:8px;padding:10px;cursor:pointer}
+.history-item:hover{background:#23262d}
+.status{text-align:center;color:#aaa;font-size:13px;margin:8px 0}
+
+/* ================= PC: NAV AUTOMATICALLY GOES TOP ================= */
+@media(min-width:769px){
+    .container{padding-top:18px;}
+    .side-nav{
+        position:relative;left:auto;top:auto;bottom:auto;width:100%;
+        height:auto;transform:none;display:block;overflow:visible;
+        background:#181a1f;box-shadow:0 2px 12px rgba(0,0,0,.28);
+    }
+    .nav-toggle,.nav-close,.nav-overlay{display:none!important}
+    .nav-head{height:56px;padding:0 22px}
+    .side-nav nav{
+        display:flex;align-items:center;justify-content:center;
+        gap:0;padding:0 8px;min-height:54px;
+    }
+    .nav-link,.dropdown-btn{
+        width:auto;padding:16px 18px;border-radius:0;white-space:nowrap;
+    }
+    .nav-group{position:relative}
+    .dropdown-menu{
+        position:absolute;left:0;top:100%;width:210px;margin:0;
+        background:#181a1f;box-shadow:0 8px 20px rgba(0,0,0,.35);z-index:2000;
+    }
+    .dropdown-menu a{border-left:0;border-bottom:1px solid #292c33;background:#181a1f}
+    .nav-group.open .dropdown-menu{max-height:500px}
+}
+
+/* MOBILE */
+@media(max-width:600px){
+    .container{padding:52px 10px 10px}
+    h1{font-size:21px}
+    .url-row{flex-direction:column}
+    .url-row button{width:100%}
+    .tabs{position:sticky;top:0;z-index:50}
+    .tab-btn{font-size:12px;padding:10px 4px}
+    .video-list{grid-template-columns:1fr 1fr}
+    .video-title{font-size:12px}
+    .controls button{min-width:70px;padding:9px 8px;font-size:12px}
+}
+@media(max-width:380px){.video-list{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ================= NAVIGATION ================= -->
+<button class="nav-toggle" id="navToggle" aria-label="Open navigation">☰</button>
+<div class="nav-overlay" id="navOverlay"></div>
+
+<aside class="side-nav" id="sideNav">
+    <div class="nav-head">
+        <div class="nav-logo">FULKUMARI</div>
+        <button class="nav-close" id="navClose" aria-label="Close navigation">×</button>
+    </div>
+    <nav>
+        <a href="#" class="nav-link">⌂ <span>Home</span></a>
+
+        <div class="nav-group">
+            <button class="dropdown-btn" type="button">▣ <span>Videos</span><b>⌄</b></button>
+            <div class="dropdown-menu">
+                <a href="#youtubeTab" data-tab="youtube">All YouTube Videos</a>
+                <a href="#tiktokTab" data-tab="tiktok">TikTok Videos</a>
+                <a href="#offlineTab" data-tab="offline">Offline Videos</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <button class="dropdown-btn" type="button">☰ <span>Categories</span><b>⌄</b></button>
+            <div class="dropdown-menu">
+                <a href="#youtubeTab" data-tab="youtube">YouTube</a>
+                <a href="#tiktokTab" data-tab="tiktok">TikTok</a>
+                <a href="#offlineTab" data-tab="offline">Offline</a>
+            </div>
+        </div>
+
+        <div class="nav-group">
+            <button class="dropdown-btn" type="button">▶ <span>Playlist</span><b>⌄</b></button>
+            <div class="dropdown-menu">
+                <a href="#youtubeTab" data-tab="youtube">YouTube Playlist</a>
+                <a href="#tiktokTab" data-tab="tiktok">TikTok Playlist</a>
+            </div>
+        </div>
+
+        <a href="#" class="nav-link">▤ <span>Gallery</span></a>
+        <a href="#" class="nav-link">ℹ <span>About</span></a>
+        <a href="#" class="nav-link">☎ <span>Contact</span></a>
+    </nav>
+</aside>
+
+<div class="container">
+
+<h1>🎬 Media Video Player</h1>
+
+<div class="url-row">
+    <input id="videoURL" type="text" placeholder="Paste YouTube / TikTok URL or Video ID">
+    <button onclick="loadVideoURL()">▶ Play</button>
+</div>
+
+<div id="status" class="status">Loading videos...</div>
+
+<div class="player-box">
+    <div id="youtube-player"></div>
+    <iframe id="tiktok-player" allow="fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <video id="local-player" playsinline controls></video>
+</div>
+
+<div class="controls">
+    <button onclick="previousVideo()">⏮ Previous</button>
+    <button onclick="playVideo()">▶ Play</button>
+    <button onclick="pauseVideo()">⏸ Pause</button>
+    <button onclick="stopVideo()">⏹ Stop</button>
+    <button onclick="nextVideo()">Next ⏭</button>
+</div>
+
+<div class="seek-row">
+    <span>0:00</span>
+    <input id="seekbar" type="range" min="0" max="100" value="0" oninput="seekVideo(this.value)">
+    <span>100%</span>
+</div>
+
+<div class="volume-row">
+    <span>🔊 Volume</span>
+    <input id="volume" type="range" min="0" max="100" value="100" oninput="changeVolume(this.value)">
+</div>
+
+<div class="tabs">
+    <button id="youtubeTabBtn" class="tab-btn active" onclick="openTab('youtube')">▶ YouTube</button>
+    <button id="tiktokTabBtn" class="tab-btn" onclick="openTab('tiktok')">🎵 TikTok</button>
+    <button id="offlineTabBtn" class="tab-btn" onclick="openTab('offline')">📱 Offline</button>
+</div>
+
+<div id="youtubeTab" class="tab-panel active">
+    <div class="search-box">
+        <input id="youtubeSearch" type="text" placeholder="🔎 Search YouTube videos..." oninput="searchYouTube()">
+    </div>
+    <div id="youtubeList" class="video-list"></div>
+</div>
+
+<div id="tiktokTab" class="tab-panel">
+    <div class="search-box">
+        <input id="tiktokSearch" type="text" placeholder="🔎 Search TikTok videos..." oninput="searchTikTok()">
+    </div>
+    <div id="tiktokList" class="video-list"></div>
+</div>
+
+<div id="offlineTab" class="tab-panel">
+    <div class="offline-tools">
+        <label class="file-label">
+            📁 Select Offline Videos
+            <input id="localFiles" type="file" accept="video/*" multiple onchange="handleLocalFiles(event)">
+        </label>
+        <button class="clear-btn" onclick="clearLocalVideos()">🗑 Clear Videos</button>
+    </div>
+    <div id="offlineList" class="video-list"></div>
+</div>
+
+<div class="history-section">
+    <div class="history-title">🕘 Recently Played</div>
+    <div id="historyList" class="history-list"></div>
+</div>
+
+</div>
+
+<script>
+/* ================= NAVIGATION ================= */
+const sideNav=document.getElementById("sideNav");
+const navToggle=document.getElementById("navToggle");
+const navClose=document.getElementById("navClose");
+const navOverlay=document.getElementById("navOverlay");
+
+function openNav(){sideNav.classList.add("open");navOverlay.classList.add("show")}
+function closeNav(){sideNav.classList.remove("open");navOverlay.classList.remove("show")}
+navToggle.addEventListener("click",openNav);
+navClose.addEventListener("click",closeNav);
+navOverlay.addEventListener("click",closeNav);
+
+document.querySelectorAll(".dropdown-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+        const group=btn.parentElement;
+        document.querySelectorAll(".nav-group.open").forEach(g=>{
+            if(g!==group)g.classList.remove("open");
+        });
+        group.classList.toggle("open");
+    });
+});
+
+document.querySelectorAll(".dropdown-menu a[data-tab]").forEach(a=>{
+    a.addEventListener("click",e=>{
+        e.preventDefault();
+        openTab(a.dataset.tab);
+        document.querySelectorAll(".nav-group.open").forEach(g=>g.classList.remove("open"));
+        closeNav();
+        document.getElementById(a.dataset.tab+"Tab").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+});
+
+/* ================= GOOGLE SHEET ================= */
+const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfLCxJaz-eDFB7SGeROjZDepLOHg1ZggZhYf5kfWJc8S-l1H9frmOshuakfD7_4ocFZd2tvRvEaLN9/pub?gid=281133690&single=true&output=csv";
+
+/* ================= VARIABLES ================= */
+let sheetVideos=[],youtubeVideos=[],tiktokVideos=[];
+let youtubeIndex=-1,tiktokIndex=-1;
+let localVideos=[],localIndex=-1;
+let activeTab="youtube",mode="";
+let player=null,playerReady=false;
+let tiktokCurrentTime=0,historyVideos=[];
+
+/* ================= YOUTUBE API ================= */
+function loadYouTubeAPI(){
+    if(document.getElementById("youtube-api"))return;
+    const tag=document.createElement("script");
+    tag.id="youtube-api";tag.src="https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+}
+function onYouTubeIframeAPIReady(){
+    player=new YT.Player("youtube-player",{
+        videoId:"",
+        playerVars:{autoplay:0,controls:1,rel:0,modestbranding:1},
+        events:{
+            onReady:()=>{playerReady=true},
+            onStateChange:event=>{
+                if(event.data===YT.PlayerState.ENDED && mode==="youtube")nextVideo();
+            }
+        }
+    });
+}
+
+/* ================= TABS ================= */
+function openTab(tab){
+    activeTab=tab;
+    document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.getElementById(tab+"Tab").classList.add("active");
+    document.getElementById(tab+"TabBtn").classList.add("active");
+    renderActiveTab();
+}
+function renderActiveTab(){
+    if(activeTab==="youtube")renderYouTubeVideos(youtubeVideos);
+    else if(activeTab==="tiktok")renderTikTokVideos(tiktokVideos);
+    else renderLocalVideos();
+}
+
+/* ================= URL HELPERS ================= */
+function extractVideoID(url){
+    if(!url)return "";
+    url=String(url).trim();
+    if(/^[a-zA-Z0-9_-]{11}$/.test(url))return url;
+    try{
+        const u=new URL(url);
+        if(u.hostname.includes("youtu.be"))return u.pathname.substring(1).split("/")[0];
+        if(u.hostname.includes("youtube.com")){
+            const v=u.searchParams.get("v"); if(v)return v;
+            const parts=u.pathname.split("/");
+            let i=parts.indexOf("shorts"); if(i>=0&&parts[i+1])return parts[i+1];
+            i=parts.indexOf("embed"); if(i>=0&&parts[i+1])return parts[i+1];
+        }
+    }catch(e){}
+    return "";
+}
+function isTikTokURL(value){
+    if(!value)return false;
+    value=String(value).toLowerCase();
+    return value.includes("tiktok.com")||value.includes("vm.tiktok.com")||value.includes("vt.tiktok.com");
+}
+function extractTikTokID(value){
+    if(!value)return "";
+    value=String(value).trim();
+    if(/^\d+$/.test(value))return value;
+    try{
+        const u=new URL(value),parts=u.pathname.split("/").filter(Boolean);
+        const i=parts.indexOf("video");
+        if(i>=0&&parts[i+1])return parts[i+1].split("?")[0].split("/")[0];
+        for(let j=parts.length-1;j>=0;j--)if(/^\d+$/.test(parts[j]))return parts[j];
+    }catch(e){}
+    return "";
+}
+function extractImageURL(value){
+    if(!value)return "";
+    value=String(value).trim();
+    return value.startsWith("http://")||value.startsWith("https://")?value:"";
+}
+
+/* ================= MANUAL LOAD ================= */
+function loadVideoURL(){
+    const input=document.getElementById("videoURL"),value=input.value.trim();
+    if(!value){alert("Please enter YouTube or TikTok URL.");return}
+
+    if(isTikTokURL(value)){
+        const id=extractTikTokID(value);
+        if(!id){alert("TikTok Video ID भेटिएन।");return}
+        const index=tiktokVideos.findIndex(v=>String(v.id)===String(id));
+        openTab("tiktok");
+        loadTikTok(index>=0?tiktokVideos[index]:{title:"TikTok Video",url:value,thumbnail:"",id:id},index);
+        return;
+    }
+
+    if(/^\d+$/.test(value)){
+        const index=tiktokVideos.findIndex(v=>String(v.id)===value);
+        openTab("tiktok");
+        loadTikTok(index>=0?tiktokVideos[index]:{title:"TikTok Video",url:"",thumbnail:"",id:value},index);
+        return;
+    }
+
+    const id=extractVideoID(value);
+    if(id){
+        openTab("youtube");
+        const index=youtubeVideos.findIndex(v=>v.id===id);
+        loadYouTubeVideo(
+            index>=0?youtubeVideos[index]:{
+                title:"YouTube Video",url:value,
+                thumbnail:"https://img.youtube.com/vi/"+id+"/hqdefault.jpg",
+                id:id,type:"youtube"
+            },index
+        );
+        return;
+    }
+    alert("Valid YouTube/TikTok URL वा Video ID राख्नुहोस्.");
+}
+
+/* ================= PLAYER ================= */
+function hideAllPlayers(){
+    document.getElementById("youtube-player").style.display="none";
+    document.getElementById("tiktok-player").style.display="none";
+    document.getElementById("local-player").style.display="none";
+}
+function showYouTubePlayer(){hideAllPlayers();document.getElementById("youtube-player").style.display="block"}
+function showTikTokPlayer(){hideAllPlayers();document.getElementById("tiktok-player").style.display="block"}
+function showLocalPlayer(){hideAllPlayers();document.getElementById("local-player").style.display="block"}
+
+function loadYouTubeVideo(video,index){
+    if(!video||!video.id)return;
+    mode="youtube";youtubeIndex=index;showYouTubePlayer();
+    if(playerReady)player.loadVideoById(video.id);
+    addHistory({title:video.title||"YouTube Video",type:"youtube",id:video.id,index:index});
+    renderYouTubeVideos(youtubeVideos);
+}
+function loadTikTok(video,index){
+    if(!video||!video.id){alert("TikTok Video ID छैन.");return}
+    mode="tiktok";tiktokIndex=index;tiktokCurrentTime=0;showTikTokPlayer();
+    const iframe=document.getElementById("tiktok-player");
+    iframe.src="about:blank";
+    setTimeout(()=>{
+        iframe.src="https://www.tiktok.com/player/v1/"+encodeURIComponent(video.id)+"?controls=1&description=1&music_info=1&loop=0";
+    },80);
+    addHistory({title:video.title||"TikTok Video",type:"tiktok",id:video.id,index:index});
+    renderTikTokVideos(tiktokVideos);
+}
+
+function playVideo(){
+    if(mode==="youtube"&&playerReady)player.playVideo();
+    else if(mode==="tiktok")sendTikTokMessage({type:"play"});
+    else if(mode==="local")document.getElementById("local-player").play();
+}
+function pauseVideo(){
+    if(mode==="youtube"&&playerReady)player.pauseVideo();
+    else if(mode==="tiktok")sendTikTokMessage({type:"pause"});
+    else if(mode==="local")document.getElementById("local-player").pause();
+}
+function stopVideo(){
+    if(mode==="youtube"&&playerReady)player.stopVideo();
+    else if(mode==="tiktok")sendTikTokMessage({type:"pause"});
+    else if(mode==="local"){
+        const v=document.getElementById("local-player");v.pause();v.currentTime=0;
+    }
+}
+function nextVideo(){
+    if(activeTab==="youtube"&&youtubeVideos.length){
+        let n=youtubeIndex+1;if(n>=youtubeVideos.length)n=0;loadYouTubeVideo(youtubeVideos[n],n);return;
+    }
+    if(activeTab==="tiktok"&&tiktokVideos.length){
+        let n=tiktokIndex+1;if(n>=tiktokVideos.length)n=0;loadTikTok(tiktokVideos[n],n);return;
+    }
+    if(activeTab==="offline"&&localVideos.length){
+        let n=localIndex+1;if(n>=localVideos.length)n=0;playLocalVideo(n);
+    }
+}
+function previousVideo(){
+    if(activeTab==="youtube"&&youtubeVideos.length){
+        let n=youtubeIndex-1;if(n<0)n=youtubeVideos.length-1;loadYouTubeVideo(youtubeVideos[n],n);return;
+    }
+    if(activeTab==="tiktok"&&tiktokVideos.length){
+        let n=tiktokIndex-1;if(n<0)n=tiktokVideos.length-1;loadTikTok(tiktokVideos[n],n);return;
+    }
+    if(activeTab==="offline"&&localVideos.length){
+        let n=localIndex-1;if(n<0)n=localVideos.length-1;playLocalVideo(n);
+    }
+}
+
+/* ================= SEEK / VOLUME ================= */
+function seekVideo(value){
+    const percent=Number(value);
+    if(mode==="youtube"&&playerReady){
+        const duration=player.getDuration();if(duration)player.seekTo(duration*percent/100,true);
+    }else if(mode==="local"){
+        const v=document.getElementById("local-player");if(v.duration)v.currentTime=v.duration*percent/100;
+    }
+}
+function changeVolume(value){
+    const vol=Number(value);
+    if(mode==="youtube"&&playerReady)player.setVolume(vol);
+    else if(mode==="local")document.getElementById("local-player").volume=vol/100;
+    else if(mode==="tiktok")sendTikTokMessage(vol<=0?{type:"mute"}:{type:"unMute"});
+}
+function sendTikTokMessage(message){
+    const iframe=document.getElementById("tiktok-player");
+    if(iframe&&iframe.contentWindow)iframe.contentWindow.postMessage(message,"https://www.tiktok.com");
+}
+
+/* ================= LOCAL ================= */
+function handleLocalFiles(event){
+    Array.from(event.target.files||[]).forEach(file=>{
+        if(!file.type.startsWith("video/"))return;
+        localVideos.push({title:file.name,url:URL.createObjectURL(file),file:file});
+    });
+    renderLocalVideos();
+    if(mode!=="local"&&localVideos.length===1)playLocalVideo(0);
+}
+function playLocalVideo(index){
+    if(index<0||index>=localVideos.length)return;
+    localIndex=index;mode="local";
+    const video=document.getElementById("local-player");showLocalPlayer();
+    video.src=localVideos[index].url;video.load();
+    video.volume=Number(document.getElementById("volume").value)/100;
+    video.play().catch(()=>{});
+    addHistory({title:localVideos[index].title,type:"offline",index:index});
+    renderLocalVideos();
+}
+document.getElementById("local-player").addEventListener("ended",()=>{if(mode==="local")nextVideo()});
+document.getElementById("local-player").addEventListener("timeupdate",function(){
+    if(mode==="local"&&this.duration)document.getElementById("seekbar").value=(this.currentTime/this.duration)*100;
+});
+function clearLocalVideos(){
+    if(!localVideos.length)return;
+    if(!confirm("सबै offline videos हटाउने?"))return;
+    localVideos.forEach(v=>{try{URL.revokeObjectURL(v.url)}catch(e){}});
+    localVideos=[];localIndex=-1;
+    const video=document.getElementById("local-player");video.pause();video.removeAttribute("src");video.load();
+    if(mode==="local")mode="";
+    renderLocalVideos();
+}
+
+/* ================= CSV / SHEET ================= */
+async function loadSheetVideos(){
+    try{
+        setStatus("Loading videos from Google Sheet...");
+        const response=await fetch(SHEET_URL,{cache:"no-store"});
+        if(!response.ok)throw new Error("Sheet loading failed");
+        sheetVideos=parseCSV(await response.text());
+        youtubeVideos=sheetVideos.filter(v=>v.type==="youtube");
+        tiktokVideos=sheetVideos.filter(v=>v.type==="tiktok");
+        renderYouTubeVideos(youtubeVideos);renderTikTokVideos(tiktokVideos);renderLocalVideos();updateTabCounts();
+        setStatus(youtubeVideos.length+" YouTube • "+tiktokVideos.length+" TikTok • "+localVideos.length+" Offline");
+    }catch(error){
+        console.error(error);setStatus("Google Sheet videos load हुन सकेन।");
+    }
+}
+function parseCSV(csv){
+    const rows=[];let row=[],value="",insideQuotes=false;
+    for(let i=0;i<csv.length;i++){
+        const c=csv[i],n=csv[i+1];
+        if(c==='"'&&insideQuotes&&n==='"'){value+='"';i++;continue}
+        if(c==='"'){insideQuotes=!insideQuotes;continue}
+        if(c===","&&!insideQuotes){row.push(value);value="";continue}
+        if((c==="\n"||c==="\r")&&!insideQuotes){
+            if(c==="\r"&&n==="\n")i++;
+            row.push(value);rows.push(row);row=[];value="";continue;
+        }
+        value+=c;
+    }
+    if(value.length||row.length){row.push(value);rows.push(row)}
+    if(rows.length<2)return [];
+    const result=[];
+    for(let i=1;i<rows.length;i++){
+        const r=rows[i]||[],title=String(r[0]||"").trim(),url=String(r[1]||"").trim();
+        const thumbnail=String(r[2]||"").trim(),columnD=String(r[3]||"").trim();
+        if(!title&&!url&&!columnD)continue;
+        let type="",id="";
+        if(isTikTokURL(url)||/^\d+$/.test(columnD)){
+            type="tiktok";id=/^\d+$/.test(columnD)?columnD:extractTikTokID(url);
+        }else{
+            id=extractVideoID(url)||(/^[a-zA-Z0-9_-]{11}$/.test(columnD)?columnD:"");
+            if(id)type="youtube";
+        }
+        if(!type||!id)continue;
+        let image=extractImageURL(thumbnail);
+        if(!image&&type==="youtube")image="https://img.youtube.com/vi/"+id+"/hqdefault.jpg";
+        result.push({title:title||"Untitled Video",url:url,thumbnail:image,id:id,type:type});
+    }
+    return result;
+}
+
+/* ================= RENDER ================= */
+function renderYouTubeVideos(videos){
+    const list=document.getElementById("youtubeList");
+    if(!videos.length){list.innerHTML='<div class="empty">▶ No YouTube videos found.</div>';updateTabCounts();return}
+    list.innerHTML="";
+    videos.forEach(video=>{
+        const originalIndex=youtubeVideos.indexOf(video),card=document.createElement("div");
+        card.className="video-card"+(mode==="youtube"&&originalIndex===youtubeIndex?" active":"");
+        card.onclick=()=>loadYouTubeVideo(video,originalIndex);
+        const thumb=video.thumbnail||"https://img.youtube.com/vi/"+video.id+"/hqdefault.jpg";
+        card.innerHTML='<img class="thumb" src="'+escapeHTML(thumb)+'" loading="lazy" onerror="this.src=\'https://img.youtube.com/vi/'+escapeHTML(video.id)+'/hqdefault.jpg\'"><div class="video-info"><div class="video-title">'+escapeHTML(video.title)+'</div><div class="video-type">▶ YouTube</div></div>';
+        list.appendChild(card);
+    });
+    updateTabCounts();
+}
+function renderTikTokVideos(videos){
+    const list=document.getElementById("tiktokList");
+    if(!videos.length){list.innerHTML='<div class="empty">🎵 No TikTok videos found.</div>';updateTabCounts();return}
+    list.innerHTML="";
+    videos.forEach(video=>{
+        const originalIndex=tiktokVideos.indexOf(video),card=document.createElement("div");
+        card.className="video-card"+(mode==="tiktok"&&originalIndex===tiktokIndex?" active":"");
+        card.onclick=()=>loadTikTok(video,originalIndex);
+        const thumb=video.thumbnail||"https://placehold.co/640x360/111111/ffffff?text=TikTok";
+        card.innerHTML='<img class="thumb" src="'+escapeHTML(thumb)+'" loading="lazy"><div class="video-info"><div class="video-title">'+escapeHTML(video.title)+'</div><div class="video-type">🎵 TikTok</div></div>';
+        list.appendChild(card);
+    });
+    updateTabCounts();
+}
+function renderLocalVideos(){
+    const list=document.getElementById("offlineList");
+    if(!localVideos.length){
+        list.innerHTML='<div class="empty">📱 No offline videos selected.<br><br>Select videos from your device.</div>';
+        updateTabCounts();return;
+    }
+    list.innerHTML="";
+    localVideos.forEach((video,index)=>{
+        const card=document.createElement("div");
+        card.className="video-card"+(mode==="local"&&index===localIndex?" active":"");
+        card.onclick=()=>playLocalVideo(index);
+        card.innerHTML='<video class="thumb" src="'+escapeHTML(video.url)+'" muted preload="metadata"></video><div class="video-info"><div class="video-title">'+escapeHTML(video.title)+'</div><div class="video-type">📱 Offline Video</div></div>';
+        list.appendChild(card);
+    });
+    updateTabCounts();
+}
+
+/* ================= SEARCH ================= */
+function searchYouTube(){
+    const k=document.getElementById("youtubeSearch").value.toLowerCase().trim();
+    renderYouTubeVideos(youtubeVideos.filter(v=>v.title.toLowerCase().includes(k)||v.id.toLowerCase().includes(k)));
+}
+function searchTikTok(){
+    const k=document.getElementById("tiktokSearch").value.toLowerCase().trim();
+    renderTikTokVideos(tiktokVideos.filter(v=>v.title.toLowerCase().includes(k)||v.id.toLowerCase().includes(k)));
+}
+
+/* ================= HISTORY ================= */
+function addHistory(item){
+    historyVideos=historyVideos.filter(old=>!(old.type===item.type&&old.id===item.id&&old.title===item.title));
+    historyVideos.unshift(item);if(historyVideos.length>20)historyVideos=historyVideos.slice(0,20);
+    try{localStorage.setItem("media_history",JSON.stringify(historyVideos))}catch(e){}
+    renderHistory();
+}
+function loadHistory(){
+    try{historyVideos=JSON.parse(localStorage.getItem("media_history")||"[]")}catch(e){historyVideos=[]}
+    renderHistory();
+}
+function renderHistory(){
+    const list=document.getElementById("historyList");
+    if(!historyVideos.length){list.innerHTML='<div class="empty">No history yet.</div>';return}
+    list.innerHTML="";
+    historyVideos.forEach(item=>{
+        const div=document.createElement("div");div.className="history-item";
+        div.textContent=(item.type==="youtube"?"▶ ":item.type==="tiktok"?"🎵 ":"📱 ")+item.title;
+        div.onclick=()=>{
+            if(item.type==="youtube"){
+                const i=youtubeVideos.findIndex(v=>v.id===item.id);openTab("youtube");
+                loadYouTubeVideo(i>=0?youtubeVideos[i]:{title:item.title,id:item.id},i);
+            }else if(item.type==="tiktok"){
+                const i=tiktokVideos.findIndex(v=>String(v.id)===String(item.id));openTab("tiktok");
+                loadTikTok(i>=0?tiktokVideos[i]:{title:item.title,id:item.id},i);
+            }else if(item.type==="offline"&&item.index>=0&&item.index<localVideos.length){
+                openTab("offline");playLocalVideo(item.index);
+            }
+        };
+        list.appendChild(div);
+    });
+}
+function updateTabCounts(){
+    document.getElementById("youtubeTabBtn").textContent="▶ YouTube ("+youtubeVideos.length+")";
+    document.getElementById("tiktokTabBtn").textContent="🎵 TikTok ("+tiktokVideos.length+")";
+    document.getElementById("offlineTabBtn").textContent="📱 Offline ("+localVideos.length+")";
+}
+function setStatus(text){document.getElementById("status").textContent=text}
+function escapeHTML(value){
+    return String(value||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+/* ================= TIKTOK EVENTS ================= */
+window.addEventListener("message",event=>{
+    if(!event.origin.includes("tiktok.com"))return;
+    let data=event.data;
+    if(typeof data==="string"){try{data=JSON.parse(data)}catch(e){return}}
+    if(!data)return;
+    if((data.type==="onCurrentTime"||data.event==="onCurrentTime")&&typeof data.currentTime==="number")tiktokCurrentTime=data.currentTime;
+    if((data.type==="onStateChange"||data.event==="onStateChange")&&(data.value===0||data.state===0)&&mode==="tiktok")nextVideo();
+});
+
+/* ================= KEYBOARD ================= */
+document.addEventListener("keydown",event=>{
+    if(event.target.tagName==="INPUT"||event.target.tagName==="TEXTAREA")return;
+    if(event.key==="ArrowRight")nextVideo();
+    if(event.key==="ArrowLeft")previousVideo();
+    if(event.key===" "){event.preventDefault();playVideo()}
+});
+
+/* ================= INIT ================= */
+loadYouTubeAPI();
+loadHistory();
+loadSheetVideos();
+updateTabCounts();
+</script>
+</body>
+</html>
