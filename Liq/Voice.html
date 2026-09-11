@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Voice Control</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    color:#fff;
+}
+
+.container{
+    width:100%;
+    max-width:600px;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:30px 20px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+
+h1{
+    margin:0 0 8px;
+    font-size:30px;
+}
+
+.subtitle{
+    opacity:.9;
+    margin-bottom:25px;
+}
+
+.mic{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    border:none;
+    background:#fff;
+    color:#6c4bd8;
+    font-size:55px;
+    cursor:pointer;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+    transition:.2s;
+}
+
+.mic:hover{
+    transform:scale(1.05);
+}
+
+.mic.listening{
+    animation:pulse 1.2s infinite;
+    background:#ff4d6d;
+    color:#fff;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,77,109,.7)}
+    70%{box-shadow:0 0 0 30px rgba(255,77,109,0)}
+    100%{box-shadow:0 0 0 0 rgba(255,77,109,0)}
+}
+
+.status{
+    margin:22px 0 10px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.command{
+    min-height:60px;
+    background:rgba(0,0,0,.2);
+    border-radius:15px;
+    padding:15px;
+    margin:15px 0;
+    font-size:17px;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.buttons button{
+    border:0;
+    border-radius:14px;
+    padding:15px 10px;
+    font-size:15px;
+    cursor:pointer;
+    background:#fff;
+    color:#333;
+    font-weight:bold;
+}
+
+.buttons button:active{
+    transform:scale(.97);
+}
+
+.help{
+    margin-top:25px;
+    text-align:left;
+    background:rgba(0,0,0,.15);
+    padding:18px;
+    border-radius:15px;
+}
+
+.help h3{
+    margin-top:0;
+}
+
+.help p{
+    margin:8px 0;
+}
+
+.footer{
+    margin-top:20px;
+    font-size:12px;
+    opacity:.7;
+}
+
+@media(max-width:450px){
+    h1{
+        font-size:25px;
+    }
+
+    .mic{
+        width:110px;
+        height:110px;
+        font-size:45px;
+    }
+
+    .buttons{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎤 Voice Control</h1>
+
+    <div class="subtitle">
+        बोल्नुहोस् र आफ्नो page खोल्नुहोस्
+    </div>
+
+    <button id="micButton" class="mic" onclick="startListening()">
+        🎤
+    </button>
+
+    <div id="status" class="status">
+        Microphone Ready
+    </div>
+
+    <div id="command" class="command">
+        यहाँ तपाईंले बोलेको command देखिन्छ।
+    </div>
+
+    <div class="buttons">
+
+        <button onclick="openChatbot()">
+            🤖 Chatbot
+        </button>
+
+        <button onclick="openCV()">
+            📄 CV Form
+        </button>
+
+        <button onclick="openWebsite()">
+            🌐 Website
+        </button>
+
+        <button onclick="goBack()">
+            🔙 Back
+        </button>
+
+        <button onclick="refreshPage()">
+            🔄 Refresh
+        </button>
+
+        <button onclick="speak('नमस्कार, म तपाईंको voice assistant हुँ।')">
+            🔊 Test Voice
+        </button>
+
+    </div>
+
+    <div class="help">
+
+        <h3>🎤 Voice Commands</h3>
+
+        <p>👉 "Chatbot खोल"</p>
+        <p>👉 "Open chatbot"</p>
+
+        <p>👉 "CV form खोल"</p>
+        <p>👉 "Open CV form"</p>
+
+        <p>👉 "Website खोल"</p>
+        <p>👉 "Open website"</p>
+
+        <p>👉 "पछाडि जाऊ"</p>
+        <p>👉 "Go back"</p>
+
+        <p>👉 "Refresh गर"</p>
+        <p>👉 "Refresh"</p>
+
+    </div>
+
+    <div class="footer">
+        Voice Control System • Mobile & PC
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIGURATION
+   यहाँ आफ्नो page/file को URL परिवर्तन गर्न सक्नुहुन्छ
+   ===================================================== */
+
+const CHATBOT_URL = "chatbot.html";
+
+const CVFORM_URL = "cvform5.html";
+
+const WEBSITE_URL =
+"https://fulkumari.com.np/Nepali%20Congress/cvform5";
+
+
+/* =====================================================
+   ELEMENTS
+   ===================================================== */
+
+const micButton = document.getElementById("micButton");
+const statusText = document.getElementById("status");
+const commandText = document.getElementById("command");
+
+
+/* =====================================================
+   SPEECH RECOGNITION
+   ===================================================== */
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if(SpeechRecognition){
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.lang = "ne-NP";
+
+    recognition.onstart = function(){
+
+        micButton.classList.add("listening");
+
+        statusText.innerText =
+            "🎤 सुन्दैछु... बोल्नुहोस्";
+
+        commandText.innerText =
+            "बोल्नुहोस्...";
+    };
+
+
+    recognition.onresult = function(event){
+
+        const text =
+            event.results[0][0].transcript;
+
+        commandText.innerText =
+            "🗣️ " + text;
+
+        statusText.innerText =
+            "Command प्राप्त भयो";
+
+        processCommand(text);
+    };
+
+
+    recognition.onerror = function(event){
+
+        micButton.classList.remove("listening");
+
+        statusText.innerText =
+            "❌ Voice error";
+
+        if(event.error === "not-allowed"){
+
+            commandText.innerText =
+                "Microphone permission दिनुहोस्।";
+
+            speak(
+                "Microphone permission दिनुहोस्।"
+            );
+
+        }else{
+
+            commandText.innerText =
+                "फेरि प्रयास गर्नुहोस्।";
+        }
+    };
+
+
+    recognition.onend = function(){
+
+        micButton.classList.remove("listening");
+
+        if(
+            statusText.innerText.includes("सुन्दैछु")
+        ){
+
+            statusText.innerText =
+                "Microphone Ready";
+        }
+    };
+
+}else{
+
+    statusText.innerText =
+        "❌ Voice Recognition Supported छैन";
+
+    commandText.innerText =
+        "Chrome वा Edge browser प्रयोग गर्नुहोस्।";
+}
+
+
+/* =====================================================
+   START LISTENING
+   ===================================================== */
+
+function startListening(){
+
+    if(!recognition){
+
+        alert(
+            "यो browser मा Voice Recognition उपलब्ध छैन। Chrome/Edge प्रयोग गर्नुहोस्।"
+        );
+
+        return;
+    }
+
+    try{
+
+        recognition.lang = "ne-NP";
+
+        recognition.start();
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+}
+
+
+/* =====================================================
+   COMMAND PROCESSING
+   ===================================================== */
+
+function processCommand(command){
+
+    const text =
+        command
+        .toLowerCase()
+        .trim();
+
+
+    /* -----------------------------------------------
+       CHATBOT
+       ----------------------------------------------- */
+
+    if(
+        text.includes("chatbot") ||
+        text.includes("च्याटबोट") ||
+        text.includes("च्याट बोट")
+    ){
+
+        speak("Chatbot खोल्दैछु");
+
+        setTimeout(function(){
+
+            openChatbot();
+
+        },700);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       CV FORM
+       ----------------------------------------------- */
+
+    if(
+        text.includes("cv") ||
+        text.includes("सीभी") ||
+        text.includes("फर्म") ||
+        text.includes("form")
+    ){
+
+        speak("CV form खोल्दैछु");
+
+        setTimeout(function(){
+
+            openCV();
+
+        },700);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       WEBSITE
+       ----------------------------------------------- */
+
+    if(
+        text.includes("website") ||
+        text.includes("वेबसाइट") ||
+        text.includes("साइट") ||
+        text.includes("site")
+    ){
+
+        speak("Website खोल्दैछु");
+
+        setTimeout(function(){
+
+            openWebsite();
+
+        },700);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       BACK
+       ----------------------------------------------- */
+
+    if(
+        text.includes("back") ||
+        text.includes("पछाडि") ||
+        text.includes("फिर्ता")
+    ){
+
+        speak("पछाडि जाँदैछु");
+
+        setTimeout(function(){
+
+            goBack();
+
+        },600);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       REFRESH
+       ----------------------------------------------- */
+
+    if(
+        text.includes("refresh") ||
+        text.includes("रिफ्रेस") ||
+        text.includes("फ्रेस")
+    ){
+
+        speak("Page refresh गर्दैछु");
+
+        setTimeout(function(){
+
+            refreshPage();
+
+        },600);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       HOME
+       ----------------------------------------------- */
+
+    if(
+        text.includes("home") ||
+        text.includes("होम") ||
+        text.includes("मुख्य पेज")
+    ){
+
+        speak("Home page खोल्दैछु");
+
+        setTimeout(function(){
+
+            window.location.href =
+                "index.html";
+
+        },600);
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       HELP
+       ----------------------------------------------- */
+
+    if(
+        text.includes("help") ||
+        text.includes("मद्दत") ||
+        text.includes("के गर्न सक्छौ")
+    ){
+
+        speak(
+            "तपाईं Chatbot, CV form, Website, Back र Refresh भन्न सक्नुहुन्छ।"
+        );
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       HELLO
+       ----------------------------------------------- */
+
+    if(
+        text.includes("hello") ||
+        text.includes("नमस्कार") ||
+        text.includes("नमस्ते")
+    ){
+
+        speak(
+            "नमस्कार। म तपाईंको voice assistant हुँ।"
+        );
+
+        return;
+    }
+
+
+    /* -----------------------------------------------
+       UNKNOWN COMMAND
+       ----------------------------------------------- */
+
+    speak(
+        "माफ गर्नुहोस्, यो command बुझिनँ।"
+    );
+
+}
+
+
+/* =====================================================
+   OPEN CHATBOT
+   ===================================================== */
+
+function openChatbot(){
+
+    window.location.href =
+        CHATBOT_URL;
+}
+
+
+/* =====================================================
+   OPEN CV
+   ===================================================== */
+
+function openCV(){
+
+    window.location.href =
+        CVFORM_URL;
+}
+
+
+/* =====================================================
+   OPEN WEBSITE
+   ===================================================== */
+
+function openWebsite(){
+
+    window.location.href =
+        WEBSITE_URL;
+}
+
+
+/* =====================================================
+   BACK
+   ===================================================== */
+
+function goBack(){
+
+    if(history.length > 1){
+
+        history.back();
+
+    }else{
+
+        speak(
+            "पछाडि जाने page छैन।"
+        );
+    }
+}
+
+
+/* =====================================================
+   REFRESH
+   ===================================================== */
+
+function refreshPage(){
+
+    window.location.reload();
+}
+
+
+/* =====================================================
+   TEXT TO SPEECH
+   ===================================================== */
+
+function speak(text){
+
+    if(!("speechSynthesis" in window)){
+
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const message =
+        new SpeechSynthesisUtterance(text);
+
+    message.lang = "ne-NP";
+
+    message.rate = 0.9;
+
+    message.pitch = 1;
+
+    window.speechSynthesis.speak(message);
+}
+
+
+/* =====================================================
+   KEYBOARD SHORTCUT
+   Space = Microphone
+   ===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.code === "Space" &&
+            document.activeElement.tagName !== "INPUT" &&
+            document.activeElement.tagName !== "TEXTAREA"
+        ){
+
+            event.preventDefault();
+
+            startListening();
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
