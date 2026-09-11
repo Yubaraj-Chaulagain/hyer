@@ -3,288 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YouTube Pro Player</title>
+
+<title>YouTube + TikTok + Mobile Video Player</title>
 
 <style>
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
-    font-family:Arial,sans-serif;
 }
 
 body{
+    margin:0;
     background:#0b0b0b;
-    color:white;
-    min-height:100vh;
+    color:#fff;
+    font-family:Arial,sans-serif;
 }
 
-.app{
-    max-width:1100px;
+.container{
+    max-width:1000px;
     margin:auto;
-    padding:20px;
+    padding:12px;
 }
 
-header{
+h2{
     text-align:center;
-    margin-bottom:25px;
+    margin:8px 0 14px;
 }
 
-header h1{
-    color:#ff0000;
-    font-size:28px;
-}
-
-header p{
-    color:#aaa;
-    margin-top:8px;
-}
-
-/* SEARCH / URL */
-.search-box{
+.input-row{
     display:flex;
-    gap:10px;
-    margin-bottom:25px;
+    gap:8px;
+    margin-bottom:8px;
 }
 
-.search-box input{
+input[type="text"]{
     flex:1;
-    padding:15px;
-    border:none;
-    outline:none;
-    border-radius:10px;
-    background:#1b1b1b;
-    color:white;
-    font-size:16px;
+    min-width:0;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #444;
+    background:#181818;
+    color:#fff;
 }
 
-.search-box button{
-    padding:0 25px;
-    border:none;
-    border-radius:10px;
-    background:#ff0000;
-    color:white;
-    font-size:16px;
+button,
+.local-btn{
+    border:0;
+    border-radius:8px;
+    padding:11px 14px;
+    background:#222;
+    color:#fff;
     cursor:pointer;
+    font-size:14px;
 }
 
-.search-box button:hover{
-    background:#cc0000;
+button:hover,
+.local-btn:hover{
+    background:#333;
 }
 
-/* PLAYER */
+.load-btn{
+    background:#e50914;
+}
+
+.load-btn:hover{
+    background:#ff1a25;
+}
+
+.local-btn{
+    display:inline-block;
+    background:#075e54;
+}
+
+.local-btn input{
+    display:none;
+}
+
+.clear-btn{
+    background:#642020;
+}
+
+.status{
+    padding:8px 10px;
+    background:#151515;
+    border-radius:7px;
+    margin:8px 0;
+    font-size:13px;
+    color:#bbb;
+}
+
 .player-box{
-    background:#111;
-    padding:15px;
-    border-radius:15px;
-    box-shadow:0 0 30px rgba(255,0,0,.15);
-}
-
-.player{
     width:100%;
     aspect-ratio:16/9;
-    background:black;
+    background:#000;
     border-radius:10px;
     overflow:hidden;
+    margin:10px 0;
+    position:relative;
 }
 
-#player{
+#youtubePlayer,
+#tiktokPlayer,
+#localPlayer{
     width:100%;
     height:100%;
 }
 
-/* CONTROLS */
+#youtubePlayer{
+    display:block;
+}
+
+#tiktokPlayer{
+    display:none;
+    border:0;
+    background:#000;
+}
+
+#localPlayer{
+    display:none;
+    object-fit:contain;
+    background:#000;
+}
+
 .controls{
     display:flex;
     flex-wrap:wrap;
+    gap:6px;
     justify-content:center;
-    gap:10px;
-    margin-top:18px;
+    margin:8px 0;
 }
 
 .controls button{
-    background:#222;
-    border:none;
-    color:white;
-    padding:12px 18px;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:15px;
+    min-width:70px;
 }
 
-.controls button:hover{
-    background:#ff0000;
-}
-
-/* VOLUME */
 .volume-box{
-    margin-top:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin:8px 0 14px;
 }
 
-.volume-box label{
-    color:#aaa;
+#volume{
+    width:180px;
 }
 
-.volume-box input{
-    width:100%;
-    margin-top:8px;
-}
-
-/* VIDEO LIST */
-.video-section{
-    margin-top:30px;
-}
-
-.video-section h2{
-    margin-bottom:15px;
-}
-
-.video-search{
-    width:100%;
-    padding:14px;
-    background:#1b1b1b;
-    border:none;
-    outline:none;
+.section{
+    background:#121212;
     border-radius:10px;
-    color:white;
-    font-size:16px;
-    margin-bottom:15px;
+    padding:10px;
+    margin-top:12px;
+}
+
+.section h3{
+    margin:4px 0 10px;
+    font-size:17px;
+}
+
+.search{
+    width:100%;
+    padding:11px;
+    border-radius:8px;
+    border:1px solid #444;
+    background:#181818;
+    color:#fff;
+    margin-bottom:8px;
 }
 
 .video-list{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:7px;
 }
 
 .video-item{
     display:flex;
-    gap:15px;
+    gap:10px;
     align-items:center;
-    background:#161616;
-    padding:10px;
-    border-radius:10px;
+    padding:7px;
+    background:#1b1b1b;
+    border-radius:8px;
     cursor:pointer;
-    transition:.2s;
 }
 
 .video-item:hover{
-    background:#222;
+    background:#282828;
 }
 
-.video-item.active{
-    border:2px solid #ff0000;
-}
-
-.video-thumb{
-    width:160px;
-    aspect-ratio:16/9;
+.thumb{
+    width:110px;
+    height:62px;
     object-fit:cover;
-    border-radius:8px;
-    background:black;
+    border-radius:6px;
+    background:#000;
+    flex-shrink:0;
+}
+
+.tiktok-thumb{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:25px;
 }
 
 .video-info{
-    flex:1;
+    min-width:0;
 }
 
 .video-title{
-    font-size:17px;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.video-id{
-    font-size:12px;
-    color:#888;
-}
-
-.play-btn{
-    background:#ff0000;
-    color:white;
-    border:none;
-    padding:10px 15px;
-    border-radius:7px;
-    cursor:pointer;
-}
-
-/* HISTORY */
-.history{
-    margin-top:30px;
-}
-
-.history h2{
-    margin-bottom:15px;
-}
-
-.history-list{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.history-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#161616;
-    padding:12px;
-    border-radius:8px;
-}
-
-.history-item span{
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin-right:10px;
-}
-
-.history-item button{
-    background:#ff0000;
-    color:white;
-    border:none;
-    padding:7px 12px;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* STATUS */
-.status{
-    color:#aaa;
-    margin-bottom:15px;
     font-size:14px;
+    font-weight:bold;
+    line-height:1.3;
+    overflow:hidden;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
 }
 
-/* MOBILE */
+.video-type{
+    font-size:11px;
+    color:#999;
+    margin-top:4px;
+}
+
+.local-tools{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+}
+
+.empty{
+    text-align:center;
+    color:#777;
+    padding:15px;
+    font-size:13px;
+}
+
 @media(max-width:600px){
 
-    .app{
-        padding:12px;
-    }
-
-    .search-box{
+    .input-row{
         flex-direction:column;
     }
 
-    .search-box button{
-        padding:14px;
+    .input-row button{
+        width:100%;
     }
 
     .controls button{
-        flex:1 1 40%;
+        min-width:62px;
+        padding:10px 8px;
+        font-size:13px;
     }
 
-    .video-item{
-        align-items:flex-start;
-        flex-wrap:wrap;
+    .thumb{
+        width:90px;
+        height:51px;
     }
 
-    .video-thumb{
-        width:120px;
-    }
-
-    .play-btn{
-        width:100%;
+    .video-title{
+        font-size:13px;
     }
 }
 </style>
@@ -292,28 +269,49 @@ header p{
 
 <body>
 
-<div class="app">
+<div class="container">
 
-<header>
-    <h1>▶ YouTube Pro Player</h1>
-    <p>YouTube Player • Google Sheet Video List</p>
-</header>
+<h2>▶ YouTube + TikTok + Mobile Player</h2>
 
+<div class="input-row">
 
-<!-- URL INPUT -->
+    <input
+        type="text"
+        id="videoUrl"
+        placeholder="Paste YouTube or TikTok URL..."
+    >
 
-<div class="search-box">
+    <button class="load-btn" onclick="loadVideoURL()">
+        Load Video
+    </button>
 
-<input
-    type="text"
-    id="youtubeUrl"
-    placeholder="Paste YouTube Video URL or Video ID"
->
+</div>
 
-<button onclick="loadVideo()">
-    Load Video
-</button>
+<div class="local-tools">
 
+    <label class="local-btn">
+        📱 Select Mobile Videos
+
+        <input
+            type="file"
+            id="localVideos"
+            accept="video/*"
+            multiple
+        >
+
+    </label>
+
+    <button
+        class="clear-btn"
+        onclick="clearLocalVideos()"
+    >
+        🗑 Clear Mobile Videos
+    </button>
+
+</div>
+
+<div class="status" id="status">
+    Ready
 </div>
 
 
@@ -321,8 +319,20 @@ header p{
 
 <div class="player-box">
 
-<div class="player">
-    <div id="player"></div>
+    <div id="youtubePlayer"></div>
+
+    <iframe
+        id="tiktokPlayer"
+        allow="fullscreen"
+        title="TikTok Player"
+    ></iframe>
+
+    <video
+        id="localPlayer"
+        playsinline
+        preload="metadata"
+    ></video>
+
 </div>
 
 
@@ -330,238 +340,266 @@ header p{
 
 <div class="controls">
 
-<button onclick="previousVideo()">
-    ⏮ Previous
-</button>
+    <button onclick="previousVideo()">
+        ⏮ Previous
+    </button>
 
-<button onclick="backward()">
-    ⏪ -10 sec
-</button>
+    <button onclick="seekVideo(-10)">
+        ↶ -10
+    </button>
 
-<button onclick="playVideo()">
-    ▶ Play
-</button>
+    <button onclick="playVideo()">
+        ▶ Play
+    </button>
 
-<button onclick="pauseVideo()">
-    ⏸ Pause
-</button>
+    <button onclick="pauseVideo()">
+        ⏸ Pause
+    </button>
 
-<button onclick="forward()">
-    ⏩ +10 sec
-</button>
+    <button onclick="seekVideo(10)">
+        +10 ↷
+    </button>
 
-<button onclick="nextVideo()">
-    ⏭ Next
-</button>
+    <button onclick="nextVideo()">
+        Next ⏭
+    </button>
 
-<button onclick="stopVideo()">
-    ⏹ Cancel
-</button>
+    <button onclick="stopVideo()">
+        ⏹ Stop
+    </button>
 
 </div>
 
-
-<!-- VOLUME -->
 
 <div class="volume-box">
 
-<label>🔊 Volume</label>
+    🔊
 
-<input
-    type="range"
-    min="0"
-    max="100"
-    value="100"
-    oninput="changeVolume(this.value)"
->
+    <input
+        type="range"
+        id="volume"
+        min="0"
+        max="100"
+        value="100"
+        oninput="changeVolume(this.value)"
+    >
 
-</div>
+    <span id="volumeText">
+        100%
+    </span>
 
 </div>
 
 
 <!-- GOOGLE SHEET -->
 
-<div class="video-section">
+<div class="section">
 
-<h2>🎬 YouTube Videos</h2>
+    <h3>📊 Google Sheet Videos</h3>
 
-<input
-    type="text"
-    class="video-search"
-    id="videoSearch"
-    placeholder="🔎 Search videos..."
-    oninput="searchVideos()"
->
+    <input
+        class="search"
+        id="search"
+        type="text"
+        placeholder="Search videos..."
+        oninput="searchVideos()"
+    >
 
-<div
-    class="status"
-    id="status"
->
-    Loading videos...
+    <div
+        id="sheetList"
+        class="video-list"
+    >
+        <div class="empty">
+            Loading Google Sheet...
+        </div>
+    </div>
+
 </div>
 
-<div
-    class="video-list"
-    id="videoList"
-></div>
+
+<!-- LOCAL -->
+
+<div class="section">
+
+    <h3>📱 Mobile Videos</h3>
+
+    <div
+        id="localList"
+        class="video-list"
+    >
+
+        <div class="empty">
+            No mobile videos selected.
+        </div>
+
+    </div>
 
 </div>
 
 
 <!-- HISTORY -->
 
-<div class="history">
+<div class="section">
 
-<h2>📜 Previous Videos</h2>
+    <h3>🕘 History</h3>
 
-<div
-    class="history-list"
-    id="historyList"
-></div>
+    <div
+        id="historyList"
+        class="video-list"
+    >
+
+        <div class="empty">
+            No history yet.
+        </div>
+
+    </div>
 
 </div>
 
 </div>
 
 
-<!-- YOUTUBE IFRAME API -->
+<!-- YOUTUBE API -->
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
+
 <script>
 
-/* =========================================
-   GOOGLE SHEET CSV URL
-========================================= */
+/* =====================================================
+   GOOGLE SHEET
+===================================================== */
 
-const CSV_URL =
+const SHEET_CSV =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vQfLCxJaz-eDFB7SGeROjZDepLOHg1ZggZhYf5kfWJc8S-l1H9frmOshuakfD7_4ocFZd2tvRvEaLN9/pub?gid=281133690&single=true&output=csv";
 
 
-/* =========================================
+/* =====================================================
    VARIABLES
-========================================= */
+===================================================== */
 
 let player = null;
 
 let playerReady = false;
 
-let playlist = [];
+let sheetVideos = [];
 
 let currentIndex = -1;
 
-let sheetVideos = [];
+let localVideos = [];
+
+let localIndex = -1;
+
+let mode = "youtube";
 
 let historyVideos = [];
 
-let pendingIndex = -1;
 
-
-/* =========================================
-   YOUTUBE API READY
-========================================= */
+/* =====================================================
+   YOUTUBE READY
+===================================================== */
 
 function onYouTubeIframeAPIReady(){
 
-    player = new YT.Player("player",{
+    player =
+        new YT.Player(
+            "youtubePlayer",
+            {
 
-        height:"100%",
+                height:"100%",
+                width:"100%",
 
-        width:"100%",
+                videoId:"",
 
-        videoId:"",
+                playerVars:{
+                    autoplay:0,
+                    controls:1,
+                    rel:0,
+                    playsinline:1,
+                    modestbranding:1
+                },
 
-        playerVars:{
-            autoplay:0,
-            controls:1,
-            rel:0,
-            playsinline:1
-        },
+                events:{
 
-        events:{
+                    onReady:function(){
 
-            onReady:function(){
+                        playerReady = true;
 
-                playerReady = true;
+                        setStatus(
+                            "YouTube player ready"
+                        );
 
-                /*
-                If user clicked a video
-                before YouTube API was ready
-                */
+                    },
 
-                if(pendingIndex !== -1){
+                    onStateChange:onPlayerStateChange,
 
-                    const index =
-                        pendingIndex;
+                    onError:function(event){
 
-                    pendingIndex = -1;
+                        setStatus(
+                            "YouTube error: " +
+                            event.data
+                        );
 
-                    loadPlaylistVideo(index);
+                    }
+
                 }
 
-            },
-
-            onStateChange:
-                onPlayerStateChange
-
-        }
-
-    });
+            }
+        );
 
 }
 
 
-/* =========================================
-   IMPORTANT:
-   AUTO NEXT WHEN VIDEO ENDS
-========================================= */
+/* =====================================================
+   YOUTUBE STATE
+===================================================== */
 
 function onPlayerStateChange(event){
 
-    /*
-    YT.PlayerState.ENDED = 0
-    */
-
     if(
+        player &&
         event.data ===
         YT.PlayerState.ENDED
     ){
 
-        console.log(
-            "Video ended - playing next video"
+        setTimeout(
+            nextVideo,
+            300
         );
-
-        /*
-        Small delay makes the transition
-        more reliable on mobile
-        */
-
-        setTimeout(function(){
-
-            nextVideo();
-
-        },300);
 
     }
 
 }
 
 
-/* =========================================
-   EXTRACT VIDEO ID
-========================================= */
+/* =====================================================
+   STATUS
+===================================================== */
+
+function setStatus(text){
+
+    document
+        .getElementById("status")
+        .textContent = text;
+
+}
+
+
+/* =====================================================
+   YOUTUBE ID
+===================================================== */
 
 function extractVideoID(input){
 
-    if(!input)
+    if(!input){
+
         return null;
 
+    }
+
     input =
-        input.trim();
+        String(input).trim();
 
-
-    /* Direct Video ID */
 
     if(
         /^[a-zA-Z0-9_-]{11}$/.test(input)
@@ -577,88 +615,148 @@ function extractVideoID(input){
         const url =
             new URL(input);
 
-
-        /* youtu.be */
-
-        if(
-            url.hostname.includes(
-                "youtu.be"
-            )
-        ){
-
-            return url.pathname
-                .split("/")
-                .filter(Boolean)[0] || null;
-
-        }
-
-
-        /* youtube.com */
-
         if(
             url.hostname.includes(
                 "youtube.com"
-            )
+            ) &&
+            url.searchParams.get("v")
         ){
 
-            let videoID =
-                url.searchParams.get("v");
-
-
-            if(videoID)
-                return videoID;
-
-
-            let parts =
-                url.pathname
-                .split("/")
-                .filter(Boolean);
-
-
-            /* embed */
-
-            let embedIndex =
-                parts.indexOf("embed");
-
-
-            if(
-                embedIndex !== -1 &&
-                parts[embedIndex + 1]
-            ){
-
-                return parts[
-                    embedIndex + 1
-                ];
-
-            }
-
-
-            /* shorts */
-
-            let shortsIndex =
-                parts.indexOf("shorts");
-
-
-            if(
-                shortsIndex !== -1 &&
-                parts[shortsIndex + 1]
-            ){
-
-                return parts[
-                    shortsIndex + 1
-                ];
-
-            }
+            return url.searchParams.get("v");
 
         }
 
+
+        if(
+            url.hostname ===
+            "youtu.be"
+        ){
+
+            return url.pathname
+                .substring(1);
+
+        }
+
+
+        if(
+            url.pathname
+                .startsWith("/embed/")
+        ){
+
+            return url.pathname
+                .split("/")[2];
+
+        }
+
+
+        if(
+            url.pathname
+                .startsWith("/shorts/")
+        ){
+
+            return url.pathname
+                .split("/")[2];
+
+        }
+
+    }catch(e){
+
+        return null;
+
     }
 
-    catch(error){
+    return null;
 
-        console.log(
-            "Invalid URL"
-        );
+}
+
+
+/* =====================================================
+   TIKTOK URL CHECK
+===================================================== */
+
+function isTikTokURL(url){
+
+    if(!url){
+
+        return false;
+
+    }
+
+    return /(^|\/\/)(www\.)?(tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com)/i
+        .test(url);
+
+}
+
+
+/* =====================================================
+   TIKTOK ID
+===================================================== */
+
+function extractTikTokID(input){
+
+    if(!input){
+
+        return null;
+
+    }
+
+    input =
+        String(input).trim();
+
+
+    /*
+       Direct TikTok numeric ID
+    */
+
+    if(/^\d{15,25}$/.test(input)){
+
+        return input;
+
+    }
+
+
+    try{
+
+        const url =
+            new URL(input);
+
+
+        /*
+           Official TikTok player URL
+        */
+
+        const playerMatch =
+            url.pathname.match(
+                /\/player\/v1\/(\d+)/i
+            );
+
+        if(playerMatch){
+
+            return playerMatch[1];
+
+        }
+
+
+        /*
+           Normal TikTok URL
+
+           /@username/video/123456
+        */
+
+        const videoMatch =
+            url.pathname.match(
+                /\/video\/(\d+)/i
+            );
+
+        if(videoMatch){
+
+            return videoMatch[1];
+
+        }
+
+    }catch(e){
+
+        return null;
 
     }
 
@@ -668,28 +766,65 @@ function extractVideoID(input){
 }
 
 
-/* =========================================
-   LOAD MANUAL VIDEO
-========================================= */
+/* =====================================================
+   IMAGE URL FROM SHEET
+===================================================== */
 
-function loadVideo(){
+function extractImageURL(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+    const text =
+        String(value);
+
+
+    /*
+       Handles:
+
+       https://...
+
+       IMAGE("https://...")
+    */
+
+    const match =
+        text.match(
+            /https?:\/\/[^"')\s]+/i
+        );
+
+
+    if(match){
+
+        return match[0];
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================================
+   LOAD MANUAL URL
+===================================================== */
+
+function loadVideoURL(){
 
     const input =
-        document.getElementById(
-            "youtubeUrl"
-        );
-
-    const value =
-        input.value.trim();
-
-    const videoID =
-        extractVideoID(value);
+        document
+        .getElementById("videoUrl")
+        .value
+        .trim();
 
 
-    if(!videoID){
+    if(!input){
 
         alert(
-            "Please enter a valid YouTube URL or Video ID"
+            "YouTube वा TikTok URL राख्नुहोस्।"
         );
 
         return;
@@ -698,145 +833,188 @@ function loadVideo(){
 
 
     /*
-    If this video already exists
-    in Google Sheet, use its exact
-    Sheet position.
+       TIKTOK
     */
 
-    let sheetIndex =
-        sheetVideos.findIndex(
-            video =>
-            video.id === videoID
-        );
+    if(isTikTokURL(input)){
+
+        const id =
+            extractTikTokID(input);
 
 
-    if(sheetIndex !== -1){
+        if(id){
 
-        /*
-        Make sure playlist follows
-        Google Sheet order.
-        */
+            currentIndex =
+                sheetVideos.findIndex(
+                    v =>
+                        v.type === "tiktok" &&
+                        v.id === id
+                );
 
-        syncPlaylistWithSheet();
 
-        currentIndex =
-            sheetIndex;
-
-        loadPlaylistVideo(
-            currentIndex
-        );
-
-    }
-
-    else{
-
-        /*
-        Manual video not in Sheet.
-        Add it to the end.
-        */
-
-        let existing =
-            playlist.findIndex(
-                video =>
-                video.id === videoID
+            loadTikTok(
+                id,
+                "Manual TikTok Video",
+                input
             );
 
-
-        if(existing !== -1){
-
-            currentIndex =
-                existing;
-
-        }
-
-        else{
-
-            playlist.push({
-
-                id:videoID,
-
-                title:"YouTube Video",
-
-                url:value
-
-            });
-
-            currentIndex =
-                playlist.length - 1;
+            return;
 
         }
 
 
-        loadPlaylistVideo(
-            currentIndex
+        /*
+           vm.tiktok.com short URL
+           browser बाट redirect resolve
+           गर्न CORS limitation हुन सक्छ।
+        */
+
+        alert(
+            "यो TikTok short URL हो।\n\n" +
+            "Google Sheet को D column मा TikTok Video ID राख्नुहोस्, " +
+            "वा TikTok को full URL प्रयोग गर्नुहोस्।"
         );
-
-    }
-
-
-    input.value = "";
-
-}
-
-
-/* =========================================
-   SYNC PLAYLIST WITH GOOGLE SHEET
-========================================= */
-
-function syncPlaylistWithSheet(){
-
-    /*
-    Google Sheet order is the main playlist.
-    */
-
-    playlist =
-        sheetVideos.map(
-            video => ({
-                id:video.id,
-                title:video.title,
-                url:video.url
-            })
-        );
-
-}
-
-
-/* =========================================
-   LOAD PLAYLIST VIDEO
-========================================= */
-
-function loadPlaylistVideo(index){
-
-    if(
-        index < 0 ||
-        index >= playlist.length
-    ){
 
         return;
 
     }
 
 
-    currentIndex =
-        index;
+    /*
+       YOUTUBE
+    */
 
+    const id =
+        extractVideoID(input);
+
+
+    if(!id){
+
+        alert(
+            "Valid YouTube वा TikTok URL भेटिएन।"
+        );
+
+        return;
+
+    }
+
+
+    const foundIndex =
+        sheetVideos.findIndex(
+            v =>
+                v.type === "youtube" &&
+                v.id === id
+        );
+
+
+    if(foundIndex !== -1){
+
+        loadYouTubeVideo(
+            foundIndex
+        );
+
+        return;
+
+    }
+
+
+    mode = "youtube";
+
+    currentIndex = -1;
+
+    showYouTubePlayer();
+
+
+    if(playerReady){
+
+        player.loadVideoById(id);
+
+
+        addHistory({
+
+            id:id,
+
+            title:"Manual YouTube Video",
+
+            type:"YouTube",
+
+            url:input
+
+        });
+
+
+        setStatus(
+            "Playing manual YouTube video"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD SHEET YOUTUBE
+===================================================== */
+
+function loadYouTubeVideo(index){
+
+    if(!sheetVideos.length){
+
+        return;
+
+    }
+
+
+    if(index < 0){
+
+        index =
+            sheetVideos.length - 1;
+
+    }
+
+
+    if(index >= sheetVideos.length){
+
+        index = 0;
+
+    }
+
+
+    /*
+       If current item is TikTok,
+       use TikTok player
+    */
 
     const video =
-        playlist[index];
+        sheetVideos[index];
 
 
-    if(
-        !playerReady ||
-        !player ||
-        !player.loadVideoById
-    ){
+    if(video.type === "tiktok"){
 
-        /*
-        Wait until YouTube API is ready.
-        */
+        loadTikTok(
+            video.id,
+            video.title,
+            video.url,
+            index
+        );
 
-        pendingIndex =
-            index;
+        return;
+
+    }
+
+
+    currentIndex = index;
+
+    mode = "youtube";
+
+    showYouTubePlayer();
+
+
+    if(!playerReady){
+
+        setStatus(
+            "YouTube player loading..."
+        );
 
         return;
 
@@ -848,24 +1026,367 @@ function loadPlaylistVideo(index){
     );
 
 
-    addToHistory(video);
+    addHistory({
 
-    renderVideos();
+        id:video.id,
 
-    renderHistory();
+        title:video.title,
+
+        type:"Google Sheet YouTube",
+
+        url:video.url,
+
+        thumbnail:video.thumbnail || ""
+
+    });
+
+
+    setStatus(
+        "YouTube: " +
+        video.title
+    );
+
+
+    renderSheetVideos();
 
 }
 
 
-/* =========================================
+/* =====================================================
+   LOAD TIKTOK
+===================================================== */
+
+function loadTikTok(
+    id,
+    title,
+    url,
+    index
+){
+
+    if(!id){
+
+        setStatus(
+            "TikTok Video ID भेटिएन।"
+        );
+
+        return;
+
+    }
+
+
+    mode = "tiktok";
+
+
+    if(
+        typeof index === "number" &&
+        index >= 0
+    ){
+
+        currentIndex = index;
+
+    }
+    else{
+
+        currentIndex =
+            sheetVideos.findIndex(
+                v =>
+                    v.type === "tiktok" &&
+                    v.id === id
+            );
+
+    }
+
+
+    showTikTokPlayer();
+
+
+    const iframe =
+        document.getElementById(
+            "tiktokPlayer"
+        );
+
+
+    /*
+       TikTok Official Embed Player
+    */
+
+    iframe.src =
+        "https://www.tiktok.com/player/v1/" +
+        encodeURIComponent(id) +
+        "?controls=1" +
+        "&description=1" +
+        "&music_info=1";
+
+
+    addHistory({
+
+        id:id,
+
+        title:title ||
+            "TikTok Video",
+
+        type:"TikTok",
+
+        url:url || "",
+
+        thumbnail:
+            findThumbnail(
+                id,
+                "tiktok"
+            )
+
+    });
+
+
+    setStatus(
+        "TikTok: " +
+        (title || "Video")
+    );
+
+
+    renderSheetVideos();
+
+}
+
+
+/* =====================================================
+   FIND THUMBNAIL
+===================================================== */
+
+function findThumbnail(
+    id,
+    type
+){
+
+    const video =
+        sheetVideos.find(
+            v =>
+                v.id === id &&
+                v.type === type
+        );
+
+
+    if(video){
+
+        return video.thumbnail || "";
+
+    }
+
+
+    return "";
+
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextVideo(){
+
+    /*
+       LOCAL
+    */
+
+    if(mode === "local"){
+
+        if(!localVideos.length){
+
+            return;
+
+        }
+
+
+        localIndex++;
+
+
+        if(
+            localIndex >=
+            localVideos.length
+        ){
+
+            localIndex = 0;
+
+        }
+
+
+        playLocalVideo(
+            localIndex
+        );
+
+        return;
+
+    }
+
+
+    /*
+       SHEET
+    */
+
+    if(!sheetVideos.length){
+
+        setStatus(
+            "Google Sheet मा video छैन।"
+        );
+
+        return;
+
+    }
+
+
+    currentIndex++;
+
+
+    if(
+        currentIndex >=
+        sheetVideos.length
+    ){
+
+        currentIndex = 0;
+
+    }
+
+
+    const video =
+        sheetVideos[currentIndex];
+
+
+    if(video.type === "tiktok"){
+
+        loadTikTok(
+            video.id,
+            video.title,
+            video.url,
+            currentIndex
+        );
+
+    }
+    else{
+
+        loadYouTubeVideo(
+            currentIndex
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousVideo(){
+
+    if(mode === "local"){
+
+        if(!localVideos.length){
+
+            return;
+
+        }
+
+
+        localIndex--;
+
+
+        if(localIndex < 0){
+
+            localIndex =
+                localVideos.length - 1;
+
+        }
+
+
+        playLocalVideo(
+            localIndex
+        );
+
+        return;
+
+    }
+
+
+    if(!sheetVideos.length){
+
+        return;
+
+    }
+
+
+    currentIndex--;
+
+
+    if(currentIndex < 0){
+
+        currentIndex =
+            sheetVideos.length - 1;
+
+    }
+
+
+    const video =
+        sheetVideos[currentIndex];
+
+
+    if(video.type === "tiktok"){
+
+        loadTikTok(
+            video.id,
+            video.title,
+            video.url,
+            currentIndex
+        );
+
+    }
+    else{
+
+        loadYouTubeVideo(
+            currentIndex
+        );
+
+    }
+
+}
+
+
+/* =====================================================
    PLAY
-========================================= */
+===================================================== */
 
 function playVideo(){
 
+    if(mode === "local"){
+
+        const video =
+            document.getElementById(
+                "localPlayer"
+            );
+
+        video.play().catch(
+            function(){}
+        );
+
+        return;
+
+    }
+
+
+    if(mode === "tiktok"){
+
+        sendTikTokMessage(
+            "play",
+            null
+        );
+
+        return;
+
+    }
+
+
     if(
-        player &&
-        player.playVideo
+        playerReady &&
+        player
     ){
 
         player.playVideo();
@@ -875,15 +1396,40 @@ function playVideo(){
 }
 
 
-/* =========================================
+/* =====================================================
    PAUSE
-========================================= */
+===================================================== */
 
 function pauseVideo(){
 
+    if(mode === "local"){
+
+        document
+            .getElementById(
+                "localPlayer"
+            )
+            .pause();
+
+        return;
+
+    }
+
+
+    if(mode === "tiktok"){
+
+        sendTikTokMessage(
+            "pause",
+            null
+        );
+
+        return;
+
+    }
+
+
     if(
-        player &&
-        player.pauseVideo
+        playerReady &&
+        player
     ){
 
         player.pauseVideo();
@@ -893,33 +1439,183 @@ function pauseVideo(){
 }
 
 
-/* =========================================
-   STOP / CANCEL
-========================================= */
+/* =====================================================
+   STOP
+===================================================== */
 
 function stopVideo(){
 
+    if(mode === "local"){
+
+        const video =
+            document.getElementById(
+                "localPlayer"
+            );
+
+        video.pause();
+
+        video.currentTime = 0;
+
+        return;
+
+    }
+
+
+    if(mode === "tiktok"){
+
+        sendTikTokMessage(
+            "seekTo",
+            0
+        );
+
+        sendTikTokMessage(
+            "pause",
+            null
+        );
+
+        return;
+
+    }
+
+
     if(
-        player &&
-        player.stopVideo
+        playerReady &&
+        player
     ){
 
-        player.stopVideo();
+        player.pauseVideo();
+
+        player.seekTo(
+            0,
+            true
+        );
 
     }
 
 }
 
 
-/* =========================================
-   BACKWARD
-========================================= */
+/* =====================================================
+   SEEK
+===================================================== */
 
-function backward(){
+function seekVideo(seconds){
+
+    /*
+       LOCAL
+    */
+
+    if(mode === "local"){
+
+        const video =
+            document.getElementById(
+                "localPlayer"
+            );
+
+
+        let target =
+            video.currentTime +
+            seconds;
+
+
+        if(
+            Number.isFinite(
+                video.duration
+            )
+        ){
+
+            target =
+                Math.max(
+                    0,
+                    Math.min(
+                        video.duration,
+                        target
+                    )
+                );
+
+        }
+        else{
+
+            target =
+                Math.max(
+                    0,
+                    target
+                );
+
+        }
+
+
+        video.currentTime =
+            target;
+
+        return;
+
+    }
+
+
+    /*
+       TIKTOK
+    */
+
+    if(mode === "tiktok"){
+
+        /*
+           TikTok iframe बाट current
+           time direct read गर्न
+           requestCurrentTime पठाइन्छ।
+        */
+
+        const iframe =
+            document.getElementById(
+                "tiktokPlayer"
+            );
+
+
+        iframe.contentWindow.postMessage(
+            {
+                type:"getCurrentTime",
+                "x-tiktok-player":true
+            },
+            "*"
+        );
+
+
+        /*
+           last known time प्रयोग
+        */
+
+        let target =
+            (window.tiktokCurrentTime || 0)
+            + seconds;
+
+
+        target =
+            Math.max(
+                0,
+                target
+            );
+
+
+        sendTikTokMessage(
+            "seekTo",
+            target
+        );
+
+        window.tiktokCurrentTime =
+            target;
+
+        return;
+
+    }
+
+
+    /*
+       YOUTUBE
+    */
 
     if(
-        !player ||
-        !player.getCurrentTime
+        !playerReady ||
+        !player
     ){
 
         return;
@@ -931,26 +1627,50 @@ function backward(){
         player.getCurrentTime();
 
 
-    player.seekTo(
+    const duration =
+        player.getDuration();
+
+
+    let target =
+        current + seconds;
+
+
+    target =
         Math.max(
             0,
-            current - 10
-        ),
+            Math.min(
+                duration,
+                target
+            )
+        );
+
+
+    player.seekTo(
+        target,
         true
     );
 
 }
 
 
-/* =========================================
-   FORWARD
-========================================= */
+/* =====================================================
+   TIKTOK MESSAGE
+===================================================== */
 
-function forward(){
+function sendTikTokMessage(
+    type,
+    value
+){
+
+    const iframe =
+        document.getElementById(
+            "tiktokPlayer"
+        );
+
 
     if(
-        !player ||
-        !player.getCurrentTime
+        !iframe ||
+        !iframe.contentWindow
     ){
 
         return;
@@ -958,31 +1678,159 @@ function forward(){
     }
 
 
-    const current =
-        player.getCurrentTime();
+    iframe.contentWindow.postMessage(
+        {
+            type:type,
 
+            value:value,
 
-    player.seekTo(
-        current + 10,
-        true
+            "x-tiktok-player":true
+
+        },
+        "*"
     );
 
 }
 
 
-/* =========================================
+/* =====================================================
+   TIKTOK EVENTS
+===================================================== */
+
+window.addEventListener(
+    "message",
+    function(event){
+
+        const data =
+            event.data;
+
+
+        if(
+            !data ||
+            data["x-tiktok-player"] !== true
+        ){
+
+            return;
+
+        }
+
+
+        /*
+           TikTok current time
+        */
+
+        if(
+            data.type ===
+            "onCurrentTime"
+        ){
+
+            window.tiktokCurrentTime =
+                Number(data.value) || 0;
+
+        }
+
+
+        /*
+           State:
+           0 = ended
+           1 = playing
+           2 = paused
+           3 = buffering
+        */
+
+        if(
+            data.type ===
+            "onStateChange"
+        ){
+
+            const state =
+                Number(data.value);
+
+
+            if(state === 0){
+
+                setTimeout(
+                    nextVideo,
+                    300
+                );
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
    VOLUME
-========================================= */
+===================================================== */
 
 function changeVolume(value){
 
+    value =
+        Number(value);
+
+
+    document
+        .getElementById(
+            "volumeText"
+        )
+        .textContent =
+        value + "%";
+
+
+    if(mode === "local"){
+
+        document
+            .getElementById(
+                "localPlayer"
+            )
+            .volume =
+            value / 100;
+
+        return;
+
+    }
+
+
+    if(mode === "tiktok"){
+
+        /*
+           TikTok official player supports
+           mute / unMute rather than normal
+           volume slider.
+        */
+
+        if(value <= 0){
+
+            sendTikTokMessage(
+                "mute",
+                null
+            );
+
+        }
+        else{
+
+            sendTikTokMessage(
+                "unMute",
+                null
+            );
+
+        }
+
+        return;
+
+    }
+
+
     if(
-        player &&
-        player.setVolume
+        playerReady &&
+        player
     ){
 
         player.setVolume(
-            Number(value)
+            value
         );
 
     }
@@ -990,138 +1838,463 @@ function changeVolume(value){
 }
 
 
-/* =========================================
-   PREVIOUS VIDEO
-========================================= */
+/* =====================================================
+   SHOW YOUTUBE
+===================================================== */
 
-function previousVideo(){
+function showYouTubePlayer(){
 
-    /*
-    If Sheet exists, always use Sheet order.
-    */
-
-    if(sheetVideos.length > 0){
-
-        syncPlaylistWithSheet();
-
-    }
+    document
+        .getElementById(
+            "youtubePlayer"
+        )
+        .style.display =
+        "block";
 
 
-    if(
-        playlist.length === 0
-    ){
+    document
+        .getElementById(
+            "tiktokPlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "localPlayer"
+        )
+        .style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   SHOW TIKTOK
+===================================================== */
+
+function showTikTokPlayer(){
+
+    document
+        .getElementById(
+            "youtubePlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "tiktokPlayer"
+        )
+        .style.display =
+        "block";
+
+
+    document
+        .getElementById(
+            "localPlayer"
+        )
+        .style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   SHOW LOCAL
+===================================================== */
+
+function showLocalPlayer(){
+
+    document
+        .getElementById(
+            "youtubePlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "tiktokPlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "localPlayer"
+        )
+        .style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   LOCAL FILE SELECT
+===================================================== */
+
+document
+    .getElementById(
+        "localVideos"
+    )
+    .addEventListener(
+        "change",
+        function(event){
+
+            const files =
+                Array.from(
+                    event.target.files || []
+                );
+
+
+            if(!files.length){
+
+                return;
+
+            }
+
+
+            localVideos.forEach(
+                function(video){
+
+                    URL.revokeObjectURL(
+                        video.url
+                    );
+
+                }
+            );
+
+
+            localVideos =
+                files.map(
+                    function(file){
+
+                        return {
+
+                            file:file,
+
+                            url:
+                                URL.createObjectURL(
+                                    file
+                                ),
+
+                            title:
+                                file.name
+
+                        };
+
+                    }
+                );
+
+
+            localIndex = -1;
+
+
+            renderLocalVideos();
+
+
+            setStatus(
+                localVideos.length +
+                " वटा mobile video loaded"
+            );
+
+
+            playLocalVideo(0);
+
+        }
+    );
+
+
+/* =====================================================
+   PLAY LOCAL
+===================================================== */
+
+function playLocalVideo(index){
+
+    if(!localVideos.length){
 
         return;
 
     }
 
 
+    if(index < 0){
+
+        index =
+            localVideos.length - 1;
+
+    }
+
+
     if(
-        currentIndex <= 0
+        index >=
+        localVideos.length
     ){
 
-        currentIndex =
-            playlist.length - 1;
-
-    }
-
-    else{
-
-        currentIndex--;
+        index = 0;
 
     }
 
 
-    loadPlaylistVideo(
-        currentIndex
+    localIndex = index;
+
+    mode = "local";
+
+    showLocalPlayer();
+
+
+    const video =
+        document.getElementById(
+            "localPlayer"
+        );
+
+
+    const item =
+        localVideos[index];
+
+
+    video.src =
+        item.url;
+
+
+    video.volume =
+        Number(
+            document.getElementById(
+                "volume"
+            ).value
+        ) / 100;
+
+
+    video.load();
+
+
+    video.play().catch(
+        function(){
+
+            setStatus(
+                "Video loaded — Play थिच्नुहोस्"
+            );
+
+        }
     );
+
+
+    addHistory({
+
+        id:
+            "local-" + index,
+
+        title:
+            item.title,
+
+        type:
+            "Mobile"
+
+    });
+
+
+    setStatus(
+        "📱 " +
+        item.title
+    );
+
+
+    renderLocalVideos();
 
 }
 
 
-/* =========================================
-   NEXT VIDEO
-========================================= */
+/* =====================================================
+   LOCAL ENDED
+===================================================== */
 
-function nextVideo(){
+document
+    .getElementById(
+        "localPlayer"
+    )
+    .addEventListener(
+        "ended",
+        function(){
 
-    /*
-    IMPORTANT:
-    Google Sheet is the main queue.
-    */
+            if(
+                mode !== "local"
+            ){
 
-    if(sheetVideos.length > 0){
+                return;
 
-        syncPlaylistWithSheet();
-
-    }
+            }
 
 
-    if(
-        playlist.length === 0
-    ){
+            nextVideo();
+
+        }
+    );
+
+
+/* =====================================================
+   RENDER LOCAL
+===================================================== */
+
+function renderLocalVideos(){
+
+    const box =
+        document.getElementById(
+            "localList"
+        );
+
+
+    box.innerHTML = "";
+
+
+    if(!localVideos.length){
+
+        box.innerHTML =
+            '<div class="empty">' +
+            'No mobile videos selected.' +
+            '</div>';
 
         return;
 
     }
 
 
-    if(
-        currentIndex >=
-        playlist.length - 1
-    ){
+    localVideos.forEach(
+        function(video,index){
 
-        /*
-        When last Sheet video ends,
-        start again from first video.
-        */
-
-        currentIndex = 0;
-
-    }
-
-    else{
-
-        currentIndex++;
-
-    }
+            const item =
+                document.createElement(
+                    "div"
+                );
 
 
-    loadPlaylistVideo(
-        currentIndex
+            item.className =
+                "video-item";
+
+
+            item.innerHTML = `
+
+                <div class="thumb tiktok-thumb">
+                    📱
+                </div>
+
+                <div class="video-info">
+
+                    <div class="video-title">
+                        ${escapeHTML(
+                            video.title
+                        )}
+                    </div>
+
+                    <div class="video-type">
+                        Mobile Video ${index + 1}
+                    </div>
+
+                </div>
+
+            `;
+
+
+            item.onclick =
+                function(){
+
+                    playLocalVideo(
+                        index
+                    );
+
+                };
+
+
+            box.appendChild(item);
+
+        }
     );
 
 }
 
 
-/* =========================================
+/* =====================================================
+   CLEAR LOCAL
+===================================================== */
+
+function clearLocalVideos(){
+
+    const video =
+        document.getElementById(
+            "localPlayer"
+        );
+
+
+    video.pause();
+
+    video.removeAttribute(
+        "src"
+    );
+
+    video.load();
+
+
+    localVideos.forEach(
+        function(item){
+
+            URL.revokeObjectURL(
+                item.url
+            );
+
+        }
+    );
+
+
+    localVideos = [];
+
+    localIndex = -1;
+
+
+    renderLocalVideos();
+
+
+    mode = "youtube";
+
+    showYouTubePlayer();
+
+
+    setStatus(
+        "Mobile videos cleared"
+    );
+
+}
+
+
+/* =====================================================
    LOAD GOOGLE SHEET
-========================================= */
+===================================================== */
 
 async function loadSheetVideos(){
 
-    const status =
-        document.getElementById(
-            "status"
-        );
-
-
     try{
 
-        status.innerText =
-            "Loading videos...";
+        setStatus(
+            "Google Sheet loading..."
+        );
 
 
         const response =
             await fetch(
-                CSV_URL
+                SHEET_CSV +
+                "&t=" +
+                Date.now()
             );
 
 
         if(!response.ok){
 
             throw new Error(
-                "Unable to load CSV"
+                "HTTP " +
+                response.status
             );
 
         }
@@ -1135,239 +2308,399 @@ async function loadSheetVideos(){
             parseCSV(csv);
 
 
-        /*
-        VERY IMPORTANT:
-        Create playlist from ALL
-        Google Sheet rows in exact order.
-        */
-
-        syncPlaylistWithSheet();
+        renderSheetVideos();
 
 
-        status.innerText =
+        setStatus(
             sheetVideos.length +
-            " videos loaded";
-
-
-        renderVideos();
-
-        renderHistory();
+            " वटा Google Sheet videos loaded"
+        );
 
 
     }
-
     catch(error){
 
         console.error(error);
 
 
-        status.innerText =
-            "❌ Unable to load Google Sheet videos";
+        document
+            .getElementById(
+                "sheetList"
+            )
+            .innerHTML =
+
+            '<div class="empty">' +
+            'Google Sheet load failed.<br>' +
+            escapeHTML(
+                error.message
+            ) +
+            '</div>';
+
+
+        setStatus(
+            "Google Sheet load failed"
+        );
 
     }
 
 }
 
 
-/* =========================================
+/* =====================================================
    CSV PARSER
-========================================= */
+===================================================== */
 
 function parseCSV(csv){
 
-    const lines =
-        csv
-        .replace(/\r/g,"")
-        .split("\n");
+    const rows = [];
 
+    let row = [];
 
-    const videos = [];
-
-
-    /*
-    Skip header
-    */
-
-    for(
-        let i = 1;
-        i < lines.length;
-        i++
-    ){
-
-        const line =
-            lines[i].trim();
-
-
-        if(!line)
-            continue;
-
-
-        const columns =
-            splitCSV(line);
-
-
-        if(
-            columns.length < 2
-        ){
-
-            continue;
-
-        }
-
-
-        const title =
-            columns[0].trim();
-
-
-        const url =
-            columns[1].trim();
-
-
-        const id =
-            extractVideoID(url);
-
-
-        if(!id)
-            continue;
-
-
-        videos.push({
-
-            title:
-                title ||
-                "YouTube Video",
-
-            url:url,
-
-            id:id
-
-        });
-
-    }
-
-
-    return videos;
-
-}
-
-
-/* =========================================
-   SPLIT CSV
-========================================= */
-
-function splitCSV(line){
-
-    const result = [];
-
-    let current = "";
+    let value = "";
 
     let insideQuotes = false;
 
 
     for(
         let i = 0;
-        i < line.length;
+        i < csv.length;
         i++
     ){
 
         const char =
-            line[i];
+            csv[i];
+
+        const next =
+            csv[i + 1];
 
 
-        if(char === '"'){
+        if(
+            char === '"' &&
+            next === '"'
+        ){
 
-            /*
-            Handle escaped quotes
-            */
+            value += '"';
+
+            i++;
+
+        }
+
+        else if(
+            char === '"'
+        ){
+
+            insideQuotes =
+                !insideQuotes;
+
+        }
+
+        else if(
+            char === ',' &&
+            !insideQuotes
+        ){
+
+            row.push(
+                value.trim()
+            );
+
+            value = "";
+
+        }
+
+        else if(
+            (
+                char === '\n' ||
+                char === '\r'
+            ) &&
+            !insideQuotes
+        ){
 
             if(
-                insideQuotes &&
-                line[i + 1] === '"'
+                char === '\r' &&
+                next === '\n'
             ){
-
-                current += '"';
 
                 i++;
 
             }
 
-            else{
 
-                insideQuotes =
-                    !insideQuotes;
+            row.push(
+                value.trim()
+            );
+
+
+            if(
+                row.some(
+                    x => x !== ""
+                )
+            ){
+
+                rows.push(row);
 
             }
 
-        }
 
-        else if(
-            char === "," &&
-            !insideQuotes
-        ){
+            row = [];
 
-            result.push(
-                current
-            );
-
-            current = "";
+            value = "";
 
         }
 
         else{
 
-            current += char;
+            value += char;
 
         }
 
     }
 
 
-    result.push(
-        current
+    if(
+        value !== "" ||
+        row.length
+    ){
+
+        row.push(
+            value.trim()
+        );
+
+
+        if(
+            row.some(
+                x => x !== ""
+            )
+        ){
+
+            rows.push(row);
+
+        }
+
+    }
+
+
+    /*
+       Header skip
+    */
+
+    const data =
+        rows.slice(1);
+
+
+    const result = [];
+
+
+    data.forEach(
+        function(cols){
+
+            /*
+               A = Title
+               B = URL
+               C = Thumbnail
+               D = Video ID
+            */
+
+            const title =
+                (
+                    cols[0] ||
+                    "Untitled Video"
+                ).trim();
+
+
+            const url =
+                (
+                    cols[1] ||
+                    ""
+                ).trim();
+
+
+            const thumbnail =
+                extractImageURL(
+                    cols[2] || ""
+                );
+
+
+            const sheetID =
+                (
+                    cols[3] ||
+                    ""
+                ).trim();
+
+
+            /*
+               TIKTOK
+            */
+
+            if(
+                isTikTokURL(url)
+            ){
+
+                let id =
+                    extractTikTokID(
+                        url
+                    );
+
+
+                /*
+                   If URL is
+                   vm.tiktok.com,
+                   use D column ID
+                */
+
+                if(
+                    !id &&
+                    /^\d{15,25}$/.test(
+                        sheetID
+                    )
+                ){
+
+                    id = sheetID;
+
+                }
+
+
+                if(id){
+
+                    result.push({
+
+                        id:id,
+
+                        title:title,
+
+                        url:url,
+
+                        thumbnail:
+                            thumbnail,
+
+                        type:"tiktok"
+
+                    });
+
+                }
+
+
+                return;
+
+            }
+
+
+            /*
+               YOUTUBE
+            */
+
+            const youtubeID =
+                extractVideoID(
+                    url
+                );
+
+
+            if(youtubeID){
+
+                result.push({
+
+                    id:youtubeID,
+
+                    title:title,
+
+                    url:url,
+
+                    thumbnail:
+                        thumbnail,
+
+                    type:"youtube"
+
+                });
+
+            }
+
+        }
     );
 
 
-    return result.map(
-        value =>
-        value
-        .replace(/^"|"$/g,"")
-        .trim()
-    );
+    return result;
 
 }
 
 
-/* =========================================
-   RENDER VIDEO LIST
-========================================= */
+/* =====================================================
+   RENDER SHEET
+===================================================== */
 
-function renderVideos(
-    videos = sheetVideos
-){
+function renderSheetVideos(){
 
-    const container =
+    const box =
         document.getElementById(
-            "videoList"
+            "sheetList"
         );
 
 
-    container.innerHTML = "";
+    const search =
+        document
+            .getElementById(
+                "search"
+            )
+            .value
+            .toLowerCase()
+            .trim();
 
 
-    if(
-        videos.length === 0
-    ){
+    box.innerHTML = "";
 
-        container.innerHTML =
-            "<p style='color:#888'>No videos found.</p>";
+
+    const filtered =
+        sheetVideos.filter(
+            function(video){
+
+                return (
+
+                    video.title
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                    ||
+
+                    video.id
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                    ||
+
+                    video.url
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                );
+
+            }
+        );
+
+
+    if(!filtered.length){
+
+        box.innerHTML =
+            '<div class="empty">' +
+            'Video भेटिएन।' +
+            '</div>';
 
         return;
 
     }
 
 
-    videos.forEach(
-        video => {
+    filtered.forEach(
+        function(video){
+
+            const index =
+                sheetVideos.indexOf(
+                    video
+                );
+
 
             const item =
                 document.createElement(
@@ -1379,153 +2712,126 @@ function renderVideos(
                 "video-item";
 
 
+            let thumbnailHTML = "";
+
+
             /*
-            Active video
+               YOUTUBE THUMBNAIL
             */
 
             if(
-                currentIndex >= 0 &&
-                playlist[currentIndex] &&
-                playlist[currentIndex].id ===
-                video.id
+                video.type ===
+                "youtube"
             ){
 
-                item.classList.add(
-                    "active"
-                );
+                thumbnailHTML = `
+
+                    <img
+                        class="thumb"
+                        src="https://img.youtube.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg"
+                        loading="lazy"
+                        onerror="this.style.display='none'"
+                    >
+
+                `;
+
+            }
+
+            /*
+               TIKTOK THUMBNAIL
+            */
+
+            else{
+
+                if(video.thumbnail){
+
+                    thumbnailHTML = `
+
+                        <img
+                            class="thumb"
+                            src="${escapeHTML(
+                                video.thumbnail
+                            )}"
+                            loading="lazy"
+                            onerror="this.outerHTML='<div class=&quot;thumb tiktok-thumb&quot;>♪</div>'"
+                        >
+
+                    `;
+
+                }
+                else{
+
+                    thumbnailHTML = `
+
+                        <div class="thumb tiktok-thumb">
+                            ♪
+                        </div>
+
+                    `;
+
+                }
 
             }
 
 
-            /*
-            Thumbnail
-            */
+            item.innerHTML = `
 
-            const thumbnail =
-                document.createElement(
-                    "img"
-                );
+                ${thumbnailHTML}
 
+                <div class="video-info">
 
-            thumbnail.className =
-                "video-thumb";
+                    <div class="video-title">
+                        ${escapeHTML(
+                            video.title
+                        )}
+                    </div>
 
+                    <div class="video-type">
 
-            thumbnail.src =
-                "https://img.youtube.com/vi/" +
-                video.id +
-                "/hqdefault.jpg";
+                        ${
+                            video.type ===
+                            "tiktok"
+                            ? "TikTok"
+                            : "YouTube"
+                        }
 
+                        • Sheet #${index + 1}
 
-            thumbnail.alt =
-                video.title;
+                    </div>
 
+                </div>
 
-            /*
-            Info
-            */
-
-            const info =
-                document.createElement(
-                    "div"
-                );
+            `;
 
 
-            info.className =
-                "video-info";
+            item.onclick =
+                function(){
 
+                    if(
+                        video.type ===
+                        "tiktok"
+                    ){
 
-            const title =
-                document.createElement(
-                    "div"
-                );
+                        loadTikTok(
+                            video.id,
+                            video.title,
+                            video.url,
+                            index
+                        );
 
+                    }
+                    else{
 
-            title.className =
-                "video-title";
+                        loadYouTubeVideo(
+                            index
+                        );
 
-
-            title.innerText =
-                video.title;
-
-
-            const id =
-                document.createElement(
-                    "div"
-                );
-
-
-            id.className =
-                "video-id";
-
-
-            id.innerText =
-                video.id;
-
-
-            info.appendChild(
-                title
-            );
-
-
-            info.appendChild(
-                id
-            );
-
-
-            /*
-            Play button
-            */
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.className =
-                "play-btn";
-
-
-            button.innerText =
-                "▶ Play";
-
-
-            button.onclick =
-                event => {
-
-                    event.stopPropagation();
-
-                    playSheetVideo(
-                        video
-                    );
+                    }
 
                 };
 
 
-            item.onclick =
-                () =>
-                playSheetVideo(
-                    video
-                );
-
-
-            item.appendChild(
-                thumbnail
-            );
-
-
-            item.appendChild(
-                info
-            );
-
-
-            item.appendChild(
-                button
-            );
-
-
-            container.appendChild(
+            box.appendChild(
                 item
             );
 
@@ -1535,137 +2841,47 @@ function renderVideos(
 }
 
 
-/* =========================================
-   PLAY GOOGLE SHEET VIDEO
-========================================= */
-
-function playSheetVideo(video){
-
-    /*
-    Always rebuild playlist from
-    Google Sheet to preserve exact order.
-    */
-
-    syncPlaylistWithSheet();
-
-
-    const index =
-        sheetVideos.findIndex(
-            item =>
-            item.id === video.id
-        );
-
-
-    if(index === -1){
-
-        return;
-
-    }
-
-
-    currentIndex =
-        index;
-
-
-    loadPlaylistVideo(
-        currentIndex
-    );
-
-}
-
-
-/* =========================================
+/* =====================================================
    SEARCH
-========================================= */
+===================================================== */
 
 function searchVideos(){
 
-    const query =
-        document
-        .getElementById(
-            "videoSearch"
-        )
-        .value
-        .toLowerCase()
-        .trim();
-
-
-    if(!query){
-
-        renderVideos(
-            sheetVideos
-        );
-
-        return;
-
-    }
-
-
-    const filtered =
-        sheetVideos.filter(
-            video =>
-
-            video.title
-            .toLowerCase()
-            .includes(query)
-
-            ||
-
-            video.id
-            .toLowerCase()
-            .includes(query)
-
-            ||
-
-            video.url
-            .toLowerCase()
-            .includes(query)
-
-        );
-
-
-    renderVideos(
-        filtered
-    );
+    renderSheetVideos();
 
 }
 
 
-/* =========================================
+/* =====================================================
    HISTORY
-========================================= */
+===================================================== */
 
-function addToHistory(video){
-
-    /*
-    Don't duplicate the same video
-    repeatedly.
-    */
+function addHistory(video){
 
     historyVideos =
         historyVideos.filter(
-            item =>
-            item.id !== video.id
+            function(item){
+
+                return !(
+                    item.id ===
+                    video.id &&
+
+                    item.type ===
+                    video.type
+                );
+
+            }
         );
 
 
-    historyVideos.unshift({
+    historyVideos.unshift(
+        video
+    );
 
-        id:video.id,
-
-        title:video.title,
-
-        url:video.url
-
-    });
-
-
-    /*
-    Keep last 20
-    */
 
     if(
-        historyVideos.length > 20
+        historyVideos.length >
+        20
     ){
 
         historyVideos =
@@ -1682,27 +2898,27 @@ function addToHistory(video){
 }
 
 
-/* =========================================
+/* =====================================================
    RENDER HISTORY
-========================================= */
+===================================================== */
 
 function renderHistory(){
 
-    const container =
+    const box =
         document.getElementById(
             "historyList"
         );
 
 
-    container.innerHTML = "";
+    box.innerHTML = "";
 
 
-    if(
-        historyVideos.length === 0
-    ){
+    if(!historyVideos.length){
 
-        container.innerHTML =
-            "<p style='color:#888'>No videos played yet.</p>";
+        box.innerHTML =
+            '<div class="empty">' +
+            'No history yet.' +
+            '</div>';
 
         return;
 
@@ -1710,7 +2926,7 @@ function renderHistory(){
 
 
     historyVideos.forEach(
-        video => {
+        function(video){
 
             const item =
                 document.createElement(
@@ -1719,84 +2935,192 @@ function renderHistory(){
 
 
             item.className =
-                "history-item";
+                "video-item";
 
 
-            const text =
-                document.createElement(
-                    "span"
-                );
+            /*
+               TIKTOK
+            */
+
+            if(
+                video.type ===
+                "TikTok"
+            ){
+
+                let thumb =
+                    video.thumbnail;
 
 
-            text.innerText =
-                video.title;
+                let thumbHTML =
+                    thumb
+                    ?
+
+                    `<img
+                        class="thumb"
+                        src="${escapeHTML(
+                            thumb
+                        )}"
+                        onerror="this.outerHTML='<div class=&quot;thumb tiktok-thumb&quot;>♪</div>'"
+                    >`
+
+                    :
+
+                    `<div class="thumb tiktok-thumb">
+                        ♪
+                    </div>`;
 
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+                item.innerHTML = `
+
+                    ${thumbHTML}
+
+                    <div class="video-info">
+
+                        <div class="video-title">
+                            ${escapeHTML(
+                                video.title
+                            )}
+                        </div>
+
+                        <div class="video-type">
+                            TikTok
+                        </div>
+
+                    </div>
+
+                `;
 
 
-            button.innerText =
-                "▶ Play";
+                item.onclick =
+                    function(){
 
-
-            button.onclick =
-                () => {
-
-                    /*
-                    If history video is in
-                    Google Sheet, use Sheet order.
-                    */
-
-                    const sheetIndex =
-                        sheetVideos.findIndex(
-                            v =>
-                            v.id === video.id
+                        loadTikTok(
+                            video.id,
+                            video.title,
+                            video.url
                         );
 
+                    };
 
-                    if(
-                        sheetIndex !== -1
-                    ){
-
-                        syncPlaylistWithSheet();
-
-                        loadPlaylistVideo(
-                            sheetIndex
-                        );
-
-                    }
-
-                    else{
-
-                        /*
-                        Manual video
-                        */
-
-                        playlist.push(
-                            video
-                        );
-
-                        loadPlaylistVideo(
-                            playlist.length - 1
-                        );
-
-                    }
-
-                };
+            }
 
 
-            item.appendChild(
-                text
-            );
+            /*
+               YOUTUBE
+            */
 
-            item.appendChild(
-                button
-            );
+            else if(
+                video.type ===
+                "YouTube" ||
+                video.type ===
+                "Google Sheet YouTube"
+            ){
 
-            container.appendChild(
+                item.innerHTML = `
+
+                    <img
+                        class="thumb"
+                        src="https://img.youtube.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg"
+                    >
+
+                    <div class="video-info">
+
+                        <div class="video-title">
+                            ${escapeHTML(
+                                video.title
+                            )}
+                        </div>
+
+                        <div class="video-type">
+                            YouTube
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                item.onclick =
+                    function(){
+
+                        const index =
+                            sheetVideos.findIndex(
+                                function(v){
+
+                                    return (
+                                        v.id ===
+                                        video.id &&
+
+                                        v.type ===
+                                        "youtube"
+                                    );
+
+                                }
+                            );
+
+
+                        if(index !== -1){
+
+                            loadYouTubeVideo(
+                                index
+                            );
+
+                        }
+                        else{
+
+                            mode =
+                                "youtube";
+
+                            showYouTubePlayer();
+
+
+                            if(playerReady){
+
+                                player.loadVideoById(
+                                    video.id
+                                );
+
+                            }
+
+                        }
+
+                    };
+
+            }
+
+
+            /*
+               MOBILE
+            */
+
+            else{
+
+                item.innerHTML = `
+
+                    <div class="thumb tiktok-thumb">
+                        📱
+                    </div>
+
+                    <div class="video-info">
+
+                        <div class="video-title">
+                            ${escapeHTML(
+                                video.title
+                            )}
+                        </div>
+
+                        <div class="video-type">
+                            Mobile Video
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            box.appendChild(
                 item
             );
 
@@ -1806,33 +3130,45 @@ function renderHistory(){
 }
 
 
-/* =========================================
-   ENTER KEY
-========================================= */
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
-document
-.getElementById(
-    "youtubeUrl"
-)
-.addEventListener(
-    "keydown",
-    event => {
+function escapeHTML(text){
 
-        if(
-            event.key === "Enter"
-        ){
+    return String(text)
 
-            loadVideo();
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        }
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-    }
-);
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 
 
-/* =========================================
+/* =====================================================
    START
-========================================= */
+===================================================== */
 
 loadSheetVideos();
 
