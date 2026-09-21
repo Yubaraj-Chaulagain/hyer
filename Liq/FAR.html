@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Attendance Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f6f9;
+}
+
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: #e0e0e0;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px 5px 0 0;
+  transition: background 0.3s;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.tab-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* The critical utility rule to ensure isolated tabs */
+.hidden {
+  display: none !important;
+}
+
+.photo-upload-container {
+  margin: 15px 0;
+}
+
+.preview-box img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  margin-top: 10px;
+}
+
+</style>
+</head>
+<body>
+
+  <!-- Navigation Tabs -->
+  <nav class="tab-navigation">
+    <button class="tab-btn active" onclick="switchTab('live-attendance')">🎥 Live Attendance</button>
+    <button class="tab-btn" onclick="switchTab('attendance-log')">📊 Attendance</button>
+    <button class="tab-btn" onclick="switchTab('register-employee')">👤 Register Employee</button>
+    <button class="tab-btn" onclick="switchTab('registered-employees')">👥 Registered Employees</button>
+    <button class="tab-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+  </nav>
+
+  <!-- Main Content Sections -->
+  <main class="tab-container">
+    
+    <!-- 1. Live Attendance Tab -->
+    <section id="live-attendance" class="tab-content">
+      <h2>🎥 Live Attendance</h2>
+      <div class="controls">
+        <button id="start-btn">▶ Start</button>
+        <button id="stop-btn">⏹ Stop</button>
+        <button id="scan-btn">🔍 Scan</button>
+      </div>
+      <div id="video-container">Loading face recognition...</div>
+    </section>
+
+    <!-- 2. Attendance Log Tab -->
+    <section id="attendance-log" class="tab-content hidden">
+      <h2>📊 Attendance Logs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th><th>Time</th><th>ID</th><th>Name</th><th>Status</th><th>Photo</th>
+          </tr>
+        </thead>
+        <tbody id="attendance-table-body">
+          <!-- Dynamic logs go here -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. Register Employee Tab -->
+    <section id="register-employee" class="tab-content hidden">
+      <h2>👤 Register Employee</h2>
+      <form id="registration-form" onsubmit="handleRegistration(event)">
+        <input type="text" id="emp-id" placeholder="Employee ID" required>
+        <input type="text" id="emp-name" placeholder="Full Name" required>
+        
+        <!-- Photo Selection System -->
+        <div class="photo-upload-container">
+          <input type="file" id="emp-photo-input" accept="image/*" onchange="previewPhoto(event)" required>
+          <div class="preview-box">
+            <img id="photo-preview" src="placeholder-profile.png" alt="Preview">
+          </div>
+        </div>
+        
+        <button type="submit">➕ Register & Upload</button>
+      </form>
+    </section>
+
+    <!-- 4. Registered Employees Tab -->
+    <section id="registered-employees" class="tab-content hidden">
+      <h2>👥 Registered Employees</h2>
+      <table id="employees-table">
+        <!-- Table headers & data -->
+      </table>
+    </section>
+
+    <!-- 5. Settings Tab -->
+    <section id="settings" class="tab-content hidden">
+      <h2>⚙️ Settings</h2>
+      <label>Office Start Time: <input type="time" value="08:00"></label>
+      <label>Late Threshold: <input type="time" value="09:00"></label>
+      <label>Google Sheets Webhook URL: <input type="text" id="sheets-url" placeholder="https://google.com..."></label>
+      <button onclick="saveSettings()">💾 Save Settings</button>
+    </section>
+
+  </main>
+
+  <script>
+// 1. Tab Switcher Logic
+function switchTab(tabId) {
+  // Hide all sections
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => content.classList.add('hidden'));
+
+  // Remove 'active' status from all buttons
+  const buttons = document.querySelectorAll('.tab-btn');
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  // Show selected section
+  document.getElementById(tabId).classList.remove('hidden');
+
+  // Highlight active button dynamically based on layout structure
+  event.currentTarget.classList.add('active');
+}
+
+// 2. Photo Upload Preview
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('photo-preview').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// 3. Register Employee with ImgBB and Google Sheets Integration
+async function handleRegistration(event) {
+  event.preventDefault();
+  
+  const id = document.getElementById('emp-id').value;
+  const name = document.getElementById('emp-name').value;
+  const photoFile = document.getElementById('emp-photo-input').files[0];
+  const googleSheetsUrl = document.getElementById('sheets-url').value;
+
+  if (!googleSheetsUrl) {
+    alert("Please configure your Google Sheets URL in the Settings tab first!");
+    return;
+  }
+
+  // A. Upload photo file straight to ImgBB
+  const apiKey = '52ae8561eb90c44178b46a0c95d6664c'; // Replace with your actual ImgBB API key
+  const formData = new FormData();
+  formData.append('image', photoFile);
+
+  try {
+    const imgbbResponse = await fetch(`https://imgbb.com{apiKey}`, {
+      method: 'POST',
+      body: formData
+    });
+    const imgbbData = await imgbbResponse.json();
+    const uploadedPhotoUrl = imgbbData.data.url;
+
+    // B. Package data packet for Google Sheets deployment
+    const payload = {
+      action: "register",
+      id: id,
+      name: name,
+      photoUrl: uploadedPhotoUrl,
+      timestamp: new Date().toISOString()
+    };
+
+    // C. Fire payload over to Google Sheets Web App
+    const sheetResponse = await fetch(googleSheetsUrl, {
+      method: 'POST',
+      mode: 'no-cors', // standard cross-origin bypass layout for Google App Script web apps
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    alert(`Successfully registered ${name}! Data saved to Google Sheets.`);
+    document.getElementById('registration-form').reset();
+    document.getElementById('photo-preview').src = 'placeholder-profile.png';
+
+  } catch (error) {
+    console.error("Error during setup operations:", error);
+    alert("Registration process failed. Review console logs.");
+  }
+}
+
+// 4. Attendance logging helper function to invoke when face matches
+async function logAttendanceToSheets(employeeId, employeeName, status) {
+  const googleSheetsUrl = document.getElementById('sheets-url').value;
+  if (!googleSheetsUrl) return;
+
+  const payload = {
+    action: "attendance",
+    id: employeeId,
+    name: employeeName,
+    status: status,
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString()
+  };
+
+  await fetch(googleSheetsUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify(payload)
+  });
+}
+
+
+</script>
+</body>
+</html>
