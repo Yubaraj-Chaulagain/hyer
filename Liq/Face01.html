@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FAR Face Attendance Pro - 20 Gate</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#222}
+header{background:#0d6efd;color:#fff;padding:15px 18px}header h1{margin:0;font-size:21px}
+nav{display:flex;gap:7px;overflow:auto;background:#fff;padding:10px;border-bottom:1px solid #ddd}
+.tab-btn{border:0;padding:10px 14px;border-radius:7px;cursor:pointer;background:#e9ecef;white-space:nowrap}
+.tab-btn.active{background:#0d6efd;color:#fff}main{max-width:1400px;margin:auto;padding:12px}
+.tab{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 8px #0001}.hidden{display:none!important}
+button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;background:#0d6efd;color:white;margin:3px}
+button.danger{background:#dc3545}button.secondary{background:#6c757d}button.success{background:#198754}
+input,select{padding:10px;border:1px solid #ccc;border-radius:7px;width:100%;margin:5px 0 10px}
+label{font-weight:bold;font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.camera{max-width:760px;margin:auto;background:#111;border-radius:12px;overflow:hidden}
+video{width:100%;display:block;background:#000;min-height:280px;object-fit:cover}canvas{display:none}
+.status{text-align:center;padding:12px;margin:10px 0;border-radius:8px;background:#eef3f8}
+table{width:100%;border-collapse:collapse;margin-top:15px;min-width:850px}.wrap{overflow:auto}
+th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f1f3f5}
+.photo{width:45px;height:45px;border-radius:50%;object-fit:cover}.card{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:12px}
+.small{font-size:12px;color:#666}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{padding:15px;background:#f8f9fa;border-radius:10px;text-align:center}.stat b{font-size:24px;display:block}
+.gate{font-size:20px;font-weight:bold;text-align:center;margin:5px}.ok{color:#198754;font-weight:bold}.bad{color:#dc3545;font-weight:bold}
+@media(max-width:600px){main{padding:8px}.tab{padding:10px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+</head>
+<body>
+<header><h1>🎥 FAR Face Attendance Pro — 20 Gate System</h1></header>
+<nav>
+<button class="tab-btn active" onclick="switchTab('entry',this)">🟢 ENTRY</button>
+<button class="tab-btn" onclick="switchTab('out',this)">🔴 OUT</button>
+<button class="tab-btn" onclick="switchTab('today',this)">📊 TODAY ATTENDANCE</button>
+<button class="tab-btn" onclick="switchTab('employees',this)">👥 EMPLOYEES</button>
+<button class="tab-btn" onclick="switchTab('register',this)">👤 REGISTER</button>
+<button class="tab-btn" onclick="switchTab('settings',this)">⚙️ SETTINGS</button>
+</nav>
+<main>
+<section id="entry" class="tab">
+<h2>🟢 ENTRY CAMERA</h2>
+<div class="gate">Gate: <span id="entryGateLabel">Gate 1</span></div>
+<div><label>Select Gate</label><select id="entryGate"></select></div>
+<div class="camera"><video id="entryVideo" autoplay muted playsinline></video></div>
+<button onclick="startCamera('entry')">▶ Start Entry Camera</button>
+<button class="success" onclick="manualScan('entry')">🔍 Scan Now</button>
+<button class="secondary" onclick="stopCamera('entry')">⏹ Stop</button>
+<div id="entryStatus" class="status">AI loading पछि camera start गर्नुहोस्.</div>
+<div class="stats"><div class="stat"><b id="entryCount">0</b>Entry Today</div><div class="stat"><b id="entryMatched">0</b>Matched</div><div class="stat"><b id="entryFailed">0</b>Failed</div><div class="stat"><b id="entryDevice">Gate 1</b>Device</div></div>
+<div class="card"><b>Automatic mode:</b><div class="small">Camera सुरु गरेपछि face आफैं scan हुन्छ। हरेक पटक Scan Face थिचिरहनु पर्दैन।</div></div>
+</section>
+
+<section id="out" class="tab hidden">
+<h2>🔴 OUT CAMERA</h2>
+<div class="gate">Gate: <span id="outGateLabel">Gate 1</span></div>
+<div><label>Select Gate</label><select id="outGate"></select></div>
+<div class="camera"><video id="outVideo" autoplay muted playsinline></video></div>
+<button onclick="startCamera('out')">▶ Start OUT Camera</button>
+<button class="success" onclick="manualScan('out')">🔍 Scan Now</button>
+<button class="secondary" onclick="stopCamera('out')">⏹ Stop</button>
+<div id="outStatus" class="status">AI loading पछि camera start गर्नुहोस्.</div>
+<div class="stats"><div class="stat"><b id="outCount">0</b>Out Today</div><div class="stat"><b id="outMatched">0</b>Matched</div><div class="stat"><b id="outFailed">0</b>Failed</div><div class="stat"><b id="outDevice">Gate 1</b>Device</div></div>
+<div class="card"><b>Automatic mode:</b><div class="small">OUT camera पनि automatic face recognition मा चल्छ। OUT गर्न पहिले ENTRY हुनुपर्छ।</div></div>
+</section>
+
+<section id="today" class="tab hidden">
+<h2>📊 TODAY ATTENDANCE — GOOGLE SHEET</h2>
+<div class="grid"><div><label>Date</label><input type="date" id="todayDate" onchange="refreshTodayFromSheets()"></div><div><label>Search</label><input id="todaySearch" placeholder="ID or name" oninput="renderToday()"></div></div><button class="success" onclick="refreshTodayFromSheets()">☁️ Load Today Attendance from Google Sheet</button>
+<div class="stats"><div class="stat"><b id="todayEmployees">0</b>Employees</div><div class="stat"><b id="todayEntries">0</b>Entries</div><div class="stat"><b id="todayOuts">0</b>OUT</div><div class="stat"><b id="todayInside">0</b>Inside</div></div>
+<div class="wrap"><table><thead><tr><th>Date</th><th>ID</th><th>Name</th><th>Trade</th><th>Company</th><th>Entry</th><th>Entry Gate</th><th>OUT</th><th>OUT Gate</th><th>Match</th><th>Photo</th></tr></thead><tbody id="todayBody"></tbody></table></div>
+</section>
+
+<section id="employees" class="tab hidden">
+<h2>👥 REGISTERED EMPLOYEES</h2>
+<button onclick="refreshEmployeesFromSheets()">🔄 Refresh Google Sheet</button>
+<input id="employeeSearch" placeholder="Search ID, name, trade, company..." oninput="renderEmployees()">
+<div class="wrap"><table><thead><tr><th>Photo</th><th>ID</th><th>Name</th><th>Trade</th><th>Company</th><th>Department</th><th>Nationality</th><th>Phone</th><th>Site</th><th>Joining</th><th>Action</th></tr></thead><tbody id="employeeBody"></tbody></table></div>
+</section>
+
+<section id="register" class="tab hidden">
+<h2>👤 REGISTER EMPLOYEE</h2>
+<form id="registrationForm"><div class="grid">
+<div><label>Employee ID</label><input id="empId" required></div><div><label>Full Name</label><input id="empName" required></div>
+<div><label>Trade</label><input id="empTrade"></div><div><label>Company</label><input id="empCompany"></div>
+<div><label>Department</label><input id="empDepartment"></div><div><label>Nationality</label><input id="empNationality"></div>
+<div><label>Phone / WhatsApp</label><input id="empPhone"></div><div><label>Site / Project</label><input id="empSite"></div>
+<div><label>Joining Date</label><input type="date" id="empJoining"></div></div>
+<label>Employee Photo</label><input type="file" id="empPhoto" accept="image/*" required>
+<img id="photoPreview" class="photo" style="width:100px;height:100px;display:block;margin:8px 0">
+<button type="submit">➕ Register Employee</button><button type="button" class="secondary" onclick="resetForm()">Reset</button>
+</form>
+</section>
+
+<section id="settings" class="tab hidden">
+<h2>⚙️ SETTINGS</h2>
+<div class="grid">
+<div><label>Gate Number</label><select id="deviceGate"></select></div>
+<div><label>Gate Type</label><select id="deviceType"><option value="ENTRY">ENTRY</option><option value="OUT">OUT</option></select></div>
+<div><label>Late Threshold</label><input type="time" id="lateThreshold"></div>
+</div>
+<button onclick="saveSettings()">💾 Save Device Settings</button>
+<button class="secondary" onclick="refreshEmployeesFromSheets()">🔄 Refresh Employees</button>
+<button class="secondary" onclick="exportData()">⬇ Backup</button>
+<div class="card"><b>20-Gate deployment:</b><div class="small">उही HTML 20 devices मा राख्न सकिन्छ। Attendance record अब local/offline storage मा राखिँदैन। ENTRY/OUT scan सीधै Google Sheet मा submit हुन्छ र TODAY ATTENDANCE Google Sheet बाट मात्र load हुन्छ।</div></div>
+<input type="file" id="importFile" accept=".json" onchange="importData(event)">
+</section>
+</main>
+
+<script>
+/* SAME EXISTING APPS SCRIPT URL + IMGBB KEY */
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycby1GC28DYk9FUozXQIhDGDFU3b7hCJlPTJ-EnrBzTUY0R90FXTFMpi_SZRk2fw6UXjt/exec";
+const IMGBB_API_KEY="52ae8561eb90c44178b46a0c95d6664c";
+
+const EMP_KEY="faceAttendanceEmployees_v1",SET_KEY="faceAttendanceSettings_v1";
+let employees=JSON.parse(localStorage.getItem(EMP_KEY)||"[]");
+// Attendance is stored ONLY in Google Sheets. No local/offline attendance log is used.
+let sheetAttendance=[];
+let sheetAttendanceLoading=false;
+let settings=Object.assign({lateThreshold:"09:00",gate:1,type:"ENTRY"},JSON.parse(localStorage.getItem(SET_KEY)||"{}"));
+let streams={entry:null,out:null},scanTimers={entry:null,out:null},scanning={entry:false,out:false},busy={entry:false,out:false};
+let faceModelsLoaded=false,faceModelsLoading=null;
+const FACE_MODEL_URL="https://justadudewhohacks.github.io/face-api.js/models";
+const FACE_MATCH_THRESHOLD=0.52;
+const $=id=>document.getElementById(id);
+
+function saveAll(){localStorage.setItem(EMP_KEY,JSON.stringify(employees));}
+function switchTab(id,btn){
+ document.querySelectorAll(".tab").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");
+ document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");
+ if(id==="today")renderToday();
+ if(id==="employees")renderEmployees();
+}
+function gateOptions(sel){$(sel).innerHTML=Array.from({length:20},(_,i)=>`<option value="${i+1}">Gate ${i+1}</option>`).join("");}
+["entryGate","outGate","deviceGate"].forEach(gateOptions);
+$("entryGate").value=settings.gate;$("outGate").value=settings.gate;$("deviceGate").value=settings.gate;$("deviceType").value=settings.type;
+$("lateThreshold").value=settings.lateThreshold;
+$("entryGate").onchange=()=>setGate("entry");$("outGate").onchange=()=>setGate("out");
+function setGate(mode){
+ const n=$(mode+"Gate").value;$(mode+"GateLabel").textContent="Gate "+n;$(mode+"Device").textContent="Gate "+n;
+ settings.gate=Number(n);localStorage.setItem(SET_KEY,JSON.stringify(settings));
+}
+function nowParts(){const d=new Date();return{date:d.toISOString().slice(0,10),time:d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})};}
+function statusFor(t){return t<=settings.lateThreshold?"Present":"Late";}
+
+/* ---------------- FACE AI: FIXED LOADING ---------------- */
+async function loadFaceModels(){
+ if(faceModelsLoaded)return true;
+ if(faceModelsLoading)return faceModelsLoading;
+ faceModelsLoading=(async()=>{
+   try{
+     $("entryStatus").textContent="⏳ Loading Face AI models...";
+     $("outStatus").textContent="⏳ Loading Face AI models...";
+     await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL);
+     await faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL);
+     await faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL);
+     faceModelsLoaded=true;
+     $("entryStatus").textContent="✅ Face AI ready.";
+     $("outStatus").textContent="✅ Face AI ready.";
+     return true;
+   }catch(e){
+     console.error(e);
+     faceModelsLoading=null;
+     $("entryStatus").textContent="❌ Face AI model failed: "+e.message;
+     $("outStatus").textContent="❌ Face AI model failed: "+e.message;
+     throw e;
+   }
+ })();
+ return faceModelsLoading;
+}
+
+async function waitVideoReady(video){
+ if(video.readyState>=2 && video.videoWidth>0)return;
+ await new Promise((resolve,reject)=>{
+   const timer=setTimeout(()=>reject(new Error("Camera video ready भएन.")),10000);
+   const ok=()=>{clearTimeout(timer);video.removeEventListener("loadeddata",ok);resolve();};
+   video.addEventListener("loadeddata",ok,{once:true});
+ });
+}
+
+async function startCamera(mode){
+ try{
+   stopCamera(mode);
+   $(mode+"Status").textContent="⏳ Face AI loading...";
+   await loadFaceModels();
+   $(mode+"Status").textContent="📷 Camera permission मागिँदैछ...";
+   const video=$(mode+"Video");
+   streams[mode]=await navigator.mediaDevices.getUserMedia({
+     video:{facingMode:{ideal:"user"},width:{ideal:640},height:{ideal:480}},
+     audio:false
+   });
+   video.srcObject=streams[mode];
+   await video.play();
+   await waitVideoReady(video);
+   scanning[mode]=true;
+   $(mode+"Status").textContent="🤖 Camera ready — automatic face scan चलिरहेको छ...";
+   autoScan(mode);
+ }catch(e){
+   console.error(e);
+   scanning[mode]=false;
+   $(mode+"Status").textContent="❌ "+e.message;
+ }
+}
+
+function stopCamera(mode){
+ scanning[mode]=false;
+ if(scanTimers[mode]){clearTimeout(scanTimers[mode]);scanTimers[mode]=null;}
+ if(streams[mode])streams[mode].getTracks().forEach(t=>t.stop());
+ streams[mode]=null;
+ const v=$(mode+"Video");if(v)v.srcObject=null;
+ $(mode+"Status").textContent="Camera stopped.";
+}
+
+async function detectBestEmployee(mode){
+ const video=$(mode+"Video");
+ if(!video || video.readyState<2 || !video.videoWidth)return null;
+
+ const det=await faceapi.detectSingleFace(
+   video,
+   new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:0.45})
+ ).withFaceLandmarks().withFaceDescriptor();
+
+ if(!det)return {detected:false};
+
+ let best=null,bestDistance=Infinity;
+ for(const emp of employees){
+   if(!emp.faceDescriptor)continue;
+   try{
+     let arr=typeof emp.faceDescriptor==="string"?JSON.parse(emp.faceDescriptor):emp.faceDescriptor;
+     if(!Array.isArray(arr)||arr.length!==128)continue;
+     const d=faceapi.euclideanDistance(det.descriptor,new Float32Array(arr));
+     if(d<bestDistance){bestDistance=d;best=emp;}
+   }catch(err){console.warn("Bad face descriptor:",emp.id);}
+ }
+ return {detected:true,best,bestDistance};
+}
+
+async function autoScan(mode){
+ if(!scanning[mode]||!streams[mode])return;
+ if(busy[mode]){
+   scanTimers[mode]=setTimeout(()=>autoScan(mode),700);
+   return;
+ }
+ try{
+   const result=await detectBestEmployee(mode);
+   if(!result){scanTimers[mode]=setTimeout(()=>autoScan(mode),900);return;}
+   if(!result.detected){
+     $(mode+"Status").textContent="🔎 Looking for face...";
+   }else if(!result.best){
+     $(mode+"Status").textContent="👤 Face detected — no registered face profile.";
+   }else if(result.bestDistance>FACE_MATCH_THRESHOLD){
+     $(mode+"Status").textContent="👀 Face detected — not matched.";
+     $(mode+"Failed").textContent=Number($(mode+"Failed").textContent)+1;
+   }else{
+     await processAttendance(result.best,mode,result.bestDistance);
+   }
+ }catch(e){console.error("scan",e);}
+ scanTimers[mode]=setTimeout(()=>autoScan(mode),1400);
+}
+
+async function manualScan(mode){
+ if(!streams[mode]){alert("पहिले Start Camera गर्नुहोस्.");return;}
+ try{
+   await loadFaceModels();
+   const r=await detectBestEmployee(mode);
+   if(!r||!r.detected){$(mode+"Status").textContent="❌ Face भेटिएन.";return;}
+   if(!r.best){$(mode+"Status").textContent="❌ Registered face profile भेटिएन.";return;}
+   if(r.bestDistance>FACE_MATCH_THRESHOLD){
+     $(mode+"Status").textContent="❌ Face match भएन. Distance "+r.bestDistance.toFixed(3);
+     return;
+   }
+   await processAttendance(r.best,mode,r.bestDistance);
+ }catch(e){$(mode+"Status").textContent="❌ Scan failed: "+e.message;}
+}
+
+function allAttendanceLogs(){
+ return [...logs,...sheetAttendance];
+}
+function hasTodayType(id,date,type){
+ return allAttendanceLogs().some(x=>String(x.id)===String(id)&&String(x.date)===String(date)&&String(x.type||"").toUpperCase()===String(type).toUpperCase());
+}
+function attendanceKey(x){
+ return [x.date,x.id,x.type,x.time,x.gate].map(v=>String(v??"")).join("|");
+}
+
+async function processAttendance(emp,mode,distance){
+ const p=nowParts(),type=mode==="entry"?"ENTRY":"OUT";
+ if(hasTodayType(emp.id,p.date,type)){
+   $(mode+"Status").textContent=`ℹ️ ${emp.name} already has ${type} today.`;
+   return;
+ }
+ if(type==="OUT"&&!hasTodayType(emp.id,p.date,"ENTRY")){
+   $(mode+"Status").textContent=`⚠️ ${emp.name} has no ENTRY today.`;
+   return;
+ }
+ const record={date:p.date,time:p.time,id:emp.id,name:emp.name,status:type==="ENTRY"?statusFor(p.time):"OUT",photo:emp.photo||"",trade:emp.trade||"",company:emp.company||"",department:emp.department||"",nationality:emp.nationality||"",phone:emp.phone||"",site:emp.site||"",joiningDate:emp.joiningDate||"",matchDistance:Number(distance.toFixed(4)),type:type,gate:$(mode+"Gate").value};
+ try{
+   // Refresh today's centralized records first. This prevents another gate/device
+   // from recording the same employee again.
+   await refreshTodayFromSheets(true);
+   if(hasTodayType(emp.id,p.date,type)){
+     $(mode+"Status").textContent=`ℹ️ ${emp.name} already has ${type} today (Google Sheet).`;
+     return;
+   }
+   if(type==="OUT"&&!hasTodayType(emp.id,p.date,"ENTRY")){
+     $(mode+"Status").textContent=`⚠️ ${emp.name} has no ENTRY today.`;
+     return;
+   }
+   $(mode+"Status").textContent=`☁️ Saving ${type} to Google Sheet...`;
+   const result=await googleApi({action:"attendance",data:record},30000,2);
+   if(!result || result.success===false) throw new Error(result?.error||"Google Sheet rejected attendance.");
+   logs.unshift(record);saveAll();updateDashboard();renderToday();
+   $(mode+"Status").textContent=`✅ ${emp.name} — ${type} recorded at ${p.time} (Gate ${record.gate})`;
+   $(mode+"Matched").textContent=Number($(mode+"Matched").textContent)+1;
+   setTimeout(()=>{if(scanning[mode])$(mode+"Status").textContent="🤖 Ready for next employee...";},2500);
+ }catch(e){
+   console.error("Attendance Google save error:",e);
+   $(mode+"Status").textContent="❌ Attendance save failed: "+e.message;
+ }
+}
+async function uploadToImgBB(file){
+ const base64=await new Promise((res,rej)=>{
+   const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);
+   r.onerror=()=>rej(new Error("Photo read failed"));r.readAsDataURL(file);
+ });
+ const body=new URLSearchParams();body.append("key",IMGBB_API_KEY);body.append("image",base64);
+ const r=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body});
+ const d=await r.json();if(!d.success)throw new Error(d.error?.message||"ImgBB failed");
+ return d.data.display_url||d.data.url;
+}
+function fileToImage(file){
+ return new Promise((res,rej)=>{
+   const u=URL.createObjectURL(file),i=new Image();
+   i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("Photo load failed"))};i.src=u;
+ });
+}
+
+$("registrationForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const f=$("empPhoto").files[0];if(!f)return alert("Photo select गर्नुहोस्.");
+ const b=e.submitter;if(b)b.disabled=true;
+ try{
+   await loadFaceModels();
+   $("entryStatus").textContent="🔍 Employee photo बाट face profile बनाउँदै...";
+   const img=await fileToImage(f);
+   const face=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.45}))
+      .withFaceLandmarks().withFaceDescriptor();
+   if(!face)throw new Error("Photo मा स्पष्ट face भेटिएन. अगाडिबाट खिचिएको clear face photo राख्नुहोस्.");
+   const photo=await uploadToImgBB(f);
+   const emp={
+     id:$("empId").value.trim(),name:$("empName").value.trim(),
+     trade:$("empTrade").value.trim(),company:$("empCompany").value.trim(),
+     department:$("empDepartment").value.trim(),nationality:$("empNationality").value.trim(),
+     phone:$("empPhone").value.trim(),site:$("empSite").value.trim(),
+     joiningDate:$("empJoining").value,photo,
+     faceDescriptor:JSON.stringify(Array.from(face.descriptor)),
+     registeredAt:new Date().toISOString()
+   };
+   if(!emp.id||!emp.name)throw new Error("Employee ID and name required.");
+   await googleApi({action:"saveEmployee",data:emp});
+   employees=await loadEmployeesFromSheets();saveAll();renderEmployees();updateDashboard();
+   alert("✅ Employee registered with face profile.");
+   resetForm();
+ }catch(err){console.error(err);alert("❌ "+err.message)}
+ finally{if(b)b.disabled=false;}
+});
+$("empPhoto").onchange=e=>{
+ const f=e.target.files[0];if(f){const r=new FileReader();r.onload=x=>$("photoPreview").src=x.target.result;r.readAsDataURL(f);}
+};
+function resetForm(){$("registrationForm").reset();$("photoPreview").removeAttribute("src");}
+
+/* ---------------- EMPLOYEES ---------------- */
+function renderEmployees(){
+ const q=$("employeeSearch").value.toLowerCase();
+ $("employeeBody").innerHTML=employees.filter(e=>
+   (e.id+" "+e.name+" "+(e.trade||"")+" "+(e.company||"")+" "+(e.department||"")).toLowerCase().includes(q)
+ ).map((e,i)=>`<tr>
+ <td>${e.photo?`<img class="photo" src="${esc(e.photo)}" onerror="this.style.display='none'">`:""}</td>
+ <td>${esc(e.id)}</td><td>${esc(e.name)}</td><td>${esc(e.trade)}</td><td>${esc(e.company)}</td>
+ <td>${esc(e.department)}</td><td>${esc(e.nationality)}</td><td>${esc(e.phone)}</td><td>${esc(e.site)}</td>
+ <td>${esc(e.joiningDate)}</td><td><button class="danger" onclick="deleteEmployee(${i})">Delete</button></td></tr>`
+ ).join("")||'<tr><td colspan="11">No employees</td></tr>';
+}
+async function deleteEmployee(i){
+ const e=employees[i];if(!e||!confirm("Delete employee?"))return;
+ try{await googleApi({action:"deleteEmployee",data:{id:e.id}});employees.splice(i,1);saveAll();renderEmployees();updateDashboard();}
+ catch(x){alert(x.message);}
+}
+
+/* ---------------- TODAY ---------------- */
+async function refreshTodayFromSheets(silent=false){
+ const date=$("todayDate").value||nowParts().date;
+ if(sheetAttendanceLoading)return;
+ sheetAttendanceLoading=true;
+ try{
+   const r=await googleApi({action:"attendanceToday",data:{date}},30000,1);
+   sheetAttendance=Array.isArray(r.attendance)?r.attendance:[];
+   renderToday();
+   updateDashboard();
+   if(!silent){
+     $("todaySearch").focus();
+     const msg=`Google Sheet बाट ${sheetAttendance.length} attendance record load भयो.`;
+     $("entryStatus").textContent=msg;
+     $("outStatus").textContent=msg;
+   }
+ }catch(e){
+   console.error("Today attendance load error:",e);
+   if(!silent)alert("❌ Google Sheet Today Attendance load भएन:\n\n"+e.message);
+ }finally{
+   sheetAttendanceLoading=false;
+ }
+}
+
+function mergedAttendanceForDate(date){
+ const map=new Map();
+ [...logs,...sheetAttendance].filter(x=>String(x.date)===String(date)).forEach(x=>{
+   const k=attendanceKey(x);
+   if(!map.has(k))map.set(k,x);
+ });
+ return Array.from(map.values());
+}
+
+function renderToday(){
+ const date=$("todayDate").value,q=$("todaySearch").value.toLowerCase();
+ const dayLogs=mergedAttendanceForDate(date);
+ const ids=[...new Set(dayLogs.map(x=>String(x.id)))];
+
+ $("todayEmployees").textContent=employees.length;
+ $("todayEntries").textContent=dayLogs.filter(x=>String(x.type).toUpperCase()==="ENTRY").length;
+ $("todayOuts").textContent=dayLogs.filter(x=>String(x.type).toUpperCase()==="OUT").length;
+ $("todayInside").textContent=ids.filter(id=>{
+   const hasEntry=dayLogs.some(x=>String(x.id)===id&&String(x.type).toUpperCase()==="ENTRY");
+   const hasOut=dayLogs.some(x=>String(x.id)===id&&String(x.type).toUpperCase()==="OUT");
+   return hasEntry&&!hasOut;
+ }).length;
+
+ const rows=ids.map(id=>{
+   const ent=dayLogs.find(x=>String(x.id)===id&&String(x.type).toUpperCase()==="ENTRY");
+   const out=dayLogs.find(x=>String(x.id)===id&&String(x.type).toUpperCase()==="OUT");
+   const e=employees.find(x=>String(x.id)===id)||ent||out;
+   if(!e||!(id+" "+(e.name||"")).toLowerCase().includes(q))return "";
+   return `<tr><td>${esc(date)}</td><td>${esc(id)}</td><td>${esc(e.name)}</td><td>${esc(e.trade||"")}</td><td>${esc(e.company||"")}</td>
+   <td>${esc(ent?.time||"-")}</td><td>${esc(ent?.gate||"-")}</td><td>${esc(out?.time||"-")}</td><td>${esc(out?.gate||"-")}</td>
+   <td>${esc(ent?.matchDistance??out?.matchDistance??"-")}</td><td>${e.photo?`<img class="photo" src="${esc(e.photo)}">`:""}</td></tr>`;
+ }).join("");
+
+ $("todayBody").innerHTML=rows||'<tr><td colspan="11">No attendance today.</td></tr>';
+}
+function updateDashboard(){
+ const d=nowParts().date;
+ $("entryCount").textContent=logs.filter(x=>x.date===d&&x.type==="ENTRY").length;
+ $("outCount").textContent=logs.filter(x=>x.date===d&&x.type==="OUT").length;
+}
+
+/* ---------------- SETTINGS / API ---------------- */
+function saveSettings(){
+ settings.gate=Number($("deviceGate").value);
+ settings.type=$("deviceType").value;
+ settings.lateThreshold=$("lateThreshold").value;
+ localStorage.setItem(SET_KEY,JSON.stringify(settings));
+ $("entryGate").value=settings.gate;$("outGate").value=settings.gate;
+ setGate("entry");setGate("out");
+ alert("Settings saved.");
+}
+async function googleApi(payload,timeout=30000,retries=2){
+  let lastError=null;
+  for(let attempt=0;attempt<=retries;attempt++){
+    try{
+      return await new Promise((resolve,reject)=>{
+        const cb="farcb_"+Date.now()+"_"+Math.floor(Math.random()*999999);
+        const script=document.createElement("script");
+        let done=false;
+        const timer=setTimeout(()=>finish(new Error("Google Sheet response timeout. Apps Script deployment/access check गर्नुहोस्.")),timeout);
+        function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(_){}if(script.parentNode)script.parentNode.removeChild(script)}
+        function finish(err,data){if(done)return;done=true;cleanup();err?reject(err):resolve(data)}
+        window[cb]=data=>{
+          if(!data){finish(new Error("Google Apps Script ले empty response दियो."));return;}
+          if(data.success===false){finish(new Error(data.error||data.message||"Google operation failed."));return;}
+          finish(null,data);
+        };
+        const params=new URLSearchParams();
+        params.set("action",payload.action||"");
+        params.set("callback",cb);
+        params.set("data",JSON.stringify(payload.data!==undefined?payload.data:{}));
+        params.set("t",Date.now());
+        script.onerror=()=>finish(new Error("Google Apps Script URL load भएन. सही /exec deployment प्रयोग भएको छ कि जाँच गर्नुहोस्."));
+        script.src=GOOGLE_SCRIPT_URL+(GOOGLE_SCRIPT_URL.includes("?")?"&":"?")+params.toString();
+        document.head.appendChild(script);
+      });
+    }catch(err){
+      lastError=err;
+      if(attempt<retries) await new Promise(r=>setTimeout(r,1000*(attempt+1)));
+    }
+  }
+  throw lastError||new Error("Google operation failed.");
+}
+
+async function loadEmployeesFromSheets(){const r=await googleApi({action:"employees"});return Array.isArray(r.employees)?r.employees:[];}
+async function refreshEmployeesFromSheets(silent=false){
+ try{
+   employees=await loadEmployeesFromSheets();saveAll();renderEmployees();updateDashboard();
+   if(!silent)alert("Google Sheet बाट "+employees.length+" employees load भयो.");
+ }catch(e){console.error(e);if(!silent)alert("❌ "+e.message);}
+}
+function exportData(){
+ const a=document.createElement("a"),b=new Blob([JSON.stringify({employees,settings},null,2)],{type:"application/json"});
+ a.href=URL.createObjectURL(b);a.download="face-attendance-20-gate-backup.json";a.click();
+}
+function importData(e){
+ const f=e.target.files[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);employees=d.employees||[];settings=Object.assign(settings,d.settings||{});saveAll();location.reload();}catch(_){alert("Invalid backup");}};
+ r.readAsText(f);
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+
+/* INIT */
+$("todayDate").value=nowParts().date;
+renderEmployees();renderToday();updateDashboard();refreshTodayFromSheets(true);
+refreshEmployeesFromSheets(true);
+// Keep all 20 gate devices synchronized with the central Attendance sheet.
+setInterval(()=>{ if(document.visibilityState==="visible") refreshTodayFromSheets(true); },10000);
+</script>
+</body>
+</html>
