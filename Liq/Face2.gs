@@ -201,69 +201,100 @@ function employeeObject(row) {
     registeredAt: String(row[11] || '')
   };
 }
-
 function saveAttendance(data) {
-  const sheet = getAttendanceSheet();
+  const lock = LockService.getScriptLock();
 
-  const date = String(data.date || '').trim();
-  const id = String(data.id || '').trim();
-  const type = String(data.type || '').trim().toUpperCase();
-  const gate = String(data.gate || '').trim();
+  try {
+    // एकै समयमा आएको दोस्रो request लाई रोक्छ
+    lock.waitLock(15000);
 
-  if (!date || !id || !type) {
-    return {
-      success: false,
-      error: 'Attendance requires date, Employee ID and Type (ENTRY/OUT).'
-    };
-  }
+    const sheet = getAttendanceSheet();
 
-  if (type !== 'ENTRY' && type !== 'OUT') {
-    return {
-      success: false,
-      error: 'Invalid attendance type: ' + type
-    };
-  }
+    const date = String(data.date || '').trim();
+    const id = String(data.id || '').trim();
+    const type = String(data.type || '').trim().toUpperCase();
+    const gate = String(data.gate || '').trim();
 
-  // Server-side duplicate protection across all 20 devices.
-  const duplicate = findAttendance_(date, id, type);
-  if (duplicate) {
+    if (!date || !id || !type) {
+      return {
+        success: false,
+        error: 'Attendance requires date, Employee ID and Type.'
+      };
+    }
+
+    if (type !== 'ENTRY' && type !== 'OUT') {
+      return {
+        success: false,
+        error: 'Invalid attendance type: ' + type
+      };
+    }
+
+    /*
+     * IMPORTANT:
+     * Duplicate check happens while the script lock is active.
+     * Therefore, two devices cannot save the same attendance simultaneously.
+     */
+    const duplicate = findAttendance_(date, id, type);
+
+    if (duplicate) {
+      return {
+        success: true,
+        duplicate: true,
+        saved: false,
+        message:
+          'Already scanned: ' + id + ' - ' + type + ' on ' + date,
+        row: duplicate.row
+      };
+    }
+
+    const row = [
+      date,                                      // A Date
+      String(data.time || ''),                  // B Time
+      id,                                       // C Employee ID
+      String(data.name || ''),                 // D Name
+      String(data.status || ''),               // E Status
+      String(data.photo || ''),                // F Photo URL
+      String(data.trade || ''),                // G Trade
+      String(data.company || ''),              // H Company
+      String(data.department || ''),           // I Department
+      String(data.nationality || ''),          // J Nationality
+      String(data.phone || ''),                // K Phone
+      String(data.site || ''),                 // L Site
+      String(data.joiningDate || ''),          // M Joining Date
+      String(data.matchDistance || ''),        // N Face Match Distance
+      type,                                     // O Type
+      gate,                                     // P Gate
+      new Date()                                // Q Saved At
+    ];
+
+    sheet.appendRow(row);
+    SpreadsheetApp.flush();
+
     return {
       success: true,
-      duplicate: true,
-      message: 'Attendance already exists for this employee/type today.',
-      row: duplicate.row
+      saved: true,
+      duplicate: false,
+      row: sheet.getLastRow(),
+      id: id,
+      type: type,
+      gate: gate,
+      message: 'Attendance saved successfully.'
     };
+
+  } catch (err) {
+    return {
+      success: false,
+      saved: false,
+      error: 'Attendance save error: ' + err.message
+    };
+
+  } finally {
+    try {
+      lock.releaseLock();
+    } catch (e) {
+      // Lock release error safely ignored
+    }
   }
-
-  const row = [
-    date,
-    String(data.time || ''),
-    id,
-    String(data.name || ''),
-    String(data.status || ''),
-    String(data.photo || ''),
-    String(data.trade || ''),
-    String(data.company || ''),
-    String(data.department || ''),
-    String(data.nationality || ''),
-    String(data.phone || ''),
-    String(data.site || ''),
-    String(data.joiningDate || ''),
-    String(data.matchDistance || ''),
-    type,
-    gate,
-    new Date()
-  ];
-
-  sheet.appendRow(row);
-
-  return {
-    success: true,
-    row: sheet.getLastRow(),
-    type: type,
-    gate: gate,
-    message: 'Attendance saved successfully.'
-  };
 }
 
 function getAttendanceToday(date) {
