@@ -325,6 +325,319 @@ function sendMonthEndReports(force){
   const month=Utilities.formatDate(now,tz,'yyyy-MM'),summary=getMonthlySummary(month),emps=getEmployees(),log=getEmailLogSheet();let sent=0,skipped=0,failed=0;
   summary.rows.forEach(r=>{if(!r.email){skipped++;return;}if(emailAlreadySent_(log,month,r.employeeId)){skipped++;return;}try{const subject=monthName_(month)+' Attendance Report - '+r.name;const body='Dear '+r.name+',\n\nMonthly Attendance Report\nMonth: '+monthName_(month)+'\nEmployee ID: '+r.employeeId+'\nCompany: '+(r.company||'-')+'\n\nWorking Days: '+r.workingDays+'\nLeave Days: '+r.leaveDays+'\nGovernment Holiday Days: '+r.holidayDays+'\nAbsent Days: '+r.absentDays+'\nWorking Hours: '+r.workingHours+'\nLeave Hours: '+r.leaveHours+'\nHoliday Extra Hours: '+r.holidayExtraHours+'\nTotal Hours: '+r.totalHours+'\n\nNote: Leave is credited at 8 hours by default. Government-holiday work receives 8 extra hours. The last-day status may be provisional if the 24-hour finalization window has not completed.\n\nRegards,\nFAR Face Attendance Pro';const html='<h2>FAR Face Attendance Pro</h2><p><b>Monthly Attendance Report</b></p><p>Month: '+esc_(monthName_(month))+'<br>Employee ID: '+esc_(r.employeeId)+'<br>Company: '+esc_(r.company||'-')+'</p><table border="1" cellpadding="6" cellspacing="0"><tr><td>Working Days</td><td>'+r.workingDays+'</td></tr><tr><td>Leave Days</td><td>'+r.leaveDays+'</td></tr><tr><td>Government Holiday Days</td><td>'+r.holidayDays+'</td></tr><tr><td>Absent Days</td><td>'+r.absentDays+'</td></tr><tr><td>Working Hours</td><td>'+r.workingHours+'</td></tr><tr><td>Leave Hours</td><td>'+r.leaveHours+'</td></tr><tr><td>Holiday Extra Hours</td><td>'+r.holidayExtraHours+'</td></tr><tr><td><b>Total Hours</b></td><td><b>'+r.totalHours+'</b></td></tr></table><p>Leave = 8 hours by default. Government-holiday work = 8 extra hours. Last-day status may be provisional.</p>';MailApp.sendEmail({to:r.email,subject:subject,body:body,htmlBody:html});log.appendRow([month,r.employeeId,r.email,new Date(),'SENT','']);sent++;}catch(e){log.appendRow([month,r.employeeId,r.email,new Date(),'FAILED',String(e)]);failed++;}});return {success:true,month,sent,skipped,failed};
 }
+/**
+ * Creates employee monthly Time Sheet PDF.
+ * This is ADD-ON only; existing attendance saving is untouched.
+ */
+function createEmployeeTimeSheetPdf_(employeeId, month, employeeName) {
+  const tz = Session.getScriptTimeZone();
+  const employees = getEmployees();
+
+  const emp = employees.find(function(e) {
+    return String(e.id).toLowerCase() === String(employeeId).toLowerCase();
+  });
+
+  if (!emp) {
+    throw new Error('Employee not found: ' + employeeId);
+  }
+
+  const parts = String(month).split('-').map(Number);
+  const year = parts[0];
+  const mon = parts[1];
+
+  const first = new Date(year, mon - 1, 1);
+  const last = new Date(year, mon, 0);
+
+  const attendanceMap = buildAttendanceMap_(first, last);
+  const leaveMap = buildApprovedLeaveMap_(first, last);
+  const holidayMap = buildGovernmentHolidayMap_(first, last);
+
+  let html = `
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        margin: 25px;
+        color: #222;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      .info {
+        margin-bottom: 15px;
+        line-height: 1.6;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th, td {
+        border: 1px solid #999;
+        padding: 5px;
+        text-align: center;
+      }
+
+      th {
+        background: #eeeeee;
+        font-weight: bold;
+      }
+
+      .total {
+        font-weight: bold;
+        background: #eeeeee;
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 9px;
+        color: #555;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <h1>Monthly Time Sheet</h1>
+
+    <div class="info">
+      <b>Employee ID:</b> ${esc_(emp.id)}<br>
+      <b>Employee Name:</b> ${esc_(emp.name)}<br>
+      <b>Company:</b> ${esc_(emp.company || '-')}<br>
+      <b>Trade:</b> ${esc_(emp.trade || '-')}<br>
+      <b>Month:</b> ${esc_(monthName_(month))}
+    </div>
+
+    <table>
+      <tr>
+        <th>Date</th>
+        <th>Day</th>
+        <th>ENTRY</th>
+        <th>OUT</th>
+        <th>Status</th>
+        <th>Hours</th>
+        <th>Extra Hours</th>
+      </tr>
+  `;
+
+  let workingDays = 0;
+  let leaveDays = 0;
+  let holidayDays = 0;
+  let absentDays = 0;
+  let workingHours = 0;
+  let leaveHours = 0;
+  let holidayExtraHours = 0;
+
+  for (
+    let d = new Date(first);
+    d <= last;
+    d.setDate(d.getDate() + 1)
+  ) {
+
+    const date = Utilities.formatDate(d, tz, 'yyyy-MM-dd');
+    const dayName = Utilities.formatDate(d, tz, 'EEEE');
+
+    const key = date + '|' + String(emp.id).toLowerCase();
+
+    const logs = attendanceMap[key] || [];
+    const leave = leaveMap[key];
+    const holiday = holidayMap[date];
+
+    const entries = logs
+      .filter(x => x.type === 'ENTRY')
+      .map(x => x.time)
+      .sort();
+
+    const outs = logs
+      .filter(x => x.type === 'OUT')
+      .map(x => x.time)
+      .sort();
+
+    const worked = calculateWorkedHours_(logs);
+
+    let entry = entries.length ? entries[0] : '';
+    let out = outs.length ? outs[outs.length - 1] : '';
+
+    let status = '';
+    let hours = 0;
+    let extra = 0;
+
+    const sunday = d.getDay() === 0;
+
+    /*
+     * Priority:
+     * Government Holiday
+     * Sunday
+     * Approved Leave
+     * Complete ENTRY + OUT
+     * Absent
+     */
+
+    if (holiday) {
+
+      holidayDays++;
+
+      if (worked > 0) {
+        status = 'Holiday Worked';
+        hours = worked;
+        extra = STANDARD_DAILY_HOURS;
+
+        workingHours += worked;
+        holidayExtraHours += STANDARD_DAILY_HOURS;
+
+      } else {
+        status = 'Holiday';
+      }
+
+    } else if (sunday) {
+
+      /*
+       * Sunday is weekly holiday.
+       * It is NOT counted as absent.
+       * If worked, 8 extra hours are added.
+       */
+
+      if (worked > 0) {
+        status = 'Sunday Worked';
+        hours = worked;
+        extra = STANDARD_DAILY_HOURS;
+
+        workingHours += worked;
+        holidayExtraHours += STANDARD_DAILY_HOURS;
+      } else {
+        status = 'Sunday';
+      }
+
+    } else if (leave) {
+
+      status = 'Leave';
+      hours = 0;
+
+      leaveDays++;
+      leaveHours += Number(
+        leave.hours || STANDARD_DAILY_HOURS
+      );
+
+    } else if (worked > 0) {
+
+      /*
+       * Working Day requires complete ENTRY + OUT.
+       */
+      status = 'Present';
+      hours = worked;
+
+      workingDays++;
+      workingHours += worked;
+
+    } else {
+
+      status = 'Absent';
+      absentDays++;
+    }
+
+    html += `
+      <tr>
+        <td>${esc_(date)}</td>
+        <td>${esc_(dayName)}</td>
+        <td>${esc_(entry || '-')}</td>
+        <td>${esc_(out || '-')}</td>
+        <td>${esc_(status)}</td>
+        <td>${hours ? hours.toFixed(2) : '0.00'}</td>
+        <td>${extra ? extra.toFixed(2) : '0.00'}</td>
+      </tr>
+    `;
+  }
+
+  const totalHours =
+    workingHours +
+    leaveHours +
+    holidayExtraHours;
+
+  html += `
+      <tr class="total">
+        <td colspan="5">MONTHLY TOTAL</td>
+        <td>${totalHours.toFixed(2)}</td>
+        <td>${holidayExtraHours.toFixed(2)}</td>
+      </tr>
+    </table>
+
+    <br>
+
+    <table>
+      <tr>
+        <th>Working Days</th>
+        <th>Leave Days</th>
+        <th>Holiday Days</th>
+        <th>Absent Days</th>
+      </tr>
+
+      <tr>
+        <td>${workingDays}</td>
+        <td>${leaveDays}</td>
+        <td>${holidayDays}</td>
+        <td>${absentDays}</td>
+      </tr>
+
+      <tr>
+        <th>Working Hours</th>
+        <th>Leave Hours</th>
+        <th>Holiday Extra</th>
+        <th>Total Hours</th>
+      </tr>
+
+      <tr>
+        <td>${workingHours.toFixed(2)}</td>
+        <td>${leaveHours.toFixed(2)}</td>
+        <td>${holidayExtraHours.toFixed(2)}</td>
+        <td>${totalHours.toFixed(2)}</td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      Leave is credited at 8 hours by default.<br>
+      Sunday is weekly holiday and is not counted as absent.<br>
+      Sunday work receives 8 extra hours.<br>
+      Government-holiday work receives 8 extra hours.<br>
+      Working Day requires a complete ENTRY and OUT pair.
+    </div>
+
+  </body>
+  </html>
+  `;
+
+  const blob = HtmlService
+    .createHtmlOutput(html)
+    .getBlob()
+    .setName(
+      'TimeSheet_' +
+      employeeId +
+      '_' +
+      month +
+      '.html'
+    );
+
+  const pdf = blob
+    .getAs(MimeType.PDF)
+    .setName(
+      'TimeSheet_' +
+      employeeId +
+      '_' +
+      month +
+      '.pdf'
+    );
+
+  return pdf;
+}
+
+
 function emailAlreadySent_(s,month,id){const last=s.getLastRow();if(last<2)return false;const vals=s.getRange(2,1,last-1,2).getDisplayValues();return vals.some(r=>r[0]===month&&String(r[1]).toLowerCase()===String(id).toLowerCase());}
 function setupAttendanceSystem(){
   // Run this ONCE after replacing Face2.gs. It creates/updates all required
