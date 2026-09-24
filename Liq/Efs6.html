@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FAR Face Attendance Pro - 20 Gate - Fast Scan</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#222}
+header{background:#0d6efd;color:#fff;padding:15px 18px}header h1{margin:0;font-size:21px}
+nav{display:flex;gap:7px;overflow:auto;background:#fff;padding:10px;border-bottom:1px solid #ddd}
+.tab-btn{border:0;padding:10px 14px;border-radius:7px;cursor:pointer;background:#e9ecef;white-space:nowrap}
+.tab-btn.active{background:#0d6efd;color:#fff}main{max-width:1400px;margin:auto;padding:12px}
+.tab{background:#fff;border-radius:10px;padding:16px;box-shadow:0 2px 8px #0001}.hidden{display:none!important}
+button{border:0;border-radius:7px;padding:10px 14px;cursor:pointer;background:#0d6efd;color:white;margin:3px}
+button.danger{background:#dc3545}button.secondary{background:#6c757d}button.success{background:#198754}
+input,select{padding:10px;border:1px solid #ccc;border-radius:7px;width:100%;margin:5px 0 10px}
+label{font-weight:bold;font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.camera{max-width:760px;margin:auto;background:#111;border-radius:12px;overflow:hidden}
+video{width:100%;display:block;background:#000;min-height:240px;max-height:480px;object-fit:cover}canvas{display:none}
+.status{text-align:center;padding:12px;margin:10px 0;border-radius:8px;background:#eef3f8}
+table{width:100%;border-collapse:collapse;margin-top:15px;min-width:850px}.wrap{overflow:auto}
+th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f1f3f5}
+.photo{width:45px;height:45px;border-radius:50%;object-fit:cover}.card{border:1px solid #ddd;border-radius:10px;padding:15px;margin-top:12px}
+.small{font-size:12px;color:#666}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{padding:15px;background:#f8f9fa;border-radius:10px;text-align:center}.stat b{font-size:24px;display:block}
+.gate{font-size:20px;font-weight:bold;text-align:center;margin:5px}.ok{color:#198754;font-weight:bold}.bad{color:#dc3545;font-weight:bold}
+@media(max-width:600px){main{padding:8px}.tab{padding:10px}.stats{grid-template-columns:repeat(2,1fr)}}
+
+.password-modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;z-index:99999;padding:18px}
+.password-box{background:#fff;border-radius:14px;padding:22px;max-width:360px;width:100%;box-shadow:0 10px 40px #0006;color:#222}
+.password-box h3{margin:0 0 8px}.password-box p{font-size:13px;color:#666}.password-box input{margin:10px 0}.password-error{color:#dc3545;font-size:13px;min-height:18px}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+</head>
+<body>
+<header><h1>🎥 FAR Face Attendance Pro — 20 Gate System</h1></header>
+<nav>
+<button class="tab-btn active" onclick="requestTab('entry',this)">🟢 ENTRY</button>
+<button class="tab-btn" onclick="requestTab('out',this)">🔴 OUT</button>
+<button class="tab-btn" onclick="requestTab('today',this)">📊 TODAY ATTENDANCE</button>
+<button class="tab-btn" onclick="requestTab('employees',this)">👥 EMPLOYEES</button>
+<button class="tab-btn" onclick="requestTab('register',this)">👤 REGISTER</button>
+<button class="tab-btn" onclick="requestTab('settings',this)">⚙️ SETTINGS</button>
+<button class="tab-btn" onclick="requestTab('leave',this)">🩺 LEAVE</button>
+<button class="tab-btn" onclick="requestTab('holiday',this)">🏛️ HOLIDAY</button>
+<button class="tab-btn" onclick="requestTab('monthly',this)">📅 MONTHLY REPORT</button>
+</nav>
+
+<div id="passwordModal" class="password-modal hidden">
+ <div class="password-box">
+  <h3>🔐 Password Required</h3>
+  <p id="passwordPrompt">यो Tab खोल्न User sheet को Column B को Password हाल्नुहोस्।</p>
+  <input id="tabPasswordInput" type="password" placeholder="Enter password" autocomplete="off">
+  <div id="passwordError" class="password-error"></div>
+  <button onclick="verifyTabPassword()">Unlock Tab</button>
+  <button class="secondary" onclick="cancelTabPassword()">Cancel</button>
+ </div>
+</div>
+
+<main>
+<section id="entry" class="tab">
+<h2>🟢 ENTRY CAMERA</h2>
+<div class="gate">Gate: <span id="entryGateLabel">Gate 1</span></div>
+<div><label>Select Gate</label><select id="entryGate"></select></div>
+<div class="camera"><video id="entryVideo" autoplay muted playsinline></video></div>
+<button onclick="startCamera('entry')">▶ Start Entry Camera</button>
+<button class="success" onclick="manualScan('entry')">🔍 Scan Now</button>
+<button class="secondary" onclick="stopCamera('entry')">⏹ Stop</button>
+<div id="entryStatus" class="status">AI loading पछि camera start गर्नुहोस्.</div>
+<div class="stats"><div class="stat"><b id="entryCount">0</b>Entry Today</div><div class="stat"><b id="entryMatched">0</b>Matched</div><div class="stat"><b id="entryFailed">0</b>Failed</div><div class="stat"><b id="entryDevice">Gate 1</b>Device</div></div>
+<div class="card"><b>Automatic mode:</b><div class="small">Fast face detection चलिरहेको छ। Face भेटिएपछि automatic match हुन्छ; एउटै व्यक्तिलाई तुरुन्तै दोहोर्याएर scan हुँदैन।</div></div>
+</section>
+
+<section id="out" class="tab hidden">
+<h2>🔴 OUT CAMERA</h2>
+<div class="gate">Gate: <span id="outGateLabel">Gate 1</span></div>
+<div><label>Select Gate</label><select id="outGate"></select></div>
+<div class="camera"><video id="outVideo" autoplay muted playsinline></video></div>
+<button onclick="startCamera('out')">▶ Start OUT Camera</button>
+<button class="success" onclick="manualScan('out')">🔍 Scan Now</button>
+<button class="secondary" onclick="stopCamera('out')">⏹ Stop</button>
+<div id="outStatus" class="status">AI loading पछि camera start गर्नुहोस्.</div>
+<div class="stats"><div class="stat"><b id="outCount">0</b>Out Today</div><div class="stat"><b id="outMatched">0</b>Matched</div><div class="stat"><b id="outFailed">0</b>Failed</div><div class="stat"><b id="outDevice">Gate 1</b>Device</div></div>
+<div class="card"><b>Automatic mode:</b><div class="small">OUT camera पनि automatic face recognition मा चल्छ। OUT गर्न पहिले ENTRY हुनुपर्छ।</div></div>
+</section>
+
+<section id="today" class="tab hidden">
+<h2>📊 TODAY ATTENDANCE — GOOGLE SHEET</h2><div class="small">ℹ️ Attendance data auto-refresh हुँदैन। Camera scan लाई fast राख्न manual Load button प्रयोग गर्नुहोस्।</div>
+<div class="grid"><div><label>Date</label><input type="date" id="todayDate" onchange="refreshTodayFromSheets()"></div><div><label>Search</label><input id="todaySearch" placeholder="ID or name" oninput="renderToday()"></div></div><button class="success" onclick="refreshTodayFromSheets(false,true)">☁️ Load Today Attendance from Google Sheet</button><div id="todayLoadStatus" class="status">Not loaded yet.</div>
+<div class="stats"><div class="stat"><b id="todayEmployees">0</b>Employees</div><div class="stat"><b id="todayEntries">0</b>Entries</div><div class="stat"><b id="todayOuts">0</b>OUT</div><div class="stat"><b id="todayInside">0</b>Inside</div></div>
+<div class="wrap"><table><thead><tr><th>Date</th><th>ID</th><th>Name</th><th>Trade</th><th>Company</th><th>Entry</th><th>Entry Gate</th><th>OUT</th><th>OUT Gate</th><th>Match</th><th>Photo</th></tr></thead><tbody id="todayBody"></tbody></table></div>
+</section>
+
+<section id="employees" class="tab hidden">
+<h2>👥 REGISTERED EMPLOYEES</h2>
+<button onclick="refreshEmployeesFromSheets()">🔄 Refresh Google Sheet</button>
+<input id="employeeSearch" placeholder="Search ID, name, trade, company..." oninput="renderEmployees()">
+<div class="wrap"><table><thead><tr><th>Photo</th><th>ID</th><th>Name</th><th>Trade</th><th>Company</th><th>Department</th><th>Nationality</th><th>Phone</th><th>Email</th><th>Site</th><th>Joining</th><th>Action</th></tr></thead><tbody id="employeeBody"></tbody></table></div>
+</section>
+
+<section id="register" class="tab hidden">
+<h2>👤 REGISTER EMPLOYEE</h2>
+<form id="registrationForm"><div class="grid">
+<div><label>Employee ID</label><input id="empId" required></div><div><label>Full Name</label><input id="empName" required></div>
+<div><label>Trade</label><input id="empTrade"></div><div><label>Company</label><input id="empCompany"></div>
+<div><label>Department</label><input id="empDepartment"></div><div><label>Nationality</label><input id="empNationality"></div>
+<div><label>Phone / WhatsApp</label><input id="empPhone"></div><div><label>Employee Gmail</label><input id="empEmail" type="email" placeholder="employee@gmail.com"></div><div><label>Site / Project</label><input id="empSite"></div>
+<div><label>Joining Date</label><input type="date" id="empJoining"></div></div>
+<label>Employee Photo</label><input type="file" id="empPhoto" accept="image/*" required>
+<img id="photoPreview" class="photo" style="width:100px;height:100px;display:block;margin:8px 0">
+<button type="submit">➕ Register Employee</button><button type="button" class="secondary" onclick="resetForm()">Reset</button>
+</form>
+</section>
+
+
+<section id="leave" class="tab hidden">
+<h2>🩺 LEAVE / SICK LEAVE</h2>
+<div class="card"><div class="small">Approved leave is credited as <b>8 hours</b> by default. The system uses this information when the 24-hour attendance finalization runs.</div></div>
+<div class="grid">
+<div><label>Employee</label><select id="leaveEmployee"></select></div>
+<div><label>Date</label><input type="date" id="leaveDate"></div>
+<div><label>Leave Type</label><select id="leaveType"><option>Sick Leave</option><option>Annual Leave</option><option>Emergency Leave</option><option>Other Leave</option></select></div>
+<div><label>Hours</label><input type="number" id="leaveHours" value="8" min="0" step="0.5"></div>
+<div><label>Approved</label><select id="leaveApproved"><option value="YES">YES</option><option value="NO">NO</option></select></div>
+<div><label>Reason</label><input id="leaveReason" placeholder="Sick / medical / other reason"></div>
+</div>
+<button class="success" onclick="saveLeaveFromUI()">💾 Save Leave</button><button class="secondary" onclick="loadLeaveHolidayUI()">🔄 Refresh</button>
+<div class="wrap"><table><thead><tr><th>Date</th><th>ID</th><th>Name</th><th>Company</th><th>Type</th><th>Hours</th><th>Approved</th><th>Reason</th><th>Action</th></tr></thead><tbody id="leaveBody"></tbody></table></div>
+</section>
+
+<section id="holiday" class="tab hidden">
+<h2>🏛️ GOVERNMENT HOLIDAY</h2>
+<div class="card"><div class="small">Only holidays entered here are treated as government holidays. If an employee works on that date, the system adds <b>8 extra hours</b>.</div></div>
+<div class="grid"><div><label>Date</label><input type="date" id="holidayDate"></div><div><label>Holiday Name</label><input id="holidayName" placeholder="UAE Government Holiday"></div><div><label>Government Holiday</label><select id="holidayGov"><option value="YES">YES</option><option value="NO">NO</option></select></div></div>
+<button class="success" onclick="saveHolidayFromUI()">💾 Save Holiday</button><button class="secondary" onclick="loadLeaveHolidayUI()">🔄 Refresh</button>
+<div class="wrap"><table><thead><tr><th>Date</th><th>Holiday</th><th>Government</th><th>Action</th></tr></thead><tbody id="holidayBody"></tbody></table></div>
+</section>
+
+<section id="monthly" class="tab hidden">
+<h2>📅 MONTHLY HOURS & REPORT</h2>
+<div class="grid"><div><label>Month</label><input type="month" id="reportMonth"></div></div>
+<button class="success" onclick="loadMonthlyReports()">📊 Calculate Monthly Report</button>
+<button onclick="runAttendanceAutomationUI()">⚙️ Finalize 24-Hour Attendance</button>
+<button class="secondary" onclick="installTriggersUI()">⏱ Install Automatic Triggers</button>
+<button class="secondary" onclick="sendMonthEndReportsUI()">📧 Send Month-End Emails Now</button>
+<div id="monthlyStatus" class="status">Select month and calculate.</div>
+<h3>👤 Employee Monthly Summary</h3>
+<div class="wrap"><table><thead><tr><th>Month</th><th>ID</th><th>Name</th><th>Company</th><th>Working Days</th><th>Leave</th><th>Holiday</th><th>Absent</th><th>Working Hours</th><th>Leave Hours</th><th>Holiday Extra</th><th>Total Hours</th><th>Email</th></tr></thead><tbody id="monthlyBody"></tbody></table></div>
+<h3>🏢 Company Monthly Summary</h3>
+<div class="wrap"><table><thead><tr><th>Month</th><th>Company</th><th>Employees</th><th>Working Days</th><th>Leave</th><th>Holiday</th><th>Absent</th><th>Working Hours</th><th>Leave Hours</th><th>Holiday Extra</th><th>Total Hours</th></tr></thead><tbody id="companyMonthlyBody"></tbody></table></div>
+</section>
+
+<section id="settings" class="tab hidden">
+<h2>⚙️ SETTINGS</h2>
+<div class="grid">
+<div><label>Gate Number</label><select id="deviceGate"></select></div>
+<div><label>Gate Type</label><select id="deviceType"><option value="ENTRY">ENTRY</option><option value="OUT">OUT</option></select></div>
+<div><label>Late Threshold</label><input type="time" id="lateThreshold"></div>
+</div>
+<button onclick="saveSettings()">💾 Save Device Settings</button>
+<button class="secondary" onclick="refreshEmployeesFromSheets()">🔄 Refresh Employees</button>
+<button class="secondary" onclick="exportData()">⬇ Backup</button>
+<div class="card"><b>Fast + Central Google Sheet:</b><div class="small">Attendance save हुन्छ Google Sheet बाट success response आएपछि मात्र। Scan fail भएमा फेरि retry गर्न मिल्छ।</div></div><div class="card"><b>🤖 Automatic Attendance:</b><div class="small">Hourly trigger finalizes the previous day after 24 hours. Month-end email trigger runs daily and sends on the last calendar day.</div><button class="success" onclick="installTriggersUI()">⏱ Install / Update Automatic Triggers</button></div>
+<div class="card"><b>20-Gate deployment:</b><div class="small">उही HTML 20 devices मा राख्न सकिन्छ। Attendance record अब local/offline storage मा राखिँदैन। ENTRY/OUT scan सीधै Google Sheet मा submit हुन्छ र TODAY ATTENDANCE Google Sheet बाट मात्र load हुन्छ।</div></div>
+<input type="file" id="importFile" accept=".json" onchange="importData(event)">
+
+<div class="card">
+<h3>🕐 12-Hour Shift Settings</h3>
+<div class="small">Apps Script परिवर्तन आवश्यक छैन। Google Sheet को Date लाई Shift Date का रूपमा प्रयोग गरिन्छ।</div>
+<div class="grid">
+<div><label>Day Shift Start</label><input type="time" id="dayShiftStart" value="06:00"></div>
+<div><label>Day Shift End</label><input type="time" id="dayShiftEnd" value="18:00"></div>
+<div><label>Night Shift Start</label><input type="time" id="nightShiftStart" value="18:00"></div>
+<div><label>Night Shift End</label><input type="time" id="nightShiftEnd" value="06:00"></div>
+</div>
+<button class="success" onclick="saveShiftSettings()">💾 Save Shift Settings</button>
+<div class="small" style="margin-top:8px">
+Day Shift: 06:00–17:59<br>
+Night Shift: 18:00–05:59 (अर्को बिहानको OUT पनि सुरु भएको रातकै Shift Date मा पर्छ)
+</div>
+</div>
+</section>
+</main>
+
+<script>
+const SHIFT_DEFAULTS={dayStart:"06:00",dayEnd:"18:00",nightStart:"18:00",nightEnd:"06:00"};
+
+/* SAME EXISTING APPS SCRIPT URL + IMGBB KEY */
+const GOOGLE_SCRIPT_URL="https://script.google.com/macros/s/AKfycbxsjCHmBpeLkbS1n_amuvxg96mmc9965ZSCx7dFhNBGjQ65H7udi8G5r9Yd1TPRLbX8/exec";
+const IMGBB_API_KEY="52ae8561eb90c44178b46a0c95d6664c";
+
+// FULLY ONLINE MODE: no employee, attendance, password or settings data is read from localStorage.
+let employees=[];
+let sheetAttendance=[];
+let sheetAttendanceLoading=false;
+let settings={lateThreshold:"09:00",gate:1,type:"ENTRY"};
+let streams={entry:null,out:null},scanTimers={entry:null,out:null},scanning={entry:false,out:false},busy={entry:false,out:false};
+let faceModelsLoaded=false,faceModelsLoading=null;
+let descriptorCache=new Map();
+let lastMatched={entry:{id:null,time:0},out:{id:null,time:0}};
+let attendanceInFlight=new Set();
+let faceSubmitLock=new Set();
+const FACE_MODEL_URL="https://justadudewhohacks.github.io/face-api.js/models";
+const FACE_MATCH_THRESHOLD=0.52;
+const $=id=>document.getElementById(id);
+
+function saveAll(){ /* Disabled: fully online mode. */ }
+
+/* TAB PASSWORD PROTECTION - USER CSV COLUMN B */
+const USER_CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vRr59OGVWttug0w8K8v4M_FWPCCGY8MBSb2lY_wmWpKkWCkvZzETP-bnRo0RkNiSRUtkBKJrDXrFJxb/pub?gid=693413513&single=true&output=csv";
+let pendingTab=null,pendingTabButton=null,passwordChecking=false;
+
+function requestTab(id,btn){
+ pendingTab=id; pendingTabButton=btn;
+ $("passwordPrompt").textContent="यो Tab खोल्न User sheet को Column B मा भएको Password हाल्नुहोस्।";
+ $("tabPasswordInput").value=""; $("passwordError").textContent="";
+ $("passwordModal").classList.remove("hidden");
+ setTimeout(()=>$("tabPasswordInput").focus(),60);
+}
+function cancelTabPassword(){pendingTab=null;pendingTabButton=null;$("passwordModal").classList.add("hidden");}
+async function verifyTabPassword(){
+ if(passwordChecking)return;
+ const entered=$("tabPasswordInput").value.trim();
+ if(!entered){$("passwordError").textContent="Password हाल्नुहोस्.";return;}
+ passwordChecking=true;$("passwordError").textContent="Checking...";
+ try{
+  const r=await fetch(USER_CSV_URL+"&t="+Date.now(),{cache:"no-store"});
+  if(!r.ok)throw new Error("CSV load भएन");
+  const rows=parseUserCSV(await r.text());
+  const passwords=rows.slice(1).map(row=>String(row[1]||"").trim()).filter(Boolean);
+  if(passwords.includes(entered)){
+   const id=pendingTab,btn=pendingTabButton;cancelTabPassword();switchTab(id,btn);
+  }else $("passwordError").textContent="❌ Wrong password. Tab change भएन।";
+ }catch(e){$("passwordError").textContent="❌ Password check failed: "+e.message;}
+ finally{passwordChecking=false;}
+}
+function parseUserCSV(text){
+ const rows=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){
+  const c=text[i],n=text[i+1];
+  if(c==='"'&&quoted&&n==='"'){cell+='"';i++;continue;}
+  if(c==='"'){quoted=!quoted;continue;}
+  if(c===','&&!quoted){row.push(cell);cell="";continue;}
+  if((c==='\n'||c==='\r')&&!quoted){
+   if(c==='\r'&&n==='\n')i++;
+   row.push(cell);if(row.some(v=>v.trim()!==""))rows.push(row);
+   row=[];cell="";continue;
+  }
+  cell+=c;
+ }
+ if(cell!==""||row.length){row.push(cell);rows.push(row);}
+ return rows;
+}
+
+function switchTab(id,btn){
+ document.querySelectorAll(".tab").forEach(x=>x.classList.add("hidden"));$(id).classList.remove("hidden");
+ document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");
+ if(id==="today")renderToday();
+ if(id==="employees")renderEmployees();
+ if(id==="leave"||id==="holiday")loadLeaveHolidayUI();
+ if(id==="monthly")loadMonthlyReports();
+}
+function gateOptions(sel){$(sel).innerHTML=Array.from({length:20},(_,i)=>`<option value="${i+1}">Gate ${i+1}</option>`).join("");}
+["entryGate","outGate","deviceGate"].forEach(gateOptions);
+$("entryGate").value=settings.gate;$("outGate").value=settings.gate;$("deviceGate").value=settings.gate;$("deviceType").value=settings.type;
+$("lateThreshold").value=settings.lateThreshold;
+$("entryGate").onchange=()=>setGate("entry");$("outGate").onchange=()=>setGate("out");
+function setGate(mode){
+ const n=$(mode+"Gate").value;$(mode+"GateLabel").textContent="Gate "+n;$(mode+"Device").textContent="Gate "+n;
+ settings.gate=Number(n);
+}
+function nowParts(){const d=new Date();return{date:d.toISOString().slice(0,10),time:d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"})};}
+function statusFor(t){return t<=settings.lateThreshold?"Present":"Late";}
+
+/* ---------------- FACE AI: FIXED LOADING ---------------- */
+async function loadFaceModels(){
+ if(faceModelsLoaded)return true;
+ if(faceModelsLoading)return faceModelsLoading;
+ faceModelsLoading=(async()=>{
+   try{
+     $("entryStatus").textContent="⏳ Loading Face AI models...";
+     $("outStatus").textContent="⏳ Loading Face AI models...";
+     await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL);
+     await faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL);
+     await faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL);
+     faceModelsLoaded=true;
+     $("entryStatus").textContent="✅ Face AI ready.";
+     $("outStatus").textContent="✅ Face AI ready.";
+     return true;
+   }catch(e){
+     console.error(e);
+     faceModelsLoading=null;
+     $("entryStatus").textContent="❌ Face AI model failed: "+e.message;
+     $("outStatus").textContent="❌ Face AI model failed: "+e.message;
+     throw e;
+   }
+ })();
+ return faceModelsLoading;
+}
+
+async function waitVideoReady(video){
+ if(video.readyState>=2 && video.videoWidth>0)return;
+ await new Promise((resolve,reject)=>{
+   const timer=setTimeout(()=>reject(new Error("Camera video ready भएन.")),10000);
+   const ok=()=>{clearTimeout(timer);video.removeEventListener("loadeddata",ok);resolve();};
+   video.addEventListener("loadeddata",ok,{once:true});
+ });
+}
+
+async function startCamera(mode){
+ try{
+   stopCamera(mode);
+   $(mode+"Status").textContent="⏳ Face AI loading...";
+   await loadFaceModels();
+   $(mode+"Status").textContent="📷 Camera permission मागिँदैछ...";
+   const video=$(mode+"Video");
+   streams[mode]=await navigator.mediaDevices.getUserMedia({
+     video:{facingMode:{ideal:"user"},width:{ideal:360,max:480},height:{ideal:270,max:360},frameRate:{ideal:24,max:30}},
+     audio:false
+   });
+   video.srcObject=streams[mode];
+   await video.play();
+   await waitVideoReady(video);
+   scanning[mode]=true;
+   $(mode+"Status").textContent="🤖 Camera ready — automatic face scan चलिरहेको छ...";
+   autoScan(mode);
+ }catch(e){
+   console.error(e);
+   scanning[mode]=false;
+   $(mode+"Status").textContent="❌ "+e.message;
+ }
+}
+
+function stopCamera(mode){
+ scanning[mode]=false;
+ if(scanTimers[mode]){clearTimeout(scanTimers[mode]);scanTimers[mode]=null;}
+ if(streams[mode])streams[mode].getTracks().forEach(t=>t.stop());
+ streams[mode]=null;
+ const v=$(mode+"Video");if(v)v.srcObject=null;
+ $(mode+"Status").textContent="Camera stopped.";
+}
+
+async function detectBestEmployee(mode){
+  const video=$(mode+"Video");
+  if(!video || video.readyState<2 || !video.videoWidth)return null;
+
+  const det=await faceapi.detectSingleFace(
+    video,
+    new faceapi.TinyFaceDetectorOptions({inputSize:128,scoreThreshold:0.52})
+  ).withFaceLandmarks().withFaceDescriptor();
+
+  if(!det)return {detected:false};
+
+  let best=null,bestDistance=Infinity;
+  for(const emp of employees){
+    if(!emp.faceDescriptor)continue;
+    try{
+      let cached=descriptorCache.get(String(emp.id));
+      if(!cached){
+        const arr=typeof emp.faceDescriptor==="string"
+          ? JSON.parse(emp.faceDescriptor) : emp.faceDescriptor;
+        if(!Array.isArray(arr)||arr.length!==128)continue;
+        cached=new Float32Array(arr);
+        descriptorCache.set(String(emp.id),cached);
+      }
+      const d=faceapi.euclideanDistance(det.descriptor,cached);
+      if(d<bestDistance){bestDistance=d;best=emp;}
+    }catch(err){console.warn("Bad face descriptor:",emp.id);}
+  }
+  return {detected:true,best,bestDistance};
+}
+
+async function autoScan(mode){
+  if(!scanning[mode]||!streams[mode])return;
+
+  if(busy[mode]){
+    scanTimers[mode]=setTimeout(()=>autoScan(mode),160);
+    return;
+  }
+
+  try{
+    const result=await detectBestEmployee(mode);
+
+    if(!result){
+      scanTimers[mode]=setTimeout(()=>autoScan(mode),300);
+      return;
+    }
+
+    if(!result.detected){
+      $(mode+"Status").textContent="🔎 Looking for face...";
+      scanTimers[mode]=setTimeout(()=>autoScan(mode),220);
+    }else if(!result.best){
+      $(mode+"Status").textContent="👤 Face detected — no registered face profile.";
+      scanTimers[mode]=setTimeout(()=>autoScan(mode),300);
+    }else if(result.bestDistance>FACE_MATCH_THRESHOLD){
+      $(mode+"Status").textContent="👀 Face detected — not matched.";
+      $(mode+"Failed").textContent=Number($(mode+"Failed").textContent)+1;
+      scanTimers[mode]=setTimeout(()=>autoScan(mode),300);
+    }else{
+      const now=Date.now();
+      const last=lastMatched[mode];
+
+      if(last && last.id===String(result.best.id) && now-last.time<1200){
+        $(mode+"Status").textContent=`✅ ${result.best.name} already scanned — ready...`;
+        scanTimers[mode]=setTimeout(()=>autoScan(mode),300);
+      }else{
+        const lockKey=[mode,String(result.best.id)].join("|");
+        if(faceSubmitLock.has(lockKey)){
+          scanTimers[mode]=setTimeout(()=>autoScan(mode),500);
+          return;
+        }
+        faceSubmitLock.add(lockKey);
+        let saved=false;
+        try{
+          saved=await processAttendance(result.best,mode,result.bestDistance);
+        }finally{
+          faceSubmitLock.delete(lockKey);
+        }
+        if(saved) lastMatched[mode]={id:String(result.best.id),time:Date.now()};
+        scanTimers[mode]=setTimeout(()=>autoScan(mode),160);
+      }
+    }
+  }catch(e){
+    console.error("scan",e);
+    scanTimers[mode]=setTimeout(()=>autoScan(mode),350);
+  }
+}
+
+async function manualScan(mode){
+ if(!streams[mode]){alert("पहिले Start Camera गर्नुहोस्.");return;}
+ try{
+   await loadFaceModels();
+   const r=await detectBestEmployee(mode);
+   if(!r||!r.detected){$(mode+"Status").textContent="❌ Face भेटिएन.";return;}
+   if(!r.best){$(mode+"Status").textContent="❌ Registered face profile भेटिएन.";return;}
+   if(r.bestDistance>FACE_MATCH_THRESHOLD){
+     $(mode+"Status").textContent="❌ Face match भएन. Distance "+r.bestDistance.toFixed(3);
+     return;
+   }
+   await processAttendance(r.best,mode,r.bestDistance);
+ }catch(e){$(mode+"Status").textContent="❌ Scan failed: "+e.message;}
+}
+
+function allAttendanceLogs(){
+  // Attendance is centralized in Google Sheets only.
+  return sheetAttendance;
+}
+
+function hasTodayType(id,date,type){
+  return allAttendanceLogs().some(x=>
+    String(x.id)===String(id) &&
+    String(x.date)===String(date) &&
+    String(x.type||"").toUpperCase()===String(type).toUpperCase()
+  );
+}
+
+function attendanceKey(x){
+  return [x.date,x.id,x.type,x.time,x.gate].map(v=>String(v??"")).join("|");
+}
+
+
+function getShiftConfig(){
+  return Object.assign({},SHIFT_DEFAULTS,window.farOnlineShiftSettings||{});
+}
+function minutesOfDay(hm){
+  const p=String(hm||"00:00").split(":").map(Number);
+  return (p[0]||0)*60+(p[1]||0);
+}
+function shiftInfo(date,time){
+  const cfg=getShiftConfig(), m=minutesOfDay(time);
+  const ds=minutesOfDay(cfg.dayStart), de=minutesOfDay(cfg.dayEnd);
+  const ns=minutesOfDay(cfg.nightStart), ne=minutesOfDay(cfg.nightEnd);
+  if(m>=ds && m<de) return {shift:"DAY",shiftDate:date};
+  if(m>=ns) return {shift:"NIGHT",shiftDate:date};
+  if(m<ne){
+    const d=new Date(date+"T00:00:00");
+    d.setDate(d.getDate()-1);
+    const sd=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return {shift:"NIGHT",shiftDate:sd};
+  }
+  return {shift:"OUTSIDE",shiftDate:date};
+}
+function saveShiftSettings(){
+  const s={
+    dayStart:$("dayShiftStart")?.value||"06:00",
+    dayEnd:$("dayShiftEnd")?.value||"18:00",
+    nightStart:$("nightShiftStart")?.value||"18:00",
+    nightEnd:$("nightShiftEnd")?.value||"06:00"
+  };
+  window.farOnlineShiftSettings=s;
+  alert("✅ Shift settings applied for this session.");
+}
+function renderShiftSettings(){
+  const s=getShiftConfig();
+  if($("dayShiftStart")) $("dayShiftStart").value=s.dayStart;
+  if($("dayShiftEnd")) $("dayShiftEnd").value=s.dayEnd;
+  if($("nightShiftStart")) $("nightShiftStart").value=s.nightStart;
+  if($("nightShiftEnd")) $("nightShiftEnd").value=s.nightEnd;
+}
+
+async function processAttendance(emp,mode,distance){
+ const p=nowParts(),type=mode==="entry"?"ENTRY":"OUT";
+ const si=shiftInfo(p.date,p.time);
+ if(si.shift==="OUTSIDE"){
+   $(mode+"Status").textContent="⚠️ Current time is outside configured shift hours.";
+   return;
+ }
+
+ const all=[...(Array.isArray(sheetAttendance)?sheetAttendance:[])];
+ const exists=all.some(x=>{
+   const xi=shiftInfo(String(x.date||""),String(x.time||""));
+   return String(x.id)===String(emp.id) &&
+          xi.shift===si.shift &&
+          String(x.shiftDate||xi.shiftDate)===String(si.shiftDate) &&
+          String(x.type||"").toUpperCase()===type;
+ });
+ if(exists){
+   $(mode+"Status").textContent=`ℹ️ ${emp.name} already has ${type} for ${si.shift} shift (${si.shiftDate}).`;
+   return;
+ }
+
+ if(type==="OUT"){
+   const hasEntry=all.some(x=>{
+     const xi=shiftInfo(String(x.date||""),String(x.time||""));
+     return String(x.id)===String(emp.id) &&
+            xi.shift===si.shift &&
+            String(x.shiftDate||xi.shiftDate)===String(si.shiftDate) &&
+            String(x.type||"").toUpperCase()==="ENTRY";
+   });
+   if(!hasEntry){
+     $(mode+"Status").textContent=`⚠️ ${emp.name} has no ENTRY for ${si.shift} shift.`;
+     return;
+   }
+ }
+
+ const record={
+   date:si.shiftDate,time:p.time,id:emp.id,name:emp.name,
+   status:type==="ENTRY"?statusFor(p.time):"OUT",photo:emp.photo||"",
+   trade:emp.trade||"",company:emp.company||"",department:emp.department||"",
+   nationality:emp.nationality||"",phone:emp.phone||"",site:emp.site||"",
+   joiningDate:emp.joiningDate||"",matchDistance:Number(distance.toFixed(4)),
+   type:type,gate:$(mode+"Gate").value
+ };
+
+ try{
+   $(mode+"Status").textContent=`☁️ Saving ${type} (${si.shift} shift) to Google Sheet...`;
+   const result=await googleApi({action:"attendance",data:record},30000,2);
+   if(!result || result.success===false) throw new Error(result?.error||"Google Sheet rejected attendance.");
+
+   // Attendance is stored centrally in Google Sheet; do not use local logs.
+   sheetAttendance.push(record);
+   updateDashboard(); renderToday();
+   $(mode+"Status").textContent=`✅ ${emp.name} — ${type} recorded (${si.shift} shift, Gate ${record.gate})`;
+   $(mode+"Matched").textContent=Number($(mode+"Matched").textContent)+1;
+   lastMatched[mode]={id:String(emp.id),time:Date.now()};
+   setTimeout(()=>{if(scanning[mode])$(mode+"Status").textContent="🤖 Ready for next employee...";},1800);
+   return true;
+ }catch(e){
+   console.error("Attendance Google save error:",e);
+   $(mode+"Status").textContent="❌ Attendance save failed: "+e.message;
+   lastMatched[mode]={id:"",time:0};
+   return false;
+ }
+}
+async function uploadToImgBB(file){
+  if(!file) throw new Error("Photo file भेटिएन.");
+  if(!IMGBB_API_KEY || IMGBB_API_KEY.length < 20){
+    throw new Error("ImgBB API key सही छैन. index.html को IMGBB_API_KEY जाँच गर्नुहोस्.");
+  }
+  if(file.size > 32 * 1024 * 1024){
+    throw new Error("Photo 32 MB भन्दा ठूलो छ. सानो photo छान्नुहोस्.");
+  }
+
+  // Mobile photos can be very large. Resize/compress before upload.
+  const img=await fileToImage(file);
+  const maxSide=1400;
+  const scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+  const canvas=document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
+  canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  const blob=await new Promise((resolve,reject)=>{
+    canvas.toBlob(b=>b?resolve(b):reject(new Error("Photo compression failed.")),"image/jpeg",0.82);
+  });
+
+  const form=new FormData();
+  form.append("key",IMGBB_API_KEY);
+  form.append("image",blob,"employee-photo.jpg");
+
+  let response;
+  try{
+    response=await fetch("https://api.imgbb.com/1/upload",{method:"POST",body:form});
+  }catch(err){
+    throw new Error("ImgBB server मा पुग्न सकेन. Internet/VPN वा ImgBB access जाँच गर्नुहोस्.");
+  }
+
+  let d={};
+  try{ d=await response.json(); }catch(_){
+    throw new Error("ImgBB ले valid response दिएन (HTTP "+response.status+").");
+  }
+
+  if(!response.ok || !d.success){
+    const apiMsg=d?.error?.message || d?.error?.code || d?.status_txt || "Unknown ImgBB error";
+    throw new Error("ImgBB upload failed: "+apiMsg+" (HTTP "+response.status+")");
+  }
+  return d.data.display_url||d.data.url;
+}
+function fileToImage(file){
+ return new Promise((res,rej)=>{
+   const u=URL.createObjectURL(file),i=new Image();
+   i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("Photo load failed"))};i.src=u;
+ });
+}
+
+$("registrationForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const f=$("empPhoto").files[0];if(!f)return alert("Photo select गर्नुहोस्.");
+ const b=e.submitter;if(b)b.disabled=true;
+ try{
+   await loadFaceModels();
+   $("entryStatus").textContent="🔍 Employee photo बाट face profile बनाउँदै...";
+   const img=await fileToImage(f);
+   const face=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.45}))
+      .withFaceLandmarks().withFaceDescriptor();
+   if(!face)throw new Error("Photo मा स्पष्ट face भेटिएन. अगाडिबाट खिचिएको clear face photo राख्नुहोस्.");
+   const photo=await uploadToImgBB(f);
+   const emp={
+     id:$("empId").value.trim(),name:$("empName").value.trim(),
+     trade:$("empTrade").value.trim(),company:$("empCompany").value.trim(),
+     department:$("empDepartment").value.trim(),nationality:$("empNationality").value.trim(),
+     phone:$("empPhone").value.trim(),email:$("empEmail").value.trim(),site:$("empSite").value.trim(),
+     joiningDate:$("empJoining").value,photo,
+     faceDescriptor:JSON.stringify(Array.from(face.descriptor)),
+     registeredAt:new Date().toISOString()
+   };
+   if(!emp.id||!emp.name)throw new Error("Employee ID and name required.");
+   await googleApi({action:"saveEmployee",data:emp});
+   employees=await loadEmployeesFromSheets();descriptorCache.clear();renderEmployees();updateDashboard();
+   alert("✅ Employee registered with face profile.");
+   resetForm();
+ }catch(err){console.error(err);alert("❌ "+err.message)}
+ finally{if(b)b.disabled=false;}
+});
+$("empPhoto").onchange=e=>{
+ const f=e.target.files[0];if(f){const r=new FileReader();r.onload=x=>$("photoPreview").src=x.target.result;r.readAsDataURL(f);}
+};
+function resetForm(){$("registrationForm").reset();$("photoPreview").removeAttribute("src");}
+
+/* ---------------- EMPLOYEES ---------------- */
+function renderEmployees(){
+ const q=$("employeeSearch").value.toLowerCase();
+ $("employeeBody").innerHTML=employees.filter(e=>
+   (e.id+" "+e.name+" "+(e.trade||"")+" "+(e.company||"")+" "+(e.department||"")).toLowerCase().includes(q)
+ ).map((e,i)=>`<tr>
+ <td>${e.photo?`<img class="photo" src="${esc(e.photo)}" onerror="this.style.display='none'">`:""}</td>
+ <td>${esc(e.id)}</td><td>${esc(e.name)}</td><td>${esc(e.trade)}</td><td>${esc(e.company)}</td>
+ <td>${esc(e.department)}</td><td>${esc(e.nationality)}</td><td>${esc(e.phone)}</td><td>${esc(e.email||"")}</td><td>${esc(e.site)}</td>
+ <td>${esc(e.joiningDate)}</td><td><button class="danger" onclick="deleteEmployee(${i})">Delete</button></td></tr>`
+ ).join("")||'<tr><td colspan="12">No employees</td></tr>';
+}
+async function deleteEmployee(i){
+ const e=employees[i];if(!e||!confirm("Delete employee?"))return;
+ try{await googleApi({action:"deleteEmployee",data:{id:e.id}});employees.splice(i,1);descriptorCache.delete(String(e.id));saveAll();renderEmployees();updateDashboard();}
+ catch(x){alert(x.message);}
+}
+
+/* ---------------- TODAY ---------------- */
+let lastSheetRefreshAt=0;
+let lastSheetRefreshDate="";
+let sheetAttendanceFresh=false;
+async function refreshTodayFromSheets(silent=false,force=false,requestedDate=null){
+  const date=requestedDate||$("todayDate").value||nowParts().date;
+
+  // If another refresh is running, wait for it instead of returning with stale data.
+  if(sheetAttendanceLoading){
+    await new Promise(resolve=>{
+      const started=Date.now();
+      const wait=()=>{
+        if(!sheetAttendanceLoading || Date.now()-started>12000) return resolve();
+        setTimeout(wait,100);
+      };
+      wait();
+    });
+    if(!force && lastSheetRefreshDate===date && Date.now()-lastSheetRefreshAt<5000) return;
+  }
+
+  if(!force && lastSheetRefreshDate===date && Date.now()-lastSheetRefreshAt<5000){
+    return;
+  }
+
+  sheetAttendanceLoading=true;
+  sheetAttendanceFresh=false;
+  try{
+    const r=await googleApi({action:"attendanceToday",data:{date}},30000,2);
+    if(!r || r.success===false) throw new Error(r?.error||"Google Sheet returned an invalid response.");
+    sheetAttendance=Array.isArray(r.attendance)?r.attendance:[];
+    lastSheetRefreshAt=Date.now();
+    lastSheetRefreshDate=date;
+    sheetAttendanceFresh=true;
+    renderToday();
+    updateDashboard();
+    if(!silent){
+      $("todaySearch").focus();
+      const msg=`Google Sheet बाट ${sheetAttendance.length} attendance record load भयो.`;
+      if($("todayLoadStatus")) $("todayLoadStatus").textContent="✅ "+msg;
+      $("entryStatus").textContent=msg;
+      $("outStatus").textContent=msg;
+    }
+    return true;
+  }catch(e){
+    sheetAttendanceFresh=false;
+    console.error("Today attendance load error:",e);
+    if($("todayLoadStatus")) $("todayLoadStatus").textContent="❌ "+e.message;
+    if(!silent) alert("❌ Google Sheet Today Attendance load भएन:\n\n"+e.message);
+    return false;
+  }finally{
+    sheetAttendanceLoading=false;
+  }
+}
+
+function mergedAttendanceForDate(date){
+ const map=new Map();
+ [...sheetAttendance].filter(x=>String(x.date)===String(date)).forEach(x=>{
+   const k=attendanceKey(x);
+   if(!map.has(k))map.set(k,x);
+ });
+ return Array.from(map.values());
+}
+
+function renderToday(){
+ const date=$("todayDate").value,q=$("todaySearch").value.toLowerCase();
+ const dayLogs=mergedAttendanceForDate(date);
+ const ids=[...new Set(dayLogs.map(x=>String(x.id)))];
+
+ $("todayEmployees").textContent=employees.length;
+ $("todayEntries").textContent=dayLogs.filter(x=>String(x.type).toUpperCase()==="ENTRY").length;
+ $("todayOuts").textContent=dayLogs.filter(x=>String(x.type).toUpperCase()==="OUT").length;
+ $("todayInside").textContent=ids.filter(id=>{
+   const hasEntry=dayLogs.some(x=>String(x.id)===id&&String(x.type).toUpperCase()==="ENTRY");
+   const hasOut=dayLogs.some(x=>String(x.id)===id&&String(x.type).toUpperCase()==="OUT");
+   return hasEntry&&!hasOut;
+ }).length;
+
+ const rows=ids.map(id=>{
+   const ent=dayLogs.find(x=>String(x.id)===id&&String(x.type).toUpperCase()==="ENTRY");
+   const out=dayLogs.find(x=>String(x.id)===id&&String(x.type).toUpperCase()==="OUT");
+   const e=employees.find(x=>String(x.id)===id)||ent||out;
+   if(!e||!(id+" "+(e.name||"")).toLowerCase().includes(q))return "";
+   return `<tr><td>${esc(date)}</td><td>${esc(id)}</td><td>${esc(e.name)}</td><td>${esc(e.trade||"")}</td><td>${esc(e.company||"")}</td>
+   <td>${esc(ent?.time||"-")}</td><td>${esc(ent?.gate||"-")}</td><td>${esc(out?.time||"-")}</td><td>${esc(out?.gate||"-")}</td>
+   <td>${esc(ent?.matchDistance??out?.matchDistance??"-")}</td><td>${e.photo?`<img class="photo" src="${esc(e.photo)}">`:""}</td></tr>`;
+ }).join("");
+
+ $("todayBody").innerHTML=rows||'<tr><td colspan="11">No attendance today.</td></tr>';
+}
+function updateDashboard(){
+ const d=nowParts().date;
+ $("entryCount").textContent=sheetAttendance.filter(x=>String(x.date)===d&&String(x.type).toUpperCase()==="ENTRY").length;
+ $("outCount").textContent=sheetAttendance.filter(x=>String(x.date)===d&&String(x.type).toUpperCase()==="OUT").length;
+}
+
+/* ---------------- SETTINGS / API ---------------- */
+function saveSettings(){
+ settings.gate=Number($("deviceGate").value);
+ settings.type=$("deviceType").value;
+ settings.lateThreshold=$("lateThreshold").value;
+ localStorage.setItem(SET_KEY,JSON.stringify(settings));
+ $("entryGate").value=settings.gate;$("outGate").value=settings.gate;
+ setGate("entry");setGate("out");
+ alert("Settings saved.");
+}
+async function googleApi(payload,timeout=30000,retries=2){
+  let lastError=null;
+  for(let attempt=0;attempt<=retries;attempt++){
+    try{
+      return await new Promise((resolve,reject)=>{
+        const cb="farcb_"+Date.now()+"_"+Math.floor(Math.random()*999999);
+        const script=document.createElement("script");
+        let done=false;
+        const timer=setTimeout(()=>finish(new Error("Google Sheet response timeout. Apps Script deployment/access check गर्नुहोस्.")),timeout);
+        function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(_){}if(script.parentNode)script.parentNode.removeChild(script)}
+        function finish(err,data){if(done)return;done=true;cleanup();err?reject(err):resolve(data)}
+        window[cb]=data=>{
+          if(!data){finish(new Error("Google Apps Script ले empty response दियो."));return;}
+          if(data.success===false){finish(new Error(data.error||data.message||"Google operation failed."));return;}
+          finish(null,data);
+        };
+        const params=new URLSearchParams();
+        params.set("action",payload.action||"");
+        params.set("callback",cb);
+        params.set("data",JSON.stringify(payload.data!==undefined?payload.data:{}));
+        params.set("t",Date.now());
+        script.onerror=()=>finish(new Error("Google Apps Script URL load भएन. सही /exec deployment प्रयोग भएको छ कि जाँच गर्नुहोस्."));
+        script.src=GOOGLE_SCRIPT_URL+(GOOGLE_SCRIPT_URL.includes("?")?"&":"?")+params.toString();
+        document.head.appendChild(script);
+      });
+    }catch(err){
+      lastError=err;
+      if(attempt<retries) await new Promise(r=>setTimeout(r,1000*(attempt+1)));
+    }
+  }
+  throw lastError||new Error("Google operation failed.");
+}
+
+async function loadEmployeesFromSheets(){const r=await googleApi({action:"employees"});return Array.isArray(r.employees)?r.employees:[];}
+async function refreshEmployeesFromSheets(silent=false){
+ try{
+   employees=await loadEmployeesFromSheets();descriptorCache.clear();renderEmployees();updateDashboard();
+   if(!silent)alert("Google Sheet बाट "+employees.length+" employees load भयो.");
+ }catch(e){console.error(e);if(!silent)alert("❌ "+e.message);}
+}
+function exportData(){
+  alert("Fully online mode: data is stored in Google Sheets. Use Google Sheets export/download for backup.");
+}
+function importData(e){
+  alert("Fully online mode: local JSON import is disabled.");
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+
+
+/* ---------------- LEAVE / HOLIDAY / MONTHLY AUTOMATION ---------------- */
+function fillEmployeeSelect(){
+ const s=$("leaveEmployee"); if(!s)return;
+ s.innerHTML=employees.map(e=>`<option value="${esc(e.id)}">${esc(e.id)} - ${esc(e.name)}</option>`).join("");
+}
+async function loadLeaveHolidayUI(){
+ fillEmployeeSelect();
+ const m=$("reportMonth")?.value||nowParts().date.slice(0,7);
+ if($("leaveDate")&&!$("leaveDate").value)$("leaveDate").value=nowParts().date;
+ if($("holidayDate")&&!$("holidayDate").value)$("holidayDate").value=nowParts().date;
+ try{
+  const [lr,hr]=await Promise.all([googleApi({action:"leaves",data:{month:m}}),googleApi({action:"holidays",data:{month:m}})]);
+  if($("leaveBody"))$("leaveBody").innerHTML=(lr.leaves||[]).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.employeeId)}</td><td>${esc(x.employeeName)}</td><td>${esc(x.company)}</td><td>${esc(x.leaveType)}</td><td>${esc(x.hours)}</td><td>${x.approved?"YES":"NO"}</td><td>${esc(x.reason)}</td><td><button class="danger" onclick="removeLeave('${esc(x.recordId)}')">Delete</button></td></tr>`).join("")||'<tr><td colspan="9">No leave records.</td></tr>';
+  if($("holidayBody"))$("holidayBody").innerHTML=(hr.holidays||[]).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.name)}</td><td>${x.governmentHoliday?"YES":"NO"}</td><td><button class="danger" onclick="removeHoliday('${esc(x.recordId)}')">Delete</button></td></tr>`).join("")||'<tr><td colspan="4">No holidays.</td></tr>';
+ }catch(e){if($("monthlyStatus"))$("monthlyStatus").textContent="❌ "+e.message;}
+}
+async function saveLeaveFromUI(){
+ try{const r=await googleApi({action:"saveLeave",data:{employeeId:$("leaveEmployee").value,date:$("leaveDate").value,leaveType:$("leaveType").value,hours:Number($("leaveHours").value||8),reason:$("leaveReason").value,approved:$("leaveApproved").value}});if(!r.success)throw new Error(r.error);alert("✅ Leave saved.");loadLeaveHolidayUI();}catch(e){alert("❌ "+e.message);}
+}
+async function removeLeave(id){if(!confirm("Delete this leave record?"))return;try{await googleApi({action:"deleteLeave",data:{id}});loadLeaveHolidayUI();}catch(e){alert("❌ "+e.message);}}
+async function saveHolidayFromUI(){
+ try{const r=await googleApi({action:"saveHoliday",data:{date:$("holidayDate").value,name:$("holidayName").value,governmentHoliday:$("holidayGov").value}});if(!r.success)throw new Error(r.error);alert("✅ Government holiday saved.");loadLeaveHolidayUI();}catch(e){alert("❌ "+e.message);}
+}
+async function removeHoliday(id){if(!confirm("Delete this holiday?"))return;try{await googleApi({action:"deleteHoliday",data:{id}});loadLeaveHolidayUI();}catch(e){alert("❌ "+e.message);}}
+/*
+ * MONTHLY REPORT FIX (HTML ONLY)
+ *
+ * The Apps Script monthly endpoint requires a complete ENTRY + OUT pair to
+ * calculate working hours. For the report UI we also need to count a day as
+ * a Working Day when an employee has an ENTRY (even if OUT is not recorded
+ * yet). This fixes cases such as M001 having September ENTRY but Working Days=0.
+ * Approved Leave has priority over attendance; Government Holiday has priority
+ * over Leave, matching the existing backend rules. No Apps Script change is
+ * required.
+ */
+function monthDateList_(month){
+ const [y,mo]=String(month).split("-").map(Number);
+ if(!y||!mo)return [];
+ const today=nowParts().date;
+ const last=new Date(y,mo,0).getDate();
+ const out=[];
+ for(let d=1;d<=last;d++){
+   const k=`${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+   // The current day is not finalized until its 24-hour window is complete.
+   if(k===today)break;
+   if(k<today || `${y}-${String(mo).padStart(2,"0")}`!==today.slice(0,7)) out.push(k);
+ }
+ return out;
+}
+
+function timeMinutesHtml_(t){
+ const m=String(t||"").match(/(\d{1,2}):(\d{2})/);
+ return m ? Number(m[1])*60+Number(m[2]) : -1;
+}
+
+function workedHoursFromLogsHtml_(logs){
+ const entries=(logs||[]).filter(x=>String(x.type).toUpperCase()==="ENTRY").map(x=>timeMinutesHtml_(x.time)).filter(x=>x>=0).sort((a,b)=>a-b);
+ const outs=(logs||[]).filter(x=>String(x.type).toUpperCase()==="OUT").map(x=>timeMinutesHtml_(x.time)).filter(x=>x>=0).sort((a,b)=>a-b);
+ let total=0;
+ entries.forEach(en=>{
+   const idx=outs.findIndex(o=>o>en);
+   if(idx>=0){total+=outs[idx]-en;outs.splice(idx,1);}
+ });
+ return Math.round((total/60)*100)/100;
+}
+
+async function buildHtmlMonthlyReport_(month){
+ const days=monthDateList_(month);
+ if(!days.length)return [];
+
+ // Load the raw source data through the existing API.
+ const [er,lr,hr]=await Promise.all([
+   googleApi({action:"employees",data:{}}),
+   googleApi({action:"leaves",data:{month}}),
+   googleApi({action:"holidays",data:{month}})
+ ]);
+ const emps=Array.isArray(er.employees)?er.employees:[];
+ const leaves=Array.isArray(lr.leaves)?lr.leaves.filter(x=>x.approved):[];
+ const holidays=Array.isArray(hr.holidays)?hr.holidays.filter(x=>x.governmentHoliday):[];
+
+ const leaveMap=new Map();
+ leaves.forEach(x=>leaveMap.set(`${x.date}|${String(x.employeeId).toLowerCase()}`,x));
+ const holidayMap=new Map();
+ holidays.forEach(x=>holidayMap.set(String(x.date),x));
+
+ // Get each day's attendance. Small batches avoid opening too many JSONP
+ // requests at once on mobile browsers.
+ const attendanceByDate=new Map();
+ for(let i=0;i<days.length;i+=5){
+   const batch=days.slice(i,i+5);
+   $("monthlyStatus").textContent=`⏳ Reading attendance ${Math.min(i+batch.length,days.length)}/${days.length} days...`;
+   const results=await Promise.all(batch.map(date=>googleApi({action:"attendanceToday",data:{date}})));
+   batch.forEach((date,j)=>attendanceByDate.set(date,Array.isArray(results[j].attendance)?results[j].attendance:[]));
+ }
+
+ const rows=emps.map(e=>{
+   let workingDays=0,leaveDays=0,holidayDays=0,absentDays=0,workingHours=0,leaveHours=0,holidayExtraHours=0;
+   const join=String(e.joiningDate||"");
+   const id=String(e.id||"").toLowerCase();
+
+   days.forEach(date=>{
+     if(join && join>date)return;
+     const holiday=holidayMap.get(date);
+     const leave=leaveMap.get(`${date}|${id}`);
+     const logs=(attendanceByDate.get(date)||[]).filter(x=>String(x.id||"").toLowerCase()===id);
+     const hasAttendance=logs.some(x=>{const t=String(x.type||"").toUpperCase();return t==="ENTRY"||t==="OUT";});
+     const worked=workedHoursFromLogsHtml_(logs);
+
+     // Same priority as the existing system: Holiday -> Leave -> Work -> Absent.
+     if(holiday){
+       holidayDays++;
+       workingHours+=worked;
+       if(hasAttendance)holidayExtraHours+=8;
+     }else if(leave){
+       leaveDays++;
+       leaveHours+=Number(leave.hours||8);
+     }else if(hasAttendance){
+       // IMPORTANT: ENTRY alone counts as a Working Day. Hours remain 0
+       // until an OUT is available, so the report does not invent hours.
+       workingDays++;
+       workingHours+=worked;
+     }else{
+       absentDays++;
+     }
+   });
+
+   const total=workingHours+leaveHours+holidayExtraHours;
+   return {
+     month,employeeId:e.id,name:e.name,company:e.company||"",email:e.email||"",
+     workingDays,leaveDays,holidayDays,absentDays,
+     workingHours:Math.round(workingHours*100)/100,
+     leaveHours:Math.round(leaveHours*100)/100,
+     holidayExtraHours:Math.round(holidayExtraHours*100)/100,
+     totalHours:Math.round(total*100)/100
+   };
+ });
+ return rows;
+}
+
+function renderHtmlMonthlyRows_(rows){
+ $("monthlyBody").innerHTML=(rows||[]).map(x=>`<tr><td>${esc(x.month)}</td><td>${esc(x.employeeId)}</td><td>${esc(x.name)}</td><td>${esc(x.company)}</td><td>${x.workingDays}</td><td>${x.leaveDays}</td><td>${x.holidayDays}</td><td>${x.absentDays}</td><td>${x.workingHours}</td><td>${x.leaveHours}</td><td>${x.holidayExtraHours}</td><td><b>${x.totalHours}</b></td><td>${esc(x.email||"")}</td></tr>`).join("")||'<tr><td colspan="13">No monthly data.</td></tr>';
+
+ const companies={};
+ (rows||[]).forEach(x=>{
+   const key=x.company||"(No Company)";
+   if(!companies[key])companies[key]={month:x.month,company:key,employees:0,workingDays:0,leaveDays:0,holidayDays:0,absentDays:0,workingHours:0,leaveHours:0,holidayExtraHours:0,totalHours:0};
+   const c=companies[key]; c.employees++;
+   c.workingDays+=Number(x.workingDays||0); c.leaveDays+=Number(x.leaveDays||0); c.holidayDays+=Number(x.holidayDays||0); c.absentDays+=Number(x.absentDays||0);
+   c.workingHours+=Number(x.workingHours||0); c.leaveHours+=Number(x.leaveHours||0); c.holidayExtraHours+=Number(x.holidayExtraHours||0); c.totalHours+=Number(x.totalHours||0);
+ });
+ const cr=Object.values(companies);
+ $("companyMonthlyBody").innerHTML=cr.map(x=>`<tr><td>${esc(x.month)}</td><td>${esc(x.company)}</td><td>${x.employees}</td><td>${x.workingDays}</td><td>${x.leaveDays}</td><td>${x.holidayDays}</td><td>${x.absentDays}</td><td>${x.workingHours.toFixed(2)}</td><td>${x.leaveHours.toFixed(2)}</td><td>${x.holidayExtraHours.toFixed(2)}</td><td><b>${x.totalHours.toFixed(2)}</b></td></tr>`).join("")||'<tr><td colspan="11">No company data.</td></tr>';
+}
+
+async function loadMonthlyReports(){
+ const m=$("reportMonth")?.value||nowParts().date.slice(0,7);
+ if($("reportMonth"))$("reportMonth").value=m;
+ try{
+   const rows=await buildHtmlMonthlyReport_(m);
+   renderHtmlMonthlyRows_(rows);
+   $("monthlyStatus").textContent=`✅ ${m} report calculated from Attendance + Leave + Holiday. ENTRY भएको दिन Working Day मा count हुन्छ.`;
+ }catch(e){
+   console.error(e);
+   $("monthlyStatus").textContent="❌ Monthly report failed: "+e.message;
+ }
+}
+async function runAttendanceAutomationUI(){try{const r=await googleApi({action:"runDailyAttendance",data:{}});alert("✅ 24-hour attendance finalization completed. "+JSON.stringify(r.result||{}));if($("reportMonth"))loadMonthlyReports();}catch(e){alert("❌ "+e.message);}}
+async function installTriggersUI(){try{const r=await googleApi({action:"installTriggers",data:{}});alert("✅ "+(r.message||"Automatic triggers installed."));}catch(e){alert("❌ "+e.message);}}
+async function sendMonthEndReportsUI(){try{const r=await googleApi({action:"sendMonthEndReports",data:{}});alert(`📧 Sent: ${r.sent||0} | Skipped: ${r.skipped||0} | Failed: ${r.failed||0}`);}catch(e){alert("❌ "+e.message);}}
+
+/* INIT */
+$("todayDate").value=nowParts().date;
+if($("leaveDate"))$("leaveDate").value=nowParts().date;
+if($("holidayDate"))$("holidayDate").value=nowParts().date;
+if($("reportMonth"))$("reportMonth").value=nowParts().date.slice(0,7);
+renderShiftSettings();
+renderEmployees();renderToday();updateDashboard();
+(async()=>{
+  try{
+    $("entryStatus").textContent="☁️ Google Sheet बाट employees load हुँदैछ...";
+    $("outStatus").textContent="☁️ Google Sheet बाट employees load हुँदैछ...";
+    employees=await loadEmployeesFromSheets();
+    descriptorCache.clear();
+    renderEmployees();updateDashboard();
+    $("entryStatus").textContent="✅ Online employees loaded: "+employees.length;
+    $("outStatus").textContent="✅ Online employees loaded: "+employees.length;
+  }catch(e){
+    $("entryStatus").textContent="❌ Online employee load failed: "+e.message;
+    $("outStatus").textContent="❌ Online employee load failed: "+e.message;
+  }
+})();
+// Employees are loaded from local cache first; use Refresh Google Sheet when needed.
+// No automatic Attendance-sheet refresh while cameras are running.
+// This prevents network refreshes from interrupting face scanning.
+// Use the Today Attendance tab's manual "Load Today Attendance" button when needed.
+</script>
+</body>
+</html>
