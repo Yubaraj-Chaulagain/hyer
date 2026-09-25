@@ -608,10 +608,37 @@ async function uploadToImgBB(file){
   return d.data.display_url||d.data.url;
 }
 function fileToImage(file){
- return new Promise((res,rej)=>{
-   const u=URL.createObjectURL(file),i=new Image();
-   i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error("Photo load failed"))};i.src=u;
- });
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      reject(new Error("Photo file भेटिएन।"));
+      return;
+    }
+
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      img.onload = function() {
+        if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+          resolve(img);
+        } else {
+          reject(new Error("Photo decode भएन। JPG वा PNG फोटो छान्नुहोस्।"));
+        }
+      };
+
+      img.onerror = function() {
+        reject(new Error("Photo खोल्न सकिएन। JPG वा PNG फोटो प्रयोग गर्नुहोस्।"));
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.onerror = function() {
+      reject(new Error("Photo पढ्न सकिएन। फेरि फोटो छान्नुहोस्।"));
+    };
+
+    reader.readAsDataURL(file);
+  });
 }
 
 $("registrationForm").addEventListener("submit",async e=>{
