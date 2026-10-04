@@ -2,7 +2,7 @@
 // Paste your Fine-grained GitHub token inside the quotes below.
 // Required permission: Zip-Stroge repository -> Contents: Read and write.
 // WARNING: Anyone who can view this HTML source can copy the token.
-const GITHUB_TOKEN = "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";
+const GITHUB_TOKEN = "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";
 const OWNER="Yubaraj-Chaulagain", REPO="Zip-Stroge", FOLDER="files/";let files=[];const $=id=>document.getElementById(id);
 function api(path){return `https://api.github.com/repos/${OWNER}/${REPO}${path}`}function headers(){if(!GITHUB_TOKEN||GITHUB_TOKEN==="PASTE_YOUR_GITHUB_PAT_HERE")throw Error("HTML code मा GITHUB_TOKEN राख्नुहोस्।");return {Accept:"application/vnd.github+json",Authorization:"Bearer "+GITHUB_TOKEN,"X-GitHub-Api-Version":"2022-11-28"}}
 function msg(s){$("status").textContent=s}function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}function size(n){if(!n)return"0 B";let u=["B","KB","MB","GB"],i=Math.floor(Math.log(n)/Math.log(1024));return(n/1024**i).toFixed(i?2:0)+" "+u[i]}
