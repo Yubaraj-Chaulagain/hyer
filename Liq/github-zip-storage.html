@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GitHub ZIP Storage</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;font-family:Arial;color:#17202a}
+header{background:#111827;color:#fff;text-align:center;padding:24px 15px}header h1{margin:0 0 6px}
+main{max-width:720px;margin:auto;padding:18px}.card{background:#fff;border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #0001}
+label{display:block;font-weight:bold;margin:12px 0 7px}input{width:100%;padding:13px;border:1px solid #ccd3dc;border-radius:10px;font-size:15px}
+button,.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+.blue{background:#2563eb;color:#fff}.green{background:#16a34a;color:#fff}.red{background:#dc2626;color:#fff}.gray{background:#64748b;color:#fff}
+.row,.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.status{padding:12px;background:#eef2ff;border-radius:10px;margin-top:12px;white-space:pre-wrap}
+.item{border:1px solid #e1e5eb;border-radius:13px;padding:14px;margin-top:10px}.name{font-weight:bold;word-break:break-all}.meta,.small{font-size:13px;color:#64748b;margin-top:6px}
+</style></head><body>
+<header><h1>📦 GitHub ZIP Storage</h1><div>Upload • Update • Delete • Download</div></header>
+<main>
+<div class="card"><h2>⚙️ GitHub Settings</h2>
+<label>Owner</label><input id="owner" value="Yubaraj-Chaulagain">
+<label>Repository</label><input id="repo" value="Zip-Stroge">
+<label>GitHub Token</label><input id="token" type="password" placeholder="github_pat_...">
+<div class="small">Token is kept in this browser only. Do not publish it in the HTML.</div>
+<div class="row"><button class="blue" onclick="save()">💾 Save</button><button class="gray" onclick="clearToken()">🗑️ Clear Token</button></div></div>
+<div class="card"><h2>➕ Add ZIP</h2><input id="upload" type="file" accept=".zip,application/zip">
+<div class="row"><button class="green" onclick="upload()">⬆️ Upload ZIP</button><button class="gray" onclick="load()">🔄 Refresh</button></div>
+<div id="status" class="status">Ready.</div></div>
+<div class="card"><h2>📁 Stored ZIP Files</h2><input id="search" placeholder="🔎 Search ZIP..." oninput="render()"><div id="files"></div></div>
+</main>
+<script>
+const folder="files/";let list=[];
+const $=id=>document.getElementById(id);
+function save(){localStorage.gh_owner=$("owner").value.trim();localStorage.gh_repo=$("repo").value.trim();if($("token").value.trim())localStorage.gh_token=$("token").value.trim();msg("✅ Settings saved.");load()}
+function init(){$("owner").value=localStorage.gh_owner||"Yubaraj-Chaulagain";$("repo").value=localStorage.gh_repo||"Zip-Stroge";$("token").value=localStorage.gh_token||"";if(localStorage.gh_token)load();else $("files").innerHTML="<div class=small>पहिले Token राखेर Save गर्नुहोस्।</div>"}
+function clearToken(){localStorage.removeItem("gh_token");$("token").value="";msg("🗑️ Token cleared.")}
+function cfg(){if(!localStorage.gh_token)throw Error("GitHub Token राख्नुहोस्।");return{owner:$("owner").value.trim(),repo:$("repo").value.trim(),token:localStorage.gh_token}}
+function api(p){let c=cfg();return "https://api.github.com/repos/"+encodeURIComponent(c.owner)+"/"+encodeURIComponent(c.repo)+p}
+function hdr(){let c=cfg();return{"Accept":"application/vnd.github+json","Authorization":"Bearer "+c.token,"X-GitHub-Api-Version":"2022-11-28"}}
+function msg(x){$("status").textContent=x}
+function esc(x){return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function size(n){if(!n)return"0 B";let u=["B","KB","MB","GB"],i=Math.floor(Math.log(n)/Math.log(1024));return(n/1024**i).toFixed(i?2:0)+" "+u[i]}
+async function load(){try{let r=await fetch(api("/contents/"+encodeURIComponent(folder)),{headers:hdr()});if(r.status==404){list=[];render();return}if(!r.ok)throw Error(await r.text());let d=await r.json();list=(Array.isArray(d)?d:[]).filter(x=>x.type=="file"&&x.name.toLowerCase().endsWith(".zip"));render()}catch(e){$("files").innerHTML="<div class=status>❌ "+esc(e.message)+"</div>"}}
+function render(){let q=$("search").value.toLowerCase(),a=list.filter(x=>x.name.toLowerCase().includes(q));$("files").innerHTML=a.length?a.map((x,i)=>`<div class=item><div class=name>📦 ${esc(x.name)}</div><div class=meta>${size(x.size)} • ${esc(x.sha.slice(0,12))}...</div><div class=actions><a class="btn green" href="${esc(x.download_url)}" target="_blank">📥 Download</a><button class=blue onclick="update(${i})">🔄 Update</button><button class=red onclick="del(${i})">🗑️ Delete</button></div></div>`).join(""):"<div class=small>📦 No ZIP files found.</div>"}
+function b64(buf){let s="",a=new Uint8Array(buf);for(let i=0;i<a.length;i+=0x8000)s+=String.fromCharCode(...a.subarray(i,i+0x8000));return btoa(s)}
+async function get(path){let r=await fetch(api("/contents/"+encodeURIComponent(path)),{headers:hdr()});if(r.status==404)return null;if(!r.ok)throw Error(await r.text());return r.json()}
+async function put(path,file,sha){let body={message:(sha?"Update ":"Add ")+file.name,content:b64(await file.arrayBuffer())};if(sha)body.sha=sha;let r=await fetch(api("/contents/"+encodeURIComponent(path)),{method:"PUT",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify(body)});if(!r.ok)throw Error(await r.text())}
+async function upload(){let f=$("upload").files[0];if(!f)return msg("⚠️ ZIP file छान्नुहोस्।");if(!f.name.toLowerCase().endsWith(".zip"))return msg("⚠️ ZIP मात्र।");try{msg("⏳ Upload हुँदैछ...");let p=folder+f.name;if(await get(p))return msg("⚠️ यो नामको file छ। Update प्रयोग गर्नुहोस्।");await put(p,f);msg("✅ Upload सफल: "+f.name);$("upload").value="";load()}catch(e){msg("❌ "+e.message)}}
+async function update(i){let old=list[i],input=document.createElement("input");input.type="file";input.accept=".zip";input.onchange=async()=>{let f=input.files[0];if(!f)return;try{msg("⏳ Update हुँदैछ...");let p=folder+f.name,oldnew=await get(p);await put(p,f,oldnew?.sha);if(p!=old.path){let r=await fetch(api("/contents/"+encodeURIComponent(old.path)),{method:"DELETE",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify({message:"Delete old ZIP "+old.name,sha:old.sha})});if(!r.ok)throw Error(await r.text())}msg("✅ Update सफल: "+f.name);load()}catch(e){msg("❌ "+e.message)}};input.click()}
+async function del(i){let f=list[i];if(!confirm("Delete गर्ने हो?\n\n"+f.name))return;try{msg("⏳ Delete हुँदैछ...");let r=await fetch(api("/contents/"+encodeURIComponent(f.path)),{method:"DELETE",headers:{...hdr(),"Content-Type":"application/json"},body:JSON.stringify({message:"Delete ZIP "+f.name,sha:f.sha})});if(!r.ok)throw Error(await r.text());msg("✅ Deleted: "+f.name);load()}catch(e){msg("❌ "+e.message)}}
+init();
+</script></body></html>
