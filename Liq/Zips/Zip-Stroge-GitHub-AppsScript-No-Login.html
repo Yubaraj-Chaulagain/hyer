@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GitHub ZIP Storage</title>
+<style>
+body{font-family:Arial;margin:0;background:#f3f6fa}
+header{background:#111827;color:white;text-align:center;padding:24px}
+main{max-width:720px;margin:auto;padding:16px}
+.card{background:white;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 3px 12px #0001}
+input{width:100%;padding:13px;box-sizing:border-box;border:1px solid #ccd3dc;border-radius:10px;margin:5px 0}
+button,a{border:0;border-radius:10px;padding:12px 15px;margin:6px 4px 0 0;font-weight:bold;text-decoration:none;display:inline-block;cursor:pointer}
+.g{background:#16a34a;color:white}.b{background:#2563eb;color:white}.r{background:#dc2626;color:white}
+.s{background:#eef2ff;padding:12px;border-radius:10px;margin-top:10px;white-space:pre-wrap}
+.item{border:1px solid #ddd;border-radius:12px;padding:13px;margin-top:10px}
+.meta{font-size:13px;color:#64748b}
+</style>
+</head>
+<body>
+<header><h1>📦 GitHub ZIP Storage</h1>Upload · Update · Delete · Download</header>
+<main>
+
+<div class="card">
+<h3>⚙️ Apps Script Connection</h3>
+<p style="font-size:13px;color:#64748b">
+HTML GitHub मा राख्नुहोस्। GitHub Token यहाँ नराख्नुहोस्।
+तलको URL मा आफ्नो Google Apps Script Web App URL राख्नुहोस्।
+</p>
+<code>const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";</code>
+</div>
+
+<div class="card">
+<b>Repository:</b> Yubaraj-Chaulagain/Zip-Stroge<br>
+<small>🔒 GitHub token Google Apps Script मा मात्र हुन्छ।</small>
+</div>
+
+<div id="app">
+<div class="card">
+<h2>➕ Add ZIP</h2>
+<input id="f" type="file" accept=".zip">
+<button class="g" onclick="upload()">⬆️ Upload ZIP</button>
+<button onclick="load()">🔄 Refresh</button>
+<div id="st" class="s">Ready.</div>
+</div>
+
+<div class="card">
+<h2>📁 Stored ZIP files</h2>
+<input id="q" placeholder="Search ZIP..." oninput="render()">
+<div id="list">Loading...</div>
+</div>
+</div>
+</main>
+
+
+<script>
+// ============================================================
+// 🔴 IMPORTANT: यहाँ आफ्नो Google Apps Script Web App URL राख्नुहोस्.
+// GitHub Token यहाँ नराख्नुहोस्.
+// ============================================================
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+let files=[];
+const $=id=>document.getElementById(id);
+
+function ready(){
+  return APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes("PASTE_YOUR");
+}
+function status(x){$("st").textContent=x;}
+
+async function api(action,data={}){
+  if(!ready()) throw new Error("APPS_SCRIPT_URL मा Google Apps Script Web App URL राख्नुहोस्।");
+
+  const response=await fetch(APPS_SCRIPT_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({action:action,...data})
+  });
+
+  const text=await response.text();
+  let result;
+  try{ result=JSON.parse(text); }
+  catch(e){ throw new Error("Apps Script बाट सही JSON response आएन।"); }
+
+  if(!result.ok) throw new Error(result.message||"Request failed");
+  return result;
+}
+
+async function load(){
+  try{
+    status("⏳ Loading...");
+    const result=await api("list",{});
+    files=result.files||[];
+    render();
+    status("✅ Connected. ZIP files: "+files.length);
+  }catch(e){
+    status("❌ "+e.message);
+  }
+}
+
+function esc(x){
+  return String(x).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function size(n){
+  if(!n)return "0 B";
+  let u=["B","KB","MB","GB"];
+  let i=Math.floor(Math.log(n)/Math.log(1024));
+  return (n/Math.pow(1024,i)).toFixed(i?2:0)+" "+u[i];
+}
+
+function render(){
+  let search=$("q").value.toLowerCase();
+
+  let arr=files.filter(function(x){
+    return x.name.toLowerCase().includes(search);
+  });
+
+  $("list").innerHTML=arr.length ? arr.map(function(x){
+    let i=files.findIndex(function(y){return y.path===x.path;});
+
+    return `<div class="item">
+      <b>📦 ${esc(x.name)}</b>
+      <div class="meta">${size(x.size)} · SHA ${esc((x.sha||"").slice(0,10))}...</div>
+      <a class="g" href="${esc(x.download_url||"#")}" target="_blank" rel="noopener">📥 Download</a>
+      <button class="b" onclick="updateFile(${i})">🔄 Update</button>
+      <button class="r" onclick="deleteFile(${i})">🗑️ Delete</button>
+    </div>`;
+  }).join("") : "<p>No ZIP files found.</p>";
+}
+
+function readBase64(file){
+  return new Promise(function(resolve,reject){
+    let reader=new FileReader();
+    reader.onload=function(){
+      resolve(String(reader.result).split(",")[1]);
+    };
+    reader.onerror=function(){
+      reject(new Error("ZIP file पढ्न सकिएन।"));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function upload(){
+  let file=$("f").files[0];
+
+  if(!file)return status("पहिले ZIP छान्नुहोस्।");
+  if(!/\.zip$/i.test(file.name))
+    return status("❌ केवल .zip file upload गर्नुहोस्।");
+
+  try{
+    status("⏳ ZIP तयार हुँदैछ...");
+    let base64=await readBase64(file);
+
+    status("⏳ GitHub मा upload हुँदैछ...");
+
+    let result=await api("upload",{
+      name:file.name,
+      base64:base64
+    });
+
+    $("f").value="";
+    status("✅ "+result.message);
+    load();
+
+  }catch(e){
+    status("❌ "+e.message);
+  }
+}
+
+async function updateFile(index){
+  let old=files[index];
+
+  let input=document.createElement("input");
+  input.type="file";
+  input.accept=".zip";
+
+  input.onchange=async function(){
+    let file=input.files[0];
+    if(!file)return;
+
+    try{
+      status("⏳ Updating...");
+      let base64=await readBase64(file);
+
+      let result=await api("update",{
+        oldPath:old.path,
+        oldSha:old.sha,
+        name:file.name,
+        base64:base64
+      });
+
+      status("✅ "+result.message);
+      load();
+
+    }catch(e){
+      status("❌ "+e.message);
+    }
+  };
+
+  input.click();
+}
+
+async function deleteFile(index){
+  let file=files[index];
+
+  if(!confirm("Delete "+file.name+" ?"))return;
+
+  try{
+    status("⏳ Deleting...");
+
+    let result=await api("delete",{
+      path:file.path,
+      sha:file.sha
+    });
+
+    status("✅ "+result.message);
+    load();
+
+  }catch(e){
+    status("❌ "+e.message);
+  }
+}
+
+// Page खुल्नेबित्तिकै ZIP list load हुन्छ।
+load();
+</script>
+
+</body>
+</html>
