@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zip-Stroge</title>
+<style>
+body{font-family:Arial;margin:0;background:#f3f6fa;color:#17202a}
+header{background:#111827;color:#fff;text-align:center;padding:25px}
+main{max-width:720px;margin:auto;padding:16px}
+.card{background:#fff;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 3px 12px #0001}
+input{width:100%;padding:13px;box-sizing:border-box;border:1px solid #ccd3dc;border-radius:10px}
+button,a{border:0;border-radius:10px;padding:12px 15px;margin:7px 5px 0 0;font-weight:bold;text-decoration:none;display:inline-block;cursor:pointer}
+.g{background:#16a34a;color:#fff}.b{background:#2563eb;color:#fff}.r{background:#dc2626;color:#fff}
+.s{background:#eef2ff;padding:12px;border-radius:10px;margin-top:12px;white-space:pre-wrap}
+.item{background:#fff;border:1px solid #ddd;border-radius:12px;padding:13px;margin-top:10px}
+.meta{font-size:13px;color:#64748b;margin-top:6px}
+</style>
+</head>
+<body>
+<header><h1>📦 GitHub ZIP Storage</h1>Upload · Update · Delete · Download</header>
+<main>
+<div class="card">
+<b>Repository:</b> Yubaraj-Chaulagain/Zip-Stroge<br>
+<small>🔐 GitHub token server-side मा सुरक्षित राखिएको छ। Browser मा token पठाइँदैन।</small>
+</div>
+
+<div class="card">
+<h2>➕ Add ZIP</h2>
+<input id="f" type="file" accept=".zip">
+<button class="g" onclick="upload()">⬆️ Upload ZIP</button>
+<button onclick="load()">🔄 Refresh</button>
+<div id="st" class="s">Ready.</div>
+</div>
+
+<div class="card">
+<h2>📁 Stored ZIP files</h2>
+<input id="q" placeholder="Search ZIP..." oninput="render()">
+<div id="list">Loading...</div>
+</div>
+</main>
+
+<script>
+const $=x=>document.getElementById(x);
+let files=[];
+
+async function api(action, options={}) {
+  const url = 'api.php?action=' + encodeURIComponent(action);
+  const r = await fetch(url, options);
+  const text = await r.text();
+  let data;
+  try { data=JSON.parse(text); } catch { throw Error(text || 'Server error'); }
+  if(!r.ok || data.ok===false) throw Error(data.message || 'Request failed');
+  return data;
+}
+
+function esc(x){
+  return String(x).replace(/[&<>"']/g,c=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function sz(n){
+  if(!n)return'0 B';
+  let u=['B','KB','MB','GB'],i=Math.floor(Math.log(n)/Math.log(1024));
+  return (n/1024**i).toFixed(i?2:0)+' '+u[i];
+}
+function render(){
+  let q=$('q').value.toLowerCase();
+  let a=files.filter(x=>x.name.toLowerCase().includes(q));
+  $('list').innerHTML=a.length?a.map(x=>{
+    let i=files.findIndex(y=>y.path===x.path);
+    return `<div class=item>
+      <b>📦 ${esc(x.name)}</b>
+      <div class=meta>${sz(x.size)} · SHA ${esc((x.sha||'').slice(0,10))}...</div>
+      <a class="g" href="${esc(x.download_url||'#')}" target="_blank" rel="noopener">📥 Download</a>
+      <button class="b" onclick="updateFile(${i})">🔄 Update</button>
+      <button class="r" onclick="delFile(${i})">🗑️ Delete</button>
+    </div>`;
+  }).join(''):'<p>No ZIP files found.</p>';
+}
+
+async function load(){
+  try{
+    $('list').textContent='⏳ Loading...';
+    let d=await api('list');
+    files=d.files||[];
+    render();
+    $('st').textContent='✅ Connected. ZIP files: '+files.length;
+  }catch(e){
+    $('list').textContent=e.message;
+    $('st').textContent='❌ '+e.message;
+  }
+}
+
+async function upload(){
+  let f=$('f').files[0];
+  if(!f)return $('st').textContent='पहिले ZIP छान्नुहोस्।';
+  if(!f.name.toLowerCase().endsWith('.zip'))
+    return $('st').textContent='❌ केवल .zip file upload गर्नुहोस्।';
+
+  try{
+    $('st').textContent='⏳ Uploading...';
+    let fd=new FormData();
+    fd.append('file',f);
+    let d=await api('upload',{method:'POST',body:fd});
+    $('f').value='';
+    $('st').textContent='✅ '+d.message;
+    load();
+  }catch(e){ $('st').textContent='❌ '+e.message; }
+}
+
+function updateFile(i){
+  let old=files[i];
+  let p=document.createElement('input');
+  p.type='file'; p.accept='.zip';
+  p.onchange=async()=>{
+    let f=p.files[0]; if(!f)return;
+    try{
+      $('st').textContent='⏳ Updating...';
+      let fd=new FormData();
+      fd.append('file',f);
+      fd.append('old_path',old.path);
+      fd.append('old_sha',old.sha);
+      let d=await api('update',{method:'POST',body:fd});
+      $('st').textContent='✅ '+d.message;
+      load();
+    }catch(e){ $('st').textContent='❌ '+e.message; }
+  };
+  p.click();
+}
+
+async function delFile(i){
+  let f=files[i];
+  if(!confirm('Delete '+f.name+' ?'))return;
+  try{
+    $('st').textContent='⏳ Deleting...';
+    let fd=new FormData();
+    fd.append('path',f.path);
+    fd.append('sha',f.sha);
+    let d=await api('delete',{method:'POST',body:fd});
+    $('st').textContent='✅ '+d.message;
+    load();
+  }catch(e){ $('st').textContent='❌ '+e.message; }
+}
+load();
+</script>
+</body>
+</html>
