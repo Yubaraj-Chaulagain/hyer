@@ -11,7 +11,7 @@ function out($data, $status=200) {
 }
 
 $token = trim($config['token'] ?? '');
-if ($token === '' || strpos($token, 'PASTE_YOUR_NEW_GITHUB_TOKEN') !== false) {
+if ($token === '' || strpos($token, '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') !== false) {
     out(['ok'=>false,'message'=>'Server configuration error: GitHub token राखिएको छैन।'], 500);
 }
 
