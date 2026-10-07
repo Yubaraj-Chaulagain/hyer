@@ -1,0 +1,916 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fast APK Manager</title><style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#111827
+}
+
+header{
+  background:#111827;
+  color:#fff;
+  text-align:center;
+  padding:22px 15px
+}
+
+header h1{
+  margin:0 0 6px;
+  font-size:24px
+}
+
+header p{
+  margin:0;
+  color:#cbd5e1;
+  font-size:13px
+}
+
+.container{
+  max-width:850px;
+  margin:auto;
+  padding:16px
+}
+
+.controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px
+}
+
+button,.profile{
+  border:0;
+  border-radius:9px;
+  padding:11px 15px;
+  font-weight:bold;
+  font-size:14px;
+  text-decoration:none;
+  cursor:pointer
+}
+
+.refresh{
+  background:#2563eb;
+  color:white
+}
+
+.profile{
+  background:#e2e8f0;
+  color:#111827
+}
+
+.search{
+  width:100%;
+  padding:13px;
+  border:1px solid #cbd5e1;
+  border-radius:10px;
+  font-size:15px;
+  outline:none;
+  margin-bottom:12px
+}
+
+.status{
+  background:#fff;
+  border-radius:11px;
+  padding:13px;
+  margin-bottom:12px;
+  box-shadow:0 2px 7px #00000010;
+  font-size:14px
+}
+
+.progress{
+  height:5px;
+  background:#e2e8f0;
+  border-radius:5px;
+  overflow:hidden;
+  margin-top:9px
+}
+
+.progressBar{
+  height:100%;
+  width:0%;
+  background:#2563eb;
+  transition:.25s
+}
+
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 2px 9px #00000012
+}
+
+.badge{
+  display:inline-block;
+  font-size:11px;
+  font-weight:bold;
+  padding:4px 7px;
+  border-radius:6px;
+  margin-bottom:8px
+}
+
+.release{
+  background:#dcfce7;
+  color:#166534
+}
+
+.repo{
+  background:#dbeafe;
+  color:#1e40af
+}
+
+.name{
+  font-size:17px;
+  font-weight:bold;
+  word-break:break-word;
+  margin-bottom:7px
+}
+
+.meta{
+  color:#64748b;
+  font-size:13px;
+  line-height:1.7;
+  margin-bottom:11px
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap
+}
+
+.download,.open{
+  padding:9px 13px;
+  border-radius:8px;
+  text-decoration:none;
+  font-size:13px;
+  font-weight:bold
+}
+
+.download{
+  background:#16a34a;
+  color:#fff
+}
+
+.open{
+  background:#e2e8f0;
+  color:#111827
+}
+
+.empty{
+  background:#fff;
+  text-align:center;
+  padding:35px 15px;
+  border-radius:14px;
+  color:#64748b
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  color:#64748b;
+  font-size:12px
+}
+</style></head><body><header>
+  <h1>📱 Fast APK Manager</h1>
+  <p>Yubaraj-Chaulagain • GitHub</p>
+</header><div class="container">  <div class="controls"><button
+  class="refresh"
+  onclick="start()">
+  🔄 Refresh
+</button>
+
+<a
+  class="profile"
+  href="https://github.com/Yubaraj-Chaulagain"
+  target="_blank">
+  👤 GitHub
+</a>
+
+  </div><input
+id="search"
+class="search"
+type="search"
+placeholder="🔎 Search APK or repository..."
+oninput="filterList()">
+
+  <div class="status"><div id="statusText">
+  ⚡ Starting...
+</div>
+
+<div class="progress">
+  <div
+    id="progressBar"
+    class="progressBar">
+  </div>
+</div>
+
+  </div>  <div id="list">
+    <div class="empty">
+      🔄 Loading APKs...
+    </div>
+  </div></div><footer>
+  Fast GitHub APK Manager
+</footer><script>
+
+const USERNAME =
+  "Yubaraj-Chaulagain";
+
+const API =
+  "https://api.github.com";
+
+let allAPKs = [];
+
+let repos = [];
+
+
+/* =========================
+   API
+========================= */
+
+async function api(url){
+
+  const r = await fetch(url,{
+    headers:{
+      Accept:
+        "application/vnd.github+json"
+    }
+  });
+
+  if(!r.ok)
+    throw new Error(r.status);
+
+  return r.json();
+}
+
+
+/* =========================
+   Load repositories
+========================= */
+
+async function getRepos(){
+
+  return await api(
+    `${API}/users/${USERNAME}/repos?per_page=100&sort=updated`
+  );
+
+}
+
+
+/* =========================
+   FAST RELEASE SCAN
+========================= */
+
+async function getRelease(repo){
+
+  try{
+
+    const releases =
+      await api(
+        `${API}/repos/${USERNAME}/${repo.name}/releases?per_page=10`
+      );
+
+    const result=[];
+
+    releases.forEach(release=>{
+
+      if(release.draft)
+        return;
+
+      (release.assets || []).forEach(asset=>{
+
+        if(
+          asset.name
+            .toLowerCase()
+            .endsWith(".apk")
+        ){
+
+          result.push({
+
+            type:"release",
+
+            name:asset.name,
+
+            repo:repo.name,
+
+            version:
+              release.tag_name ||
+              release.name ||
+              "Release",
+
+            size:asset.size,
+
+            downloads:
+              asset.download_count || 0,
+
+            date:
+              release.published_at ||
+              release.created_at,
+
+            download:
+              asset.browser_download_url,
+
+            open:
+              release.html_url
+
+          });
+
+        }
+
+      });
+
+    });
+
+    return result;
+
+  }catch(e){
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================
+   REPOSITORY APK SCAN
+   Uses GitHub Contents API
+   instead of recursive tree
+========================= */
+
+async function getRepoAPK(repo){
+
+  try{
+
+    const root =
+      await api(
+        `${API}/repos/${USERNAME}/${repo.name}/contents`
+      );
+
+    const result=[];
+
+    for(const item of root){
+
+      if(
+        item.type==="file" &&
+        item.name
+          .toLowerCase()
+          .endsWith(".apk")
+      ){
+
+        result.push({
+
+          type:"repository",
+
+          name:item.name,
+
+          repo:repo.name,
+
+          version:"Repository",
+
+          size:item.size,
+
+          date:
+            repo.updated_at,
+
+          download:
+            item.download_url,
+
+          open:
+            item.html_url
+
+        });
+
+      }
+
+    }
+
+    return result;
+
+  }catch(e){
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================
+   Render
+========================= */
+
+function render(data){
+
+  const list =
+    document.getElementById("list");
+
+  if(!data.length){
+
+    list.innerHTML=`
+      <div class="empty">
+        📦 No APK found
+      </div>
+    `;
+
+    return;
+
+  }
+
+  list.innerHTML="";
+
+  data.forEach(apk=>{
+
+    const card =
+      document.createElement("div");
+
+    card.className="card";
+
+    const badge =
+      apk.type==="release"
+      ?
+      `<span class="badge release">
+        🚀 Release
+       </span>`
+      :
+      `<span class="badge repo">
+        📁 Repository
+       </span>`;
+
+
+    const version =
+      apk.version
+      ?
+      `<br>🏷️ Version:
+       <b>${safe(apk.version)}</b>`
+      :
+      "";
+
+
+    const downloads =
+      apk.type==="release"
+      ?
+      `<br>⬇️ Downloads:
+       <b>${apk.downloads}</b>`
+      :
+      "";
+
+
+    card.innerHTML=`
+
+      ${badge}
+
+      <div class="name">
+        📱 ${safe(apk.name)}
+      </div>
+
+      <div class="meta">
+
+        📦 Repository:
+        <b>${safe(apk.repo)}</b>
+
+        ${version}
+
+        <br>
+        💾 Size:
+        <b>${size(apk.size)}</b>
+
+        ${downloads}
+
+        <br>
+        📅 ${date(apk.date)}
+
+      </div>
+
+      <div class="actions">
+
+        <a
+          class="download"
+          href="${apk.download}"
+          target="_blank">
+          ⬇️ Download APK
+        </a>
+
+        <a
+          class="open"
+          href="${apk.open}"
+          target="_blank">
+          🔗 Open
+        </a>
+
+      </div>
+    `;
+
+    list.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================
+   Parallel worker
+========================= */
+
+async function parallelScan(
+  items,
+  worker,
+  concurrency=5
+){
+
+  let index=0;
+
+  async function run(){
+
+    while(true){
+
+      const i=index++;
+
+      if(i>=items.length)
+        return;
+
+      const result =
+        await worker(items[i],i);
+
+      if(result)
+        allAPKs.push(...result);
+
+    }
+
+  }
+
+  const workers=[];
+
+  for(
+    let i=0;
+    i<Math.min(concurrency,items.length);
+    i++
+  ){
+
+    workers.push(run());
+
+  }
+
+  await Promise.all(workers);
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+async function start(){
+
+  const status =
+    document.getElementById("statusText");
+
+  const bar =
+    document.getElementById("progressBar");
+
+  const list =
+    document.getElementById("list");
+
+
+  allAPKs=[];
+
+  list.innerHTML=
+    `<div class="empty">
+      ⚡ Loading...
+     </div>`;
+
+
+  bar.style.width="5%";
+
+  try{
+
+    status.innerHTML=
+      "📡 Connecting to GitHub...";
+
+
+    repos =
+      await getRepos();
+
+
+    if(!repos.length){
+
+      status.innerHTML=
+        "❌ No public repositories found";
+
+      render([]);
+
+      return;
+
+    }
+
+
+    /*
+      STEP 1
+      RELEASES FIRST
+    */
+
+    status.innerHTML=
+      `🚀 Checking Releases...
+       <b>0/${repos.length}</b>`;
+
+
+    let releaseDone=0;
+
+
+    await parallelScan(
+      repos,
+      async(repo)=>{
+
+        const result =
+          await getRelease(repo);
+
+        releaseDone++;
+
+        const percent =
+          Math.round(
+            (releaseDone /
+            repos.length) * 50
+          );
+
+        bar.style.width =
+          percent + "%";
+
+
+        status.innerHTML=
+          `🚀 Checking Releases...
+           <b>${releaseDone}/${repos.length}</b>`;
+
+        /*
+          IMPORTANT:
+          Show release APKs immediately
+        */
+
+        if(result.length){
+
+          allAPKs.push(...result);
+
+          removeDuplicates();
+
+          sortList();
+
+          render(allAPKs);
+
+        }
+
+        /*
+          Returning empty because
+          result was already added.
+        */
+
+        return [];
+
+      },
+      6
+    );
+
+
+    /*
+      STEP 2
+      REPOSITORY ROOT APK
+    */
+
+    status.innerHTML=
+      `📁 Checking repository APKs...`;
+
+
+    let repoDone=0;
+
+
+    await parallelScan(
+      repos,
+      async(repo)=>{
+
+        const result =
+          await getRepoAPK(repo);
+
+        repoDone++;
+
+
+        const percent =
+          50 +
+          Math.round(
+            (repoDone /
+            repos.length) * 50
+          );
+
+
+        bar.style.width =
+          percent + "%";
+
+
+        status.innerHTML=
+          `📁 Checking repository APKs...
+           <b>${repoDone}/${repos.length}</b>`;
+
+
+        return result;
+
+      },
+      6
+    );
+
+
+    removeDuplicates();
+
+    sortList();
+
+    render(allAPKs);
+
+
+    bar.style.width="100%";
+
+
+    status.innerHTML=
+      `✅ Done •
+       ${repos.length} repositories •
+       ${allAPKs.length} APKs`;
+
+
+  }catch(e){
+
+    console.error(e);
+
+    status.innerHTML=
+      "❌ GitHub connection failed";
+
+    list.innerHTML=`
+      <div class="empty">
+
+        <div style="font-size:40px">
+          ⚠️
+        </div>
+
+        <h3>
+          Loading failed
+        </h3>
+
+        <p>
+          Check internet and press Refresh.
+        </p>
+
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================
+   Duplicate removal
+========================= */
+
+function removeDuplicates(){
+
+  const map =
+    new Map();
+
+  allAPKs.forEach(apk=>{
+
+    map.set(
+      apk.download,
+      apk
+    );
+
+  });
+
+  allAPKs =
+    Array.from(map.values());
+
+}
+
+
+/* =========================
+   Sort newest
+========================= */
+
+function sortList(){
+
+  allAPKs.sort((a,b)=>{
+
+    return new Date(b.date || 0) -
+           new Date(a.date || 0);
+
+  });
+
+}
+
+
+/* =========================
+   Search
+========================= */
+
+function filterList(){
+
+  const q =
+    document
+      .getElementById("search")
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  if(!q){
+
+    render(allAPKs);
+
+    return;
+
+  }
+
+
+  render(
+    allAPKs.filter(apk=>
+
+      apk.name
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      apk.repo
+        .toLowerCase()
+        .includes(q)
+
+      ||
+
+      (apk.version || "")
+        .toLowerCase()
+        .includes(q)
+
+    )
+  );
+
+}
+
+
+/* =========================
+   Helpers
+========================= */
+
+function size(bytes){
+
+  if(!bytes)
+    return "Unknown";
+
+  if(bytes<1024)
+    return bytes+" B";
+
+  if(bytes<1024*1024)
+    return (
+      bytes/1024
+    ).toFixed(1)+" KB";
+
+  if(bytes<1024*1024*1024)
+    return (
+      bytes/1024/1024
+    ).toFixed(1)+" MB";
+
+  return (
+    bytes/1024/1024/1024
+  ).toFixed(1)+" GB";
+
+}
+
+
+function date(value){
+
+  if(!value)
+    return "Unknown";
+
+  return new Date(value)
+    .toLocaleDateString();
+
+}
+
+
+function safe(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =========================
+   Start
+========================= */
+
+start();
+
+</script></body>
+</html>
