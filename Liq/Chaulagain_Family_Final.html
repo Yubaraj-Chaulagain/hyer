@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="Chaulagain Family Official - YouTube Live and Videos">
+<title>Chaulagain Family Official</title>
+<style>
+:root{--bg:#f3f4f6;--ink:#111827;--muted:#6b7280;--card:#fff;--line:#e5e7eb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Devanagari",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#111827;color:#fff;padding:15px 14px;position:sticky;top:0;z-index:10}.head{max-width:1000px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-size:19px;font-weight:800}.sub{font-size:12px;opacity:.8;margin-top:4px}
+button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer;font-size:14px}.yt{background:#ef4444;color:white}.secondary{background:#e5e7eb;color:#111827}.primary{background:#111827;color:white}
+main{max-width:1000px;margin:auto;padding:15px}.card{background:#fff;border-radius:16px;padding:14px;margin-bottom:16px;box-shadow:0 2px 12px #00000012}
+.title{font-size:20px;font-weight:800;margin:4px 0 12px}.live-badge{display:inline-flex;align-items:center;gap:7px;background:#dc2626;color:white;border-radius:999px;padding:6px 11px;font-size:13px;font-weight:800;margin-bottom:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:white;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.25}}
+.player{position:relative;width:100%;aspect-ratio:16/9;background:#111827;border-radius:12px;overflow:hidden}.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.offline{display:flex;min-height:180px;height:100%;align-items:center;justify-content:center;text-align:center;color:white;padding:25px}.offline b{font-size:19px;display:block;margin-bottom:8px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.videos{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:14px}
+.video{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;cursor:pointer}.video:focus-visible{outline:3px solid #60a5fa}
+.thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#ddd}.vinfo{padding:10px}.vtitle{font-weight:700;font-size:15px;line-height:1.35}.date{font-size:12px;color:var(--muted);margin-top:6px}
+.search{display:flex;gap:8px;margin-bottom:12px}.search input,.settings input{flex:1;min-width:0;padding:12px;border:1px solid #d1d5db;border-radius:10px;font-size:15px}
+.status{padding:10px;border-radius:10px;background:#f3f4f6;color:#4b5563;font-size:13px;line-height:1.5;overflow-wrap:anywhere}.error{background:#fee2e2;color:#991b1b}.empty{text-align:center;color:#6b7280;padding:25px}
+.settings{display:none;margin-top:12px;padding:12px;background:#f9fafb;border:1px solid var(--line);border-radius:12px}.settings.open{display:block}.settings label{display:block;font-size:13px;font-weight:700;margin:8px 0 5px}
+.help{font-size:12px;color:var(--muted);line-height:1.5;margin-top:8px}footer{text-align:center;color:#6b7280;font-size:12px;padding:20px}
+@media(max-width:520px){.brand{font-size:16px}.head{align-items:flex-start}.head .yt{padding:9px 10px}.card{padding:12px}main{padding:10px}.videos{grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div><div class="brand">📺 Chaulagain Family Official</div><div class="sub">Live • Videos • Latest Updates</div></div><button class="yt" id="channelBtn" type="button">YouTube Channel ↗</button></div></header>
+<main>
+<section class="card">
+<div class="live-badge"><span class="dot"></span> LIVE STATUS</div>
+<div class="title">🔴 YouTube Live / Video Player</div>
+<div class="player" id="liveBox"><div class="offline"><div><b>वेब प्लेयर तयार छ</b>भिडियो यही पेजभित्र चल्नेछ। भिडियोको कार्ड छान्नुहोस् वा Live जाँच गर्नुहोस्।</div></div></div>
+<div id="liveStatus" class="status" style="margin-top:10px">YouTube API Key सेट गरेपछि Live र भिडियो सूची स्वतः लोड हुन्छ।</div>
+<div class="actions"><button class="primary" id="checkLiveBtn" type="button">🔄 Live जाँच</button><button class="secondary" id="settingsBtn" type="button">⚙️ API सेटिङ</button></div>
+<div class="settings" id="settingsPanel">
+<label for="apiKeyInput">YouTube Data API v3 Key</label><input id="apiKeyInput" type="password" autocomplete="off" placeholder="YouTube API Key यहाँ राख्नुहोस्">
+<div class="actions"><button class="primary" id="saveKeyBtn" type="button">Save & Load</button><button class="secondary" id="clearKeyBtn" type="button">Key हटाउनुहोस्</button></div>
+<div class="help">API Key Google Cloud Console बाट YouTube Data API v3 सक्षम गरेर लिनुपर्छ। Key यो ब्राउजरको localStorage मा राखिन्छ। सार्वजनिक वेबसाइटमा प्रयोग गर्दा Google Cloud Console मा API restriction लगाउनुहोस्।</div>
+</div>
+</section>
+<section class="card"><div class="title">🎥 Latest Videos</div>
+<div class="search"><input id="searchInput" type="search" placeholder="भिडियोको नाम खोज्नुहोस्..." aria-label="भिडियो खोज्नुहोस्"><button class="secondary" id="reloadBtn" type="button">↻ Reload</button></div>
+<div id="status" class="status">भिडियो सूची लोड हुन API Key आवश्यक छ।</div><div id="videos" class="videos"></div>
+</section>
+</main>
+<footer>Chaulagain Family Official • भिडियो वेबसाइटभित्रै चलाउने वेब प्लेयर</footer>
+<script>
+"use strict";
+const CHANNEL_HANDLE="@chaulagainfamilyofficialma2717";
+const CHANNEL_URL="https://www.youtube.com/"+CHANNEL_HANDLE;
+const KEY_STORE="cf_youtube_api_key";
+let API_KEY=localStorage.getItem(KEY_STORE)||"",channelId=localStorage.getItem("cf_channel_id")||"",uploadPlaylistId=localStorage.getItem("cf_upload_playlist_id")||"",allVideos=[],currentVideoId="",requestBusy=false;
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+function setStatus(msg,error=false){$("status").textContent=msg;$("status").className="status"+(error?" error":"");}
+function setLiveStatus(msg,error=false){$("liveStatus").textContent=msg;$("liveStatus").className="status"+(error?" error":"");}
+function openChannel(){window.open(CHANNEL_URL,"_blank","noopener,noreferrer");}
+function showMessage(title,msg){$("liveBox").innerHTML='<div class="offline"><div><b>'+esc(title)+'</b>'+esc(msg)+'</div></div>';currentVideoId="";}
+function requireKey(){API_KEY=localStorage.getItem(KEY_STORE)||"";if(!API_KEY){setStatus("पहिले ⚙️ API सेटिङमा YouTube API Key राख्नुहोस्।",true);setLiveStatus("YouTube API Key सेट गरिएको छैन।",true);$("settingsPanel").classList.add("open");return false;}return true;}
+async function api(url){const r=await fetch(url);let d;try{d=await r.json();}catch{throw new Error("YouTube बाट जवाफ आएन। Internet जाँच गर्नुहोस्।");}if(!r.ok||d.error)throw new Error(d.error?.message||("YouTube API error ("+r.status+")"));return d;}
+async function getChannelInfo(){const d=await api("https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails&forHandle="+encodeURIComponent(CHANNEL_HANDLE)+"&key="+encodeURIComponent(API_KEY));if(!d.items?.length)throw new Error("Channel भेटिएन। Handle/API Key जाँच गर्नुहोस्।");const c=d.items[0];channelId=c.id;uploadPlaylistId=c.contentDetails.relatedPlaylists.uploads;localStorage.setItem("cf_channel_id",channelId);localStorage.setItem("cf_upload_playlist_id",uploadPlaylistId);}
+function playVideo(id,title,isLive=false){if(!id)return;currentVideoId=id;const src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=0&playsinline=1&rel=0&modestbranding=1";$("liveBox").innerHTML='<iframe src="'+src+'" title="'+esc(title||"Chaulagain Family video")+'" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';setLiveStatus((isLive?"🔴 Live player खोलियो: ":"▶️ वेबसाइटभित्र भिडियो खोलियो: ")+(title||"YouTube video"));}
+async function checkLive(){if(!requireKey())return;try{if(!channelId||!uploadPlaylistId)await getChannelInfo();const d=await api("https://www.googleapis.com/youtube/v3/search?part=snippet&channelId="+encodeURIComponent(channelId)+"&eventType=live&type=video&maxResults=1&key="+encodeURIComponent(API_KEY));if(d.items?.length){const v=d.items[0];playVideo(v.id.videoId,v.snippet?.title||"YouTube Live",true);setLiveStatus("🔴 LIVE चलिरहेको छ: "+(v.snippet?.title||"YouTube Live"));}else setLiveStatus("अहिले सार्वजनिक Live भेटिएन। च्यानलमा Live सुरु भएपछि फेरि जाँच गर्नुहोस्।");}catch(e){setLiveStatus("Live जाँच हुन सकेन: "+e.message,true);}}
+async function loadVideos(){if(requestBusy)return;if(!requireKey())return;requestBusy=true;setStatus("भिडियोहरू लोड हुँदैछन्...");try{if(!channelId||!uploadPlaylistId)await getChannelInfo();const d=await api("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&playlistId="+encodeURIComponent(uploadPlaylistId)+"&maxResults=50&key="+encodeURIComponent(API_KEY));allVideos=(d.items||[]).map(x=>({id:x.contentDetails?.videoId,title:x.snippet?.title||"Untitled video",date:x.contentDetails?.videoPublishedAt||x.snippet?.publishedAt||"",thumb:x.snippet?.thumbnails?.high?.url||x.snippet?.thumbnails?.medium?.url||x.snippet?.thumbnails?.default?.url||""})).filter(v=>v.id);renderVideos(allVideos);setStatus(allVideos.length+" वटा भिडियो भेटियो। कार्ड थिच्दा यही पेजको player मा खुल्छ।");}catch(e){setStatus("भिडियो लोड भएन: "+e.message,true);}finally{requestBusy=false;}}
+function renderVideos(list){const b=$("videos");if(!list.length){b.innerHTML='<div class="empty">भिडियो भेटिएन वा API Key सेट गरिएको छैन।</div>';return;}b.innerHTML=list.map(v=>'<div class="video" role="button" tabindex="0" data-id="'+esc(v.id)+'" aria-label="Play '+esc(v.title)+'"><img class="thumb" src="'+esc(v.thumb)+'" loading="lazy" alt=""><div class="vinfo"><div class="vtitle">'+esc(v.title)+'</div><div class="date">'+(v.date?new Date(v.date).toLocaleDateString():"")+'</div></div></div>').join("");b.querySelectorAll(".video").forEach(el=>{const activate=()=>{const v=allVideos.find(x=>x.id===el.dataset.id);if(v)playVideo(v.id,v.title);};el.addEventListener("click",activate);el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});});}
+function filterVideos(){const q=$("searchInput").value.trim().toLowerCase();renderVideos(allVideos.filter(v=>v.title.toLowerCase().includes(q)));}
+$("channelBtn").addEventListener("click",openChannel);$("checkLiveBtn").addEventListener("click",checkLive);$("reloadBtn").addEventListener("click",loadVideos);$("searchInput").addEventListener("input",filterVideos);$("settingsBtn").addEventListener("click",()=>$("settingsPanel").classList.toggle("open"));
+$("saveKeyBtn").addEventListener("click",()=>{const key=$("apiKeyInput").value.trim();if(!key){setStatus("API Key खाली छ।",true);return;}localStorage.setItem(KEY_STORE,key);API_KEY=key;channelId="";uploadPlaylistId="";$("settingsPanel").classList.remove("open");loadVideos();checkLive();});
+$("clearKeyBtn").addEventListener("click",()=>{localStorage.removeItem(KEY_STORE);API_KEY="";channelId="";uploadPlaylistId="";allVideos=[];$("apiKeyInput").value="";$("videos").innerHTML="";showMessage("API Key हटाइयो","फेरि भिडियो सूची चलाउन API सेटिङमा key राख्नुहोस्।");setStatus("API Key हटाइएको छ।",true);setLiveStatus("API Key सेट गरिएको छैन।",true);});
+$("apiKeyInput").value=API_KEY;
+if(API_KEY){loadVideos();checkLive();setInterval(checkLive,60000);}else{setStatus("API Key सेट गर्नुहोस्। त्यसपछि Latest Videos र Live जाँच चल्नेछ।");setLiveStatus("भिडियो वेबसाइटभित्रै चल्ने गरी वेब प्लेयर सेट गरिएको छ।");}
+</script>
+</body>
+</html>
