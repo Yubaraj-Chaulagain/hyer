@@ -42,6 +42,9 @@ a{color:#78e7d0}
   <div class="controls">
     <input id="searchBox" placeholder="भिडियो खोज्नुहोस्..." autocomplete="off">
     <button class="primary" id="refreshBtn">Refresh</button>
+    <button id="syncBtn" class="primary" onclick="syncYouTube()">
+  Upload / Sync Videos
+</button>
     <button id="chooseFileBtn">फोनबाट भिडियो खोल्नुहोस्</button>
     <input id="fileInput" type="file" accept="video/*" hidden>
   </div>
@@ -176,6 +179,35 @@ function playItem(v){
     $("playerArea").innerHTML='<div style="padding:30px;text-align:center">यो URL लाई player मा खोल्न सकिएन।</div>';
   }
 }
+async function syncYouTube() {
+  const status = document.getElementById("status");
+  const button = document.getElementById("syncBtn");
+
+  button.disabled = true;
+  status.textContent = "YouTube भिडियो Sync हुँदैछ...";
+
+  try {
+    const response = await fetch(
+      APPS_SCRIPT_URL + "?action=sync"
+    );
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || "Sync असफल भयो");
+    }
+
+    status.textContent = result.message;
+
+    await loadData();
+
+  } catch (error) {
+    status.textContent = "त्रुटि: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+}
+  
 function getYouTubeId(url){
   const s=String(url||"");
   const m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
