@@ -9,7 +9,7 @@
 
 const CHANNEL_HANDLE = "@chaulagainfamilyofficialma2717";
 const PROP_SPREADSHEET_ID = "SPREADSHEET_ID";
-const PROP_API_KEY = "YOUTUBE_API_KEY";
+const PROP_API_KEY = "AIzaSyBYSwVV8LrUGEhNng3vMb6Yngg_AfICctg";
 const MAX_PAGES_PER_SYNC = 4; // Up to ~200 latest uploads per sync.
 const SHEET_HEADERS = [
   "Title", "URL", "Description", "Thumbnail", "PublishedAt",
