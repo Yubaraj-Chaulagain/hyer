@@ -227,6 +227,20 @@ function readSheet(sheet) {
       type: row[6]
     }));
 }
+function checkYouTubeFeed() {
+  const channelId = "UCLbpxkvazaQThtiNjcf5vJw";
+
+  const url =
+    "https://www.youtube.com/feeds/videos.xml?channel_id=" +
+    encodeURIComponent(channelId);
+
+  const response = UrlFetchApp.fetch(url, {
+    muteHttpExceptions: true
+  });
+
+  Logger.log("HTTP Status: " + response.getResponseCode());
+  Logger.log(response.getContentText().substring(0, 2000));
+}
 
 function jsonOutput(data) {
   return ContentService
