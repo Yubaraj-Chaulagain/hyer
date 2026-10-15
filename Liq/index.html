@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chaulagain Family Official - Video Library</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--card:#131f33;--muted:#a9b7cc;--line:#263750;--accent:#25c7a2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f6f8fc;font-family:system-ui,Arial,sans-serif}
+header{padding:18px 16px;background:#101a2c;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+h1{font-size:20px;margin:0 0 5px}header p{margin:0;color:var(--muted);font-size:13px}
+main{max-width:1100px;margin:auto;padding:16px}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+input,button{font:inherit;border-radius:10px;border:1px solid var(--line);padding:10px 12px}
+input{background:#0e192a;color:white;flex:1;min-width:180px}button{background:#1c2b43;color:white;cursor:pointer}
+button.active,button.primary{background:var(--accent);color:#071b19;border-color:var(--accent);font-weight:700}
+.status{color:var(--muted);font-size:13px;margin:8px 0 14px}
+.player{background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:18px}
+.player iframe,.player video{width:100%;aspect-ratio:16/9;display:block;border:0;background:#000}
+.now{padding:12px 14px;background:var(--card)}.now h2{font-size:16px;margin:0 0 6px}.now p{margin:0;color:var(--muted);font-size:13px;white-space:pre-wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer}
+.card img{width:100%;aspect-ratio:16/9;object-fit:cover;background:#17243a;display:block}
+.card .info{padding:10px}.card h3{font-size:14px;line-height:1.4;margin:0 0 6px}.card small{color:var(--muted)}
+.empty{padding:20px;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}
+.note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:18px}
+a{color:#78e7d0}
+@media(max-width:600px){main{padding:10px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.card h3{font-size:12px}.card .info{padding:8px}h1{font-size:18px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📺 Chaulagain Family Official</h1>
+  <p>YouTube भिडियो, Shorts, TikTok र स्थानीय भिडियो एउटै ठाउँमा</p>
+</header>
+<main>
+  <div class="controls" id="tabs">
+    <button class="active" data-tab="youtube">YouTube भिडियो</button>
+    <button data-tab="shorts">Shorts</button>
+    <button data-tab="tiktok">TikTok</button>
+    <button data-tab="offline">Offline भिडियो</button>
+  </div>
+  <div class="controls">
+    <input id="searchBox" placeholder="भिडियो खोज्नुहोस्..." autocomplete="off">
+    <button class="primary" id="refreshBtn">Refresh</button>
+    <button id="chooseFileBtn">फोनबाट भिडियो खोल्नुहोस्</button>
+    <input id="fileInput" type="file" accept="video/*" hidden>
+  </div>
+  <div class="status" id="status">भिडियो सूची लोड हुँदैछ...</div>
+  <section class="player">
+    <div id="playerArea"><div style="aspect-ratio:16/9;display:grid;place-items:center;color:#a9b7cc">भिडियो छान्नुहोस्</div></div>
+    <div class="now"><h2 id="nowTitle">कुनै भिडियो छानिएको छैन</h2><p id="nowDescription"></p></div>
+  </section>
+  <section id="videoGrid" class="grid"></section>
+  <p class="note">
+    नोट: YouTube API quota असीमित हुँदैन। यो प्रणालीले Search API प्रयोग नगरी channel को Uploads playlist बाट भिडियो अपडेट गर्छ।
+    Shorts छुट्याउन ३ मिनेट वा कम लम्बाइलाई अनुमानका रूपमा प्रयोग गरिएको छ; YouTube ले सबै भिडियोको प्रकार API बाट स्पष्ट दिँदैन।
+    TikTok भिडियो थप्न Spreadsheet को <b>TikTok</b> sheet मा Title, URL, Description, Thumbnail भर्नुहोस्।
+    Offline विकल्पले फोनबाट छानेको भिडियो यही ब्राउजरमा चलाउँछ; यो YouTube/TikTok भिडियो डाउनलोड गर्ने सुविधा होइन।
+  </p>
+</main>
+<script>
+/*
+  Paste your deployed Apps Script Web App URL below.
+  Example format: https://script.google.com/macros/s/DEPLOYMENT_ID/exec
+*/
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+let data = {videos:[],shorts:[],tiktok:[]};
+let activeTab = "youtube";
+let offlineUrl = "";
+let activeVideo = null;
+
+const $ = id => document.getElementById(id);
+const statusEl = $("status");
+const grid = $("videoGrid");
+
+document.querySelectorAll("#tabs button").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b===btn));
+  activeTab = btn.dataset.tab;
+  if(activeTab === "offline") {
+    renderOffline();
+  } else {
+    renderList();
+  }
+}));
+
+$("refreshBtn").addEventListener("click", loadData);
+$("searchBox").addEventListener("input", renderList);
+$("chooseFileBtn").addEventListener("click", ()=>$("fileInput").click());
+$("fileInput").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  if(offlineUrl) URL.revokeObjectURL(offlineUrl);
+  offlineUrl = URL.createObjectURL(file);
+  activeTab = "offline";
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab==="offline"));
+  $("playerArea").innerHTML = "";
+  const video = document.createElement("video");
+  video.controls = true; video.autoplay = true; video.playsInline = true; video.src = offlineUrl;
+  $("playerArea").appendChild(video);
+  $("nowTitle").textContent = file.name;
+  $("nowDescription").textContent = "फोनबाट छानिएको स्थानीय भिडियो";
+  statusEl.textContent = "स्थानीय भिडियो चलिरहेको छ।";
+  grid.innerHTML = '<div class="empty">अर्को स्थानीय भिडियो खोल्न माथिको बटन थिच्नुहोस्।</div>';
+});
+
+function loadData(){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
+    statusEl.textContent = "Apps Script URL राखिएको छैन। index.html मा APPS_SCRIPT_URL सेट गर्नुहोस्।";
+    grid.innerHTML = '<div class="empty">README.md का सेटअप चरण पूरा गरेपछि यहाँ भिडियो देखिन्छन्।</div>';
+    return;
+  }
+  statusEl.textContent = "Google Sheets बाट भिडियो सूची लोड हुँदैछ...";
+  const callback = "receiveVideoLibrary";
+  window[callback] = function(result){
+    try {
+      data = {videos:result.videos||[],shorts:result.shorts||[],tiktok:result.tiktok||[]};
+      statusEl.textContent = "लोड भयो: YouTube "+data.videos.length+" · Shorts "+data.shorts.length+" · TikTok "+data.tiktok.length;
+      renderList();
+    } catch(err) {
+      statusEl.textContent = "डेटा पढ्न सकिएन: " + err.message;
+    } finally {
+      script.remove();
+      try { delete window[callback]; } catch(e) { window[callback]=undefined; }
+    }
+  };
+  const script = document.createElement("script");
+  script.onerror = () => { statusEl.textContent = "Apps Script बाट डेटा आएन। URL/deployment access जाँच्नुहोस्।"; script.remove(); };
+  script.src = APPS_SCRIPT_URL + (APPS_SCRIPT_URL.includes("?")?"&":"?") +
+    "action=videos&callback=" + callback + "&_=" + Date.now();
+  document.body.appendChild(script);
+}
+
+function currentItems(){
+  if(activeTab==="shorts") return data.shorts;
+  if(activeTab==="tiktok") return data.tiktok;
+  return data.videos;
+}
+function renderList(){
+  if(activeTab==="offline"){renderOffline();return;}
+  const q = $("searchBox").value.trim().toLowerCase();
+  const items = currentItems().filter(v => !q || (v.title+" "+v.description).toLowerCase().includes(q));
+  grid.innerHTML = "";
+  if(!items.length){
+    grid.innerHTML = '<div class="empty">यस खण्डमा भिडियो भेटिएन। Apps Script sync र TikTok sheet जाँच्नुहोस्।</div>';
+    return;
+  }
+  items.forEach(v=>{
+    const card=document.createElement("article"); card.className="card";
+    card.addEventListener("click",()=>playItem(v));
+    const img=document.createElement("img"); img.loading="lazy"; img.alt=""; img.src=v.thumbnail||"";
+    const info=document.createElement("div"); info.className="info";
+    const title=document.createElement("h3"); title.textContent=v.title||"Untitled video";
+    const small=document.createElement("small");
+    small.textContent=v.publishedAt ? new Date(v.publishedAt).toLocaleDateString() : (v.type==="tiktok"?"TikTok":"");
+    info.append(title,small); card.append(img,info); grid.appendChild(card);
+  });
+}
+function playItem(v){
+  activeVideo=v;
+  $("nowTitle").textContent=v.title||"Video";
+  $("nowDescription").textContent=v.description||"";
+  $("playerArea").innerHTML="";
+  const id=v.videoId || getYouTubeId(v.url);
+  if(v.type==="tiktok" || /tiktok\.com/i.test(v.url||"")){
+    const wrap=document.createElement("div"); wrap.style.cssText="aspect-ratio:9/16;max-width:430px;margin:auto;background:#000";
+    const iframe=document.createElement("iframe"); iframe.src="https://www.tiktok.com/embed/v2/"+getTikTokId(v.url);
+    iframe.allow="encrypted-media; fullscreen"; iframe.allowFullscreen=true; iframe.style.cssText="width:100%;height:100%;border:0";
+    wrap.appendChild(iframe); $("playerArea").appendChild(wrap);
+  } else if(id){
+    const iframe=document.createElement("iframe");
+    iframe.src="https://www.youtube-nocookie.com/embed/"+encodeURIComponent(id)+"?autoplay=1&rel=0";
+    iframe.title=v.title||"YouTube video"; iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen=true; $("playerArea").appendChild(iframe);
+  } else {
+    $("playerArea").innerHTML='<div style="padding:30px;text-align:center">यो URL लाई player मा खोल्न सकिएन।</div>';
+  }
+}
+function getYouTubeId(url){
+  const s=String(url||"");
+  const m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m?m[1]:"";
+}
+function getTikTokId(url){
+  const m=String(url||"").match(/\/video\/(\d+)/);
+  return m?m[1]:"";
+}
+function renderOffline(){
+  grid.innerHTML='<div class="empty">फोनबाट भिडियो खोल्न माथिको “फोनबाट भिडियो खोल्नुहोस्” बटन थिच्नुहोस्। स्थानीय भिडियोको उपलब्धता ब्राउजर/डिभाइसमा निर्भर हुन्छ।</div>';
+}
+loadData();
+</script>
+</body>
+</html>
