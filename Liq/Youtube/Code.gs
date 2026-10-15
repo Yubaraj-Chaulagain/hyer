@@ -1,4 +1,4 @@
-const CHANNEL_ID = "@chaulagainfamilyofficialma2717";
+const CHANNEL_ID = "UCLbpxkvazaQThtiNjcf5vJw";
 const PROP_ID = "SPREADSHEET_ID";
 
 const HEADERS = [
